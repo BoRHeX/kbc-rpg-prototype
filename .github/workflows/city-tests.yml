@@ -1,0 +1,17 @@
+name: KBC City regression tests
+on:
+  push:
+    branches: [main, feature/kbc-city-v0]
+  pull_request:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: python oracle_lab.py --output experiment-ci.json
+      - run: python -c "from city_sim import KBCCity; c=KBCCity(); c.advance(20); assert c.integrity_check(); print(c.state()['timeline'][-1])"

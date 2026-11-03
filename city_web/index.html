@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KBC City | Oracle Laboratory</title>
+<style>
+:root{color-scheme:dark;--bg:#09151e;--panel:#10232f;--panel2:#182e3a;--edge:#294451;--text:#e6f3f6;--muted:#a1b8c5;--mint:#8ee2bd;--blue:#7fcbe6;--purple:#b49aff;--amber:#ffc77e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 45% -20%,#234354 0,#09151e 52%);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header{border-bottom:1px solid #2d4955;padding:16px max(16px,calc((100vw - 1400px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1,h2,h3,p{margin:0}h1{font-size:23px;letter-spacing:.3px}h2{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#d7e8ef;margin-bottom:10px}h3{font-size:14px}
+.sub{color:var(--muted);font-size:12px}.badge{border:1px solid #497461;background:#193e36;border-radius:99px;padding:5px 10px;font-size:11px;color:#a9ebd0}
+.wrap{max-width:1400px;margin:auto;padding:17px 16px 60px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+.panel{background:linear-gradient(180deg,#142936,#0e212c);border:1px solid var(--edge);border-radius:15px;padding:15px;min-width:0;box-shadow:0 8px 25px #0002}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit;min-height:36px;border-radius:8px;border:1px solid #49606a;color:var(--text);background:#203743;padding:7px 10px}
+button{cursor:pointer;transition:background .1s}button:hover{background:#2a4b5b}button:disabled{opacity:.55;cursor:not-allowed}
+button.primary{background:#245e51;border-color:#377d68;color:#d9fff0}button.primary:hover{background:#307765}
+select{max-width:100%}input{width:100%;min-width:0;background:#132935}label{color:var(--muted);font-size:12px}
+#map{display:block;width:100%;aspect-ratio:4 / 3;border:1px solid #45606a;border-radius:10px;background:#142f3b;image-rendering:pixelated}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 0;color:var(--muted);font-size:11px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stat{background:var(--panel2);border:1px solid #315260;border-radius:10px;padding:12px}.stat strong{font-size:26px;display:block;font-variant-numeric:tabular-nums}
+.resident{display:grid;grid-template-columns:10px 1fr auto;align-items:center;gap:9px;padding:9px 8px;border-top:1px solid #29414e;cursor:pointer;border-radius:6px}.resident:hover,.resident.active{background:#244252}
+.progress{height:4px;background:#274450;border-radius:3px;overflow:hidden;margin-top:5px}.fill{height:100%;background:var(--mint)}
+#selected{background:#132d37;border:1px solid #335463;border-radius:10px;padding:10px;margin-top:11px;white-space:pre-wrap;color:#d4e6ee;max-height:220px;overflow:auto;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+.stack{display:grid;gap:13px}.wide{grid-column:1/-1}.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+#chart{display:block;width:100%;height:auto;aspect-ratio:4/1;border:1px solid #294956;border-radius:7px}
+.log{overflow:auto;max-height:235px;display:grid;gap:8px}.event{border-bottom:1px dashed #29414f;padding-bottom:7px;font-size:12px}
+.event small{color:var(--muted);font:11px ui-monospace,monospace}.event b{color:var(--mint);font-weight:600}
+.chatlog{height:185px;overflow:auto;border:1px solid #325262;border-radius:9px;background:#0c202a;padding:10px;display:grid;align-content:start;gap:9px}
+.bubble{background:#223e4b;border-radius:9px;padding:9px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.user{background:#2a4d44}
+.formline{display:flex;gap:7px;margin-top:9px}.formline input{flex:1}.formline button{flex:0 0 auto}
+.smallnote{font-size:11px;color:var(--muted);margin-top:7px}.status{font-size:12px;min-height:20px;color:var(--mint)}.error{color:#ffacac}
+#driver{display:grid;grid-template-columns:1fr 1fr;gap:7px}#driver select{width:100%}
+footer{color:var(--muted);margin-top:20px;font-size:12px}
+@media(max-width:960px){.layout{grid-template-columns:1fr}.columns{grid-template-columns:1fr}.wide{grid-column:auto}.stack{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.stack{grid-template-columns:1fr}.panel{padding:12px}header{padding:13px 16px}.wrap{padding:10px 9px 40px}h1{font-size:20px}.controls button{flex:1}#map{border-radius:7px}#chart{aspect-ratio:2.3/1}}
+</style>
+</head>
+<body>
+<header><div><h1>◈ KBC City <span style="color:var(--mint)">/ Oracle Lab</span></h1><p class="sub">A bounded, inspectable city for knowledge experiments</p></div><div class="controls"><span class="badge">SIMULATION v0.1</span><span id="integrity" class="sub">● Loading</span></div></header>
+<div class="wrap">
+<div class="layout">
+<section class="panel">
+ <div class="headrow"><div><h2>City Map</h2><p class="sub">Tap a resident to inspect their KnowledgeChain</p></div><span class="sub" id="stepNo">TICK 0</span></div>
+ <canvas id="map" width="768" height="576" aria-label="Top-down city map of districts and agents"></canvas>
+ <div class="legend" id="legend"></div>
+ <div class="headrow" style="margin:14px 0 0">
+  <div class="controls">
+   <button class="primary" id="step">Step ▶</button>
+   <button id="run">▶ Auto run</button>
+   <button id="ten">+ 10 ticks</button>
+  </div>
+  <div class="controls">
+   <label for="mode">Agent policy</label><select id="mode"><option value="scripted">Scripted · free</option><option value="ai">AI · API calls</option></select>
+  </div>
+ </div>
+ <p class="smallnote" id="modeHelp">Scripted mode is deterministic. KBC only changes through verified observations, derivations or sharing.</p>
+ <div id="status" class="status" role="status"></div>
+</section>
+<aside class="stack">
+ <section class="panel">
+   <h2>Oracle & Residents</h2>
+   <div class="stats"><div class="stat"><div class="sub">Oracle reference</div><strong id="oracle">1.000</strong><div class="sub">Entire bounded universe</div></div>
+   <div class="stat"><div class="sub">Knowledge blocks observed</div><strong id="coverage">0 / 3</strong><div class="sub">Across resident chains</div></div></div>
+   <div id="residents"></div>
+   <pre id="selected" tabindex="0">Select an agent to inspect its recorded proofs.</pre>
+ </section>
+ <section class="panel">
+   <h2>Branches</h2>
+   <div class="formline"><select id="branches" style="flex:1" aria-label="Active simulation branch"></select><button id="fork">Fork branch</button></div>
+   <p class="smallnote">Experiments on one branch cannot change another. Refreshing the server resets in-memory worlds.</p>
+ </section>
+</aside>
+<section class="panel wide">
+  <div class="headrow"><h2>Individual KBC Trajectories</h2><span class="sub">Provisional coverage metric [0,1]</span></div>
+  <canvas id="chart" width="980" height="245" aria-label="Agent KBC values over simulation ticks"></canvas>
+</section>
+</div>
+<div class="columns">
+ <section class="panel">
+  <h2>Talk to Oracle or Agent</h2>
+  <label for="chatTarget">Conversation target</label>
+  <select id="chatTarget"><option value="Oracle">Oracle</option></select>
+  <div class="chatlog" id="chatlog" aria-live="polite"><div class="bubble">Oracle: I have the bounded simulation reference. Ask what an agent has derived or why its value changed.</div></div>
+  <div class="formline"><input id="question" maxlength="1000" placeholder="Ask the Oracle…" aria-label="Message" autocomplete="off"><button class="primary" id="send">Send</button></div>
+  <p class="smallnote">Offline mode returns deterministic state-based explanations. AI chat is available only if a model API is configured. Chat alone never mints KBC.</p>
+ </section>
+ <section class="panel">
+  <h2>City Event Log</h2>
+  <div class="log" id="events"></div>
+  <div class="headrow" style="margin:12px 0 0"><button id="download">Export branch JSON</button><span class="sub">Event hashes and proofs included</span></div>
+ </section>
+ <section class="panel wide">
+  <h2>Direct an Agent</h2>
+  <div id="driver">
+    <select id="manualAgent" aria-label="Agent to direct"></select>
+    <select id="manualPlace" aria-label="Destination"><option>Oracle</option><option>Library</option><option>Workshop</option><option>Forum</option><option>Residence</option></select>
+    <button id="travel">Travel one tile</button><button id="study">Study at Library</button>
+    <button id="derive">Derive at Workshop</button><button id="share">Share at Forum</button>
+  </div>
+  <p class="smallnote">Actions must satisfy location, knowledge and provenance rules. Choosing an invalid action never awards KBC.</p>
+ </section>
+</div>
+<footer>KBC City v0 · This is a scientific test harness, not a currency implementation. The reference facts are predefined and the individual valuation rule remains provisional. Private deployment only.</footer>
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const palette = ["#8ee2bd","#90b9ff","#ffcb89","#bda5ff","#ff9fab","#8cdbdc","#efda89"];
+let data=null, selected="Explorer", running=false, busy=false, loop=null;
+function status(message, error=false){$("status").textContent=message;$("status").className="status"+(error?" error":"")}
+async function request(path,payload){
+ const opts=payload===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)};
+ const r=await fetch(path,opts);const json=await r.json();if(!r.ok)throw Error(json.error||"Request failed");return json;
+}
+function chooseAgent(name){selected=name;$("manualAgent").value=name;renderResidents();}
+function fixed(value){return Number(value).toFixed(3)}
+function renderResidents(){
+ const root=$("residents");root.replaceChildren();
+ const persons=data.city.residents;
+ persons.forEach((a,i)=>{
+  const row=document.createElement("div");row.className="resident"+(a.name===selected?" active":"");row.onclick=()=>chooseAgent(a.name);
+  const dot=document.createElement("span");dot.className="dot";dot.style.background=palette[i%palette.length];
+  const info=document.createElement("div");
+  const title=document.createElement("strong");title.textContent=a.name+" · "+a.role;title.style.fontSize="12px";
+  const sub=document.createElement("div");sub.className="sub";sub.textContent="Target: "+a.goal+" · "+a.known.length+" facts";
+  const progress=document.createElement("div");progress.className="progress";
+  const fill=document.createElement("div");fill.className="fill";fill.style.width=(a.kbc*100)+"%";progress.append(fill);
+  info.append(title,sub,progress);
+  const score=document.createElement("strong");score.textContent=fixed(a.kbc);score.style.fontVariantNumeric="tabular-nums";
+  row.append(dot,info,score);root.append(row);
+ });
+ const person=persons.find(a=>a.name===selected)||persons[0];
+ if(person){$("selected").textContent=person.name+" | "+person.role+"\nKBC = "+fixed(person.kbc)+"\nKnown: "+(person.known.join(", ")||"(none)")+"\n\nProofs:\n"+JSON.stringify(person.proofs,null,2);}
+}
+function drawMap(){
+ const c=$("map"),ctx=c.getContext("2d"),W=64,H=64;
+ ctx.clearRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=false;
+ for(let y=0;y<9;y++)for(let x=0;x<12;x++){
+  const dx=x*W,dy=y*H;
+  ctx.fillStyle=(x+y)%2?"#173541":"#193945";ctx.fillRect(dx,dy,W,H);
+  ctx.fillStyle="#234553";ctx.fillRect(dx+3,dy+3,3,3);
+  if(x===6||y===5){ctx.fillStyle="#284550";ctx.fillRect(dx,dy,W,H);
+   ctx.fillStyle="#3c6470";if(y===5)ctx.fillRect(dx+21,dy+30,22,3);if(x===6)ctx.fillRect(dx+30,dy+17,3,25);}
+  ctx.strokeStyle="#274954";ctx.strokeRect(dx+.5,dy+.5,W,H);
+ }
+ Object.entries(data.city.places).forEach(([name,loc])=>{
+  const x=loc.x*W,y=loc.y*H;
+  ctx.fillStyle="#071820";ctx.fillRect(x-8,y+36,82,20);
+  ctx.fillStyle="#071e2a";ctx.fillRect(x-7,y-8,78,59);
+  ctx.fillStyle=loc.color;ctx.fillRect(x-5,y-7,74,8);
+  ctx.fillStyle="#294957";ctx.fillRect(x-4,y+1,73,44);
+  ctx.fillStyle="#385b68";ctx.fillRect(x+7,y+11,14,12);ctx.fillRect(x+45,y+11,14,12);
+  ctx.fillStyle=loc.color;ctx.fillRect(x+10,y+15,8,4);ctx.fillRect(x+48,y+15,8,4);
+  ctx.fillStyle="#0b2730";ctx.fillRect(x+27,y+21,19,24);
+  ctx.fillStyle="#e4f1f6";ctx.font="bold 11px monospace";ctx.textAlign="center";ctx.fillText(name,x+31,y+57);
+ });
+ const at={};
+ data.city.residents.forEach((a,i)=>{
+  const key=a.x+","+a.y;const layer=at[key]||0;at[key]=layer+1;
+  const x=a.x*W+12+(layer%3)*16,y=a.y*H+20+Math.floor(layer/3)*12;
+  const p=palette[i%palette.length];ctx.fillStyle="#051923";ctx.fillRect(x-2,y-2,16,21);
+  ctx.fillStyle="#f0c6a6";ctx.fillRect(x+2,y,9,8);
+  ctx.fillStyle=p;ctx.fillRect(x,y+8,13,10);ctx.fillStyle="#0d1d26";ctx.fillRect(x+2,y+16,4,3);ctx.fillRect(x+8,y+16,4,3);
+  if(a.name===selected){ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.strokeRect(x-4,y-4,20,25);ctx.lineWidth=1;}
+ });
+}
+function drawChart(){
+ const canvas=$("chart"),ctx=canvas.getContext("2d"),W=canvas.width,H=canvas.height;
+ ctx.clearRect(0,0,W,H);ctx.fillStyle="#112a35";ctx.fillRect(0,0,W,H);
+ const x0=52,y0=18,x1=W-12,y1=H-27;
+ ctx.strokeStyle="#315462";ctx.fillStyle="#b7ced8";ctx.font="12px monospace";
+ for(let n=0;n<=4;n++){let y=y1-(y1-y0)*n/4;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.fillText((n/4).toFixed(2),7,y+4);}
+ const series=data.city.timeline,max=Math.max(1,...series.map(r=>r.tick)),min=series[0]?.tick??0,range=Math.max(1,max-min);
+ ctx.fillText("T"+min,x0,y1+17);ctx.fillText("T"+max,x1-43,y1+17);
+ data.city.residents.forEach((a,i)=>{ctx.strokeStyle=palette[i%palette.length];ctx.lineWidth=2;ctx.beginPath();
+  series.forEach((v,j)=>{let x=x0+(v.tick-min)/range*(x1-x0),y=y1-(v.scores[a.name]||0)*(y1-y0);if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();});
+}
+function renderEvents(){
+ const root=$("events");root.replaceChildren();
+ data.city.events.slice(-16).reverse().forEach(e=>{
+  const el=document.createElement("div");el.className="event";
+  const h=document.createElement("small");h.textContent="T"+e.tick+" / #"+e.id+" · ";
+  const title=document.createElement("b");title.textContent=e.type+" ";
+  const details=document.createElement("span");
+  let d=e.data||{};details.textContent=[d.agent,d.receiver?"→ "+d.receiver:"",d.fact||"",d.place||""].filter(Boolean).join(" ")||(d.target||"");
+  el.append(h,title,details);root.append(el);
+ });
+}
+function refillSelect(select, options, keep){
+ const old=keep??select.value;select.replaceChildren();options.forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;select.append(o);});
+ if(options.includes(old))select.value=old;
+}
+function render(){
+ if(!data)return;const state=data.city;
+ $("stepNo").textContent="TICK "+String(state.tick).padStart(4,"0");
+ $("oracle").textContent=fixed(state.oracle_kbc);
+ $("coverage").textContent=(state.timeline.at(-1)?.knowledge_blocks||0)+" / "+state.reference_size;
+ $("integrity").textContent=(state.integrity?"● RECORD VERIFIED":"● RECORD INTEGRITY FAILED");
+ $("integrity").style.color=state.integrity?"#8ee2bd":"#ffaaaa";
+ refillSelect($("branches"),data.branches,data.active);
+ refillSelect($("manualAgent"),state.residents.map(a=>a.name),selected);
+ refillSelect($("chatTarget"),["Oracle",...state.residents.map(a=>a.name)]);
+ selected=state.residents.some(a=>a.name===selected)?selected:state.residents[0].name;
+ const ai=data.ai?.configured;
+ $("modeHelp").textContent=ai?"Model API connected ("+data.ai.model+"). AI steps call the model once PER RESIDENT and may incur charges.": "Scripted mode is deterministic and free. To enable model-driven agents, configure OPENAI_API_KEY on the server.";
+ if(!ai&&$("mode").value==="ai")$("mode").value="scripted";
+ renderResidents();drawMap();drawChart();renderEvents();
+ const legend=$("legend");legend.replaceChildren();
+ Object.entries(state.places).forEach(([name,p])=>{const s=document.createElement("span");const dot=document.createElement("span");dot.className="dot";dot.style.background=p.color;s.append(dot,document.createTextNode(name));legend.append(s);});
+}
+async function reload(){data=await request("/api/state");render();}
+async function mutate(path,payload){try{busy=true;const result=await request(path,payload);data=await request("/api/state");render();status("Updated branch "+data.active+" at tick "+data.city.tick);return result;}catch(e){status(e.message,true);throw e;}finally{busy=false;}}
+async function step(n=1){if(busy)return;if($("mode").value==="ai"&&n>1){status("AI mode allows a single tick per request to control costs.",true);return;}try{await mutate("/api/step",{steps:n,mode:$("mode").value});}catch(e){}}
+function stop(){running=false;if(loop)clearTimeout(loop);loop=null;$("run").textContent="▶ Auto run";}
+async function autoStep(){if(!running)return;await step(1);if(running)loop=setTimeout(autoStep,800);}
+$("step").onclick=()=>{stop();step(1);};
+$("ten").onclick=()=>{stop();step(10);};
+$("run").onclick=()=>{if(running){stop();return;}if($("mode").value==="ai"){status("Auto-run is disabled for paid model calls. Use Step.",true);return;}running=true;$("run").textContent="❚❚ Pause";autoStep();};
+$("mode").onchange=()=>{stop();status($("mode").value==="ai"?"AI mode can consume paid API tokens. One step calls each resident's model.":"Free deterministic simulation mode.");};
+$("fork").onclick=async()=>{stop();const name=prompt("New experiment branch name (letters/numbers/-/_):","experiment-"+(data.branches.length));if(!name)return;try{await mutate("/api/branch",{name});}catch(e){}};
+$("branches").onchange=async e=>{stop();try{await mutate("/api/switch",{name:e.target.value});}catch(e){}};
+$("send").onclick=async()=>{const question=$("question").value.trim();if(!question)return;const target=$("chatTarget").value;
+ const chat=$("chatlog");const user=document.createElement("div");user.className="bubble user";user.textContent="You → "+target+": "+question;chat.append(user);$("question").value="";
+ try{const r=await mutate("/api/chat",{target,question,mode:$("mode").value});const a=document.createElement("div");a.className="bubble";a.textContent=target+" ["+r.mode+"]: "+r.reply;chat.append(a);chat.scrollTop=chat.scrollHeight;}catch(e){}};
+$("question").onkeydown=e=>{if(e.key==="Enter")$("send").click();};
+async function manual(command){stop();const agent=$("manualAgent").value;if(!agent)return;try{await mutate("/api/act",{agent,command});}catch(e){}}
+$("travel").onclick=()=>manual({action:"travel",destination:$("manualPlace").value});
+$("study").onclick=()=>manual({action:"study"});
+$("derive").onclick=()=>manual({action:"derive"});
+$("share").onclick=()=>{const sender=$("manualAgent").value,others=data.city.residents.filter(a=>a.name!==sender);
+ const recipient=others.find(a=>a.x===data.city.places.Forum.x&&a.y===data.city.places.Forum.y&&
+  data.city.residents.find(r=>r.name===sender).known.some(f=>!a.known.includes(f)));
+ if(!recipient){status("Move two agents to the Forum; the sender must know a fact the other does not.",true);return;}
+ const source=data.city.residents.find(a=>a.name===sender);
+ manual({action:"share",receiver:recipient.name,fact:source.known.find(f=>!recipient.known.includes(f))});};
+$("download").onclick=async()=>{try{let exportData=await request("/api/export");const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="kbc-city-"+data.active+"-t"+data.city.tick+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){status(e.message,true);}};
+$("map").onclick=e=>{const rect=$("map").getBoundingClientRect();const x=Math.floor((e.clientX-rect.left)/rect.width*12),y=Math.floor((e.clientY-rect.top)/rect.height*9);
+ const a=data.city.residents.find(p=>p.x===x&&p.y===y);if(a)chooseAgent(a.name);};
+reload().catch(e=>status("Could not load simulation: "+e.message,true));
+</script>
+</body>
+</html>
