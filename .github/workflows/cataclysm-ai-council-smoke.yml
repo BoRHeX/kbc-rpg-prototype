@@ -1,6 +1,13 @@
 name: Cataclysm 0.2 AI Council smoke test
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'game_factory/agent_api.py'
+      - 'game_factory/test_agent_api.py'
+      - '.github/workflows/cataclysm-ai-council-smoke.yml'
 
 permissions:
   contents: read
@@ -9,13 +16,16 @@ jobs:
   real-agents:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    concurrency:
+      group: cataclysm-council-smoke
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Verify council memory unit tests
-        run: python -m unittest game_factory.test_agent_memory -v
+        run: python -m unittest game_factory.test_agent_memory game_factory.test_agent_api -v
       - name: Check API key configured without printing it
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
