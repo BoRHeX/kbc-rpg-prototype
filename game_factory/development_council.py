@@ -8,6 +8,8 @@ PR; this module never deploys, merges, or publishes a game.
 from __future__ import annotations
 
 import argparse
+import difflib
+import hashlib
 import json
 import math
 import os
@@ -282,7 +284,17 @@ def run(goal: str, database: Path, model: str) -> dict:
         except BaseException:
             GAME_PATH.write_text(baseline, encoding="utf-8")
             raise
+        actual_diff = "".join(difflib.unified_diff(
+            baseline.splitlines(keepends=True),
+            modified.splitlines(keepends=True),
+            fromfile="Cataclysm 0.1/game.js",
+            tofile="Cataclysm 0.2 candidate/game.js",
+        ))
+        if not actual_diff.strip() or len(actual_diff) > 14000:
+            GAME_PATH.write_text(baseline, encoding="utf-8")
+            raise RuntimeError("Invalid or oversized generated diff")
         evidence = {
+            "diff_sha256": hashlib.sha256(actual_diff.encode("utf-8")).hexdigest(),
             "changed_file": GAME_REL,
             "compiled_mechanic": proposal.get("mechanic"),
             "state_fields": list(proposal.get("enemy_properties", {})),
@@ -302,9 +314,13 @@ def run(goal: str, database: Path, model: str) -> dict:
             "draft PR if automated code tests passed and no critical "
             "blocker exists; missing player testing is a mandatory "
             "release gate, not itself a blocker for opening a draft. "
-            "Reject the draft if there is a critical implementation defect.", {
+            "Inspect ACTUAL CODE DIFF for logic defects and unintentional "
+            "behavior, not just test metadata. Reject critical defects. "
+            "Distinguish syntax/unit checks from browser playtesting.", {
                 "design": design, "critique": critique,
-                "engineering": engineering, "verified_checks": evidence})
+                "engineering": engineering, "verified_checks": evidence,
+                "actual_code_diff": actual_diff,
+                "model_proposed_mechanic": proposal})
         if not qa_approves_draft(quality):
             GAME_PATH.write_text(baseline, encoding="utf-8")
             raise RuntimeError("QA did not approve a reviewable draft PR")
@@ -331,6 +347,10 @@ def run(goal: str, database: Path, model: str) -> dict:
             document += ["## " + name, "", "```json",
                          json.dumps(payload, indent=2, ensure_ascii=False)[:6500],
                          "```", ""]
+        document += [
+            "## Actual generated source diff", "",
+            "```diff", actual_diff.rstrip(), "```", "",
+        ]
         document += [
             "## Actual automated checks", "",
             "```json", json.dumps(checks, indent=2)[:5500], "```", "",
