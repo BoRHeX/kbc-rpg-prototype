@@ -75,7 +75,9 @@ jobs:
           path: artifacts/council.sqlite3
           if-no-files-found: ignore
           retention-days: 90
-      - name: Commit review candidate to a branch
+      - name: Commit review candidate and attempt draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -87,6 +89,14 @@ jobs:
           git diff --cached --check
           git commit -m "AI council: Cataclysm 0.2 review candidate"
           git push origin "$branch"
-          echo "Review candidate branch pushed: $branch"
-          echo "Open a draft PR from this branch using a GitHub account permitted to create PRs."
-          echo "GitHub Actions cannot open PRs unless the repository permits Actions to create pull requests."
+          # The GITHUB_TOKEN may lack PR-creation permission at repository level.
+          # Never fail a successful, validated code-generation run for that reason.
+          if gh pr create --draft --base main --head "$branch" \
+              --title "Cataclysm 0.2 AI Council mechanic candidate" \
+              --body-file game_factory/AI_DEV_REPORT.md; then
+            echo "Draft PR created for $branch"
+          else
+            echo "::warning::GitHub Actions PR creation is blocked. Candidate branch $branch is saved; a connected GitHub account can create its draft PR."
+            echo "Candidate branch: $branch" >> "$GITHUB_STEP_SUMMARY"
+            echo "Manual GitHub setting: Settings > Actions > General > Allow GitHub Actions to create and approve pull requests." >> "$GITHUB_STEP_SUMMARY"
+          fi
