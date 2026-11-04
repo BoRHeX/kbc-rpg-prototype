@@ -1,0 +1,39 @@
+name: Cataclysm 0.2 AI Council smoke test
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-agents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify council memory unit tests
+        run: python -m unittest game_factory.test_agent_memory -v
+      - name: Check API key configured without printing it
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "Missing OPENAI_API_KEY repository secret."
+            exit 1
+          fi
+      - name: Ask researcher and designer through real AI API
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.council_smoke
+      - name: Save council history for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-council-history
+          path: artifacts/council.sqlite3
+          if-no-files-found: ignore
+          retention-days: 14
