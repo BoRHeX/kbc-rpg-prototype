@@ -1,4 +1,4 @@
-"""Automated gameplay review. OAuth is read-only; never exposes video publicly."""
+"""Automated gameplay review; store outputs in private Google Drive, never GitHub artifacts."""
 import base64, datetime, hashlib, json, os, pathlib, subprocess, sys, time
 import requests
 from openai import OpenAI
@@ -29,6 +29,44 @@ def drive_api(path, token, params=None, stream=False):
         timeout=(30, 180), stream=stream)
     r.raise_for_status()
     return r
+
+def drive_upload(token, path, folder_id, name, mime):
+    # Resumable upload; streams large files without loading them into RAM.
+    meta={"name":name,"parents":[folder_id],"mimeType":mime}
+    r=session.post("https://www.googleapis.com/upload/drive/v3/files",
+        params={"uploadType":"resumable","fields":"id,name,webViewLink"},
+        headers={"Authorization":"Bearer "+token,"X-Upload-Content-Type":mime,
+                 "X-Upload-Content-Length":str(path.stat().st_size),
+                 "Content-Type":"application/json"},
+        json=meta,timeout=60)
+    r.raise_for_status()
+    url=r.headers["Location"]
+    size=path.stat().st_size
+    with path.open("rb") as f:
+        offset=0
+        while offset<size:
+            data=f.read(min(8*1024*1024,size-offset))
+            end=offset+len(data)-1
+            response=session.put(url,data=data,headers={
+                "Content-Length":str(len(data)),
+                "Content-Range":f"bytes {offset}-{end}/{size}"},timeout=180)
+            if response.status_code not in (200,201,308):
+                response.raise_for_status()
+            offset=end+1
+    response.raise_for_status()
+    return response.json()
+
+def delivery_folder(token):
+    name="Cataclysm YouTube Ready"
+    q="name = '"+name+"' and '"+FOLDER+"' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
+    files=drive_api("files",token,{"q":q,"fields":"files(id,name)"}).json()["files"]
+    if files: return files[0]["id"]
+    r=session.post("https://www.googleapis.com/drive/v3/files",
+        headers={"Authorization":"Bearer "+token},json={
+            "name":name,"mimeType":"application/vnd.google-apps.folder",
+            "parents":[FOLDER]},timeout=60)
+    r.raise_for_status()
+    return r.json()["id"]
 
 def newest_video(token):
     query = "'" + FOLDER + "' in parents and mimeType contains 'video/' and trashed = false"
@@ -100,31 +138,45 @@ def create_report(transcript, frames, seconds):
 
 def highlight(video, report, seconds):
     import re
-    match=re.search(r"EDIT_SEGMENTS=(\[[^\n]+\])",report)
+    # Recover a fenced or multiline EDIT_SEGMENTS array; never silently output an
+    # unrelated first-minute clip. AI suggestions are checked against duration.
+    match=re.search(r"EDIT_SEGMENTS\\s*=\\s*(\\[.*?\\])",report,re.S)
     segments=[]
     if match:
+        raw=re.sub(r"//[^\\n]*","",match.group(1))
+        raw=re.sub(r",\\s*([}\\]])",r"\\1",raw)
         try:
-            for item in json.loads(match.group(1)):
-                a=max(0,float(item["start"])); b=min(seconds,float(item["end"]))
+            for item in json.loads(raw):
+                a=max(0,float(item["start"]))
+                b=min(seconds,float(item["end"]))
                 if b>a and b-a<=90: segments.append((a,b))
-        except (ValueError,KeyError,TypeError): pass
+        except (ValueError,KeyError,TypeError):
+            pass
     if not segments:
-        segments=[(0,min(60,seconds))]
-    # Re-encode each segment, concat via demuxer; audio optional.
+        raise ValueError("AI edit decision invalid; refusing to deliver a misleading fallback video")
+    segments=segments[:5]
+    total=sum(b-a for a,b in segments)
+    if total<30 or total>180:
+        raise ValueError(f"Highlight duration {total:.0f}s outside quality gate (30-180s)")
     paths=[]
-    for i,(a,b) in enumerate(segments[:5]):
+    for i,(a,b) in enumerate(segments):
         target=OUT/("cut_%02d.mp4"%i)
         subprocess.run(["ffmpeg","-y","-v","error","-ss",str(a),"-t",str(b-a),
             "-i",str(video),"-vf","scale='min(1280,iw)':-2",
-            "-c:v","libx264","-preset","veryfast","-crf","28",
-            "-c:a","aac","-b:a","96k","-movflags","+faststart",str(target)],check=True)
+            "-c:v","libx264","-preset","veryfast","-crf","23",
+            "-c:a","aac","-b:a","128k","-movflags","+faststart",str(target)],check=True)
         paths.append(target)
     manifest=OUT/"cuts.txt"
-    manifest.write_text("".join("file '"+p.name+"'\n" for p in paths))
+    manifest.write_text("".join("file '"+p.name+"'\\n" for p in paths))
+    output=OUT/"cataclysm_highlights.mp4"
     subprocess.run(["ffmpeg","-y","-v","error","-f","concat","-safe","0",
-        "-i",str(manifest),"-c","copy",str(OUT/"cataclysm_highlights.mp4")],check=True)
-    for p in paths: p.unlink()
+        "-i",str(manifest),"-c","copy","-movflags","+faststart",str(output)],check=True)
+    if not 29<=duration(output)<=181 or output.stat().st_size<1000000:
+        raise ValueError("Edited video failed duration/size quality gate")
+    for f in paths: f.unlink()
     manifest.unlink()
+    return segments
+
 
 def github_issue(title,body):
     r=session.post("https://api.github.com/repos/"+GH+"/issues",
@@ -153,11 +205,12 @@ def main():
        headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"]},
        params={"state":"all","per_page":100},timeout=30)
     check.raise_for_status()
-    if any(x.get("title")==title for x in check.json()):
+    if not os.getenv("REPROCESS_EXISTING") == "true" and any(x.get("title")==title for x in check.json()):
         print("Already reviewed; skipping duplicate processing.");return
     video=OUT/"raw.mp4"
     download(token,file_id,video)
     seconds=duration(video)
+    if seconds > 3600: sys.exit("Recording exceeds 60-minute processing cost cap")
     transcript=transcribe(video,seconds)
     (OUT/"transcript.json").write_text(json.dumps(transcript,indent=2,ensure_ascii=False))
     frames=analyse_frames(video,seconds)
