@@ -7,6 +7,14 @@ class DevelopmentCouncilTests(unittest.TestCase):
 
     def test_draft_approval_accepts_typed_and_explicit_text(self):
         self.assertTrue(qa_approves_draft({
+            "approve_draft_pr": True,
+            "reason": "Actual automated checks passed; human playtesting remains required"
+        }))
+        self.assertFalse(qa_approves_draft({
+            "approve_draft_pr": False,
+            "reason": "Critical implementation defect"
+        }))
+        self.assertTrue(qa_approves_draft({
             "proposed_action": {"approve_draft_pr": True, "reason": "Tests passed"}
         }))
         self.assertTrue(qa_approves_draft({
