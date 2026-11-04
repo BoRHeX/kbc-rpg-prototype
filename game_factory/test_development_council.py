@@ -26,7 +26,7 @@ class DevelopmentCouncilTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             apply_exact_edits(self.SOURCE, [
                 {"path": GAME_REL, "old": "const speed = 10;",
-                 "new": "const speed = 15;\\x02"}])
+                 "new": "const speed = 15;" + chr(2)}])
 
     def test_rejects_unrelated_files(self):
         with self.assertRaises(ValueError):
