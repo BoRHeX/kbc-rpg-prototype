@@ -188,6 +188,22 @@ def action(response: dict) -> dict:
     return value
 
 
+def goal_fingerprint(goal: str, baseline_source: str) -> str:
+    """A reviewed development request is unique to its goal and source baseline."""
+    normalized = " ".join(goal.casefold().split())
+    source_hash = hashlib.sha256(baseline_source.encode("utf-8")).hexdigest()
+    return hashlib.sha256((normalized + "\\0" + source_hash).encode("utf-8")).hexdigest()
+
+
+def already_completed(memory: CouncilMemory, producer_id: str,
+                      fingerprint: str) -> bool:
+    return any(
+        event["kind"] == "completed_goal" and
+        event["payload"].get("fingerprint") == fingerprint
+        for event in memory.history(producer_id, limit=500)
+    )
+
+
 def run(goal: str, database: Path, model: str) -> dict:
     goal = goal.strip()[:280]
     if not goal:
@@ -203,6 +219,11 @@ def run(goal: str, database: Path, model: str) -> dict:
         identities = {role: memory.register(role, model) for role in (
             "researcher", "designer", "critic", "engineer",
             "implementer", "qa", "producer")}
+        fingerprint = goal_fingerprint(goal, baseline)
+        if already_completed(memory, identities["producer"], fingerprint):
+            return {"run_id": run_id, "status": "duplicate_skipped",
+                    "reason": "Identical goal and game baseline already completed",
+                    "changed_files": [], "checks": []}
         refs = [GAME_REL, "studio/web/game-config.json",
                 "game_factory/README.md"]
         source_context = {
@@ -363,6 +384,10 @@ def run(goal: str, database: Path, model: str) -> dict:
             "Council run ID: " + run_id,
         ]
         REPORT.write_text("\n".join(document) + "\n", encoding="utf-8")
+        memory.record(identities["producer"], run_id, "completed_goal",
+                      {"fingerprint": fingerprint, "goal": goal,
+                       "mechanic": proposal.get("mechanic"),
+                       "draft_review_only": True}, refs)
         return {"run_id": run_id, "status": "draft_ready",
                 "changed_files": [GAME_REL, str(REPORT.relative_to(ROOT))],
                 "checks": [x["exit_code"] for x in checks]}
@@ -377,7 +402,11 @@ def main() -> None:
     parser.add_argument("--db", type=Path,
                         default=ROOT / "artifacts/council.sqlite3")
     args = parser.parse_args()
-    print(json.dumps(run(args.goal, args.db, args.model), indent=2))
+    result = run(args.goal, args.db, args.model)
+    print(json.dumps(result, indent=2))
+    if os.getenv("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+            output.write("status=" + str(result["status"]) + "\n")
 
 
 if __name__ == "__main__":
