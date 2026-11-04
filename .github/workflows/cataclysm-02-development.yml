@@ -75,7 +75,7 @@ jobs:
           path: artifacts/council.sqlite3
           if-no-files-found: ignore
           retention-days: 90
-      - name: Open draft PR containing real code and evidence
+      - name: Commit review candidate to a branch
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -89,4 +89,6 @@ jobs:
           git diff --cached --check
           git commit -m "AI council: Cataclysm 0.2 review candidate"
           git push origin "$branch"
-          gh pr create --draft --base main --head "$branch"             --title "Cataclysm 0.2 AI Council mechanic candidate"             --body-file game_factory/AI_DEV_REPORT.md
+          echo "Review candidate branch pushed: $branch"
+          echo "Open a draft PR from this branch using a GitHub account permitted to create PRs."
+          echo "GitHub Actions cannot open PRs unless the repository permits Actions to create pull requests."
