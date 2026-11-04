@@ -1,7 +1,7 @@
 """Agent-driven, review-gated Cataclysm development iteration.
 
 Requires a paid OPENAI_API_KEY. Each role calls a real model. The coding
-agent may edit only the existing game.js through validated exact replacements.
+agent may edit only the existing game.js through verified insertion slots.
 Tests are executed by the runner, not by the models. A workflow opens a draft
 PR; this module never deploys, merges, or publishes a game.
 """
@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
+import re
 import subprocess
 import sys
 import uuid
@@ -56,6 +58,71 @@ def apply_exact_edits(source: str, edits: object) -> str:
     if changed == source or len(changed) - len(source) > 5000:
         raise ValueError("No meaningful bounded code change produced")
     return changed
+
+
+ENEMY_INIT_ANCHOR = "phase:rnd(0,TWO),weight:extra,hurt:0});"
+ENEMY_MOVE_ANCHOR = "enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;"
+
+
+def apply_mechanic_slots(source: str, proposal: object) -> str:
+    """Compile constrained model-authored behavior into verified game slots.
+
+    The source anchors are owned by this program, NEVER copied by a model.
+    AI writes new behavior; code owns patch locations. Review is mandatory.
+    """
+    if not isinstance(proposal, dict):
+        raise ValueError("Implementer must propose a mechanic object")
+    name = proposal.get("mechanic")
+    props = proposal.get("enemy_properties")
+    movement = proposal.get("enemy_movement_js")
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{2,39}", name):
+        raise ValueError("Mechanic must have a short stable identifier")
+    if not isinstance(props, dict) or not 1 <= len(props) <= 3:
+        raise ValueError("One to three enemy state fields required")
+    if not isinstance(movement, str) or not 30 <= len(movement) <= 2500:
+        raise ValueError("Expected a short enemy-movement JavaScript block")
+    if source.count(ENEMY_INIT_ANCHOR) != 1 or source.count(ENEMY_MOVE_ANCHOR) != 1:
+        raise ValueError("Known Cataclysm patch locations are missing or ambiguous")
+
+    entries = []
+    for key, value in props.items():
+        if not isinstance(key, str) or not re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]{0,31}", key):
+            raise ValueError("Invalid enemy state field name")
+        if key in ("x", "y", "r", "hp", "max", "speed", "phase", "weight", "hurt"):
+            raise ValueError("Existing enemy fields may not be overwritten")
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ValueError("Enemy state must have a finite numeric initial value")
+        if abs(value) > 1000:
+            raise ValueError("Enemy state initial value is out of bounds")
+        entries.append(f"{key}:{json.dumps(value)}")
+    # Some models double-escape newlines even inside valid JSON strings.
+    # Normalize only obvious multiline code, never interpret JS escapes.
+    if "\\n" in movement and "\n" not in movement and movement.count("\\n") >= 2:
+        movement = movement.replace("\\n", "\n")
+    if any(ord(char) < 32 and char not in "\n\t" for char in movement):
+        raise ValueError("Generated code contains control characters")
+    blocked = FORBIDDEN + (
+        "fetch(", "globalThis", "document.", "window.", "navigator.",
+        "require(", "Function(", "setTimeout(", "setInterval(", "return ",
+        "throw ", "break;", "continue;", "export ", "import ",
+    )
+    if any(fragment.casefold() in movement.casefold() for fragment in blocked):
+        raise ValueError("Generated code contains blocked behavior")
+    if not ("enemy.x" in movement or "enemy.y" in movement):
+        raise ValueError("Generated movement code must update or control enemy movement")
+    if any(field + ":" in movement for field in props):
+        raise ValueError("State initialization belongs in enemy_properties, not movement")
+
+    patched = source.replace(
+        ENEMY_INIT_ANCHOR,
+        ENEMY_INIT_ANCHOR[:-3] + "," + ",".join(entries) + "});", 1,
+    )
+    patched = patched.replace(ENEMY_MOVE_ANCHOR, movement.strip(), 1)
+    if len(patched) > len(source) + 5500 or patched == source:
+        raise ValueError("Generated mechanic exceeds patch limits")
+    return patched
+
+
 
 
 def run_check(argv: list[str]) -> dict:
@@ -146,45 +213,45 @@ def run(goal: str, database: Path, model: str) -> dict:
                 "proposal": design, "critique": critique,
                 "existing_source": baseline[:14300]})
         implementation = ask("implementer",
-            "Implement ONE small mechanic in game.js. Return a JSON object "
-            "with proposed_action.edits: an array of one or two objects "
-            "containing path, old, new. Path must be studio/web/game.js. "
-            "CRITICAL: old MUST be one SHORT, EXACT, UNIQUE source-code line "
-            "copied verbatim from the supplied source (no newline or literal "
-            "backslash-n characters). New may replace that exact one line "
-            "with a few lines of code, preserving surrounding code. "
-            "Choose ASCII-only old lines; avoid lines with emoji or unicode. "
-            "Never output diff syntax or shell commands. Do not invent "
-            "source text. Keep touch controls unchanged and the game playable.", {
+            "Write one SMALL new zombie behavior in the EXISTING Cataclysm "
+            "game. Reply in JSON with proposed_action as an object containing: "
+            "mechanic (short snake_case identifier), enemy_properties "
+            "(one to three NEW field names mapped to finite numeric initial "
+            "values, e.g. {fearTimer: 0}), and enemy_movement_js (a compact "
+            "JavaScript snippet to REPLACE the existing enemy.x/y movement "
+            "statement). Do NOT copy any old source code or return edits. "
+            "The runner automatically inserts properties into spawned enemies "
+            "and movement logic inside tick(dt) after dx,dy,d are defined. "
+            "Available variables: enemy,p,d,dx,dy,dt,rand,Math. If adding a "
+            "timer, decrement it. Preserve enemy movement outside the special "
+            "behavior. No external APIs, imports, function declarations, "
+            "new assets, or changed controls. Keep the snippet under 900 chars.", {
                 "goal": goal, "design": design, "critique": critique,
                 "engineering_plan": engineering,
-                "source": baseline[:14300],
-                "path": GAME_REL}, max_tokens=3500)
-        edits = action(implementation).get("edits")
+                "enemy_state_anchor": ENEMY_INIT_ANCHOR,
+                "movement_statement": ENEMY_MOVE_ANCHOR,
+                "source_excerpt": baseline[:8500],
+            }, max_tokens=1900)
+        proposal = action(implementation)
         try:
-            modified = apply_exact_edits(baseline, edits)
+            modified = apply_mechanic_slots(baseline, proposal)
         except ValueError as exc:
-            # One bounded repair, rather than repeating the full seven-agent
-            # deliberation. Keep both proposals in the persistent ledger.
             memory.record(identities["implementer"], run_id,
                           "rejected_code_patch",
                           {"reason": str(exc)}, refs)
             implementation = ask("implementer",
-                "Your previous code patch did not match the real game source. "
-                "Repair it now, using ONE-LINE exact source anchors only. "
-                "Copy each old field character-for-character from the supplied "
-                "code, preferably a short statement such as enemy movement or "
-                "enemy initialization. No escaped newline in old; do not "
-                "include non-ASCII dialogue or large function blocks. "
-                "Return proposed_action.edits. This is your only retry.", {
+                "Repair the rejected typed mechanic. Return proposed_action "
+                "with ONLY mechanic, enemy_properties and enemy_movement_js. "
+                "Do not reproduce source anchors or return old/new edits. "
+                "Keep the JavaScript compact, syntactically valid, and ensure "
+                "it updates enemy.x or enemy.y. One final attempt.", {
                     "error": str(exc),
-                    "previous_edits": edits,
-                    "source": baseline[:14300],
+                    "previous_proposal": proposal,
                     "goal": goal,
-                    "engineering": engineering,
-                }, max_tokens=2800)
-            edits = action(implementation).get("edits")
-            modified = apply_exact_edits(baseline, edits)
+                    "engineer": engineering,
+                }, max_tokens=1900)
+            proposal = action(implementation)
+            modified = apply_mechanic_slots(baseline, proposal)
         GAME_PATH.write_text(modified, encoding="utf-8")
         try:
             checks = verify_game()
@@ -193,7 +260,8 @@ def run(goal: str, database: Path, model: str) -> dict:
             raise
         evidence = {
             "changed_file": GAME_REL,
-            "edit_count": len(edits),
+            "compiled_mechanic": proposal.get("mechanic"),
+            "state_fields": list(proposal.get("enemy_properties", {})),
             "baseline_checks": base_checks,
             "candidate_checks": checks,
             "not_browser_playtested": True,
