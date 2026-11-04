@@ -2,10 +2,9 @@ name: Cataclysm 0.2 Real AI Development Council
 on:
   push:
     branches: [main]
+    # Paid AI runs only when a new development request arrives, not when code is maintained.
     paths:
-      - 'game_factory/development_council.py'
-      - 'game_factory/agent_api.py'
-      - '.github/workflows/cataclysm-02-development.yml'
+      - 'game_factory/COUNCIL_REQUEST.md'
   workflow_dispatch:
     inputs:
       goal:
@@ -65,8 +64,18 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
-          COUNCIL_GOAL: ${{ inputs.goal || 'Introduce one readable new zombie behavior without changing one-handed controls' }}
-        run: python -m game_factory.development_council --goal "$COUNCIL_GOAL"
+          COUNCIL_GOAL: ${{ inputs.goal }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$COUNCIL_GOAL" ]; then
+            COUNCIL_GOAL="$(head -n 1 game_factory/COUNCIL_REQUEST.md | cut -c1-280)"
+          fi
+          if [ -z "$COUNCIL_GOAL" ]; then
+            echo "::error::No development goal provided"
+            exit 1
+          fi
+          python -m game_factory.development_council --goal "$COUNCIL_GOAL"
       - name: Preserve council identities and evidence
         if: always()
         uses: actions/upload-artifact@v4
