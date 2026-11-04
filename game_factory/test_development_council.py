@@ -1,9 +1,48 @@
 import unittest
-from game_factory.development_council import apply_exact_edits, GAME_REL
+from game_factory.development_council import apply_exact_edits, apply_mechanic_slots, GAME_REL, ENEMY_INIT_ANCHOR, ENEMY_MOVE_ANCHOR
 
 
 class DevelopmentCouncilTests(unittest.TestCase):
     SOURCE = "function spawnEnemy() {\n  const speed = 10;\n}\nfunction tick() {}\n"
+
+    def test_slot_compiler_adds_real_mechanic(self):
+        source = ENEMY_INIT_ANCHOR + "\n" + ENEMY_MOVE_ANCHOR
+        candidate = apply_mechanic_slots(source, {
+            "mechanic": "hesitant_zombie",
+            "enemy_properties": {"fearTimer": 0},
+            "enemy_movement_js": (
+                "if(enemy.fearTimer>0){enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);}"
+                "else{enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;}"
+            ),
+        })
+        self.assertIn("hurt:0,fearTimer:0});", candidate)
+        self.assertIn("enemy.fearTimer", candidate)
+        self.assertNotEqual(source, candidate)
+
+    def test_slot_compiler_rejects_invalid_state_and_code(self):
+        source = ENEMY_INIT_ANCHOR + "\n" + ENEMY_MOVE_ANCHOR
+        for properties, movement in (
+            ({"__proto__": 0}, "enemy.x+=dx;enemy.y+=dy;"),
+            ({"fearTimer": float("nan")}, "enemy.x+=dx;enemy.y+=dy;"),
+            ({"fearTimer": 0}, "fetch('https://example.com');enemy.x+=dx;"),
+            ({"fearTimer": 0}, "window.location='x';enemy.x+=dx;"),
+            ({"fearTimer": 0}, "if(true) return 1;enemy.x+=dx;"),
+        ):
+            with self.subTest(properties=properties, movement=movement):
+                with self.assertRaises(ValueError):
+                    apply_mechanic_slots(source, {
+                        "mechanic": "hesitant_zombie",
+                        "enemy_properties": properties,
+                        "enemy_movement_js": movement,
+                    })
+
+    def test_slot_compiler_requires_unique_known_code(self):
+        with self.assertRaises(ValueError):
+            apply_mechanic_slots(ENEMY_MOVE_ANCHOR, {
+                "mechanic": "hesitant_zombie",
+                "enemy_properties": {"fearTimer": 0},
+                "enemy_movement_js": "enemy.x+=dx;enemy.y+=dy;",
+            })
 
     def test_exact_mechanic_edit(self):
         edits = [{"path": GAME_REL,
