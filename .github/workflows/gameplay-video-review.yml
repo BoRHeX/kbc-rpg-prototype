@@ -1,0 +1,49 @@
+name: Gameplay video to AI development report
+on:
+  workflow_dispatch:
+    inputs:
+      drive_file_id:
+        description: "Google Drive gameplay recording file ID"
+        required: false
+        default: "1GbMVr_GNoDA4mlpqX_zQBYWjUpO56Pam"
+  schedule:
+    - cron: "20 7 * * *"
+permissions:
+  contents: read
+  issues: write
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install processing dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python -m pip install --disable-pip-version-check openai requests
+      - name: Download, transcribe, analyse, edit and report
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_DRIVE_FOLDER_ID: "1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K"
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python game_factory/video_pipeline.py
+      - name: Preserve review and edited video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gameplay-review-${{ github.run_id }}
+          path: |
+            artifacts/video_review/
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
