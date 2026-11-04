@@ -217,11 +217,22 @@ def main():
     (OUT/"visual_review.md").write_text(frames)
     report=create_report(transcript,frames,seconds)
     (OUT/"development_report.md").write_text(report)
-    highlight(video,report,seconds)
+    segments=highlight(video,report,seconds)
+    folder=delivery_folder(token)
+    for name,mime in [("cataclysm_highlights.mp4","video/mp4"),
+                      ("development_report.md","text/markdown"),
+                      ("transcript.json","application/json"),
+                      ("visual_review.md","text/markdown")]:
+        f=OUT/name
+        drive_upload(token,f,folder,metadata["name"].rsplit(".",1)[0]+"_"+name,mime)
     video.unlink()
-    github_issue(title,"Automated gameplay review. Original Drive file ID: \`"+file_id+
-       "\`.\n\n"+report[:55000]+
-       "\n\nFull transcript and edited highlight are attached to this GitHub Actions run as artifacts. "+
-       "Human review required before changing game code or publishing video.")
+    link="https://drive.google.com/drive/folders/"+folder
+    if os.getenv("REPROCESS_EXISTING") != "true":
+        github_issue(title,"Automated gameplay review. Original Drive file ID: "+file_id+
+           "\\n\\n"+report[:55000]+
+           "\\n\\nEdited video and review files (private Drive): "+link+
+           "\\nSelected segments: "+json.dumps(segments)+
+           "\\nHuman approval required before YouTube publication.")
+    print("Private Google Drive delivery:",link)
 if __name__=="__main__":
     main()
