@@ -1,0 +1,6 @@
+dist/
+__pycache__/
+*.pyc
+.env
+studio/.data/
+game_factory/AI_PROPOSAL.md
