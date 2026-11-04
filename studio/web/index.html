@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c111d">
+  <meta name="description" content="BoRHeZ Games Studio: a private production control room for real gaming footage.">
+  <title>BoRHeZ Games · Studio</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div id="login" class="login-screen" hidden>
+    <div class="login-card">
+      <div class="logo-big">B<span>R</span></div>
+      <p class="eyebrow">PRIVATE PRODUCTION STUDIO</p>
+      <h1>Welcome to<br>BoRHeZ Games.</h1>
+      <p class="muted">Your crew is ready. Sign in with the token configured in your Codespace or hosting environment.</p>
+      <form id="login-form">
+        <label for="token">Studio access token</label>
+        <input id="token" name="token" type="password" autocomplete="current-password" placeholder="Paste STUDIO_TOKEN" required>
+        <button type="submit" class="primary wide">Enter studio</button>
+      </form>
+      <p class="tiny">Files and credentials remain on your private server. Never publish its forwarded port publicly.</p>
+    </div>
+  </div>
+
+  <div id="workspace" class="shell" hidden>
+    <header class="topbar">
+      <div class="brand"><div class="mark">B<span>R</span></div>
+        <div><b>BoRHeZ <em>Games</em></b><small>PRODUCTION STUDIO</small></div>
+      </div>
+      <div class="top-actions">
+        <span class="live-dot"></span><span class="online">Control room</span>
+        <button id="reload" class="icon-button" type="button" aria-label="Refresh">↻</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <p class="nav-caption">WORKSPACE</p>
+      <nav class="menu">
+        <button class="navlink active" data-tab="overview">▦ <span>Overview</span></button>
+        <button class="navlink" data-tab="pipeline">▤ <span>Production</span></button>
+        <button class="navlink" data-tab="crew">♧ <span>Agents & decisions</span></button>
+        <a class="navlink" href="/game">🎮 <span>Game Factory</span></a>
+        <button class="navlink" data-tab="activity">≋ <span>Activity log</span></button>
+        <button class="navlink" data-tab="settings">⚙ <span>Connections</span></button>
+      </nav>
+      <div class="side-note"><span class="accent">●</span> REAL FOOTAGE FIRST<br><span class="muted">Creative approval before YouTube.</span></div>
+    </aside>
+
+    <main class="main">
+      <div id="view" aria-live="polite"></div>
+    </main>
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="bottom-link active" data-tab="overview"><span>▦</span>Home</button>
+      <button class="bottom-link" data-tab="pipeline"><span>▤</span>Jobs</button>
+      <button class="bottom-link" data-tab="crew"><span>♧</span>Agents</button>
+      <button class="bottom-link" data-tab="activity"><span>≋</span>Log</button>
+      <button class="bottom-link" data-tab="settings"><span>⚙</span>Setup</button>
+      <a class="bottom-link" href="/game"><span>🎮</span>Game</a>
+    </nav>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

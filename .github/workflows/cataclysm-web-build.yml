@@ -1,0 +1,54 @@
+name: Build mobile Cataclysm game
+on:
+  push:
+    branches: [feature/borhez-game-factory-v0]
+  workflow_dispatch:
+    inputs:
+      publish_to_pages:
+        description: "Publish this experimental game to GitHub Pages (public)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check studio/web/game.js
+      - run: python -m unittest discover -s game_factory/tests -v
+      - run: python game_factory/build_static.py --out dist/cataclysm
+      - name: Package playable HTML5 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-phone-build
+          path: dist/cataclysm/
+          if-no-files-found: error
+      - name: Upload artifact for optional Pages
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_to_pages == true
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/cataclysm
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_to_pages == true
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish authorized game build to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

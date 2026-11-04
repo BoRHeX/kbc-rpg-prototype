@@ -1,0 +1,28 @@
+name: BoRHeZ Game Factory
+on:
+  push:
+    branches: [feature/borhez-game-factory-v0]
+  pull_request:
+    branches: [main, feature/borhez-games-studio-v0]
+  workflow_dispatch:
+jobs:
+  games:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check studio/web/game.js
+      - run: node --check studio/web/app.js
+      - run: python -m unittest discover -s game_factory/tests -v
+      - run: python -m unittest discover -s studio/tests -v
+      - run: python game_factory/council.py --out /tmp/borhez-factory-report.json
+      - run: python -c "import json; x=json.load(open('/tmp/borhez-factory-report.json')); assert len(x['ballots'])==5"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-factory-evidence
+          path: /tmp/borhez-factory-report.json
