@@ -102,7 +102,7 @@
     game.enemies.push({x:clamp(p.x+Math.cos(angle)*r,30,2370),y:clamp(p.y+Math.sin(angle)*r,30,2370),
       r:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
       speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
-      phase:rnd(0,TWO),weight:extra,hurt:0,fearTimer:0});
+      phase:rnd(0,TWO),weight:extra,hurt:0,fearTimer:0,fearCooldown:0});
   }
   function shotAtEnemy() {
     if(!game.enemies.length)return;
@@ -134,7 +134,15 @@
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=cfg.shotInterval/(1+.1*(p.level-1));}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
-      if(enemy.fearTimer>0){enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);}else if(d<=p.r+enemy.r+5&&rand()<0.07){enemy.fearTimer=0.3;}if(enemy.fearTimer<=0){enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;}
+      enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);
+      enemy.fearCooldown=Math.max(0,enemy.fearCooldown-dt);
+      // A frame-rate-independent, brief hesitation—not repeated every frame at contact.
+      if(enemy.fearCooldown===0&&d<115&&rand()<1-Math.exp(-0.8*dt)){
+        enemy.fearTimer=.38;enemy.fearCooldown=3;
+      }
+      const factor=enemy.fearTimer>0?.12:1;
+      enemy.x+=dx/d*enemy.speed*dt*factor;
+      enemy.y+=dy/d*enemy.speed*dt*factor;
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(d<p.r+enemy.r-3&&p.inv===0){
         p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
@@ -225,6 +233,7 @@
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
       circle(0,0,e.r,e.hurt?'#d2fff0':'#6faa8f');
+      if(e.fearTimer>0){outline(0,0,e.r+5,'#f5cf75',3);circle(0,-e.r-9,5,'#f5cf75');}
       polygon(0,0,[[-e.r*.65,-e.r*.5],[-e.r*.9,-e.r*1.2],[-e.r*.12,-e.r*.8]],'#6faa8f');
       polygon(0,0,[[e.r*.65,-e.r*.5],[e.r*.9,-e.r*1.2],[e.r*.12,-e.r*.8]],'#6faa8f');
       circle(-e.r*.35,-2,3.4,'#fb8195');circle(e.r*.35,-2,3.4,'#fb8195');
