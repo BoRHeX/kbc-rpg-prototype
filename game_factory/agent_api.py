@@ -14,7 +14,10 @@ from game_factory.agent_memory import CouncilMemory
 ENDPOINT = "https://api.openai.com/v1/responses"
 
 def ask_agent(memory: CouncilMemory, agent_id: str, run_id: str,
-              task: str, evidence: list[str], model: str | None = None) -> dict:
+              task: str, evidence: list[str], model: str | None = None,
+              max_output_tokens: int = 1200) -> dict:
+    if not 128 <= max_output_tokens <= 4000:
+        raise ValueError("Output token limit must be between 128 and 4000")
     token = os.getenv("OPENAI_API_KEY")
     if not token:
         raise RuntimeError("Set OPENAI_API_KEY as a server-side secret")
@@ -43,6 +46,7 @@ def ask_agent(memory: CouncilMemory, agent_id: str, run_id: str,
                              "task": task, "evidence_refs": evidence,
                              "agent_history": summary}),
         "store": False,
+        "max_output_tokens": max_output_tokens,
         "text": {"format": {"type": "json_object"}},
     }
     # Local ledger is authoritative; do not rely on provider conversation
