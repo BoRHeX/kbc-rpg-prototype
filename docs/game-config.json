@@ -1,0 +1,10 @@
+{
+  "speed": 235,
+  "enemySpeed": 63,
+  "spawnInterval": 1.65,
+  "shotInterval": 0.62,
+  "enemyHp": 3,
+  "spawnRamping": 0.01,
+  "fishDropChance": 0.65,
+  "maxEnemies": 95
+}
