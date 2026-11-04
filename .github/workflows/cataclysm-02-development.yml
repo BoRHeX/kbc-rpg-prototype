@@ -61,6 +61,7 @@ jobs:
             exit 1
           fi
       - name: Seven-agent development run (real API, bounded output)
+        id: council
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
@@ -85,6 +86,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
       - name: Commit review candidate and attempt draft PR
+        if: steps.council.outputs.status == 'draft_ready'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
