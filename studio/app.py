@@ -123,7 +123,7 @@ class Drive:
             raise RuntimeError("Configure GOOGLE_SERVICE_ACCOUNT_JSON and DRIVE_ROOT_FOLDER_ID")
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
-        info = json.loads(Path(cfg).read_text() if Path(cfg).is_file() else cfg)
+        info = json.loads(cfg if cfg.lstrip().startswith("{") else Path(cfg).read_text())
         credentials = service_account.Credentials.from_service_account_info(
             info, scopes=["https://www.googleapis.com/auth/drive.readonly"]
         )
