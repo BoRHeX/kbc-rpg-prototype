@@ -134,6 +134,10 @@ def qa_approves_draft(review: object) -> bool:
     """
     if not isinstance(review, dict):
         return False
+    # Some model responses supply the requested boolean at the top level,
+    # rather than nesting it under proposed_action. Both are explicit.
+    if type(review.get("approve_draft_pr")) is bool:
+        return review["approve_draft_pr"] is True
     decision = review.get("proposed_action")
     if isinstance(decision, dict):
         return decision.get("approve_draft_pr") is True
