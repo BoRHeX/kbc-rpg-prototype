@@ -1,9 +1,28 @@
+import tempfile
 import unittest
-from game_factory.development_council import apply_exact_edits, apply_mechanic_slots, GAME_REL, ENEMY_INIT_ANCHOR, ENEMY_MOVE_ANCHOR, qa_approves_draft
+from pathlib import Path
+from game_factory.agent_memory import CouncilMemory
+from game_factory.development_council import apply_exact_edits, apply_mechanic_slots, GAME_REL, ENEMY_INIT_ANCHOR, ENEMY_MOVE_ANCHOR, qa_approves_draft, goal_fingerprint, already_completed
 
 
 class DevelopmentCouncilTests(unittest.TestCase):
     SOURCE = "function spawnEnemy() {\n  const speed = 10;\n}\nfunction tick() {}\n"
+
+    def test_completed_goal_is_idempotent_per_baseline(self):
+        with tempfile.TemporaryDirectory() as directory:
+            memory = CouncilMemory(Path(directory) / "council.sqlite3")
+            producer = memory.register("producer", "gpt-4.1-mini")
+            fingerprint = goal_fingerprint("  Add New Zombie  ", "base code v1")
+            self.assertEqual(fingerprint, goal_fingerprint("add   new zombie", "base code v1"))
+            self.assertFalse(already_completed(memory, producer, fingerprint))
+            memory.record(producer, "run-1", "completed_goal",
+                          {"fingerprint": fingerprint, "goal": "Add New Zombie"})
+            self.assertTrue(already_completed(memory, producer, fingerprint))
+            self.assertFalse(already_completed(
+                memory, producer, goal_fingerprint("Add New Zombie", "base code v2")))
+            self.assertFalse(already_completed(
+                memory, producer, goal_fingerprint("Add New Fish", "base code v1")))
+            memory.close()
 
     def test_draft_approval_accepts_typed_and_explicit_text(self):
         self.assertTrue(qa_approves_draft({
