@@ -13,6 +13,21 @@ class DevelopmentCouncilTests(unittest.TestCase):
         self.assertIn("slowZombieSpeed", result)
         self.assertEqual(self.SOURCE.count("function spawnEnemy"), 1)
 
+    def test_rejects_multiline_or_double_escaped_old_anchor(self):
+        for old in ("function spawnEnemy() {\\n  const speed = 10;",
+                    "function spawnEnemy() {\\\\n  const speed = 10;"):
+            with self.subTest(old=old):
+                with self.assertRaises(ValueError):
+                    apply_exact_edits(self.SOURCE, [
+                        {"path": GAME_REL, "old": old,
+                         "new": "function spawnEnemy() { const speed = 15;"}])
+
+    def test_rejects_control_characters_in_generated_code(self):
+        with self.assertRaises(ValueError):
+            apply_exact_edits(self.SOURCE, [
+                {"path": GAME_REL, "old": "const speed = 10;",
+                 "new": "const speed = 15;\\x02"}])
+
     def test_rejects_unrelated_files(self):
         with self.assertRaises(ValueError):
             apply_exact_edits(self.SOURCE, [
