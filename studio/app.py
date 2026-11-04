@@ -477,6 +477,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.static("game.css", "text/css; charset=utf-8")
         if path == "/game.js":
             return self.static("game.js", "text/javascript; charset=utf-8")
+        if path == "/game-config.json":
+            return self.static("game-config.json", "application/json; charset=utf-8")
         if path == "/factory-report.json":
             import sys
             result = subprocess.run(
