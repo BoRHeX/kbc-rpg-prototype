@@ -76,8 +76,6 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
       - name: Commit review candidate to a branch
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
