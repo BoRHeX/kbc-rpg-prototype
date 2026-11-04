@@ -1,5 +1,11 @@
 name: Cataclysm 0.2 Real AI Development Council
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'game_factory/development_council.py'
+      - 'game_factory/agent_api.py'
+      - '.github/workflows/cataclysm-02-development.yml'
   workflow_dispatch:
     inputs:
       goal:
@@ -59,7 +65,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
-          COUNCIL_GOAL: ${{ inputs.goal }}
+          COUNCIL_GOAL: ${{ inputs.goal || 'Introduce one readable new zombie behavior without changing one-handed controls' }}
         run: python -m game_factory.development_council --goal "$COUNCIL_GOAL"
       - name: Preserve council identities and evidence
         if: always()
