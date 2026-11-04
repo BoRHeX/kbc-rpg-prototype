@@ -125,6 +125,26 @@ def apply_mechanic_slots(source: str, proposal: object) -> str:
 
 
 
+def qa_approves_draft(review: object) -> bool:
+    """Accept an explicit draft-only approval, never infer from vague praise.
+
+    The model sometimes returns a natural-language action instead of the
+    requested typed object. The conservative fallback handles only direct
+    positive approval for a review-only PR.
+    """
+    if not isinstance(review, dict):
+        return False
+    decision = review.get("proposed_action")
+    if isinstance(decision, dict):
+        return decision.get("approve_draft_pr") is True
+    if isinstance(decision, str):
+        statement = " ".join(decision.strip().casefold().split())
+        return statement.startswith(("approve draft pr", "approve the draft pr"))
+    return False
+
+
+
+
 def run_check(argv: list[str]) -> dict:
     try:
         result = subprocess.run(
@@ -271,13 +291,17 @@ def run(goal: str, database: Path, model: str) -> dict:
                       evidence, [GAME_REL])
         quality = ask("qa",
             "Independently assess the candidate and actual test-runner "
-            "evidence. This is only a reviewable draft: never claim browser "
-            "tests or real-player tests occurred. Return proposed_action "
-            "with approve_draft_pr true or false and a reason.", {
+            "evidence. This is only a REVIEW-ONLY draft, never a release. "
+            "Never claim browser or human playtests occurred. Return "
+            "proposed_action AS A JSON OBJECT with fields "
+            "approve_draft_pr (boolean) and reason (string). Approve a "
+            "draft PR if automated code tests passed and no critical "
+            "blocker exists; missing player testing is a mandatory "
+            "release gate, not itself a blocker for opening a draft. "
+            "Reject the draft if there is a critical implementation defect.", {
                 "design": design, "critique": critique,
                 "engineering": engineering, "verified_checks": evidence})
-        qa_action = quality.get("proposed_action", {})
-        if not isinstance(qa_action, dict) or qa_action.get("approve_draft_pr") is not True:
+        if not qa_approves_draft(quality):
             GAME_PATH.write_text(baseline, encoding="utf-8")
             raise RuntimeError("QA did not approve a reviewable draft PR")
         producer = ask("producer",
