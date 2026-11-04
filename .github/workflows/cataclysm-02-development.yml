@@ -1,0 +1,86 @@
+name: Cataclysm 0.2 Real AI Development Council
+on:
+  workflow_dispatch:
+    inputs:
+      goal:
+        description: "One small Cataclysm mechanic to develop"
+        required: true
+        default: "Introduce one readable new zombie behavior without changing one-handed controls"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  council-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: cataclysm-council-development
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check offline council and game tests first
+        run: |
+          python -m unittest game_factory.test_agent_memory game_factory.test_agent_api game_factory.test_development_council -v
+          node --check studio/web/game.js
+          python -m unittest discover -s game_factory/tests -v
+          python -m unittest discover -s studio/tests -v
+      - name: Restore previously recorded council memory, if available
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          prior_run="$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=cataclysm-development-memory&per_page=50" --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')" || prior_run=""
+          if [ -n "$prior_run" ]; then
+            gh run download "$prior_run" --name cataclysm-development-memory --dir artifacts || echo "Could not restore prior memory artifact; fresh ledger will be created"
+          fi
+      - name: Verify OpenAI API secret exists
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Missing OPENAI_API_KEY repository secret"
+            exit 1
+          fi
+      - name: Seven-agent development run (real API, bounded output)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+          COUNCIL_GOAL: ${{ inputs.goal }}
+        run: python -m game_factory.development_council --goal "$COUNCIL_GOAL"
+      - name: Preserve council identities and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-development-memory
+          path: artifacts/council.sqlite3
+          if-no-files-found: ignore
+          retention-days: 90
+      - name: Open draft PR containing real code and evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="ai/cataclysm-02-${{ github.run_id }}"
+          git config user.name "BoRHeZ AI Development Council"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add studio/web/game.js game_factory/AI_DEV_REPORT.md
+          git diff --cached --check
+          git commit -m "AI council: Cataclysm 0.2 review candidate"
+          git push origin "$branch"
+          gh pr create --draft --base main --head "$branch"             --title "Cataclysm 0.2 AI Council mechanic candidate"             --body-file game_factory/AI_DEV_REPORT.md
