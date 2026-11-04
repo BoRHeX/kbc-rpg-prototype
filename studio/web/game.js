@@ -95,6 +95,16 @@
     if(pointer){vx+=pointer.vx;vy+=pointer.vy;}
     const mag=Math.hypot(vx,vy); return mag>0?{x:vx/Math.max(1,mag),y:vy/Math.max(1,mag)}:{x:0,y:0};
   }
+  // Reviewed Cataclysm 0.2 mechanic: deterministic cooldown and frame-rate-scaled trigger.
+  function hesitationFactor(enemy, distance, dt, sample) {
+    enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);
+    enemy.fearCooldown=Math.max(0,enemy.fearCooldown-dt);
+    if(enemy.fearCooldown===0&&distance<115&&sample()<1-Math.exp(-0.8*dt)){
+      enemy.fearTimer=.38;
+      enemy.fearCooldown=3;
+    }
+    return enemy.fearTimer>0 ? .12 : 1;
+  }
   function spawnEnemy() {
     if(game.enemies.length>=cfg.maxEnemies)return;
     const p=game.player,angle=rnd(0,TWO),r=rnd(520,730);
@@ -134,13 +144,7 @@
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=cfg.shotInterval/(1+.1*(p.level-1));}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
-      enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);
-      enemy.fearCooldown=Math.max(0,enemy.fearCooldown-dt);
-      // A frame-rate-independent, brief hesitation—not repeated every frame at contact.
-      if(enemy.fearCooldown===0&&d<115&&rand()<1-Math.exp(-0.8*dt)){
-        enemy.fearTimer=.38;enemy.fearCooldown=3;
-      }
-      const factor=enemy.fearTimer>0?.12:1;
+      const factor=hesitationFactor(enemy,d,dt,rand);
       enemy.x+=dx/d*enemy.speed*dt*factor;
       enemy.y+=dy/d*enemy.speed*dt*factor;
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
