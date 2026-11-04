@@ -5,7 +5,7 @@ on:
       drive_file_id:
         description: "Google Drive gameplay recording file ID"
         required: false
-        default: "1GbMVr_GNoDA4mlpqX_zQBYWjUpO56Pam"
+        default: "1GbMVr_GNoDA4mlpqX_zQBYWjUpO56Pam"\n      reprocess_existing:\n        description: "Reprocess a previously reviewed video (incurs AI costs)"\n        type: boolean\n        required: false\n        default: false
   schedule:
     - cron: "20 7 * * *"
 permissions:
@@ -33,17 +33,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_DRIVE_FOLDER_ID: "1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K"
-          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}\n          REPROCESS_EXISTING: ${{ inputs.reprocess_existing }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python game_factory/video_pipeline.py
-      - name: Preserve review and edited video
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gameplay-review-${{ github.run_id }}
-          path: |
-            artifacts/video_review/
-          if-no-files-found: warn
-          retention-days: 30
-          compression-level: 0
