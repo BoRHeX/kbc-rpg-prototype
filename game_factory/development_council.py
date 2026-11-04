@@ -41,10 +41,14 @@ def apply_exact_edits(source: str, edits: object) -> str:
         old, new = edit.get("old"), edit.get("new")
         if not isinstance(old, str) or not isinstance(new, str):
             raise ValueError(f"Edit {index}: old and new must be strings")
-        if not 8 <= len(old) <= 2200 or not 8 <= len(new) <= 3500:
+        if not 8 <= len(old) <= 500 or not 8 <= len(new) <= 3500:
             raise ValueError(f"Edit {index}: replacement size outside bounds")
+        if "\\n" in old or "\\r" in old or "\n" in old or "\r" in old:
+            raise ValueError(f"Edit {index}: old anchor must be one literal source line")
+        if any(ord(char) < 32 and char not in "\n\t" for char in new):
+            raise ValueError(f"Edit {index}: replacement contains control characters")
         if old == new or changed.count(old) != 1:
-            raise ValueError(f"Edit {index}: expected one exact nontrivial match")
+            raise ValueError(f"Edit {index}: expected one exact unique source-line match")
         if any(bad.lower() in new.lower() and bad.lower() not in old.lower()
                for bad in FORBIDDEN):
             raise ValueError(f"Edit {index}: prohibited network or dynamic code")
@@ -143,19 +147,44 @@ def run(goal: str, database: Path, model: str) -> dict:
                 "existing_source": baseline[:14300]})
         implementation = ask("implementer",
             "Implement ONE small mechanic in game.js. Return a JSON object "
-            "with a proposed_action containing edits: an array of 1 or 2 "
-            "objects with path, old and new strings. Path must be "
-            "studio/web/game.js. Each old must be a unique EXACT substring "
-            "of the supplied source; new must preserve everything except the "
-            "required local change. Do NOT output diff syntax, shell commands, "
-            "HTML or explanations in place of edits. Do not invent source "
-            "outside the snippet. Keep game playable on touch devices.", {
+            "with proposed_action.edits: an array of one or two objects "
+            "containing path, old, new. Path must be studio/web/game.js. "
+            "CRITICAL: old MUST be one SHORT, EXACT, UNIQUE source-code line "
+            "copied verbatim from the supplied source (no newline or literal "
+            "backslash-n characters). New may replace that exact one line "
+            "with a few lines of code, preserving surrounding code. "
+            "Choose ASCII-only old lines; avoid lines with emoji or unicode. "
+            "Never output diff syntax or shell commands. Do not invent "
+            "source text. Keep touch controls unchanged and the game playable.", {
                 "goal": goal, "design": design, "critique": critique,
                 "engineering_plan": engineering,
                 "source": baseline[:14300],
                 "path": GAME_REL}, max_tokens=3500)
         edits = action(implementation).get("edits")
-        modified = apply_exact_edits(baseline, edits)
+        try:
+            modified = apply_exact_edits(baseline, edits)
+        except ValueError as exc:
+            # One bounded repair, rather than repeating the full seven-agent
+            # deliberation. Keep both proposals in the persistent ledger.
+            memory.record(identities["implementer"], run_id,
+                          "rejected_code_patch",
+                          {"reason": str(exc)}, refs)
+            implementation = ask("implementer",
+                "Your previous code patch did not match the real game source. "
+                "Repair it now, using ONE-LINE exact source anchors only. "
+                "Copy each old field character-for-character from the supplied "
+                "code, preferably a short statement such as enemy movement or "
+                "enemy initialization. No escaped newline in old; do not "
+                "include non-ASCII dialogue or large function blocks. "
+                "Return proposed_action.edits. This is your only retry.", {
+                    "error": str(exc),
+                    "previous_edits": edits,
+                    "source": baseline[:14300],
+                    "goal": goal,
+                    "engineering": engineering,
+                }, max_tokens=2800)
+            edits = action(implementation).get("edits")
+            modified = apply_exact_edits(baseline, edits)
         GAME_PATH.write_text(modified, encoding="utf-8")
         try:
             checks = verify_game()
