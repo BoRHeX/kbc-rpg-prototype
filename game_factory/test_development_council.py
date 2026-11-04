@@ -1,9 +1,26 @@
 import unittest
-from game_factory.development_council import apply_exact_edits, apply_mechanic_slots, GAME_REL, ENEMY_INIT_ANCHOR, ENEMY_MOVE_ANCHOR
+from game_factory.development_council import apply_exact_edits, apply_mechanic_slots, GAME_REL, ENEMY_INIT_ANCHOR, ENEMY_MOVE_ANCHOR, qa_approves_draft
 
 
 class DevelopmentCouncilTests(unittest.TestCase):
     SOURCE = "function spawnEnemy() {\n  const speed = 10;\n}\nfunction tick() {}\n"
+
+    def test_draft_approval_accepts_typed_and_explicit_text(self):
+        self.assertTrue(qa_approves_draft({
+            "proposed_action": {"approve_draft_pr": True, "reason": "Tests passed"}
+        }))
+        self.assertTrue(qa_approves_draft({
+            "proposed_action": "Approve draft PR with mandatory human playtesting before release"
+        }))
+        self.assertFalse(qa_approves_draft({
+            "proposed_action": "Do not approve draft PR until defect is corrected"
+        }))
+        self.assertFalse(qa_approves_draft({
+            "proposed_action": {"approve_draft_pr": False, "reason": "Critical defect"}
+        }))
+        self.assertFalse(qa_approves_draft({
+            "proposed_action": "Candidate looks promising but needs evaluation"
+        }))
 
     def test_slot_compiler_adds_real_mechanic(self):
         source = ENEMY_INIT_ANCHOR + "\n" + ENEMY_MOVE_ANCHOR
