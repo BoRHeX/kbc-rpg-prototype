@@ -6,6 +6,13 @@
   const W = 720, H = 1000, TWO = Math.PI * 2;
   const cfg = {speed:235,enemySpeed:63,spawnInterval:1.65,shotInterval:.62,
     enemyHp:3,spawnRamping:.010,fishDropChance:.65,maxEnemies:95};
+  fetch('/game-config.json').then(r => r.ok ? r.json() : null).then(data => {
+    if (!data || typeof data !== 'object') return;
+    for (const [key, value] of Object.entries(data)) {
+      if (Object.hasOwn(cfg, key) && typeof value === 'number' &&
+          Number.isFinite(value) && value > 0) cfg[key] = value;
+    }
+  }).catch(() => { /* defaults are a complete playable configuration */ });
   let game = null, last = 0, keys = {}, pointer = null, muted = false, audio = null;
   let seeded = 424242, stars = [], city = [], noticeTTL = 0;
   const rand = () => ((seeded = (Math.imul(1664525, seeded) + 1013904223) >>> 0) / 4294967296);
@@ -25,7 +32,8 @@
     if (!game) return;
     const score = Math.floor(game.t*2 + game.kills*7 + game.fish*9);
     const previous = Number(localStorage.getItem('cataclysm-best')||0);
-    if(score > previous) localStorage.setItem('cataclysm-best',String(score));
+    try { if(score > previous) localStorage.setItem('cataclysm-best',String(score)); }
+    catch (err) { /* storage may be disabled */ }
     $('best').textContent = 'BEST SCORE: '+Math.max(score,previous).toLocaleString();
   }
   function sound(freq=480,len=.08,type='sine',volume=.035) {
