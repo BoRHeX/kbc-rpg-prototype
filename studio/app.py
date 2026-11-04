@@ -471,6 +471,23 @@ class Handler(BaseHTTPRequestHandler):
             return self.static("app.js", "text/javascript; charset=utf-8")
         if not self.logged_in():
             return self.send_json({"error": "Sign in with STUDIO_TOKEN"}, 401)
+        if path == "/game":
+            return self.static("game.html", "text/html; charset=utf-8")
+        if path == "/game.css":
+            return self.static("game.css", "text/css; charset=utf-8")
+        if path == "/game.js":
+            return self.static("game.js", "text/javascript; charset=utf-8")
+        if path == "/game-config.json":
+            return self.static("game-config.json", "application/json; charset=utf-8")
+        if path == "/factory-report.json":
+            import sys
+            result = subprocess.run(
+                [sys.executable, str(BASE.parent / "game_factory" / "council.py"), "--json"],
+                capture_output=True, text=True, timeout=30,
+            )
+            if result.returncode:
+                return self.send_json({"error": "Experiment runner failed"}, 500)
+            return self.send_json(json.loads(result.stdout))
         if path == "/api/state":
             return self.send_json(snapshot())
         if re.fullmatch(r"/api/video/[a-f0-9]{16}", path):

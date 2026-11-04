@@ -1,0 +1,61 @@
+name: AI Game Factory (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      idea:
+        description: "Creator instruction for one bounded gameplay change"
+        required: true
+        default: "Make the first minute exciting while keeping mobile controls fair"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  agent-proposal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check configured secret
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "Configure the OPENAI_API_KEY repository secret before running AI Game Factory."
+            exit 1
+          fi
+      - name: Four role-bounded agent deliberations
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GAME_IDEA: ${{ inputs.idea }}
+        run: python game_factory/ai_factory.py --idea "$GAME_IDEA"
+      - name: Validate proposal
+        run: |
+          node --check studio/web/game.js
+          python -m unittest discover -s game_factory/tests -v
+          python -m unittest discover -s studio/tests -v
+      - name: Create draft proposal PR (no auto-merge)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="ai/cataclysm-${{ github.run_id }}"
+          git config user.name "BoRHeZ Game Factory"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add studio/web/game-config.json game_factory/AI_PROPOSAL.md
+          git commit -m "AI Game Factory: propose gameplay tuning for review"
+          git push origin "$branch"
+          gh pr create --draft --base "feature/borhez-game-factory-v0" --head "$branch" \
+            --title "AI proposal: Cataclysm balance experiment" \
+            --body-file game_factory/AI_PROPOSAL.md
