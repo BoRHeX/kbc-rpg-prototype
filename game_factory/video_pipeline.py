@@ -140,11 +140,11 @@ def highlight(video, report, seconds):
     import re
     # Recover a fenced or multiline EDIT_SEGMENTS array; never silently output an
     # unrelated first-minute clip. AI suggestions are checked against duration.
-    match=re.search(r"EDIT_SEGMENTS\\s*=\\s*(\\[.*?\\])",report,re.S)
+    match=re.search(r"EDIT_SEGMENTS\s*=\s*(\[.*?\])",report,re.S)
     segments=[]
     if match:
-        raw=re.sub(r"//[^\\n]*","",match.group(1))
-        raw=re.sub(r",\\s*([}\\]])",r"\\1",raw)
+        raw=re.sub(r"//[^\n]*","",match.group(1))
+        raw=re.sub(r",\s*([}\]])",r"\1",raw)
         try:
             for item in json.loads(raw):
                 a=max(0,float(item["start"]))
