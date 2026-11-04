@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#070e1b">
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css"></head>
+<body>
+<header class="top">
+  <a href="./" class="back">‹ <span>STUDIO</span></a>
+  <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
+  <div class="version">ALPHA 0.1 · PLAYABLE</div>
+</header>
+<main class="shell">
+  <section class="intro">
+    <div class="overline">ORIGINAL MOBILE GAME · DEVELOPMENT BUILD</div>
+    <h1>Cataclysm<span>.</span></h1>
+    <p>One cat. One city. An inconvenient number of zombies.</p>
+  </section>
+  <nav class="tabs">
+    <button class="tab active" data-tab="game">🎮 GAME</button>
+    <button class="tab" data-tab="factory">⚙ AI FACTORY</button>
+    <button class="tab" data-tab="notes">📜 DEV NOTES</button>
+  </nav>
+  <div id="game-tab">
+    <div class="hud">
+      <div class="hud-block"><small>TIME</small><b id="time">00:00</b></div>
+      <div class="hud-block"><small>FISH</small><b id="fish">0</b></div>
+      <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
+      <div class="hud-block"><small>HEALTH</small><b id="health">♥♥♥</b></div>
+    </div>
+    <div id="arena" class="arena">
+      <canvas id="canvas" width="720" height="1000" aria-label="Survive the night as a cat. Drag to move."></canvas>
+      <div id="start-overlay" class="overlay">
+        <div class="emblem">🐈‍⬛</div>
+        <div class="overline">BO RHEZ ARCADE · EPISODE 001</div>
+        <h2 id="overlay-title">MIDNIGHT SURVIVAL</h2>
+        <p id="overlay-copy">Drag to move your cat. Dodge zombies, collect fish, and fire automatically at nearby threats. Survive as long as you can.</p>
+        <button id="play" class="primary">▶ START RUN</button>
+        <small id="best">BEST RUN: —</small>
+      </div>
+      <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
+      <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
+      <div class="notice" id="notice" hidden></div>
+    </div>
+    <div class="below">
+      <div class="help"><b>CONTROLS</b><p><span class="desktop">WASD / arrow keys</span><span class="mobile">Drag anywhere on the arena</span> to move. Your cat fires automatically. Collect fish to upgrade. No login or payment required to play.</p></div>
+      <div class="actions"><button id="mute" class="secondary">♪ Sound on</button><button id="restart" class="secondary">↻ Restart</button></div>
+    </div>
+  </div>
+  <section id="factory-tab" hidden>
+    <div class="heading"><div class="overline">EVIDENCE-BASED DEVELOPMENT</div><h2>Game Factory</h2><p>Agent departments test alternative difficulty settings, argue from measurements, and propose changes. They do not silently rewrite the shipped game.</p></div>
+    <div class="factory-status" id="factory-status">Loading evidence report...</div>
+    <div class="factory-cards" id="factory-cards"></div>
+    <div class="report" id="factory-report"></div>
+  </section>
+  <section id="notes-tab" hidden>
+    <div class="heading"><div class="overline">WHAT IS REAL</div><h2>Development log</h2></div>
+    <div class="notes">
+      <article><b>Playable core</b><p>Original canvas-based survival game with touch controls, automatic combat, pickups, health, difficulty scaling, sound, pause, local best score and replay. Real code, no AI video generation required.</p></article>
+      <article><b>Automation</b><p>GitHub Actions runs Python tests and deterministic agent-council balance experiments. Votes select a proposed configuration for review, not a public release. Actual edit of game rules is subject to approval.</p></article>
+      <article><b>What agents cannot yet do</b><p>They are not persistent independent game developers. No live LLM planning, generated art pipeline, Android APK, Steam release account, or payments are connected to the app. Those are later integrations.</p></article>
+      <article><b>Recording content</b><p>The game can be played in the browser on your phone. Capture your own screen, voice and optional camera footage, then put the resulting package into BoRHeZ Games Studio.</p></article>
+    </div>
+  </section>
+</main>
+<footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
+<script src="./game.js" defer></script>
+</body></html>
