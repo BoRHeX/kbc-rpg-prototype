@@ -7,6 +7,7 @@ IDs may additionally preserve model conversation context.
 import json
 import os
 import urllib.request
+import urllib.error
 
 from game_factory.agent_memory import CouncilMemory
 
@@ -49,8 +50,20 @@ def ask_agent(memory: CouncilMemory, agent_id: str, run_id: str,
         ENDPOINT, data=json.dumps(request).encode(),
         headers={"Authorization": f"Bearer {token}",
                  "Content-Type": "application/json"}, method="POST")
-    with urllib.request.urlopen(req, timeout=90) as response:
-        data = json.load(response)
+    try:
+        with urllib.request.urlopen(req, timeout=90) as response:
+            data = json.load(response)
+    except urllib.error.HTTPError as exc:
+        raw = exc.read(8192).decode("utf-8", errors="replace")
+        try:
+            error = json.loads(raw).get("error", {})
+            code = error.get("code") or error.get("type") or "unknown"
+            message = error.get("message", "No error detail")
+        except (ValueError, AttributeError):
+            code, message = "unknown", "Provider returned a non-JSON error"
+        raise RuntimeError(
+            f"OpenAI API HTTP {exc.code}: {code}: {str(message)[:400]}"
+        ) from None
     output = "".join(
         part.get("text", "") for item in data.get("output", [])
         if item.get("type") == "message"
