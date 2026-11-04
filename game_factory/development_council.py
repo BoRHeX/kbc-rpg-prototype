@@ -88,7 +88,7 @@ def apply_mechanic_slots(source: str, proposal: object) -> str:
     for key, value in props.items():
         if not isinstance(key, str) or not re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]{0,31}", key):
             raise ValueError("Invalid enemy state field name")
-        if key in ("x", "y", "r", "hp", "max", "speed", "phase", "weight", "hurt"):
+        if key in ("x", "y", "r", "hp", "max", "speed", "phase", "weight", "hurt", "__proto__", "prototype", "constructor"):
             raise ValueError("Existing enemy fields may not be overwritten")
         if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
             raise ValueError("Enemy state must have a finite numeric initial value")
