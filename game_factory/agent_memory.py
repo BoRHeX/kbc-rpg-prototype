@@ -10,6 +10,7 @@ ROLES = {
     "researcher": "Investigate source code, gameplay and feedback; cite evidence.",
     "designer": "Propose mechanics and explain intended player experience.",
     "engineer": "Plan implementation and check technical constraints.",
+    "implementer": "Edit reviewable Cataclysm game code with strict limits.",
     "critic": "Challenge design, mobile accessibility and assumptions.",
     "qa": "Review actual test evidence; never fabricate test outcomes.",
     "producer": "Coordinate decisions, review gates and educational changelog.",
