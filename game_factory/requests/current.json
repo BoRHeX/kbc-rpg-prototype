@@ -1,14 +1,14 @@
 {
-  "id": "neon-salvage-update-003",
-  "mode": "update",
-  "game": "neon-salvage",
-  "title": "Neon Salvage",
-  "prompt": "Implement the next studio task from phone gameplay review #34 in the existing Neon Salvage game: make each earned pickup reward readable while dragging. Show a short, legible label such as '+10 · x1' or '+20 · x2' above the collected core, offset from the touch point and clamped inside the arena. Use the points and multiplier actually awarded BEFORE the existing multiplier advances; the NEXT CORE HUD continues to show the next reward multiplier. Keep the number and lifetime of labels bounded. Labels must not intercept touch, obscure the ship, or cover the HUD. Respect reduced motion with a stationary alternative. Pause freezes feedback lifetimes, and restart/replay clears them. Preserve the scoring rules, x5 cap, damage/reset behavior, hull, one-minute end conditions, controls, layout and existing game URL. Extend the existing read-only snapshot with a copied pickupFeedback array (points, multiplier, x, y, ttl) from actual live feedback state so the feature can be checked without state mutation. Read review #34 as evidence; the recording's time discontinuity is not a confirmed timer defect. Run the existing Neon Salvage logic harness and document your actual feature checks. Deliver a tested update of this game.",
-  "acceptance": [
-    "The first two pickups visibly report +10 at x1 and +20 at x2 using the awarded multiplier; capped pickups report +50 at x5. Existing NEXT CORE progression and scoring stay correct.",
-    "Reward labels are legible above the pickup/touch location, stay inside the playable area, and do not intercept touch input or obscure the ship or HUD.",
-    "Feedback is bounded in count and lifetime, freezes while paused, expires during play, and clears on restart/replay. Reduced-motion mode keeps the reward readable without floating animation.",
-    "The read-only diagnostic snapshot exposes fresh copies of actual pickupFeedback state for verification; it cannot mutate gameplay.",
-    "Run node --check for game.js, node game_factory/check_neon_logic.cjs, and concrete pickup-feedback checks; retain functional mobile start/drag/pause/resume/restart and the 60-second result flow."
-  ]
+    "id": "neon-salvage-update-003",
+    "mode": "update",
+    "game": "neon-salvage",
+    "title": "Neon Salvage",
+    "prompt": "Implement the next studio task from phone gameplay review #34 in the existing Neon Salvage game: make each earned pickup reward readable while dragging. Show a short, legible label such as '+10 · x1' or '+20 · x2' above the collected core, offset from the touch point and clamped inside the arena. Use the points and multiplier actually awarded BEFORE the existing multiplier advances; the NEXT CORE HUD continues to show the next reward multiplier. Keep the number and lifetime of labels bounded. Labels must not intercept touch, obscure the ship, or cover the HUD. Respect reduced motion with a stationary alternative. Pause freezes feedback lifetimes, and restart/replay clears them. Preserve the scoring rules, x5 cap, damage/reset behavior, hull, one-minute end conditions, controls, layout and existing game URL. Extend the existing read-only snapshot with a copied pickupFeedback array (points, multiplier, x, y, ttl) from actual live feedback state so the feature can be checked without state mutation. Read review #34 as evidence; the recording's time discontinuity is not a confirmed timer defect. Run the existing Neon Salvage logic harness and document your actual feature checks. Deliver a tested update of this game.",
+    "acceptance": [
+        "The first two pickups visibly report +10 at x1 and +20 at x2 using the awarded multiplier; capped pickups report +50 at x5. Existing NEXT CORE progression and scoring stay correct.",
+        "Reward labels are legible above the pickup/touch location, stay inside the playable area, and do not intercept touch input or obscure the ship or HUD.",
+        "Feedback is bounded in count and lifetime, freezes while paused, expires during play, and clears on restart/replay. Reduced-motion mode keeps the reward readable without floating animation.",
+        "The read-only diagnostic snapshot exposes fresh copies of actual pickupFeedback state for verification; it cannot mutate gameplay.",
+        "Run node --check for game.js, node game_factory/check_neon_logic.cjs, and concrete pickup-feedback checks; retain functional mobile start/drag/pause/resume/restart and the 60-second result flow."
+    ]
 }
