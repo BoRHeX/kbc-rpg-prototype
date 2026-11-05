@@ -60,8 +60,9 @@ the next prompt follows the current job's result. This is a bounded studio,
 not an unlimited background spending loop.
 
 `OPENAI_API_KEY` is the existing repository Actions secret. API inference uses
-the configured provider account. Each job has five bounded planning calls,
-one coding run, at most one coding repair, and one bounded QA review. Workflow
+the configured provider account. Each job has five planning-role calls and one QA-role call, each with at most
+one recovery for malformed or truncated JSON and a per-reply output ceiling of
+4,000 tokens. There is one coding run and at most one coding repair. Workflow
 timeouts also apply; token and dollar costs are not guaranteed by timeouts.
 
 ## Play and inspect delivery
@@ -77,9 +78,13 @@ commit; use its commit history to compare or restore earlier source. A stale
 job cannot overwrite a game updated since its baseline was captured. A failed
 coding, testing or QA stage does not change the accepted source or deployment.
 
-Publication and deployment are separate steps. If Pages fails after the
-accepted commit, **Re-run failed jobs** retries delivery of the same accepted
-artifact without repeating model calls. Completed receipts mean code was
+Publication and deployment are separate steps. After committing accepted source,
+the studio dispatches **Deliver Accepted Mobile Game** and waits for its live
+verification. The delivery workflow starts from the accepted source commit,
+verifies its hashes and QA receipt, and gives each attempt a unique Pages
+artifact name. If delivery fails, **Re-run failed jobs** on that delivery run
+retries the accepted source without model calls. For explicit recovery, update
+`game_factory/DELIVERY_REQUEST.json` with an existing accepted request ID. Completed receipts mean code was
 accepted; the workflow must also pass deployment and live verification before
 claiming the link was delivered.
 

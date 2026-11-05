@@ -1,0 +1,68 @@
+name: Deliver Accepted Mobile Game
+run-name: Deliver ${{ github.event.client_payload.request_id || inputs.request_id || 'accepted game' }} (${{ github.event.client_payload.delivery_key || 'recovery' }})
+on:
+  repository_dispatch:
+    types: [borhez-mobile-delivery]
+  push:
+    branches: [main]
+    paths: ['game_factory/DELIVERY_REQUEST.json']
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: Accepted job ID recorded in game_factory/results
+        type: string
+        required: true
+
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # This workflow starts after the accepted commit exists. Its GITHUB_SHA
+      # therefore identifies the source actually being deployed.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact accepted game source and independent QA evidence
+        id: accepted
+        env:
+          REQUEST_ID: ${{ github.event.client_payload.request_id || inputs.request_id || '' }}
+        run: python -m game_factory.mobile_jobs verify_published
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: mobile-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy the accepted source commit
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: mobile-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify exact live game bytes
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python game_factory/verify_live.py artifacts/mobile/delivery-receipt.json "$PAGES_URL"
+      - name: Record delivery evidence and the stable play link
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+          PLAY_PATH: ${{ steps.accepted.outputs.play_path }}
+          REQUEST_ID: ${{ steps.accepted.outputs.request_id }}
+        run: |
+          echo "### Live delivery verified: $REQUEST_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "Play: ${PAGES_URL%/}/$PLAY_PATH" >> "$GITHUB_STEP_SUMMARY"
+          echo "Accepted source commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

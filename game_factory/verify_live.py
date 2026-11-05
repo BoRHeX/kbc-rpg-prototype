@@ -1,6 +1,7 @@
 """Verify that Pages serves the exact accepted game, not just an HTTP 200 page."""
 import hashlib
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -11,8 +12,10 @@ base = sys.argv[2].rstrip("/") + "/" + receipt["play_path"]
 for attempt in range(12):
     try:
         for name, expected in receipt["files"].items():
-            url = base + name + "?verify=" + receipt["run_id"]
-            with urllib.request.urlopen(url, timeout=15) as response:
+            url = (base + name + "?verify=" + receipt["run_id"] +
+                   "&delivery=" + os.getenv("GITHUB_RUN_ID", "local") + "&attempt=" + str(attempt))
+            request = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
+            with urllib.request.urlopen(request, timeout=15) as response:
                 actual = hashlib.sha256(response.read()).hexdigest()
             if actual != expected:
                 raise ValueError("Deployed bytes do not match accepted " + name)

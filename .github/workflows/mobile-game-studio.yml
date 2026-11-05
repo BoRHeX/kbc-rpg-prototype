@@ -177,17 +177,13 @@ jobs:
   publish:
     needs: [resolve, develop]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     concurrency:
       group: borhez-game-publish
       cancel-in-progress: false
     permissions:
       contents: write
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      actions: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -212,22 +208,39 @@ jobs:
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - name: Deploy accepted games to Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Verify the live URL serves the exact accepted game
+      - name: Request delivery from the newly committed source and wait for live verification
         env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
-        run: python game_factory/verify_live.py artifacts/mobile/release/receipt.json "$PAGES_URL"
-      - name: Record the delivered play link
-        env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
-          PLAY_PATH: ${{ steps.publish.outputs.play_path }}
+          GH_TOKEN: ${{ github.token }}
           REQUEST_ID: ${{ steps.publish.outputs.request_id }}
+          DELIVERY_KEY: ${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
         run: |
-          echo "### Delivered $REQUEST_ID" >> "$GITHUB_STEP_SUMMARY"
-          echo "Play: ${PAGES_URL%/}/$PLAY_PATH" >> "$GITHUB_STEP_SUMMARY"
-          echo "Prompt, code hashes, agent decisions and QA: game_factory/results/$REQUEST_ID.json" >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          export DELIVERY_TITLE="Deliver $REQUEST_ID ($DELIVERY_KEY)"
+          python - <<'PYDISPATCH' > "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          import json,os
+          print(json.dumps({"event_type":"borhez-mobile-delivery","client_payload":{
+              "request_id":os.environ["REQUEST_ID"],"delivery_key":os.environ["DELIVERY_KEY"]}}))
+          PYDISPATCH
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          delivery_run=""
+          for attempt in {1..18}; do
+            if gh run list --workflow mobile-game-delivery.yml --event repository_dispatch --limit 30 --json databaseId,displayTitle > "$RUNNER_TEMP/mobile-delivery-runs.json"; then
+              delivery_run="$(python - <<'PYRUN'
+          import json,os
+          from pathlib import Path
+          runs=json.loads((Path(os.environ['RUNNER_TEMP'])/'mobile-delivery-runs.json').read_text())
+          print(next((str(r['databaseId']) for r in runs if r['displayTitle']==os.environ['DELIVERY_TITLE']),''))
+          PYRUN
+              )"
+            fi
+            if [ -n "$delivery_run" ]; then break; fi
+            sleep 5
+          done
+          if [ -z "$delivery_run" ]; then
+            echo "::error::Accepted source saved, but delivery run did not start"
+            exit 1
+          fi
+          echo "Delivery run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$delivery_run" >> "$GITHUB_STEP_SUMMARY"
+          gh run watch "$delivery_run" --exit-status --interval 10
+          echo "Live delivery verified for $REQUEST_ID" >> "$GITHUB_STEP_SUMMARY"
