@@ -8,7 +8,8 @@ async function testPlatform(browser,label,userAgent) {
   const page=await context.newPage();
   const errors=[];
   page.on('pageerror', e=>errors.push(e.message));
-  page.on('console', m=>{if(m.type()==='error') errors.push(m.text())});
+  page.on('console', m=>{if(m.type()==='error' && !/favicon\.ico/.test(m.location().url)) errors.push(m.text()+' at '+m.location().url)});
+  page.on('response', r=>{if(r.status()>=400 && !/favicon\.ico/.test(r.url())) errors.push('HTTP '+r.status()+' '+r.url())});
   try {
     const response=await page.goto(base,{waitUntil:'load',timeout:15000});
     if(!response || !response.ok()) throw Error('Preview HTTP not OK');
