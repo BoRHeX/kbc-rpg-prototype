@@ -176,7 +176,8 @@
         sound(740,.09,'sine');
         if(g.xp>=7+p.level*3){
           g.xp=0;p.level++;p.maxHp=Math.min(6,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);
-          p.speed+=8;p.damage+=.25;\n          if(p.level%3===0){p.maxHp=Math.min(8,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);notify('LEVEL '+p.level+' · SURVIVOR BONUS!',2.2);}\n          else notify('LEVEL '+p.level+' · CAT POWER UP!',2.2);sound(1050,.2);
+          p.speed+=8;p.damage+=.25;
+          if(p.level%3===0){p.maxHp=Math.min(8,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);notify('LEVEL '+p.level+' · SURVIVOR BONUS!',2.2);}\n          else notify('LEVEL '+p.level+' · CAT POWER UP!',2.2);sound(1050,.2);
         }
       }else if(f.ttl<=0) g.fishItems.splice(i,1);
     }
