@@ -36,11 +36,44 @@ def cycle(memory_path: Path, feedback: str, model: str):
     design = ask("designer", "Design implementation and user-visible result with acceptance criteria; prioritize tester feedback.", {"task":producer, "research":research})
     critic = ask("critic", "Challenge usability, fun, mobile controls, regressions and missing tests.", {"design":design,"feedback":feedback})
     engineer = ask("engineer", "Plan a safe small patch in studio/web/game.js with existing code anchors and concrete checks.", {"design":design,"critic":critic,"source":source[:19000]})
-    implementer = ask("implementer",
-        "Write ACTUAL source changes, not suggestions. Return proposed_action as JSON ARRAY of 1 or 2 objects with path='studio/web/game.js', old=ONE EXACT EXISTING SOURCE LINE (8-500 chars), new=replacement text (8-3500 chars). old must appear exactly once in source. Keep changes self-contained; do not add network calls, imports, secrets, dynamic evaluation, or modify controls unintentionally. You can implement ANY small gameplay or UX mechanic, not only zombies. Never claim tests were run.",
-        {"producer":producer,"design":design,"engineer":engineer,"critic":critic,"source":source[:19000]}, 3500)
-    edits = implementer.get("proposed_action")
-    changed = apply_exact_edits(source, edits)
+    # Model output is untrusted: validate the patch contract, then give the
+    # implementer concrete validation feedback and a chance to repair it.
+    # Never publish an invalid or untested change.
+    patch_contract = (
+        "Implement the selected task as an actual minimal code patch. "
+        "Return JSON object with proposed_action as an ARRAY (not an object, "
+        "not prose) containing 1 or 2 edit objects. Each edit MUST have exactly "
+        "path, old, new. path must be studio/web/game.js. old must be an EXACT "
+        "unique single line copied from the supplied source (8-500 characters). "
+        "new must be replacement JavaScript (8-3500 characters). "
+        "Example shape: {\\\"proposed_action\\\":[{\\\"path\\\":\\\"studio/web/game.js\\\",\\\"old\\\":\\\"exact original line\\\",\\\"new\\\":\\\"replacement line\\\"}]}. "
+        "Do not invent an anchor. Do not include network access or dynamic eval. "
+        "You can change any small mechanic or UX behavior; no fixed zombie-only task."
+    )
+    evidence = {"producer": producer, "design": design, "engineer": engineer,
+                "critic": critic, "source": source[:19000]}
+    changed = None
+    edits = None
+    repair_error = None
+    for attempt in range(3):
+        instruction = patch_contract
+        if repair_error:
+            instruction += ("\\nPREVIOUS PATCH REJECTED BY VALIDATOR: " + repair_error +
+                            ". Return a corrected proposed_action ARRAY using exact source anchors.")
+        implementer = ask("implementer", instruction, evidence, 3500)
+        edits = implementer.get("proposed_action")
+        # Accept the common single-edit-object response but still validate it.
+        if isinstance(edits, dict) and {"path", "old", "new"} <= edits.keys():
+            edits = [edits]
+        try:
+            changed = apply_exact_edits(source, edits)
+            break
+        except (ValueError, TypeError) as exc:
+            repair_error = str(exc)
+            ledger.record(ids["implementer"], run_id, "patch_rejected",
+                          {"attempt": attempt + 1, "error": repair_error})
+    if changed is None:
+        raise RuntimeError("Implementer failed patch validation after three attempts: " + str(repair_error))
     GAME.write_text(changed)
     try:
         checks = verify_game()
