@@ -77,7 +77,12 @@ jobs:
           sed -i 's/ALPHA 0.3/AUTONOMOUS PREVIEW/g' docs/preview/index.html
           node --check docs/preview/game.js
           printf 'Run %s\n' "$GITHUB_RUN_ID" > docs/preview/BUILD_INFO.txt
-      - name: Browser smoke test for mobile input\n        run: |\n          npm install --no-save playwright@1.56.1\n          npx playwright install chromium\n          node game_factory/browser_smoke.cjs\n      - name: Publish verified source and preview
+      - name: Browser smoke test for mobile input
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install chromium
+          node game_factory/browser_smoke.cjs
+      - name: Publish verified source and preview
         shell: bash
         run: |
           set -euo pipefail
