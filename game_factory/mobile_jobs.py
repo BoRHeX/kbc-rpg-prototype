@@ -287,9 +287,40 @@ def catalog(root):
 <h1>BoRHeZ Games</h1><p>Small games. Open one and play.</p>''' + "\n".join(links) + "\n</html>\n")
 
 
+def verify_published(root, request_id):
+    if not isinstance(request_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,63}", request_id):
+        raise ValueError("Invalid accepted request ID")
+    receipt = json.loads((root / "game_factory/results" / (request_id + ".json")).read_text())
+    request = validate_request(receipt["request"])
+    if request["id"] != request_id or receipt["request_digest"] != digest(request):
+        raise ValueError("Accepted request identity mismatch")
+    if receipt["target"] != target_for(request["game"]) or manifest(root / receipt["target"]) != receipt["files"]:
+        raise ValueError("Published source differs from accepted game bytes")
+    tests = receipt.get("acceptance", {})
+    if (receipt.get("state") != "accepted" or
+            receipt.get("qa", {}).get("proposed_action", {}).get("approve_preview") is not True or
+            tests.get("run_id") != receipt["run_id"] or tests.get("request_id") != request_id or
+            len(tests.get("platforms", [])) != 2 or
+            any(p.get("passed") is not True for p in tests["platforms"])):
+        raise ValueError("Missing accepted gameplay evidence")
+    return receipt
+
+
+def verify_published_command():
+    request_id = os.getenv("REQUEST_ID", "")
+    if not request_id:
+        request_id = json.loads((ROOT / "game_factory/DELIVERY_REQUEST.json").read_text())["request_id"]
+    receipt = verify_published(ROOT, request_id)
+    WORK.mkdir(parents=True, exist_ok=True)
+    (WORK / "delivery-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    output("play_path", receipt["play_path"])
+    output("request_id", request_id)
+    print("Accepted game bytes verified:", request_id, receipt["run_id"])
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["prepare", "plan", "validate", "stamp", "review", "package", "publish"])
+    parser.add_argument("command", choices=["prepare", "plan", "validate", "stamp", "review", "package", "publish", "verify_published"])
     args = parser.parse_args()
     if args.command == "publish":
         receipt = publish_bundle(ROOT, WORK / "release")

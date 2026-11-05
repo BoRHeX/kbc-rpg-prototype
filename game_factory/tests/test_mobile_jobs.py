@@ -2,7 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from game_factory.mobile_jobs import digest, manifest, prepare, publish_bundle, validate_request
+from game_factory.mobile_jobs import digest, manifest, prepare, publish_bundle, validate_request, verify_published
 
 
 def request(mode="create", identifier="first-job"):
@@ -105,3 +105,25 @@ class MobileJobTests(unittest.TestCase):
             (root / "game.js").symlink_to("/etc/passwd")
             with self.assertRaises(ValueError):
                 manifest(root)
+
+    def test_delivery_verifies_the_accepted_source_without_model_calls(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            job = prepare(root, request(), "10-1")
+            receipt = publish_bundle(root, bundle(root, job))
+            self.assertEqual(verify_published(root, "first-job"), receipt)
+            (root / job["target"] / "game.js").write_text("unexpected replacement")
+            with self.assertRaisesRegex(ValueError, "differs from accepted"):
+                verify_published(root, "first-job")
+
+    def test_delivery_rejects_invalid_identity_and_approval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with self.assertRaises(ValueError):
+                verify_published(root, "../escape")
+            job = prepare(root, request(), "10-1")
+            receipt = publish_bundle(root, bundle(root, job))
+            receipt["qa"]["proposed_action"]["approve_preview"] = False
+            (root / "game_factory/results/first-job.json").write_text(json.dumps(receipt))
+            with self.assertRaisesRegex(ValueError, "gameplay evidence"):
+                verify_published(root, "first-job")
