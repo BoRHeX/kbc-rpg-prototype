@@ -1,0 +1,194 @@
+{
+  "request": {
+    "id": "neon-salvage-create-001",
+    "game": "neon-salvage",
+    "mode": "create",
+    "title": "Neon Salvage",
+    "prompt": "Build an original one-minute mobile arcade game called Neon Salvage. Drag a small salvage ship around a dark space arena. Collect cyan energy cores for score, avoid moving red debris, and survive 60 seconds with three hull points. Show clear hit feedback, the remaining hull, time and score. End with a readable result and allow immediate replay. Use simple Canvas-drawn shapes, polished readable colors and one-finger controls. Implement real gameplay, not a mockup.",
+    "acceptance": [
+      "Touch start begins an active run; dragging moves the ship.",
+      "Collecting a cyan core increases score and replaces that core.",
+      "Red debris collisions reduce hull, provide visible feedback and have brief invulnerability to avoid draining all hull in one contact.",
+      "The run ends after 60 seconds or zero hull, with score and replay.",
+      "Pause freezes time and play; restart resets time, score and hull."
+    ]
+  },
+  "target": "docs/games/neon-salvage",
+  "run_id": "42084112851-1",
+  "base_manifest": {},
+  "request_digest": "c582508906faabb5382898b5dd692c77677cbfd2d7e1a2d53e10b0e29e97e61d",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "8f4b1f9c61def02b13ee3be0a4502fcbc8119cc098529e8e22d99469071c90ca",
+    "game.css": "877bfe7f524618835578e12d10d35779d37b830726764ed97ab81aaac808241f",
+    "game.js": "5b4cd69c3e507893fa9ea9c35ca07bdb51200045d4a0a114514ded8093b02666",
+    "index.html": "a6b1d30254110b1594422184380252608a96b01eceb8fe84b82a7d5d97e45cb0"
+  },
+  "play_path": "games/neon-salvage/",
+  "plan": {
+    "producer": {
+      "claim": "The job 'neon-salvage-create-001' involves implementing a playable, one-minute mobile arcade game called 'Neon Salvage' with specified gameplay mechanics and UI elements.",
+      "rationale": "The job description clearly defines the scope: a salvage ship controlled by dragging on a canvas collecting cyan cores, avoiding red debris, surviving 60 seconds with three hull points, and including visual feedback, score/time/hull display, and controls for start, pause, and restart. The completion criteria are derived directly from the acceptance criteria listed in the job JSON.",
+      "objections": "There is uncertainty about the current implementation state because the prompt provides no evidence of existing partial code or tests run. No source code or partial incremental deliveries were supplied, so the baseline for starting implementation is unknown. The prompt forbids substituting the game or ignoring requirements, which constrains scope strictly to what is described.",
+      "proposed_action": "Define the minimum playable game satisfying all acceptance criteria: create a canvas with a draggable salvage ship, cyan energy cores to collect that respawn, moving red debris to avoid, hull points that decrease on collision with damage feedback and temporary invulnerability, a timer counting to 60 seconds, a visible score, hull, and time readout, end screen showing results with a replay button, and implement pause and restart buttons with correct state management. Use simple Canvas shapes and polished colors as required. Implement keyboard controls in parallel. Expose the BORHEZ_GAME snapshot object per contract.",
+      "required_evidence": [
+        "Code files (index.html, game.js, game.css) implementing the described features",
+        "Automated test results validating the acceptance criteria (e.g., pointer drag moves ship, collection increments score and respawns core, red debris collision reduces hull with feedback and invulnerability, game ends after 60 seconds or hull zero, UI buttons function correctly)",
+        "Manual or automated snapshot outputs showing mode, time, score, and player coordinates during gameplay",
+        "Run logs or screenshots confirming one-minute gameplay with full feature set and replay capability"
+      ]
+    },
+    "researcher": {
+      "claim": "To create the original 'Neon Salvage' game, implement a one-minute mobile arcade game with a draggable salvage ship on a canvas, cyan energy cores to collect, moving red debris to avoid, and a 3-hull health system, including timer, score, and hit feedback, plus functional start, pause, and restart controls, and keyboard support.",
+      "rationale": "The job description and acceptance criteria explicitly require a touch-start-driven active run where dragging moves the ship, collection of cyan cores increases score and respawns cores, red debris collisions reduce hull with visible damage feedback and temporary invulnerability, a fixed 60-second run or zero-hull end condition with results display and immediate replay, plus pause functionality freezing the game state and restart resetting it. The canvas must use simple shapes, polished colors, and one-finger controls with keyboard support preserved. The contract mandates exposing the BORHEZ_GAME snapshot and UI controls with specific IDs, ensuring functional state transitions and accurate gameplay time accounting.",
+      "objections": "No existing source code or partial implementations were provided, so it is unclear whether any baseline code or logic exists to preserve. Without source, the implementation must start from scratch, meeting all job criteria exactly. Uncertainty about device compatibility or fine-tuning of invulnerability durations remains without physical test evidence. The lack of prior feedback or test results means potential edge cases (e.g., rapid collisions, pointer cancellation) must be anticipated but unverified.",
+      "proposed_action": "Develop from the ground up the canvas and game logic to: (1) create a responsive canvas sized for mobile with id='canvas'; (2) render a salvage ship movable by one-finger dragging and keyboard arrows/WASD; (3) spawn cyan cores that increment score on collection and respawn elsewhere; (4) animate moving red debris that damage the ship on collision and trigger visible feedback and temporary invulnerability; (5) manage hull starting at three, decreasing on damage until zero ends play; (6) run a 60-second timer counting elapsed game time, pausing and resuming with appropriate UI buttons; (7) display HUD for hull, time, and score on screen; (8) present end-of-run screen showing results and replay option; (9) implement pause and restart buttons with specified IDs that freeze and reset state respectively; (10) expose the global BORHEZ_GAME snapshot object reflecting current gameplay mode, elapsed time, score, and player position; (11) ensure keyboard and pointer cancellation support; and (12) style using simple shapes and polished colors as per requirements. Conduct local syntax checking and acceptance test runs before submission to ensure criteria fulfillment.",
+      "required_evidence": [
+        "Complete implementation files: index.html, game.js, game.css with the described functional features.",
+        "Automated acceptance test results confirming each acceptance criterion passes (pointer drag ship movement, core collection with score increment and respawn, red debris collisions cause hull damage with feedback and temporary invulnerability, game ends after 60 seconds or hull zero, UI controls work as specified).",
+        "BORHEZ_GAME snapshot outputs during gameplay reflecting mode, time, score, and player coordinates accurately.",
+        "Run logs or screenshots demonstrating full one-minute game session with correct UI and replay capability."
+      ]
+    },
+    "designer": {
+      "claim": "The core loop involves the player dragging a salvage ship with one finger to collect cyan energy cores and avoid moving red debris, managing hull integrity over a 60-second run, with clear feedback and UI controls for start, pause, and restart.",
+      "rationale": "The game prompt and acceptance criteria specify a one-minute arcade game where dragging moves the ship, collection increments score and respawns cores, collisions reduce hull with visual hit feedback and brief invulnerability, and the run ends after 60 seconds or zero hull. The UI shall clearly show remaining hull, time, and score. Controls must allow single-finger drag, tapping start to begin, pause toggling time and state freeze, and restart resetting progress. Keyboard support is preserved. The snapshot object exposes current mode, time, score, and player coordinates. Use of simple Canvas shapes and polished colors ensures clarity. The interaction is simple and accessible on mobile via dragging with one finger, harmonizing with the standard game contract.",
+      "objections": "No existing code or partial implementations were provided, so the baseline environment for integration and existing bug fixes is unknown. Without physical device verification or player testing, the timing and feel of feedback and invulnerability durations remain unvalidated. Potential edge cases like rapid collisions, pointer cancellation, or simultaneous inputs may present unknown challenges. Keyboard support alongside touch could complicate input handling. The minimalist UI must balance clarity and screen space, so iteration may be needed based on live player feedback.",
+      "proposed_action": "Implement the core gameplay loop on a responsive Canvas where the salvage ship is moved by one-finger drag or keyboard arrows/WASD. Spawn cyan energy cores that increase score and respawn randomly when collected. Animate moving red debris that cause hull damage upon collision with visible hit flashes and enforce a brief invulnerability timer to prevent rapid multiple hits. Initialize hull at three points, with the game ending on zero hull or at 60 seconds elapsed, displaying final score and a replay option. Provide UI elements with required IDs\u2014play to start, pause for toggling freeze, restart to reset game state. Display live hull, time, and score counters in polished colors and simple shapes for visibility and readability. Expose a global BORHEZ_GAME snapshot object reflecting current gameplay state. Ensure pointer cancellation and release events are handled gracefully. Maintain keyboard controls without conflicts. Keep controls and UI operable with one finger and minimal complexity.",
+      "required_evidence": [
+        "Implementation files (index.html, game.js, game.css) showing the described game mechanics and UI controls",
+        "Automated acceptance tests verifying: one-finger drag moves the ship, cyan core collection increments score and respawns, red debris collisions reduce hull with visible feedback and temporary invulnerability, game ends at zero hull or 60 seconds, UI buttons (play, pause, restart) function correctly, and keyboard input is supported",
+        "BORHEZ_GAME snapshot objects generated during play accurately reporting mode, elapsed time, score, and player coordinates",
+        "Run logs and/or screenshots capturing one-minute gameplay sessions with full UI elements and replay capability, demonstrating polished and playable game experience"
+      ]
+    },
+    "critic": {
+      "claim": "The current plan risks key failure modes compromising usability and correctness on mobile devices, including unresponsive start controls, fake progress indicators, poor touch input handling, ineffective pause and restart functions, viewport overflow issues, imbalanced gameplay difficulty, and missing prompt requirements such as clear hit feedback and accessible replay.",
+      "rationale": "The plan outlines implementing all required features but lacks detailed strategies addressing edge cases and mobile accessibility challenges. Specifically, the absence of explicit handling for unresponsive taps on the start button may prevent gameplay from beginning. Without robust detection, fake progress could occur if the game state does not truly advance when expected. Touch input on mobile requires careful management of pointer events and cancellations to avoid jittery or lost control of the salvage ship. Pausing and restarting must freeze and reset all timers and transient state properly to maintain game integrity but the plan offers no validation steps for these. Additionally, viewport overflow problems may arise on diverse screen sizes if canvas scaling and UI positioning are not explicitly managed. Game balance may be skewed without concrete timing for invulnerability or debris speed, risking frustrating difficulty or triviality. Finally, the prompt demands visible hit feedback, HUD elements, results screen, and replay capability\u2014all must be seamlessly integrated and tested but the plan admits no fallback or verification measures if these fail users\u2019 expectations.",
+      "objections": "The plan assumes implementing all features from scratch will inherently satisfy acceptance criteria but does not incorporate targeted mitigation for mobile quirks like touch pointer cancellation, laggy input, or screen size variability. It presumes keyboard and touch can coexist without conflict though these input modalities have fundamentally different event models. The brief runtime (60 seconds) leaves little margin for error or delays, increasing risk of miscounted time or premature game over. Invulnerability timing and hit feedback are asserted but not quantified, which may yield unclear visual cues or gameplay imbalance. No testing procedures or fallback UI states for unanticipated failures (e.g., pointer loss mid-drag) are described. Finally, it is unclear how the replay mechanism will handle immediate restart without visual or audio glitches.",
+      "proposed_action": "Incorporate explicit failure case testing and safeguards into the implementation plan: (1) Validate the start button reliably triggers game start on tap with debounced event handling to prevent unresponsive or multiple starts; (2) Confirm game time truly progresses only during active runs to avoid fake progress display; (3) Implement robust touch input handling including pointer cancellation, touchmove smoothing, and prevention of event conflicts to ensure responsive ship dragging; (4) Ensure pause freezes timers, animations, and input, with visible UI states, and that restart resets all game state fully, verified by automated state snapshot comparisons; (5) Design canvas and UI elements to scale or reposition neatly on various viewport sizes to avoid overflow or clipped displays; (6) Tune debris speed, invulnerability duration, and scoring increments for balanced challenge through empirical testing; (7) Provide clear and distinct visual hit feedback animations visible on mobile displays; (8) Integrate a readable end-of-run results screen with immediate replay button that resets state cleanly and smoothly; (9) Thoroughly test keyboard and touch coexistence to prevent input conflicts; (10) Capture and review game state snapshots at all modes ensuring compliance with the BORHEZ_GAME contract and accurate reflection of mode, time, score, and player position; (11) Use automated acceptance tests and manual exploratory tests focused on these failure modes before delivery.",
+      "required_evidence": [
+        "Automated and manual test results demonstrating touch start reliably initiates gameplay without unresponsiveness",
+        "Evidence showing that game time and score only advance during active running state and do not fake progress during pause or inactive states",
+        "Test logs or recordings confirming robust handling of touch input events, pointer cancellation, and fluid dragging without loss of control",
+        "Validation that pause and restart controls properly freeze and reset game timers, state, and UI with no residual effects",
+        "Responsive layout tests or screenshots verifying canvas and HUD elements do not overflow or clip on various viewport sizes",
+        "Gameplay balance assessment reports detailing invulnerability duration and debris speed tuning with user feedback or simulation",
+        "Visual proof such as screenshots or videos of clear hit feedback, consistent HUD displays showing hull, time, and score during gameplay",
+        "Demonstrations of the end-of-run screen with readable results and working replay button that resets game state smoothly",
+        "Tests showing keyboard and touch input coexistence without input drop or conflicts",
+        "BORHEZ_GAME snapshot logs from multiple gameplay phases confirming correct mode, elapsed time, score, and player coordinates reflecting actual game state"
+      ]
+    },
+    "engineer": {
+      "claim": "Implement a complete, responsive mobile arcade game 'Neon Salvage' per job requirements, ensuring robust input handling, accurate game state management, visual clarity, and full lifecycle controls including start, pause, restart, and replay.",
+      "rationale": "The game contract and acceptance criteria mandate one-finger drag control of a salvage ship on a mobile-optimized canvas to collect cyan cores (increasing score) and avoid moving red debris (which damages hull). The player must survive 60 seconds with three hull points, with visible damage feedback, HUD elements for score/time/hull, and reliable pause/restart buttons. Keyboard input must coexist with touch. The global BORHEZ_GAME snapshot must accurately reflect the current mode, elapsed time, score, and player position. Robust handling of pointer events, including cancellation, and UI scaling for varied viewports is crucial to maintain usability and meet acceptance tests.",
+      "objections": "Uncertainty exists about subtle edge cases such as rapid collision detection accuracy, exact invulnerability timings, and pointer cancellation handling which are key for fluid gameplay but cannot be preverified here. The plan to implement from scratch risks missing mobile device quirks unless explicit safeguards and validations are included. Coexistence of keyboard and touch input can lead to input conflicts without careful design. The replay mechanism and visual hit feedback require precise synchronization to avoid user confusion or glitches. Responsive UI scaling must be verified across device sizes to prevent clipping or overflow.",
+      "proposed_action": [
+        "Create or edit index.html, game.js, and game.css to define a mobile-optimized canvas with id='canvas' that fits the viewport.",
+        "Implement the salvage ship drawn with simple shapes, movable by one-finger drag and keyboard arrows/WASD, handling pointer cancellation and smooth dragging.",
+        "Spawn cyan energy cores that increment score upon collection and respawn randomly, ensuring the core cannot be collected multiple times simultaneously.",
+        "Animate red debris moving randomly; on collision with the ship, decrement hull if not currently invulnerable, trigger visible red hit feedback (e.g., flash or color change), and start a short invulnerability timer to prevent repeated damage from continuous contact.",
+        "Initialize hull to three points, decrement on damage, and end the run either after 60 seconds elapsed or zero hull, displaying a clear end-of-run screen with score and replay button that resets game state cleanly.",
+        "Implement UI elements with specified IDs: 'play' to start game on tap, 'pause' to toggle pause/resume freezing game time and animations, and 'restart' to reset time, score, hull and transient state.",
+        "Ensure the HUD displays current hull points, elapsed time (counting only during active run), and score with polished, readable colors and text.",
+        "Expose window.BORHEZ_GAME as a read-only snapshot object accurately reporting mode ('ready', 'running', 'paused', 'over'), elapsed time in seconds, score, and player coordinates from actual game state.",
+        "Implement robust event handling for pointer events, including cancellation and release, to maintain responsive dragging and input.",
+        "Support keyboard input alongside touch without conflicts.",
+        "Tune timing parameters such as invulnerability duration and debris speed for balanced challenge and user experience.",
+        "Ensure responsive layout and UI scaling to avoid viewport overflow or clipped elements on various mobile screen sizes.",
+        "Run local syntax checks (e.g., node --check) and the provided acceptance tests before submission.",
+        "Perform manual exploratory testing focused on edge cases like rapid collisions, pause/restart behavior, input event robustness, and replay smoothness."
+      ],
+      "required_evidence": [
+        "Submitted implementation files (index.html, game.js, game.css) implementing full described functionality consistent with the job contract.",
+        "Automated acceptance test results confirming: game start via tap, one-finger drag moves ship, cyan core collection increments score and respawns, red debris collisions reduce hull with visible hit feedback and temporary invulnerability, game ends correctly after 60 seconds or zero hull, and UI buttons (play, pause, restart) operate correctly.",
+        "Snapshots of window.BORHEZ_GAME during different game modes showing accurate mode, time, score, and player position from actual game state.",
+        "Logs or screenshots demonstrating full one-minute gameplay with correct HUD display and end-of-run result screen with replay functionality.",
+        "Evidence of robust touch input handling, pointer cancellation, and smooth drag behavior from logs or recordings.",
+        "Validation that pause freezes gameplay timers and input, and restart resets the game completely with no residual state.",
+        "Responsive layout tests or screenshots confirming no viewport overflow or UI clipping on different device sizes.",
+        "Demonstrations of keyboard input coexistence with touch input without input conflicts or loss."
+      ]
+    }
+  },
+  "qa": {
+    "claim": "The Neon Salvage game build meets the prompt requirements and provides a playable isolated preview with real one-minute arcade gameplay.",
+    "rationale": "The supplied source files (index.html, game.js, game.css) implement the requested game using Canvas 2D with simple shapes and colors. Gameplay elements include moving a salvage ship via dragging or keyboard keys, collecting cyan cores (+10 score each), avoiding moving red debris that causes hull damage with visual hit feedback, a 60-second run timer, three hull points, visible HUD (score, time left, hull), and an overlay that communicates status and allows immediate replay. The game logic was verified by a Node VM harness simulating full gameplay, including starting, moving, collecting, collisions, invincibility frames, pausing, resuming, restarting, and run completion at 60 seconds or hull zero. Two desktop Chromium browser runs with touch/mobile emulation showed all acceptance tests passing, including touch start, game time progression, actor movement, canvas changes, pause, resume, restart, visible run identity, and no failed resources, indicating the working interactive preview. The coder's report confirms all requested behaviors are present and states UI updates and reduced motion mode are handled. The code is self-contained without external dependencies and matches the requested controls and visual style. The overlay provides a readable end result and immediate replay options.",
+    "objections": "No physical device testing was performed, leaving uncertain if touch input and rendering behave perfectly on real mobile hardware. The Chromium desktop emulation cannot fully validate native device performance or gesture nuances. Server deployment is unverified due to failed local server attempts, so the build version remains marked as LOCAL BUILD rather than a stamped official identity, which is an administrative limitation but not a gameplay failure. Visual rendering details rely on emulator screenshots and code review without independent QA confirmation. Since no real device or human playtesting occurred, fun factor and tactile feel remain uncertain, but these are outside the prompt's automated proof scope.",
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The game implements all requested gameplay elements with proper Canvas rendering and interactive controls demonstrated by actual browser test runs passing required acceptance criteria. The VM harness and manual code inspection confirm correctness of game logic, state management, and UI feedback. Despite absence of physical mobile device tests, the high-fidelity desktop Chromium emulation evidence supports that the prompt is implemented and playable as an isolated preview.",
+      "criteria_results": {
+        "touch_start_begins_active_run": true,
+        "dragging_moves_ship": true,
+        "collecting_cyan_core_increases_score_and_replaces_core": true,
+        "red_debris_collision_reduces_hull_and_provides_feedback_with_invulnerability": true,
+        "run_ends_after_60_seconds_or_zero_hull_with_score_and_replay": true,
+        "pause_freezes_game_and_restart_resets_state": true
+      },
+      "remaining_limitations": [
+        "No physical device testing performed to confirm native touch delivery and rendering on mobile hardware.",
+        "No independent QA or human gameplay verification to assess user experience and fun factor.",
+        "Server deployment and official build stamping remain unverified due to sandbox restrictions."
+      ]
+    },
+    "required_evidence": [
+      "Physical device testing results verifying native touch responsiveness, gameplay fidelity, and UI rendering on real mobile phones.",
+      "Independent QA or user testing feedback confirming usability, playability, and fun.",
+      "Deployment confirmation with correct build version stamping to ensure production readiness."
+    ]
+  },
+  "acceptance": {
+    "run_id": "42084112851-1",
+    "request_id": "neon-salvage-create-001",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.133299999999998,
+        "player_displacement": 54.183424520952634,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0973999999999975,
+        "player_displacement": 58.87972896685592,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Neon Salvage implementation report\n\nCreated `docs/games/neon-salvage/index.html`, `game.css`, and `game.js`. There was no existing target directory. Read job.json, plan.json and feedback.md (empty feedback array); no prior gate.log was present.\n\n## Delivered behavior\n\n- Original self-contained Canvas arcade game with a dark star-grid arena, salvage ship, cyan diamond cores and red polygon debris. Uses only local JS/CSS and Canvas shapes.\n- Launch button (`play`) begins a real active run. One-finger canvas drag steers the ship at bounded speed; arrows/WASD also move it. Pointer capture, release, cancellation, and lost capture are handled. Only canvas gameplay gestures suppress browser gestures.\n- Five cyan cores each award 10 points on contact and are replaced elsewhere.\n- Six moving, bouncing debris hazards remove one of three hull points on contact. A red arena border, ship color and hit text show damage; a protective ring remains during 1.4 seconds of invulnerability. Difficulty increases gradually.\n- Visible score, remaining time and numeric hull. Run ends at 60 seconds or zero hull with a readable outcome, score, survival time, hull and immediate replay.\n- Pause toggles resume and freezes simulation, elapsed time and effects. Restart resets score, time, hull, player, objects, effects, protection and input into a running session. Backgrounding pauses automatically.\n- Responsive phone layout, real accessible HTML buttons and reduced-motion support (no collectible pulse or particle bursts). No screen shake.\n- `build-version` initially contains LOCAL BUILD and is never changed by game JS.\n- Frozen `window.BORHEZ_GAME` exposes new plain snapshots from actual state: mode, time, score, player, plus hull, invincibility and copied object positions for observation. No state mutation interface.\n\n## Checks actually run\n\n- `node --check docs/games/neon-salvage/game.js`: passed.\n- `curl -I http://127.0.0.1:8765/games/neon-salvage/`: connection refused; supplied server was not listening.\n- `node /tmp/neon-server.cjs`: temporary static server attempt failed with sandbox EPERM binding 127.0.0.1:8765. It would have stamped the build identity only in the HTTP response; source remains LOCAL BUILD.\n- `node game_factory/mobile_acceptance.cjs`: blocked before gameplay by Chromium launch failure, SIGTRAP with socket `setsockopt: Operation not permitted`. No browser acceptance pass is claimed. The check generated its own acceptance.json error evidence.\n- `node /tmp/neon-check.cjs`: passed a temporary Node VM harness executing the actual unmodified game script with DOM/Canvas stubs and simulated animation timestamps. Assertions covered ready/start, fresh frozen diagnostics, drag/cancel, pause state equality over simulated time, resume, restart resets, collecting and replacing a core, collision damage, protection across another half-second of contact, zero-hull loss/result, replay, full 60-second survival/result, and keyboard movement. Survival snapshot: mode over, time 60, score 50, hull 3. Harness inputs steered the actual ship; no game state or diagnostic values were overridden.\n\n## Limitations\n\nThe VM harness validates game logic, not browser rendering or native touch delivery. Browser visual checks, responsive screenshots and physical-phone checks remain unverified because of environment restrictions. No deployment or independent QA approval is claimed. Balance has been exercised by simulated play, not human phone playtesting.\n"
+}
