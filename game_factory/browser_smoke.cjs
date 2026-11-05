@@ -8,7 +8,7 @@ const path = require('path');
     const page = await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
     const errors=[];
     page.on('pageerror', e=>errors.push(e.message));
-    await page.goto(pathToFileURL(path.resolve('docs/preview/index.html')).href);
+    await page.goto(process.env.CATACLYSM_TEST_URL || pathToFileURL(path.resolve('docs/preview/index.html')).href);
     await page.locator('#play').click();
     await page.waitForTimeout(300);
     if(!(await page.locator('#start-overlay').isHidden())) throw Error('Start overlay did not dismiss');
