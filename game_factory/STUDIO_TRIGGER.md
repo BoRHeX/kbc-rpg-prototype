@@ -7,3 +7,5 @@ Activation retry after workflow YAML correction. Priority: reproduce and fix unr
 Third activation: preview baseline present; browser smoke test now uses HTTP. Produce the first autonomous tested gameplay iteration and report actual outcomes.
 
 Retry after screenshot-confirmed implementer patch-contract failure. Normalize edit format and allow bounded repair attempts. Verify full game build before publishing.
+
+2026-11-05: Human tester filed P0 issue #29 with gameplay-feedback label. Prioritize reproducing the Start Run button failure before other game changes. Reject green workflow as proof of playability without actual mobile interaction evidence.
