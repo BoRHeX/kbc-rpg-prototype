@@ -34,7 +34,7 @@
         <div class="overline">BO RHEZ ARCADE · EPISODE 001</div>
         <h2 id="overlay-title">MIDNIGHT SURVIVAL</h2>
         <p id="overlay-copy">Drag to move your cat. Dodge zombies, collect fish, and fire automatically at nearby threats. Survive as long as you can.</p>
-        <button id="play" class="primary">▶ START RUN</button>
+        <button id="play" type="button" class="primary">▶ START RUN</button><small id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px;max-width:290px"></small>
         <small id="best">BEST RUN: —</small>
       </div>
       <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
@@ -63,5 +63,15 @@
   </section>
 </main>
 <footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
-<script src="./game.js" defer></script>
+<script>
+window.addEventListener('error', function(event) {
+  var status=document.getElementById('runtime-status');
+  if(status){status.hidden=false;status.textContent='Game error: '+(event.message||'script failed to load');}
+});
+window.addEventListener('unhandledrejection', function(event) {
+  var status=document.getElementById('runtime-status');
+  if(status){status.hidden=false;status.textContent='Game error: '+String(event.reason||'unhandled promise');}
+});
+</script>
+<script src="./game.js?v=20261105-2" defer onerror="document.getElementById('runtime-status').hidden=false;document.getElementById('runtime-status').textContent='Game code failed to load. Please reload.'"></script>
 </body></html>
