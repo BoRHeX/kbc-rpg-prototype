@@ -37,6 +37,8 @@ For a NEW game:
 - Pausing freezes elapsed game time. Resume continues it. Restart resets time,
   score and transient state. Handle pointer cancellation and release.
 - Keep keyboard support (arrows/WASD) alongside touch input.
+- If you use the optional JSON configuration, fetch it with `cache: 'no-store'`
+  so an updated game cannot silently reuse an older configuration.
 
 For Cataclysm updates, preserve its existing control and diagnostic interfaces;
 its independent acceptance suite is selected automatically.

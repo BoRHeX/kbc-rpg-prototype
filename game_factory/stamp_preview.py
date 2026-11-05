@@ -29,6 +29,11 @@ def stamp(directory: Path, run_id: str, source_sha: str = "") -> None:
     )
     if count != 1:
         raise ValueError("Expected exactly one runtime build label")
+    content = re.sub(
+        r'((?:src|href)=["\'])(\./)?(game\.(?:js|css))(?:\?[^"\']*)?(["\'])',
+        lambda m: m[1] + (m[2] or "") + m[3] + "?build=" + run_id + m[4],
+        content,
+    )
     page.write_text(content)
     (directory / "BUILD_INFO.json").write_text(json.dumps({
         "run_id": run_id, "source_sha": source_sha,

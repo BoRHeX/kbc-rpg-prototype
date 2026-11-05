@@ -17,6 +17,8 @@ class ReleaseTests(unittest.TestCase):
             content = page.read_text()
             self.assertIn('data-run="AI PLAYTEST BUILD 456-2"', content)
             self.assertNotIn("123-1", content)
+            self.assertIn('game.js?build=456-2', content)
+            self.assertIn('game.css?build=456-2', content)
             self.assertIn(".dataset.run + ' · CODE ' + build", content)
             self.assertEqual(json.loads((directory / "BUILD_INFO.json").read_text())["run_id"], "456-2")
 
