@@ -1,0 +1,92 @@
+name: Publish previously accepted Cataclysm build
+on:
+  push:
+    branches: [main]
+    paths: ['game_factory/PUBLISH_ACCEPTED_TRIGGER.md']
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Successful develop run containing cataclysm-accepted-preview'
+        required: false
+        default: '42010567811'
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: cataclysm-game-studio
+  cancel-in-progress: false
+
+jobs:
+  publish-accepted:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ACCEPTED_RUN_ID: ${{ inputs.run_id || '42010567811' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch EXACT accepted and browser-tested artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-accepted-preview
+          run-id: ${{ env.ACCEPTED_RUN_ID }}
+          github-token: ${{ github.token }}
+          path: .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent browser test dependencies
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify accepted artifact again over HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/preview/index.html
+          test -s docs/preview/game.js
+          node --check docs/preview/game.js
+          python -m http.server 8765 --directory docs >/tmp/cataclysm-http.log 2>&1 &
+          sleep 2
+          CATACLYSM_TEST_URL=http://127.0.0.1:8765/preview/ node game_factory/acceptance_gate.cjs | tee /tmp/cataclysm-verification.txt
+      - name: Stamp real tested build and preserve audit trail
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os,re
+          from pathlib import Path
+          run=os.environ['ACCEPTED_RUN_ID']
+          html=Path('docs/preview/index.html')
+          content=html.read_text()
+          content,n=re.subn(r'(<div\s+class="version"[^>]*>)[^<]*(</div>)',
+              lambda m:m.group(1)+'AI PLAYTEST BUILD '+run+m.group(2),content,count=1)
+          if n!=1: raise SystemExit('Missing version label')
+          content=content.replace(
+              "document.getElementById('build-version').textContent = 'CODE BUILD · ' + build;",
+              "document.getElementById('build-version').textContent = 'AI PLAYTEST '+"
+              +repr(run)+" + ' · CODE ' + build;")
+          html.write_text(content)
+          Path('docs/preview/BUILD_INFO.txt').write_text(
+              'Run '+run+'\nAutomated mobile browser acceptance: PASSED\n'
+              'Samsung physical-device acceptance: NOT YET VERIFIED\n')
+          PY
+          cp /tmp/cataclysm-verification.txt game_factory/QA_VERIFICATION.txt
+          node --check docs/preview/game.js
+      - name: Publish accepted preview and Council evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ AI Game Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview game_factory/AGENT_PLAN.md game_factory/AGENT_QA.md game_factory/CODER_REPORT.md game_factory/QA_VERIFICATION.txt
+          git diff --cached --check
+          git commit -m "Publish tested autonomous Cataclysm build $ACCEPTED_RUN_ID"
+          git push origin HEAD:main
+          echo 'Verified and published Cataclysm AI build '$ACCEPTED_RUN_ID >> "$GITHUB_STEP_SUMMARY"
+          echo 'Preview: https://borhex.github.io/kbc-rpg-prototype/preview/' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Physical Samsung confirmation still required' >> "$GITHUB_STEP_SUMMARY"
