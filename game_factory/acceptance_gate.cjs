@@ -20,7 +20,7 @@ async function testPlatform(browser,label,userAgent) {
     if(!await page.locator('#start-overlay').isHidden()) throw Error('Touch START RUN did not dismiss overlay');
     await page.waitForTimeout(1400);
     const time=(await page.locator('#time').innerText()).trim();
-    if(time==='00:00' || !/^\\d\\d:\\d\\d$/.test(time)) throw Error('Timer did not advance after touch start: '+time);
+    if(time==='00:00' || !/^\d\d:\d\d$/.test(time)) throw Error('Timer did not advance after touch start: '+time);
     const canvas=page.locator('#canvas'), rect=await canvas.boundingBox();
     if(!rect) throw Error('Canvas not visible');
     const x=rect.x+rect.width*.45, y=rect.y+rect.height*.55;
