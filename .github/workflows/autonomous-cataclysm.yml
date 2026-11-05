@@ -56,6 +56,14 @@ jobs:
         run: |
           test -n "$OPENAI_API_KEY"
           python -m game_factory.autonomous_studio
+      - name: Preserve failed-cycle diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-cycle-diagnostics
+          path: game_factory/AUTONOMOUS_REPORT.md
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Preserve agent memory
         if: always()
         uses: actions/upload-artifact@v4
