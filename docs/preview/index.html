@@ -64,6 +64,7 @@
 </main>
 <footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
 <script>
+window.addEventListener('load', function(){ setTimeout(function(){ if(!window.CATACLYSM_READY){var status=document.getElementById('runtime-status');if(status){status.hidden=false;status.textContent='Game script did not initialize. Reload this page or open it in Chrome.';}} },2000); });
 window.addEventListener('error', function(event) {
   var status=document.getElementById('runtime-status');
   if(status){status.hidden=false;status.textContent='Game error: '+(event.message||'script failed to load');}
