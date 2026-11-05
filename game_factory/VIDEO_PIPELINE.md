@@ -28,3 +28,45 @@ The source folder is currently `1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K`. The initial 
 - Generated issues are evidence for developers, not proof that a bug exists.
 - Workflow needs repository Actions permission to create issues.
 - Current workflow requires the four secrets before it can execute; installing code alone does not authorize Google Drive.
+
+## Automatic handoff to Mobile Minigame Studio
+
+The video workflow preserves its normal QA issue, transcript and highlight,
+then calls `game_factory/video_bridge.py`. A separate small GPT-4.1-mini
+JSON-mode call proposes one conservative **update** from the report, transcript
+and sampled visual observations. The existing studio request schema is validated
+using `game_factory.mobile_jobs.validate_request`.
+
+**Filename is the game identity.** Rename the Drive recording to
+`<existing-game-id>__<anything>.mp4`, for example
+`neon-salvage__samsung-session-02.mp4` or
+`studio-original-001__peach-feedback.mp4`.
+The prefix must exactly match an existing game ID under `docs/games/`;
+`cataclysm__...` maps to `docs/preview/`. Unidentified videos still get
+a QA issue, but cannot trigger game changes. AI never chooses the target ID.
+
+When actionable feedback exists, the review file ID deterministically becomes
+a `yt-<24-hex>` job ID. The bridge writes `studio_request.json`, checks that
+no other request is pending, commits `game_factory/requests/current.json` on
+`main`, then sends `repository_dispatch` with event type
+`borhez-video-review`. **This explicit dispatch is necessary** because a
+push made with the workflow's `GITHUB_TOKEN` does not trigger the studio's
+normal push workflow. The studio reads the committed request and performs
+its existing planning, Codex coding, acceptance, QA and Pages publication.
+
+Non-actionable reviews generate no game job. Identical Drive file IDs produce
+the same request ID; accepted jobs do not run again. A different outstanding
+job is never overwritten. The bridge's last state and proposed request are
+also stored as 30-day workflow artifacts when produced.
+
+The source media is never intentionally uploaded as an artifact. The upload
+allowlist includes only recording metadata, transcript, review, proposed
+request, handoff status and the edited highlight. On failed runs, the runner
+is discarded.
+
+**Boundaries:** The schedule processes the newest video, not a guaranteed
+FIFO queue. One outstanding request is supported at a time; a new review
+arriving while one is pending fails safely rather than replacing it. The
+bridge currently creates **updates only**, not brand-new game concepts.
+A successful dispatch does not itself prove studio acceptance or successful
+public deployment. Check the studio result receipt and delivery workflow.
