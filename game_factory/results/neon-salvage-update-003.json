@@ -1,0 +1,219 @@
+{
+  "request": {
+    "id": "neon-salvage-update-003",
+    "game": "neon-salvage",
+    "mode": "update",
+    "title": "Neon Salvage",
+    "prompt": "Implement the next studio task from phone gameplay review #34 in the existing Neon Salvage game: make each earned pickup reward readable while dragging. Show a short, legible label such as '+10 \u00b7 x1' or '+20 \u00b7 x2' above the collected core, offset from the touch point and clamped inside the arena. Use the points and multiplier actually awarded BEFORE the existing multiplier advances; the NEXT CORE HUD continues to show the next reward multiplier. Keep the number and lifetime of labels bounded. Labels must not intercept touch, obscure the ship, or cover the HUD. Respect reduced motion with a stationary alternative. Pause freezes feedback lifetimes, and restart/replay clears them. Preserve the scoring rules, x5 cap, damage/reset behavior, hull, one-minute end conditions, controls, layout and existing game URL. Extend the existing read-only snapshot with a copied pickupFeedback array (points, multiplier, x, y, ttl) from actual live feedback state so the feature can be checked without state mutation. Read review #34 as evidence; the recording's time discontinuity is not a confirmed timer defect. Run the existing Neon Salvage logic harness and document your actual feature checks. Deliver a tested update of this game.",
+    "acceptance": [
+      "The first two pickups visibly report +10 at x1 and +20 at x2 using the awarded multiplier; capped pickups report +50 at x5. Existing NEXT CORE progression and scoring stay correct.",
+      "Reward labels are legible above the pickup/touch location, stay inside the playable area, and do not intercept touch input or obscure the ship or HUD.",
+      "Feedback is bounded in count and lifetime, freezes while paused, expires during play, and clears on restart/replay. Reduced-motion mode keeps the reward readable without floating animation.",
+      "The read-only diagnostic snapshot exposes fresh copies of actual pickupFeedback state for verification; it cannot mutate gameplay.",
+      "Run node --check for game.js, node game_factory/check_neon_logic.cjs, and concrete pickup-feedback checks; retain functional mobile start/drag/pause/resume/restart and the 60-second result flow."
+    ]
+  },
+  "target": "docs/games/neon-salvage",
+  "run_id": "42095781288-1",
+  "base_manifest": {
+    "BUILD_INFO.json": "ff70002ac738efd6d8810fa4a473169096355cf51227395035f79e93cefd2fb6",
+    "game.css": "10de3f8f088e6c42f7485165865b8d0cfbecffaf6c36dbe0545d3b1d92c16885",
+    "game.js": "f23c0f1fc7607de2ec6dff6e07e2fa52bc78d5513d94311ee6137b69ea87da19",
+    "index.html": "7959ef5a8c2106ac52011db9b26cd708d91c6d12beed7aa40894dfd1ede3f1f0"
+  },
+  "request_digest": "83c87a0feca862e545036b8d71f7d20edc9c6131d19e534e07bb2850abdb02ac",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "111bae540dedc30d72a7a99c4d7042834b1950241ab3271081e6bbc4babc0c40",
+    "game.css": "10de3f8f088e6c42f7485165865b8d0cfbecffaf6c36dbe0545d3b1d92c16885",
+    "game.js": "329689458faca5885924228828fb779a8474f17e3a0a464af8434b9547678f37",
+    "index.html": "29d78628b99dbb68212026fcacf6811cc53cdf45dbc7627b1040bd816f97436e"
+  },
+  "play_path": "games/neon-salvage/",
+  "plan": {
+    "producer": {
+      "claim": "Implement a pickup reward feedback system in Neon Salvage that visually displays the exact points and multiplier earned upon collecting a core while dragging, without disrupting existing gameplay mechanics or UI elements.",
+      "rationale": "The request specifies a concise, legible floating label such as '+10 \u00b7 x1' or '+20 \u00b7 x2' above the collected core, offset from the touch point, clamped inside the arena, and showing the awarded points and current multiplier before advancement. Labels should be bounded in number and lifetime, not intercept touch, obscure the ship or HUD, respect reduced motion mode with a stationary alternative, and freeze lifetimes during pause. The existing NEXT CORE HUD should continue displaying the next multiplier. Restart/replay clears all feedback labels. Extend the existing readonly snapshot with a copied pickupFeedback array for verification. Scoring rules, multiplier cap, damage/reset behavior, controls, HUD layout, and the one-minute session must remain unchanged. The update must be tested with automated logic checks and real gameplay simulation as per existing studio workflows.",
+      "objections": "Uncertainty exists whether the label positioning near the finger can always stay inside the arena and not overlap disallowed UI or gameplay elements on small screen sizes or during fast dragging. Potential performance impact from managing multiple feedback labels especially on low-end devices is not clearly addressed. The precise visual style, font size, color, and animation details must be carefully balanced for legibility and accessibility, including reduced motion mode compliance. Existing live snapshot extension must be implemented carefully to avoid unintended mutation of gameplay state. No prior code or independent QA evidence of pickup feedback implementation is present in the source, so this is untested new functionality. Physical device testing and independent QA validation remain necessary to confirm robustness and user experience.",
+      "proposed_action": "Scope and implement a pickup feedback label system that meets all described criteria: floating reward labels appear and fade above the pickup location offset from the touch point; they show awarded points and multiplier before increment; they cap count and lifetime; they pause when game is paused and clear on restart/replay; they respect reduced motion preference showing stationary labels; they never intercept input or obscure key elements; and they extend the snapshot with a copied pickupFeedback array reflecting current feedbacks. Verify by automated logic tests, manual gameplay runs, and snapshot inspections. No other gameplay or UI changes beyond this functionality. Measure completion by passing the provided acceptance criteria and correctness checks, including visible labels for the first few pickups matching awarded points, bounded label count, freeze on pause, clearing on restart, and snapshot exposure without mutations.",
+      "required_evidence": [
+        "Automated test results from running node game_factory/check_neon_logic.cjs confirming no breakage of existing game logic and correct pickup feedback behavior.",
+        "Manual gameplay verification recording or logs demonstrating visible pickup feedback labels corresponding exactly to the awarded points and multiplier before increment.",
+        "Screenshots or video demonstrating labels positioned inside arena, offset from touch point, not intercepting input, obscuring ship or HUD.",
+        "Demonstration of labels pausing when the game is paused and clearing promptly on restart/replay.",
+        "Snapshot JSON output from window.BORHEZ_GAME.snapshot showing a copied, read-only pickupFeedback array accurately reflecting active feedback labels during play.",
+        "Confirmation that reduced motion preference disables animation and uses stationary labels, verified by toggling system setting or equivalent simulation."
+      ]
+    },
+    "researcher": {
+      "claim": "The current Neon Salvage game implements core gameplay and scoring with a salvage-chain multiplier, showing NEXT CORE HUD updates, and supports pause, restart, keyboard and touch controls, one-minute sessions, and hull management.",
+      "rationale": "The supplied source code and prior update reveal a game where the player drags a salvage ship in a 360x480 arena, collecting cyan cores for 10 points times the current multiplier, which increases by 1 per pickup capped at x5. Colliding with red debris reduces hull by 1 and resets multiplier to x1 with a visible 'CHAIN LOST \u00b7 RESET TO x1' HUD message. Time counts down from 60 seconds; when zero or hull reaches 0 the game ends with a message and replay option. Controls include pointer drag and WASD/arrows. HUD elements show score, time, multiplier, hull, and chain loss feedback. The game state snapshot includes non-mutating copies of position, score, time, hull, multiplier and arrays of cores and debris. Pause freezes time and simulation, while restart resets game state. The prior QA evidence includes multiple automated and headless browser tests confirming these behaviors, and physical device video showing correct HUD updates and damage reset feedback. The code uses no external assets or dependencies, drawing all elements with Canvas 2D. Reduced motion preference disables animations on cores and sparks, maintaining accessibility. The next update task is to add legible pickup feedback labels near touch points reflecting awarded points before multiplier increment, while preserving all existing mechanics and respecting layout constraints.",
+      "objections": [
+        "No current implementation of pickup reward feedback labels is present; this is untested new functionality introducing UI elements near touch points, which may cause overlapping or occlusion issues or performance impact on low-end devices.",
+        "Positioning labels inside the arena while offset from touch and avoiding ship, HUD, or intercepting input is complex and not yet demonstrated.",
+        "The snapshot extension of pickup feedback states must be carefully done to avoid mutating live game state, yet this has no existing sample code or test results.",
+        "The reduced motion mode compliance for the new labels requires verification with system preference toggling or simulation.",
+        "Physical device and independent QA testing evidence for the pickup feedback feature is missing and still required for production readiness."
+      ],
+      "proposed_action": "Implement a pickup feedback system that spawns short-lived, legible labels above collected cores, offset from the pointer and clamped inside the arena boundaries to avoid interference with the ship and HUD. These labels show the awarded points (e.g. '+10 \u00b7 x1') before multiplier increment. Limit the number of simultaneous labels and their lifetime, pausing lifetime decrements while the game is paused and clearing labels on restart/replay. Respect reduced motion by omitting floating animation and using stationary labels. Ensure labels have pointer-events disabled to not intercept touch input. Extend the game state snapshot to include a copied, read-only pickupFeedback array with points, multiplier, x, y, and ttl for external verification. Preserve all existing game mechanics, scoring rules, controls, HUD layout, and one-minute session behavior. Perform automated logic tests, run manual gameplay tests (including pause, restart), inspect snapshots, and validate reduced motion compliance. Provide evidence by passing node --check on game.js, headless browser runs, and by demonstrating visible pickup feedback labels as specified without regressions.",
+      "required_evidence": [
+        "Automated test results from node game_factory/check_neon_logic.cjs showing no existing logic breakage and correct pickup feedback behavior.",
+        "Manual gameplay logs or recordings demonstrating visible pickup labels showing awarded points and multiplier before increment, positioned inside the arena and offset from the touch point without obscuring ship or HUD.",
+        "Screenshots or video proving labels do not intercept touch, and multiple labels are bounded in count and lifetime.",
+        "Evidence that feedback lifetimes pause during game pause and clear on restart/replay.",
+        "Snapshot JSON output from window.BORHEZ_GAME.snapshot including a copied pickupFeedback array consistent with active feedback labels, presented as a read-only data structure.",
+        "Verification that reduced motion preference disables label animation and shows stationary pickup feedback, confirmed by toggling system preference or equivalent method."
+      ]
+    },
+    "designer": {
+      "claim": "Neon Salvage\u2019s core loop is a 60-second one-finger drag control to move a salvage ship around a 360x480 arena, collecting cyan cores for increasing score with a salvage-chain multiplier, while avoiding moving red debris that damages hull; the game provides clear visual feedback on pickups, damage, multiplier, and end conditions, supporting pause, restart, and respecting system reduced motion.",
+      "rationale": "The game runs continuously when started, updating player position towards a single touch point or keyboard input at a consistent speed, clamped inside arena bounds. Collecting a core awards 10 points times the current multiplier, which increments by 1 capped at x5; pickup feedback labels show awarded points and multiplier before increment, positioned near the touch but clamped inside the arena without obstructing ship, HUD, or intercepting input. Damage resets multiplier, reduces hull by one, shows chaining loss feedback, and activates invincibility frames. Visual feedback includes flashing hit effects, spark bursts on pickup and damage, HUD updates for score, time, multiplier, hull, and chain loss messages. Pausing freezes game time and feedback lifetimes; restarting resets all game state and clears feedback. Reduced motion mode disables floating animations for cores, sparks, and pickup labels for accessibility. Keyboard and touch controls coexist. The game exposes a read-only snapshot of state including a copied pickupFeedback array for external verification. The implementation preserves all original mechanics, UI layout, and scoring rules as per the studio contract.",
+      "objections": [
+        "Exact positioning of pickup feedback labels near touch points could sometimes risk overlapping with ship or HUD elements on small or unusual screen sizes; careful clamping may not resolve all edge cases.",
+        "Management of multiple simultaneous labels may impact performance on low-end devices, though the count and lifetime are bounded.",
+        "Visual style, font size, and colors of pickup feedback must be well balanced for readability and accessibility, especially in reduced motion mode, but this depends on user environment and device capabilities.",
+        "The snapshot extension to include pickupFeedback is a new addition and needs thorough testing to ensure no unintended mutation of live game state occurs.",
+        "Physical device testing of the new pickup label feature and their interaction with touch input is missing, leaving some uncertainty about real-world mobile performance.",
+        "No independent QA or user feedback is yet available to confirm the usability and playability impact of the pickup feedback labels."
+      ],
+      "proposed_action": "Implement the pickup feedback system as floating text labels appearing above collected cores, offset from the pointer by a fixed vertical and horizontal margin, clamped inside the arena boundaries to avoid input interception and visual obstruction. Each label displays the awarded points and multiplier before the multiplier increments for the next pickup, e.g. '+10 \u00b7 x1'. Limit the maximum number of concurrent labels and set a fixed lifetime after which they fade out. Freeze label lifetimes when the game is paused, and clear them immediately on restart or replay. Respect system reduced motion settings by disabling floating animations for labels and showing them stationary. Implement pointer-events: none on labels to prevent touch interference. Extend the readonly game snapshot with a copied, read-only pickupFeedback array (each containing points, multiplier, x, y, ttl) for verification by the framework and QA tools. Verify correctness by running automated logic tests (node game_factory/check_neon_logic.cjs), manual playtesting covering input, scoring, pause/resume, restart/replay, and snapshot integrity, including testing reduced motion mode compliance.",
+      "required_evidence": [
+        "Automated test output from node game_factory/check_neon_logic.cjs confirming no breakage and correct pickup feedback behavior with multiplier and scoring logic intact.",
+        "Gameplay recording or logs showing visible pickup feedback labels with awarded points and multiplier before increment, visibly positioned above the pickup touch point, inside the arena, not obscuring ship or HUD, and not intercepting touch input.",
+        "Screenshots or video demonstrating bounded number and lifetime of pickup labels, and that they pause their fade/animation when the game is paused.",
+        "Demonstration that pickup labels clear immediately on restart/replay actions.",
+        "Snapshot JSON data from window.BORHEZ_GAME.snapshot including a copied, read-only pickupFeedback array accurately reflecting active feedback labels during gameplay without mutating gameplay state.",
+        "Verification through toggling system reduced motion preference that pickup feedback labels are stationary, with animations disabled, maintaining legibility and accessibility."
+      ]
+    },
+    "critic": {
+      "claim": "The current plan to implement pickup reward feedback labels in Neon Salvage risks multiple concrete failure cases in real mobile scenarios due to untested assumptions in label responsiveness, positioning, input handling, and state management.",
+      "rationale": "The plan adds floating, legible point labels above collected cores offset from the touch point, bounded in count/lifetime, with pause-aware lifetime control and snapshot exposure. It respects reduced motion and clamping inside arena boundaries, while disabling pointer events to prevent input interception. However, the absence of physical device testing leaves uncertainty if start events reliably initiate the run on varied touch hardware or if fake progress scenarios (labels appearing irrelevant to actual pickups) may occur. Touch input can easily lag or shift, risking labels overlapping HUD, ship, or going out of viewport on small or altered screen sizes or under rapid drag gestures. The code must handle pause/presume and restart cleanly to freeze and clear labels exactly without leaving stale visual artifacts. The snapshot extension requires careful cloning to avoid live game state mutation. The overall design assumes that labels never intercept input due to CSS pointer-events:none, but mobile browser event propagation and hit testing can be inconsistent. Given the complexity of input states (pointer capture, multiple pointer events), labels near touch points might still interfere with UI. Balance of label count and lifetime impacts performance on low-end devices but is not quantitatively addressed. Reduced motion compliance depends on system setting detection and animation logic correctness, which requires toggled testing. The plan has no evidence of handling or testing failure cases such as unresponsive game start, fake/delayed feedback labels, label overflow beyond viewport, or interaction with pause/restart race conditions.",
+      "objections": [
+        "Unresponsive start is plausible if touchstart is blocked or ignored on some devices or if pointer capture fails, preventing expected label creation tied to pickups.",
+        "Fake progress: feedback labels may show outdated or buffered points if pickups triggered but multiplier state is incomplete or corrupted, causing misleading player feedback.",
+        "Touch input: rapid or multi-touch drag can cause label positioning conflict or overlapping with HUD or ship, violating the requirement that labels do not obscure UI or intercept touch.",
+        "Pause and restart actions require robust clearing and freezing of feedback labels; improper handling may leave persistent or desynchronized labels during or after pause.",
+        "Viewport overflow: clamping label positions inside arena must consider realistic UI margins and varying device screen aspect ratios; otherwise labels may be partially clipped or obscure controlled elements on small phones.",
+        "Balance: the maximum number and lifetime of labels is not concretely limited or tested under rapid pickups, risking visual clutter or performance degradation on low-end hardware.",
+        "Missing prompt requirements include explicit testing results for physical mobile devices, independent QA validation of UI and input handling, and verified snapshot immutability for pickupFeedback arrays."
+      ],
+      "proposed_action": "Implement monitoring and fail-safe mechanisms for pointer event handling and game start triggers to ensure reliable responsiveness. Add defensive logic to synchronize label feedback tightly with actual awarded points and multiplier states, avoiding fake or stale labels. Enhance label positioning algorithms to respect dynamic viewport dimensions, UI overlays, and safe input zones, verified by real device testing covering multiple screen sizes and orientations. Introduce clear lifecycle management to freeze label timers on pause, clear all labels immediately on restart, and prevent feedback persistence or desynchronization. Quantitatively set and test upper bounds for maximum simultaneous labels and their lifetimes to prevent clutter and performance issues. Extend test coverage explicitly to include physical device manual playtests and independent QA confirming the absence of input interference, accessibility compliance especially reduced motion adherence, and snapshot state safety. Provide visual evidence of labels not intercepting input or obscuring ship/HUD by observing touch or pointer hit tests on real devices. Only after such comprehensive validation should this feature proceed to production.",
+      "required_evidence": [
+        "Physical device test reports and recordings demonstrating no start unresponsiveness on varied phones, including correct pointer capture and drag initiation.",
+        "Live gameplay videos or logs showing pickup feedback labels appear exactly matching awarded points and multiplier before increment, never stale or fake, including under rapid pickups.",
+        "Screenshots and hit-test results captured on mobile devices validating labels do not intercept or block touch input, nor obscure ship or HUD visuals during active dragging.",
+        "Evidence that pause freezes all feedback label timers and that restart clears all labels immediately, verified visually and by snapshot inspection.",
+        "Viewport and UI overflow tests on diverse device resolutions and aspect ratios proving labels are fully visible and clamped appropriately without clipping or overlap.",
+        "Performance benchmarks or profiling under heavy pickup label load confirming bounded label count and lifetime do not degrade responsiveness or cause frame drops.",
+        "Snapshot JSON dumps from window.BORHEZ_GAME.snapshot demonstrating read-only copied pickupFeedback arrays free from live state mutation, tested with mutation attempts to confirm isolation.",
+        "Reduced motion mode toggle tests confirming floating animation disabling and consistent stationary label display for accessibility compliance.",
+        "Independent QA or user feedback reports verifying no UI or gameplay issues arise from the pickup feedback label feature in terms of usability, legibility, and playability."
+      ]
+    },
+    "engineer": {
+      "claim": "Implement a pickup feedback label system in Neon Salvage that shows the awarded points and multiplier before increment above the collected core near the touch point without disrupting gameplay or UI, respecting reduced motion and pausing, maintaining all existing mechanics and controls, and exposing a copied pickupFeedback array in the snapshot for verification.",
+      "rationale": "The task requires visually legible, short-lived floating labels like '+10 \u00b7 x1' or '+20 \u00b7 x2' above each collected core, offset from the player's drag/touch point, clamped inside the 360x480 arena bounds to avoid obscuring the ship or HUD and not intercepting touch input. Labels must be bounded in number and lifetime to control performance and visual clutter, lifetime freezing during game pause, and immediate clearing on restart or replay. Reduced motion preference disables label floating animation, showing them stationary for accessibility. The existing NEXT CORE HUD continues to track the upcoming multiplier independently. Extending the snapshot with a copied, read-only pickupFeedback array containing points, multiplier, x, y, and ttl enables external verification without state mutation. Preserving all existing game logic, scoring rules, controls, pause/restart behavior, and layout ensures no regressions. Automated logic tests and manual gameplay runs verify correct label behavior, visibility, and pause/reset mechanics, including reduced motion compliance.",
+      "objections": [
+        "Precise label positioning near the touch could risk overlapping the ship or HUD or going outside the arena on small or unusual devices, and clamping may not cover all edge cases.",
+        "Managing multiple concurrent labels with lifetime could impact performance on low-end devices, though bounds mitigate this.",
+        "CSS pointer-events:none should prevent touch interception but mobile browsers vary in hit testing, so labels might still interfere in some environments.",
+        "Pause and restart must be carefully handled to freeze and clear labels exactly, avoiding stale or desynchronized visual artifacts.",
+        "Snapshot extension must clone pickupFeedback arrays deeply to avoid live gameplay state mutation.",
+        "No current physical device testing or independent QA verification is available, so behavior on real mobile hardware around touch responsiveness, label visibility, and accessibility compliance remains unverified.",
+        "Reduced motion compliance and system preference toggling require thorough testing to ensure label animation disables correctly."
+      ],
+      "proposed_action": "Edit game.js to add a pickupFeedback array managing pickup labels with points, multiplier, position offset from pointer, ttl, velocity for floating (disabled under reduced motion), and pointer-events disabled. Upon core collection, push a new label with awarded points and multiplier before multiplier increments. In the game update loop, decrement ttl of labels only when mode is 'running' to freeze while paused, remove expired labels, and reset pickupFeedback on restart. In the draw function, render translucent text labels above pickups with floating offset or stationary if reduced motion is set, clamping label positions inside the arena bounds with safe margins to avoid obscuring the ship and HUD. Extend window.BORHEZ_GAME.snapshot to return a deep-copied pickupFeedback array (points, multiplier, x, y, ttl) preserving read-only state. Ensure no fragile line patches\u2014add modular code with clear logic for label lifecycle, positioning, and drawing. Test by running node --check game.js, node game_factory/check_neon_logic.cjs, and manual gameplay including drag pickup, pause/resume, restart, and reduced motion toggling. Confirm pickup feedback label visibility for first pickups, bounded count and lifetime, pause freeze, restart clear, correct multiplier reporting before increment, and no UI or input interference.",
+      "required_evidence": [
+        "Automated test results from running node game_factory/check_neon_logic.cjs showing no breakage and correct pickup feedback behavior with multiplier and scoring intact.",
+        "Manual gameplay recordings or logs demonstrating visible pickup feedback labels showing awarded points and multiplier before increment, positioned inside arena and offset from touch, not obscuring ship or HUD, and not intercepting touch input.",
+        "Screenshots or video evidencing bounded label count and lifetime, labels freezing during pause, and clearing on restart/replay.",
+        "Snapshot JSON from window.BORHEZ_GAME.snapshot showing a copied, read-only pickupFeedback array reflecting active feedback labels during play without mutating game state.",
+        "Verification by toggling system reduced motion preference that pickup feedback labels are stationary (no floating animation), maintaining legibility and accessibility.",
+        "Confirm that existing NEXT CORE multiplier HUD and scoring rules remain correct and that damage/reset behavior, controls, layout, and one-minute session persist without regression."
+      ]
+    }
+  },
+  "qa": {
+    "claim": "The update implements readable, bounded pickup reward labels that appear above each collected core during dragging, showing the awarded points and multiplier before progression, with correct gameplay preservation and diagnostic snapshot exposure.",
+    "rationale": "The coder report and executed Node.js logic harnesses verify that the feedback labels display legible text in the format '+10 \u00b7 x1' through '+50 \u00b7 x5' exactly at pickup locations with safe offsets, do not intercept touch input or obscure UI/ship, respect reduced motion preferences, and handle pausing and restarting appropriately. The image evidence shows multiple browser platform runs passed in mobile emulation with actual actor movement, visible canvas changes, touch start/cancel, and pause/resume/restart actions. The snapshot returns fresh copies of pickup feedback states without mutating the gameplay. The scoring, combo cap, hull, and 60-second run duration remain unchanged. The labels are drawn only on canvas with no DOM pointer interception. The simulation tests included reduced and normal motion modes and verified feedback TTLs, placement, and counts. No new gameplay regressions or timer defects are introduced. The request acceptance criteria are all addressed and passed by the existing automated tests and static checks.",
+    "objections": "There is no physical device testing or real browser touch hit-testing with screenshots available; visual legibility and touch interaction on actual hardware remain unverified. The Playwright browser tests and live server startup failed due to sandbox restrictions preventing deployment and dynamic acceptance testing. The environment can only confirm simulated and code-level evidence, not actual user-experience validation. The provided evidence does not confirm stable continuous play on physical mobile devices.",
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The update meets the prompt requirements per source code inspection, automated logic and rendering verification in simulated mobile Chromium, and snapshot diagnostic validation. All requested features and constraints are implemented and validated except physical device usability, which is outside the available environment.",
+      "criteria_results": {
+        "pickup_labels": "Implemented with awarded points and multiplier displayed before multiplier increment; labels show '+10 \u00b7 x1' through '+50 \u00b7 x5' correctly.",
+        "label_positioning": "Above pickup locations with horizontal offsets, clamped inside arena, avoiding ship, touch targets, and HUD; safe repositioning algorithm active.",
+        "label_interaction": "Labels drawn on canvas only, no pointer events intercepted; confirmed no input interference.",
+        "feedback_limits": "At most four labels live at once with 1.2 second TTL, fading animation disabled in reduced motion, TTL freeze on pause, clearance on restart confirmed.",
+        "snapshot_exposure": "Snapshot exposes copied pickupFeedback array with points, multiplier, x, y, ttl; mutating snapshot data does not affect gameplay.",
+        "gameplay_preservation": "Existing scoring rules, x5 multiplier cap, hull/damage/reset, controls, layout, and 60-second duration unchanged and confirmed through tests.",
+        "automated_tests_passed": "Node --check, logic harness, VM focused checks, mode switching, replay, and combined exploratory survival tests all passed.",
+        "browser_emulation_runs": "Passed two mobile viewport Chromium emulations with touch events, actor movement, canvas changes, pause/resume/restart sequences, and no resource failures."
+      },
+      "remaining_limitations": [
+        "No physical hardware device testing performed to verify actual touch hit-testing, label legibility, and animation smoothness.",
+        "No live browser screenshot or video captures of the updated UI during play for visual audit.",
+        "No successful deployment or remote automated browser acceptance in last-mile environment due to sandbox restrictions and missing dependencies."
+      ]
+    },
+    "required_evidence": [
+      "Physical device gameplay video showing pickup reward labels appearing correctly while dragging the ship, with legible text and stable positioning inside arena.",
+      "Browser screenshot or screen capture from a real device or emulator running the updated build verifying labels do not obscure ship/HUD or intercept touches.",
+      "Independent QA report confirming that pause freezes label animations, restart clears label feedback, and reduced motion mode disables float/fade effects.",
+      "End-to-end automated browser acceptance test results demonstrating stable operation including pickup label visual feedback under typical user interaction on a real or simulated mobile device."
+    ]
+  },
+  "acceptance": {
+    "run_id": "42095781288-1",
+    "request_id": "neon-salvage-update-003",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0905999999999976,
+        "player_displacement": 54.183424520952634,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.096699999999992,
+        "player_displacement": 58.87972896685592,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Neon Salvage update 003\n\nImplemented in `docs/games/neon-salvage/game.js`; existing URL, HTML, CSS, controls, layout, scoring, hull/damage rules and timer remain unchanged. Read job.json, plan.json and feedback.md (review #34). The recording discontinuity was not treated as a timer defect.\n\n## Implementation\n\n- Each actual core collision captures its awarded multiplier and points before incrementing NEXT CORE. Labels render `+10 \u00b7 x1`, `+20 \u00b7 x2`, through `+50 \u00b7 x5`.\n- Canvas draws bold 16px light text on a dark, cyan-bordered 104\u00d728 panel. No new DOM/input layer is introduced, so labels cannot intercept pointer events.\n- Initial placement is above the pickup with a horizontal offset, clamped inside the arena. Safe-slot positioning avoids the ship/protection ring, current drag target, other labels, and the upper area used by damage and chain-loss notices. At upper edges a side position provides clearance when above is unavailable. Positions in diagnostics match rendered panel centers.\n- At most four labels live for 1.2 simulation seconds. Normal feedback rises slowly and fades near expiry. Reduced motion disables both rise and fade; safety relocation remains possible if the player later steers through a label.\n- Feedback updates only during running simulation, freezes while paused, expires during play, and clears in setup for restart/replay.\n- `snapshot().pickupFeedback` returns a new array of new plain objects containing points, multiplier, x, y and ttl from live feedback state. Mutating returned data does not affect gameplay.\n\n## Commands and actual results\n\n- `node --check docs/games/neon-salvage/game.js`: PASS.\n- `node game_factory/check_neon_logic.cjs`: PASS, repeated after final changes. Existing harness verified actual collection/scoring, chain growth/reset, damage/protection, loss/replay, pause/restart, snapshot isolation, and surviving to exactly 60 seconds.\n- `node <<'JS' ... JS` focused VM checks: PASS in both reduced-motion settings. Used the existing harness's seeded environment and real pointer-driven collection against unmodified game source; no gameplay-state injection or diagnostic mutation used to manufacture progress. Checked first and second awards and NEXT CORE values; naturally collected through the x5 cap; observed four simultaneous labels; checked positive TTL \u22641.2, panel bounds, ship clearance, paused state equality, resumed expiry, clean restart and copied-snapshot isolation. Reduced motion held x/y stationary across a running tick; normal mode moved y upward while TTL decreased.\n- Representative snapshots: first `{points:10,multiplier:1,x:132.7355757150799,y:185.74448910262436,ttl:1.2}` with NEXT CORE x2; second reduced-motion sample `{points:20,multiplier:2,x:268,y:104,ttl:1.1999999999999997}` with NEXT CORE x3. Capped pickup reported points 50, multiplier 5.\n- Additional inline Node VM Canvas command capture: PASS; actual draw calls included `+10 \u00b7 x1` and `+20 \u00b7 x2` at live feedback coordinates.\n- An initial combined exploratory check appended extra pickup runs before the original survival fixture. Feedback assertions passed, but the altered random sequence caused that pilot to lose hull at 27.225 seconds. Separated feature checks from the unchanged deterministic survival harness; both final checks passed. No timer or difficulty changes made.\n- `git diff --check`: PASS.\n- `python3 -m http.server 8765 --directory docs`: blocked by sandbox socket creation (`PermissionError: Operation not permitted`).\n- `node game_factory/mobile_acceptance.cjs`: attempted; blocked before gameplay by Chrome startup failure (`setsockopt: Operation not permitted`, SIGTRAP). A separate local-file Playwright attempt was blocked by a missing default headless browser executable. No dependencies installed and no tests changed.\n\n## Limitations\n\nBrowser screenshots, real browser touch hit-testing and visual legibility on hardware could not be verified in this environment. Canvas draw commands and VM simulation are feature evidence, not physical-phone or independent QA approval. The runner must perform independent browser acceptance in its supplied environment. No deployment performed.\n"
+}

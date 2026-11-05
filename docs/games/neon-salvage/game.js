@@ -4,7 +4,7 @@
   const el = id => document.getElementById(id);
   const W = 360, H = 480, reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let mode = 'ready', time = 0, score = 0, hull = 3, multiplier = 1, chainLost = 0, invincible = 0, flash = 0;
-  let player = {x:180,y:310}, cores = [], debris = [], sparks = [], pointer = null, target = null;
+  let player = {x:180,y:310}, cores = [], debris = [], sparks = [], pickupFeedback = [], pointer = null, target = null;
   let last = performance.now();
   const keys = new Set(), random = (a,b) => a + Math.random()*(b-a);
   const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
@@ -17,7 +17,7 @@
     return p;
   }
   function setup() {
-    time=0; score=0; hull=3; multiplier=1; chainLost=0; invincible=0; flash=0; sparks=[]; pointer=null; target=null; keys.clear();
+    time=0; score=0; hull=3; multiplier=1; chainLost=0; invincible=0; flash=0; sparks=[]; pickupFeedback=[]; pointer=null; target=null; keys.clear();
     player={x:180,y:310}; cores=[];
     for(let i=0;i<5;i++) cores.push(core());
     debris=Array.from({length:6},(_,i)=>{
@@ -66,6 +66,51 @@
   window.addEventListener('blur',()=>{if(mode==='running')pause();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='running')pause();});
   function burst(x,y,color){if(!reduced.matches)for(let i=0;i<10;i++)sparks.push({x,y,vx:random(-65,65),vy:random(-65,65),life:.45,color});}
+  // Canvas-only feedback cannot capture input. Coordinates describe the actual
+  // rendered label center; the top band is reserved for existing damage notices.
+  const feedbackLimit = 4, feedbackLife = 1.2, labelWidth = 104, labelHeight = 28;
+  function feedbackBlocked(x,y,f) {
+    return [player,target].some(p=>p && Math.abs(x-p.x)<labelWidth/2+30 && Math.abs(y-p.y)<labelHeight/2+30) ||
+      pickupFeedback.some(other=>other!==f && Math.abs(x-other.x)<labelWidth+4 && Math.abs(y-other.y)<labelHeight+4);
+  }
+  function placeFeedback(f,x,y) {
+    x=clamp(x,58,W-58);y=clamp(y,104,H-22);
+    if(feedbackBlocked(x,y,f)) {
+      let best=Infinity;
+      // Choose the closest safe slot, including at the top and side edges.
+      for(let cy=104;cy<=H-22;cy+=32) for(let cx=58;cx<=W-58;cx+=30) {
+        if(feedbackBlocked(cx,cy,f))continue;
+        const distance=(cx-x)**2+(cy-y)**2;
+        if(distance<best){best=distance;f.x=cx;f.y=cy;}
+      }
+    } else {f.x=x;f.y=y;}
+  }
+  function reward(c,points,awardedMultiplier) {
+    const f={points,multiplier:awardedMultiplier,x:58,y:104,ttl:feedbackLife};
+    if(pickupFeedback.length>=feedbackLimit)pickupFeedback.shift();
+    placeFeedback(f,c.x+24,c.y-58);
+    pickupFeedback.push(f);
+  }
+  function updateFeedback(dt) {
+    pickupFeedback=pickupFeedback.filter(f=>{
+      f.ttl-=dt;
+      if(f.ttl<=0)return false;
+      // Reduced motion holds position; safety relocation still protects the ship
+      // if the player subsequently steers through a label.
+      placeFeedback(f,f.x,f.y-(reduced.matches?0:12*dt));
+      return true;
+    });
+  }
+  function drawFeedback() {
+    ctx.save();ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    for(const f of pickupFeedback) {
+      ctx.globalAlpha=reduced.matches?1:Math.min(1,f.ttl/.25);
+      ctx.fillStyle='#071c27';ctx.fillRect(f.x-labelWidth/2,f.y-labelHeight/2,labelWidth,labelHeight);
+      ctx.strokeStyle='#73f4e9';ctx.lineWidth=1;ctx.strokeRect(f.x-labelWidth/2,f.y-labelHeight/2,labelWidth,labelHeight);
+      ctx.fillStyle='#edffff';ctx.fillText(`+${f.points} · x${f.multiplier}`,f.x,f.y);
+    }
+    ctx.restore();
+  }
   function update(dt) {
     time=Math.min(60,time+dt);chainLost=Math.max(0,chainLost-dt);invincible=Math.max(0,invincible-dt);flash=Math.max(0,flash-dt);
     let dx=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);
@@ -73,7 +118,8 @@
     if(dx||dy){const len=Math.hypot(dx,dy);player.x+=dx/len*220*dt;player.y+=dy/len*220*dt;}
     else if(target){const dist=Math.hypot(target.x-player.x,target.y-player.y),f=Math.min(1,460*dt/(dist||1));player.x+=(target.x-player.x)*f;player.y+=(target.y-player.y)*f;}
     player.x=clamp(player.x,12,W-12);player.y=clamp(player.y,12,H-12);
-    cores.forEach((c,i)=>{if(Math.hypot(player.x-c.x,player.y-c.y)<21){score+=10*multiplier;multiplier=Math.min(5,multiplier+1);burst(c.x,c.y,'#73f4e9');cores[i]=core();}});
+    updateFeedback(dt);
+    cores.forEach((c,i)=>{if(Math.hypot(player.x-c.x,player.y-c.y)<21){const awardedMultiplier=multiplier,points=10*awardedMultiplier;score+=points;reward(c,points,awardedMultiplier);multiplier=Math.min(5,multiplier+1);burst(c.x,c.y,'#73f4e9');cores[i]=core();}});
     for(const d of debris){
       const speed=1+time/110;d.x+=d.vx*dt*speed;d.y+=d.vy*dt*speed;d.angle+=dt*.65;
       if(d.x<d.r||d.x>W-d.r){d.vx*=-1;d.x=clamp(d.x,d.r,W-d.r);}
@@ -100,11 +146,12 @@
     if(invincible>0){ctx.strokeStyle='#ffb5c2';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.stroke();}
     ctx.fillStyle=flash>0?'#ff647e':'#effaff';ctx.strokeStyle='#78cfff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(11,11);ctx.lineTo(0,6);ctx.lineTo(-11,11);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#49d9ed';ctx.fillRect(-3,-3,6,6);ctx.restore();
     for(const s of sparks){ctx.globalAlpha=s.life/.45;ctx.fillStyle=s.color;ctx.fillRect(s.x,s.y,3,3);}ctx.globalAlpha=1;
+    drawFeedback();
     if(flash>0){ctx.strokeStyle='#ff647e';ctx.lineWidth=8;ctx.strokeRect(4,4,W-8,H-8);ctx.fillStyle='#ffafbe';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('HULL HIT −1',W/2,32);}
   }
   function resize(){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);draw();}
   new ResizeObserver(resize).observe(canvas);
   function frame(now){const dt=Math.min(.1,Math.max(0,(now-last)/1000));last=now;if(mode==='running'){let remaining=dt;while(remaining>0&&mode==='running'){const step=Math.min(remaining,1/120);update(step);remaining-=step;}}draw();requestAnimationFrame(frame);}
-  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode,time,score,multiplier,player:{x:player.x,y:player.y},hull,invincible,cores:cores.map(c=>({...c})),debris:debris.map(d=>({...d}))})});
+  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode,time,score,multiplier,player:{x:player.x,y:player.y},hull,invincible,pickupFeedback:pickupFeedback.map(f=>({...f})),cores:cores.map(c=>({...c})),debris:debris.map(d=>({...d}))})});
   setup();ui();resize();requestAnimationFrame(frame);
 })();
