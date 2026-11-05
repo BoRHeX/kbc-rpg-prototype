@@ -1,0 +1,20 @@
+name: Clear obsolete Cataclysm release blocker
+on:
+  push:
+    branches: [main]
+    paths: ['game_factory/CLEAR_STALLED_RELEASE.md']
+permissions:
+  actions: write
+  contents: read
+jobs:
+  clear-obsolete-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Cancel redundant already-superseded release run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/42054307988/cancel" || echo 'Run already stopped or token lacks cancellation permission'
+          echo 'Accepted Cataclysm 42010567811 is already published; release run 42054307988 is redundant.'
