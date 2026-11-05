@@ -1,0 +1,219 @@
+{
+  "request": {
+    "id": "studio-original-create-001",
+    "game": "studio-original-001",
+    "mode": "create",
+    "title": "Studio Original 001 \u2014 agents' choice",
+    "prompt": "The player tried Neon Salvage and honestly did not like it. The studio is commissioned to create an ENTIRELY NEW game. The user's whole creative brief is: MOBILE. LIGHT. SIMPLE. FUN. Let the studio decide the concept, real game name, theme, visual style, mechanics, challenge, scoring and session length. The game ID and request title are administrative placeholders, not a required creative name: choose your own name for the actual game. Do not ask the player to choose concepts. Record the concept the council selected and why its moment-to-moment interaction should be enjoyable. Build a genuinely different core loop, not a reskin or extension of Neon Salvage. Prioritize an immediately understandable, satisfying interaction and easy replay over feature count. Use the existing mobile game host and interface contract, with responsive one-finger play. Keep it self-contained and quick to load: combined index.html/game.js/game.css at most 200,000 bytes; no external assets, libraries, services, accounts or downloads. Do not change any existing game. Implement the actual game and its end/replay loop. The coding agent must run concrete game-specific checks for its chosen scoring/progression and end conditions, in addition to the independent mobile gate. Explain what the checks actually prove; whether the player finds it fun remains a playtest question. Complete the tested publication to a new stable play URL.",
+    "acceptance": [
+      "The studio chooses and implements an original concept and real game name. The actual page presents that name and one short, clear instruction; no creative selection is passed back to the player.",
+      "The new game's core loop is meaningfully different from Neon Salvage, with a clear player action, immediate understandable feedback, a goal or challenge and a repeatable end/replay loop.",
+      "Mobile portrait play is usable at 390x844 and 360x780, with one-finger controls, readable UI, reachable buttons and no horizontal overflow or accidental page scrolling during gameplay.",
+      "The combined HTML/CSS/JS is at most 200,000 bytes and runs entirely from local game files without external libraries, assets, accounts, network services or downloads.",
+      "Touch start, actual player interaction, pause/resume, pointer cancellation, clean restart and replay work. The visible score or progress corresponds to real game state.",
+      "The coding agent executes and reports concrete checks of its chosen scoring/progression and success/failure or end conditions, plus syntax checking. The independent mobile acceptance and independent QA must pass before publication.",
+      "Publish to a new game URL, preserve all existing games, retain the accepted source and evidence, and verify the exact live files."
+    ]
+  },
+  "target": "docs/games/studio-original-001",
+  "run_id": "42105188493-1",
+  "base_manifest": {},
+  "request_digest": "891319660d435905e819a838ea960cd5d0d7bcba7faf17ea2206322cc111be67",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "a3b0d123cf7cefb6a85cb5adc88cea2f11f40dd52091c1b96d78544aafb0e318",
+    "game.css": "d2e00d5a81993138a1d609af584d1f8e0a93b6e6f51362a3e617f777e0736672",
+    "game.js": "409af170603c1e9f88957a9d1fb7c211373629f118af911ac13404c10e7dc28c",
+    "index.html": "ff340e48b733b87cdb8c90fd8d4838c2480d1c175de2293f663944aee938d17f"
+  },
+  "play_path": "games/studio-original-001/",
+  "plan": {
+    "producer": {
+      "claim": "Scope the job to create a small, original, mobile arcade game named 'Peach Bounce' with a distinct core loop fully contained in under 200KB HTML/CSS/JS bundle, playable with one-finger controls in portrait mode on standard mobile viewports.",
+      "rationale": "The studio selected 'Peach Bounce' as the new game concept, featuring a simple interaction: bouncing a peach into jam tiles. This differs meaningfully from Neon Salvage, focusing on immediate, understandable feedback, a scoring objective, and short repeatable rounds fitting the brief of mobile, light, simple, and fun. The playable result must meet all interface, size, and operational requirements per the game contract, including start/pause/restart buttons, visible score, player position feedback, and proper game state transitions.",
+      "objections": "Potential uncertainties include whether the chosen 'Peach Bounce' concept truly offers a 'fun' experience for players, as enjoyment is subjective and not guaranteed by compliance with technical requirements. There may be edge cases in touch handling or viewport sizes not fully covered. The byte size limit may constrain possible features or polish.",
+      "proposed_action": "Define 'Peach Bounce' playable scope as: a single-page HTML5 canvas game allowing one-finger drag to control a tray bouncing a peach, attempting to hit 15 jam tile targets per round. Provide a clear game title and one-line start instruction on the main page. Implement start, pause/resume, and restart controls with visible score and elapsed time, reporting player position. The game ends after all tiles are hit or a fixed time limit; then allows immediate replay. Verify all controls work on 390x844 and 360x780 portrait viewports with no overflow or scroll. Confirm combined code size under 200,000 bytes. Produce concrete JS checks of scoring and end conditions, pause behavior, and snapshot consistency. Await independent mobile acceptance and QA testing before publishing with stable play URL.",
+      "required_evidence": "Evidence should include: 1) A public stable playable URL demonstrating the game running as specified on standard mobile viewports with proper UI and one-finger control. 2) Executed automated tests proving compliance with scoring, progression, pause/resume, restart, and viewport requirements. 3) Byte size verification report of the combined HTML/CSS/JS bundle under 200KB. 4) Screenshots or logs showing game mode transitions ('ready', 'running', 'paused', 'over') and snapshot object exposing real-time state. 5) Independent acceptance test results confirming no scroll overflow, reachable buttons, and input responsiveness. 6) Evidence of code syntax checks passing (e.g. node --check game.js). 7) Confirmation that existing games remain unchanged and all requested job criteria are satisfied before final publication."
+    },
+    "researcher": {
+      "claim": "Create a new mobile arcade game named 'Peach Bounce' with a distinct core loop featuring one-finger drag control of a tray bouncing a peach onto jam tiles, meeting the specified mobile game contract requirements.",
+      "rationale": "The studio selected 'Peach Bounce' as an original concept differing meaningfully from Neon Salvage, prioritizing a simple, immediate, and satisfying interaction suitable for mobile portrait play. The game involves controlling a tray with one finger to bounce a peach into 15 jam tiles, implementing start, pause/resume, and restart with visible score, elapsed time, and player position feedback. The combined code size is under 200KB, and the UI works on standard mobile viewport sizes without overflow. The end condition triggers after all tiles are hit or a time limit is reached, allowing for immediate replay. Concrete code-level checks confirm scoring and progression, pause functionality, and snapshot state consistency.",
+      "objections": "Subjective fun or player enjoyment cannot be guaranteed by the technical implementation alone and requires playtesting. Some edge cases in touch handling or viewport variations may remain untested. The byte size constraint might limit advanced features or polish. Confirmation of physical-device usability and independent QA approval is pending. The initial delivery notes circular pre-publication approval issues, indicating a need for further verification before publishing.",
+      "proposed_action": "Implement and finalize the self-contained 'Peach Bounce' game in a single HTML5 canvas page with JS and CSS totaling under 200,000 bytes. Ensure controls (start, pause, restart) and game states (ready, running, paused, over) correspond accurately to snapshots exposed via window.BORHEZ_GAME. Validate functional one-finger drag input on both 390x844 and 360x780 portrait mobile viewports with no horizontal overflow or accidental scrolling. Run syntax checks and gameplay state validations in code. Await and incorporate independent mobile acceptance and QA verification results. Publish the game at a new stable URL without altering existing games.",
+      "required_evidence": [
+        "Public stable playable URL demonstrating 'Peach Bounce' functioning with correct UI and one-finger control on standard mobile portrait resolutions.",
+        "Automated test results confirming correct scoring, progression, pause/resume, restart functionality, and viewport/UI requirements.",
+        "Combined HTML/CSS/JS byte size report showing the bundle under 200,000 bytes.",
+        "Screenshots or log evidence showing game state transitions (ready, running, paused, over) and that snapshot object exposes actual game state (mode, time, score, player x/y).",
+        "Independent mobile acceptance test results confirming no scroll overflow, reachable buttons, and responsive input.",
+        "Syntax check results from node --check on game.js passing without errors.",
+        "Confirmation that no existing games were modified and that all job acceptance criteria are fulfilled before final publication."
+      ]
+    },
+    "designer": {
+      "claim": "The core loop of 'Peach Bounce' involves the player using one-finger drag to control a tray that bounces a peach onto jam tiles, aiming to hit all targets within a set time. The game provides immediate feedback through dynamic peach and tray movement, score updates when jam tiles are hit, and visual state transitions. Mobile controls are simplified to a single finger drag moving the tray horizontally at the bottom of the screen, keeping interaction intuitive and reachable in portrait mode. Feedback includes visible score, elapsed time, clear start/pause/restart buttons, and snapshot state exposure to comply with the game contract.",
+      "rationale": "The chosen mechanics deliver a light, simple, and fun mobile experience that is distinct from Neon Salvage by focusing on a different player action (dragging tray to bounce rather than other mechanics). One-finger horizontal drag is immediately understandable and effortless to use on small screens, minimizing cognitive and motor load. The bouncing peach and jam tiles provide satisfying cause-and-effect feedback, encouraging short play sessions with a clear goal of hitting all jam tiles or beating the timer. The UI layout ensures all controls and feedback elements remain visible and reachable without accidental scrolling or obliterating gameplay space, complying with the acceptance criteria.",
+      "objections": "While the core loop and control scheme aligns with the brief, actual player enjoyment is not guaranteed without playtesting since 'fun' is subjective. The fixed-size jam tile layout and bounce physics may feel repetitive if not polished. Potential edge cases with touch responsiveness or accessibility across all mobile portrait resolutions could arise. The byte-size limit restricts adding richer visual or audio feedback that might increase immersion. Current evidence does not verify physical-device testing or long-term engagement metrics.",
+      "proposed_action": "Complete final implementation of the 'Peach Bounce' game enforcing one-finger horizontal drag to move the tray, with responsive bounce physics triggering jam tile hits, scoring increments, and proper game states (ready, running, paused, over) visible on UI. Ensure start, pause/resume, and restart buttons work reliably without causing scroll or overflow on viewport sizes 390x844 and 360x780 in portrait orientation. Expose real-time game snapshots via window.BORHEZ_GAME with exact state data. Run automated syntax and game logic checks confirming scoring, progression, end conditions, pause functionality, and snapshot correctness. After successful internal verification, submit for independent mobile acceptance and QA testing, obtaining results before publishing the stable play URL as a separate game, preserving all existing games unchanged.",
+      "required_evidence": [
+        "Public stable playable URL demonstrating 'Peach Bounce' running smoothly with one-finger drag input, visible UI elements (score, time, buttons) and no horizontal scroll at standard portrait mobile resolutions.",
+        "Automated test outputs confirming correct scoring increments, jam tile hit detection, round end conditions (all tiles hit or timer expiry), and restart behavior.",
+        "Byte size audit report verifying combined HTML/CSS/JS bundle size under 200,000 bytes.",
+        "Screenshots or logs illustrating game modes transitions (ready, running, paused, over) and snapshot object revealing accurate real-time data (mode, time, score, player x/y position).",
+        "Independent mobile acceptance test results indicating no scroll overflow, reachable controls, and responsive one-finger input.",
+        "Syntax verification from node --check on game.js confirming zero errors or warnings.",
+        "Confirmation logs stating no modifications to existing games and that all job acceptance criteria have been met prior to publication."
+      ]
+    },
+    "critic": {
+      "claim": "The 'Peach Bounce' plan may fail in critical areas including unresponsive game start, false progress indication, inadequate touch input handling, improper pause/resume behavior, clean restart issues, viewport overflow, unbalanced gameplay, and missing prompt-required UI elements.",
+      "rationale": "While the plan details a concept consistent with the brief and contract, several assumptions remain unverified. The start control must respond only to genuine user taps, not touch cancel or spurious events, or else the game might appear unresponsive or start unpredictably. Showing progress (score/time) must reflect actual game state\u2014not fabricated or desynchronized values\u2014to prevent fake progress illusions. The one-finger drag control must robustly handle various touch edge cases (pointer cancellation, multiple touches, accidental gestures) or the tray control could become unresponsive or jittery. Pause and resume must freeze and continue elapsed time precisely, maintaining snapshot integrity; failure causes gameplay confusion. Restart must reset all transient states without residue, ensuring a clean fresh session. UI must adapt perfectly to tested mobile viewports (390x844, 360x780) without horizontal overflow, accidental page scrolling, or unreachable controls; failures degrade usability. Core loop balance (bounce physics, jam tile difficulty, timer) needs empirical verification to avoid trivial or frustrating sessions. The prompt demands a visible named game title and single succinct instruction shown on start; omission here is a contract breach causing user confusion.",
+      "objections": "The current plan rationales rely heavily on assumptions about touch input robustness across devices and viewport sizes without physical-device or full QA approval evidence. The byte size constraint may force compromises in input smoothing and visual feedback that impact usability. Playtesting is required to confirm the subjective 'fun' aspect and balance. Early remarks note circular approval delays and lack of physical device verification, indicating existing uncertainty and incomplete validation of these critical concerns.",
+      "proposed_action": [
+        "Explicitly test and document that the start button responds only to real taps, rejecting spurious or canceled inputs to ensure user control is reflected by immediate game start.",
+        "Implement and verify that visible score and progress metrics always reflect actual game state variables, synchronizing UI with gameplay to avoid fake or misleading progress.",
+        "Conduct thorough touch input edge case testing including multi-touch, pointer cancellation, and drag gestures to ensure the tray control remains responsive and stable during play, without input lag or ignores.",
+        "Validate pause/resume toggles freeze and restart elapsed game time exactly, with UI and snapshot updates confirming mode state changes, eliminating stale displays or timer drift.",
+        "Ensure restart performs complete state reset: score zero, timer zero, jam tile states reset, player position reset, and no residual animations or physics artifacts.",
+        "Verify via viewport emulator and independent acceptance tests no horizontal overflow, accidental page scrolling, or unreachable controls occur on the specified portrait viewport sizes.",
+        "Balance and iterate on bounce physics, jam tile count, timer limits, and scoring to confirm a consistently engaging core loop neither too easy nor overly frustrating.",
+        "Confirm presence and visibility of the game name and one-line start instruction on the initial screen per prompt requirements to meet acceptance criteria."
+      ],
+      "required_evidence": [
+        "Recorded tests or logs demonstrating start button rejects canceled or fake taps and only reacts to genuine user interaction.",
+        "Screenshots or debug logs showing score and progress UI exactly match internal game state variables at all times including after pause, resume, and restart.",
+        "Touch input event trace evidencing correct one-finger drag tracking, pointer cancellation handling, and prevention of multi-touch conflicts across supported devices and viewports.",
+        "Time-stamped snapshots before and after pause/resume with elapsed time frozen and correctly resumed, verified by automated checks.",
+        "Restart sequence logs or automated tests confirming all game state and UI elements reset flawlessly without glitches.",
+        "Viewport screenshots on 390x844 and 360x780 portrait resolutions showing no horizontal scroll bars, no control clipping or overlap, and no accidental page scroll during gameplay.",
+        "Playtesting report or telemetry data demonstrating balanced gameplay session lengths, achievable goals, and meaningful challenge.",
+        "Visible UI evidence on game load showing the selected game name 'Peach Bounce' and a single clear instruction line as required by the prompt."
+      ]
+    },
+    "engineer": {
+      "claim": "Implement a self-contained mobile arcade game named 'Peach Bounce' featuring a distinct core loop where a player controls a tray with one-finger horizontal drag to bounce a peach onto 15 jam tiles within a time limit, with start, pause/resume, and restart controls, visible score, elapsed time, and real-time snapshot exposure, all fitting under 200,000 bytes combined and compliant with the mobile game contract.",
+      "rationale": "The studio selected 'Peach Bounce' to satisfy the brief for a new mobile, light, simple, and fun game differing significantly from Neon Salvage. The concept\u2019s core loop enables intuitive, immediately understandable one-finger control and satisfying cause-and-effect feedback via bouncing physics and tile hits. The UI and gameplay will be optimized for portrait mobile viewports (390x844 and 360x780) ensuring no horizontal overflow or accidental page scrolling and reachable controls. Game mode transitions and snapshot state exposure will reflect actual game status and progress, enabling precise automated verification and independent acceptance tests. The total code size constraint prioritizes essential polished features without external assets or downloads.",
+      "objections": [
+        "Player enjoyment and balance of challenge vs. frustration cannot be guaranteed without physical-device playtests.",
+        "Touch input edge cases like pointer cancellation, multi-touch, or accidental gestures may cause unresponsiveness if unhandled.",
+        "Start button input filtering must reject spurious or canceled taps to avoid unresponsive or unintended starts.",
+        "Pause/resume implementation must precisely freeze and restore elapsed game time and state to avoid UI or logic desynchronization.",
+        "Restart must fully reset all transient and persistent state to avoid residues affecting new sessions.",
+        "Byte size constraints may limit visual/audio feedback richness and polish potential.",
+        "Initial screen must clearly show the game name and a succinct start instruction per prompt; missing this breaches contract.",
+        "Viewport responsiveness and lack of overflow must be confirmed on all tested resolutions.",
+        "Independent QA approval and physical-device verification remain pending."
+      ],
+      "proposed_action": [
+        "Implement the Peach Bounce game with the described core loop, using a single HTML5 canvas with embedded JS and CSS, under 200KB combined size.",
+        "Implement one-finger horizontal drag control for the tray at the bottom of the screen, handling pointer events robustly including cancellation and multi-touch rejection.",
+        "Implement start, pause/resume, and restart buttons with distinct stable UI elements reachable within tested mobile viewports (390x844, 360x780), avoiding layout overflow or scroll.",
+        "On start, display the game name 'Peach Bounce' prominently with a single clear instruction line (e.g., 'Drag tray to bounce the peach into jam tiles!').",
+        "Synchronize visible score, elapsed time, and player position strictly with actual game state variables; update UI promptly to reflect real-time state transitions.",
+        "Expose window.BORHEZ_GAME snapshot with immutable object detailing mode (ready, running, paused, over), time, score, and player {x,y} position reflecting true game state.",
+        "Implement concrete automated checks verifying: correct scoring and jam tile hit detection; end conditions after all jam tiles hit or timer expired; precise pause/resume freezing and restoring elapsed time; clean restart resetting game state; UI responsiveness and no layout overflow on target viewports; and code syntax correctness via 'node --check'.",
+        "Run all implemented gameplay and UI tests locally and via the mobile acceptance tool, adjusting for edge cases and fixing reported issues.",
+        "Prepare evidence including byte size report, logs of automated tests, screenshots of all mode transitions and snapshot outputs, viewport screenshots, and syntax check results.",
+        "After passing all own tests and independent mobile acceptance, submit for QA verification and publish the game at a new stable URL preserving all existing games and job metadata unchanged."
+      ],
+      "required_evidence": [
+        "Public stable playable URL showing 'Peach Bounce' running correctly on 390x844 and 360x780 portrait mobile viewports with functional one-finger drag with no horizontal overflow or page scroll.",
+        "Automated test results proving correct jam tile hit scoring, progression and end condition triggers, pause/resume timing accuracy, snapshot state consistency, and restart resets.",
+        "Byte size audit showing combined index.html, game.js, and game.css under 200,000 bytes without external dependencies.",
+        "Screenshots or debug logs documenting game modes transitions (ready, running, paused, over) and window.BORHEZ_GAME snapshot output reflecting actual game state including mode, time, score, and player position.",
+        "Recorded input tests or logs verifying start button accepts only genuine taps and rejects canceled or fake taps.",
+        "Touch event traces or logs showing robust handling of pointer cancellation, multi-touch rejection, and smooth one-finger horizontal drag control.",
+        "Independent mobile acceptance test reports confirming UI layout correctness, no accidental scrolling, responsive controls, and visible required UI elements (game name, instruction, score, buttons).",
+        "Syntax check reports from 'node --check' on the final game.js showing zero errors or warnings.",
+        "Verification that no existing games were modified and all job acceptance criteria are met prior to publishing."
+      ]
+    }
+  },
+  "qa": {
+    "claim": "The game 'Peach Bounce' is a newly created mobile-friendly game with a distinct core gameplay loop that runs in portrait mode with one-finger controls, meeting the creative and technical prompt requirements for a playable isolated preview.",
+    "rationale": "The coder report details an original concept implemented under the specified directory without modifying existing games. The gameplay involves dragging a tray to bounce a peach to hit 15 jam tiles within 75 seconds, a loop differing meaningfully from Neon Salvage. The UI presents a real game name, short instruction, visible objective, remaining time, and score. Automated tests confirm no syntax errors, proper simulation of gameplay mechanics including scoring and end conditions, pointer input handling, pause/resume/restart functionality, and reduced motion for accessibility. The combined source is well within the byte limit with no external dependencies. Independent Chromium desktop tests with mobile emulation at 390x844 and 360x780 pass all interaction checks, showing actual actor movement, score updates, and no resource failures. This proves operational gameplay in an isolated environment as requested. The mobile acceptance automation failed due to sandbox environment issues unrelated to the game implementation. Physical-device testing is unperformed but not mandatory for preview approval. Publication to a live URL and exact live-file verification remain pending tasks for the publisher and are outside preview scope.",
+    "objections": [
+      "Mobile acceptance automation did not run successfully due to sandbox sandbox restrictions, leaving some unverified mobile-specific runtime aspects.",
+      "No physical device testing or human play enjoyment feedback is available, so subjective fun and practical difficulty remain unknown.",
+      "Automated testing does not guarantee full session difficulty balance or every tile's practical reachability in normal play.",
+      "No live URL or independent QA approval evidence is provided, leaving final deployment verification to the publisher."
+    ],
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The provided source, coder report, and independent desktop browser mobile-emulation evidence demonstrate that the required original game concept is implemented and playable with proper one-finger mobile portrait controls, scoring, end/replay loops, and UI. The preview criteria are met for isolated browser testing, despite unperformed physical device tests and sandbox environment mobile acceptance automation failure unrelated to game code correctness. Publication and live deployment verification are separate and pending.",
+      "criteria_results": {
+        "original_concept_and_name": "Implemented as 'Peach Bounce' with clear name and instruction",
+        "core_loop_difference": "Distinct paddle-projectile tile-clearing gameplay, not a Neon Salvage reskin",
+        "mobile_portrait_play": "Passed on desktop Chromium with 390x844 and 360x780 viewports with touch emulation",
+        "combined_source_size_and_dependencies": "Only ~10KB HTML/CSS/JS combined, no external assets or libraries",
+        "controls_and_gameplay_features": "One primary pointer control, keyboard support, pause/resume/restart, visible score/time reflecting real state",
+        "automated_logic_checks": "11-step test validates scoring, hit detection, pause behavior, replay reset and pointer ownership",
+        "stable_play_url_and_publisher_tasks": "Source delivered in isolated directory, separate publishing step remains"
+      },
+      "remaining_limitations": [
+        "Mobile acceptance automation failed due to sandbox environment; mobile handheld usability unverified",
+        "No physical device testing or human enjoyment validation, awaiting future playtesting",
+        "Session gameplay balance and tile reachability subject to human verification",
+        "Publication, live site deployment, and exact served file verification pending publisher"
+      ]
+    },
+    "required_evidence": [
+      "Independent mobile acceptance test passes or evidence with a correctly running mobile environment",
+      "Physical device testing results for practical mobile usability and control responsiveness (not a preview gate but recommended)",
+      "Independent QA report verifying viewport layout, control reachability, and no accidental scrolling",
+      "Publisher's verification of exact live-file deployment and publicly accessible stable game URL"
+    ]
+  },
+  "acceptance": {
+    "run_id": "42105188493-1",
+    "request_id": "studio-original-create-001",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.1249999999999984,
+        "player_displacement": 46.640877908106006,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0749999999999986,
+        "player_displacement": 52.48192109257343,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Peach Bounce \u2014 implementation handoff\n\nImplemented the council-selected **Peach Bounce** in the new isolated directory `docs/games/studio-original-001/`. No existing game, metadata, test, dependency, workflow, or publishing code was edited. Source files are `index.html`, `game.css`, and `game.js`.\n\n## Concept and behavior\n\nDrag a wide tray horizontally to bounce a peach into 15 jam tiles. Tray impact position controls the outgoing angle. Each tile awards exactly one point. Clear all 15 within 75 simulation seconds to win; timeout ends the round with the achieved score. Missing the tray returns a fresh peach without awarding points, keeping the interaction forgiving. Immediate tile disappearance, jam flecks, peach bounces, score updates and clear end messages make action and result understandable. This is a paddle-and-projectile target-clearing loop rather than a Neon Salvage extension. Whether it feels fun and whether the timing is well balanced remain human playtest questions.\n\n## Criteria implemented\n\n- Page presents the real name and one short drag instruction, with a visible objective, remaining time and score.\n- Responsive portrait flex layout, reachable 46px buttons, local canvas drawing, no external assets, fonts, libraries, fetches, storage or services. Canvas alone uses `touch-action: none`; page controls retain native interaction.\n- Stable `canvas`, `play`, `pause`, `restart`, `build-version` IDs. Source label remains `LOCAL BUILD`; JS never changes it. Runner must stamp the build before its gate.\n- Start uses the native button click event; canceled canvas input never starts a game. Native buttons retain keyboard activation. No claim of verified trusted/canceled browser tap behavior is made.\n- One primary pointer owns tray movement, subsequent pointers are ignored; release, cancellation and lost capture clear ownership. Left/right arrows and A/D move the same tray. Blur and document hiding pause running gameplay.\n- Pause freezes actual simulation time and physics. Resume retains progress. Restart and end-screen Play again reset tiles, score, player, peach, clock, particles, held keys and pointer ownership, then start running.\n- Frozen `window.BORHEZ_GAME` API returns new plain snapshots and nested player/peach objects from actual state. No writable diagnostics or fabricated test progress. Additional fields expose remaining targets and result.\n- Reduced motion suppresses decorative jam particles. Essential peach motion remains so the game can be played.\n\n## Executed checks and evidence\n\n1. `node --check docs/games/studio-original-001/game.js` \u2014 passed, exit 0.\n2. `node /tmp/peach-check.cjs` \u2014 final run passed all 11 checks. The temporary Node VM harness loads the actual production JS with DOM stubs; only its in-memory copy exposes internal functions/state for boundary setup. Production files and diagnostics are unchanged by this instrumentation. It checks:\n   - Ready state, frozen API, snapshot mutation does not change player state.\n   - Start handler enters running state and an actual update advances elapsed time.\n   - A peach at (50,98) traveling upward intersects the first tile on the next 1/120-second update: score becomes 1, a repeat hit stays 1, and UI refresh shows `1 / 15`.\n   - Pause freezes the complete snapshot through a simulated second; resume advances time.\n   - Hitting each of the 15 unique real tiles triggers score 15, mode over and the success message.\n   - Replay clears tile hits, timer, score and player position and starts running.\n   - Advancing from 74.99 seconds past the limit clamps time to 75 and triggers the timeout ending.\n   - A missed peach beyond the bottom respawns above the tray without adding score.\n   - A downward peach crossing the tray changes to upward motion.\n   - Primary pointer moves the tray, another pointer cannot take ownership, cancellation stops movement, and a new pointer can take ownership. Coordinate assertions allow floating point tolerance.\n   - Restart also clears a held pointer and all progress.\n   These prove production logic and handler behavior under controlled inputs, not browser event delivery, viewport usability or enjoyment. An initial exact-coordinate assertion differed by floating point rounding (220.00000000000003 versus 220); the harness now uses a 1e-9 tolerance. No game workaround was needed.\n3. `wc -c docs/games/studio-original-001/index.html docs/games/studio-original-001/game.js docs/games/studio-original-001/game.css` \u2014 1,079 + 7,652 + 1,592 = **10,323 bytes**, below 200,000.\n4. `node game_factory/mobile_acceptance.cjs` \u2014 attempted, exit 1 before loading the page. Chromium failed at launch with `setsockopt: Operation not permitted`, SIGTRAP. The tool wrote its failure evidence to `artifacts/mobile/acceptance.json`. This is not a mobile acceptance pass or a gameplay failure diagnosis. No prior `artifacts/mobile/gate.log` existed. No tests were edited.\n5. `node /tmp/peach-server.cjs` \u2014 temporary HTTP fixture attempted on 127.0.0.1:8765; sandbox rejected listen with EPERM. The fixture would have stamped the response build label only; it never served a page or changed the source label.\n6. `git diff --stat` and `git status --short` \u2014 no tracked source modifications; only the new target directory appeared. Report/artifact files are ignored by repository status.\n\n## Source fingerprints\n\n`sha256sum` executed on the delivered source:\n\n- index.html: `6b5d8df6198fc75f17cf4f3b7c9c09cb5f861ad30c87de5c5b0d9d0ab00bc1ca`\n- game.js: `409af170603c1e9f88957a9d1fb7c211373629f118af911ac13404c10e7dc28c`\n- game.css: `d2e00d5a81993138a1d609af584d1f8e0a93b6e6f51362a3e617f777e0736672`\n\n## Remaining verification and delivery\n\nThe runner must execute the unchanged independent gate with its stamped build and supplied HTTP server, including 390x844 and 360x780 checks, then independent preview QA. This sandbox produced no browser screenshots or verified viewport results. Physical handset testing and subjective enjoyment are unverified. Automated internal tests do not establish session difficulty or every tile's practical reachability through normal player input.\n\nCandidate host path is `/games/studio-original-001/`. Publication and exact live-file verification were not performed: this coding job permits editing only the target source and this report, while publishing code is explicitly out of scope. No public URL or independent QA approval is claimed. The later publication process should compare served files against accepted source, accounting for the runner's intentional HTML build-label stamp.\n"
+}
