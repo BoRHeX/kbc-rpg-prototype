@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const { pathToFileURL } = require('url');
 const path = require('path');
 (async () => {
-  const browser = await chromium.launch({headless:true});
+  const browser = await chromium.launch({headless:true,channel:process.env.BORHEZ_BROWSER_CHANNEL || undefined});
   try {
     const page = await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
     const errors=[];

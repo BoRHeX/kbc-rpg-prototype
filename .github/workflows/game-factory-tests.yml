@@ -28,6 +28,8 @@ jobs:
           name: game-factory-evidence
           path: /tmp/borhez-factory-report.json
   mobile-browser:
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -39,8 +41,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: |
-          npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
       - name: Test the stamped release over HTTP
         env:
           BUILD_RUN: ${{ github.run_id }}-${{ github.run_attempt }}

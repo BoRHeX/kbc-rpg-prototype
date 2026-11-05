@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   develop:
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -30,8 +32,8 @@ jobs:
           node-version: '22'
       - name: Install independent browser QA tools BEFORE AI is given access
         run: |
-          npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
       - name: Read open tester bugs
         env:
           GH_TOKEN: ${{ github.token }}

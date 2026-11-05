@@ -55,7 +55,7 @@ async function testPlatform(browser,label,userAgent) {
     console.log('PASS '+label+': touch start, timer '+time+', player displacement, frozen pause, resume/restart, build identity; no page errors');
   } finally {await context.close()}
 }
-(async()=>{const b=await chromium.launch({headless:true});try{
+(async()=>{const b=await chromium.launch({headless:true,channel:process.env.BORHEZ_BROWSER_CHANNEL || undefined});try{
   await testPlatform(b,'Samsung Android',samsungUA);
   await testPlatform(b,'Chrome Android','Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/125.0.0.0 Mobile Safari/537.36');
 } finally {await b.close()}})().catch(e=>{console.error('FAIL mobile acceptance:',e.stack||e);process.exit(1)});
