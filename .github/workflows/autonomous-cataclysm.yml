@@ -191,6 +191,14 @@ jobs:
           git config user.name 'BoRHeZ AI Game Studio'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/preview game_factory/AGENT_PLAN.md game_factory/AGENT_QA.md game_factory/CODER_REPORT.md
+          # Normalize trailing whitespace in generated Markdown before the strict Git check.
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('game_factory/AGENT_PLAN.md','game_factory/AGENT_QA.md','game_factory/CODER_REPORT.md'):
+              path=Path(name)
+              if path.exists(): path.write_text(path.read_text().rstrip()+'\\n')
+          PY
+          git add game_factory/AGENT_PLAN.md game_factory/AGENT_QA.md game_factory/CODER_REPORT.md
           git diff --cached --check
           git commit -m "AI Game Studio: browser-tested playable candidate #$GITHUB_RUN_ID"
           git push origin HEAD:main
