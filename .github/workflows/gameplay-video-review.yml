@@ -9,15 +9,20 @@ on:
   schedule:
     - cron: "20 7 * * *"
 permissions:
-  contents: read
+  contents: write
   issues: write
   actions: read
+concurrency:
+  group: borhez-gameplay-video-reviews
+  cancel-in-progress: false
 jobs:
   review:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -37,13 +42,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python game_factory/video_pipeline.py
+      - name: Convert review into validated studio request and dispatch it
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python game_factory/video_bridge.py
       - name: Preserve review and edited video
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gameplay-review-${{ github.run_id }}
           path: |
-            artifacts/video_review/
+            artifacts/video_review/recording.json
+            artifacts/video_review/transcript.json
+            artifacts/video_review/visual_review.md
+            artifacts/video_review/development_report.md
+            artifacts/video_review/gameplay_highlights.mp4
+            artifacts/video_review/studio_request.json
+            artifacts/video_review/studio_handoff.json
           if-no-files-found: warn
           retention-days: 30
           compression-level: 0

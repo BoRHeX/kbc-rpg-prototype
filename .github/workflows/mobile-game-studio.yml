@@ -1,6 +1,8 @@
 name: Mobile Minigame Studio
 run-name: Mobile game job · ${{ inputs.game || 'queued request' }}
 on:
+  repository_dispatch:
+    types: [borhez-video-review]
   push:
     branches: [main]
     paths: ['game_factory/requests/current.json']

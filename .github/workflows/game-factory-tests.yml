@@ -20,6 +20,7 @@ jobs:
       - run: node --check studio/web/app.js
       - run: python -m unittest game_factory.test_agent_memory game_factory.test_agent_api game_factory.test_development_council -v
       - run: python -m unittest discover -s game_factory/tests -v
+      - run: python -m unittest game_factory.test_video_bridge -v
       - run: python -m unittest discover -s studio/tests -v
       - run: python game_factory/council.py --out /tmp/borhez-factory-report.json
       - run: python -c "import json; x=json.load(open('/tmp/borhez-factory-report.json')); assert len(x['ballots'])==5"
