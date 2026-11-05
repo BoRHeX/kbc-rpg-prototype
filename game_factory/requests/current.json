@@ -1,14 +1,16 @@
 {
-    "id": "neon-salvage-update-003",
-    "mode": "update",
-    "game": "neon-salvage",
-    "title": "Neon Salvage",
-    "prompt": "Implement the next studio task from phone gameplay review #34 in the existing Neon Salvage game: make each earned pickup reward readable while dragging. Show a short, legible label such as '+10 · x1' or '+20 · x2' above the collected core, offset from the touch point and clamped inside the arena. Use the points and multiplier actually awarded BEFORE the existing multiplier advances; the NEXT CORE HUD continues to show the next reward multiplier. Keep the number and lifetime of labels bounded. Labels must not intercept touch, obscure the ship, or cover the HUD. Respect reduced motion with a stationary alternative. Pause freezes feedback lifetimes, and restart/replay clears them. Preserve the scoring rules, x5 cap, damage/reset behavior, hull, one-minute end conditions, controls, layout and existing game URL. Extend the existing read-only snapshot with a copied pickupFeedback array (points, multiplier, x, y, ttl) from actual live feedback state so the feature can be checked without state mutation. Read review #34 as evidence; the recording's time discontinuity is not a confirmed timer defect. Run the existing Neon Salvage logic harness and document your actual feature checks. Deliver a tested update of this game.",
-    "acceptance": [
-        "The first two pickups visibly report +10 at x1 and +20 at x2 using the awarded multiplier; capped pickups report +50 at x5. Existing NEXT CORE progression and scoring stay correct.",
-        "Reward labels are legible above the pickup/touch location, stay inside the playable area, and do not intercept touch input or obscure the ship or HUD.",
-        "Feedback is bounded in count and lifetime, freezes while paused, expires during play, and clears on restart/replay. Reduced-motion mode keeps the reward readable without floating animation.",
-        "The read-only diagnostic snapshot exposes fresh copies of actual pickupFeedback state for verification; it cannot mutate gameplay.",
-        "Run node --check for game.js, node game_factory/check_neon_logic.cjs, and concrete pickup-feedback checks; retain functional mobile start/drag/pause/resume/restart and the 60-second result flow."
-    ]
+  "id": "studio-original-create-001",
+  "mode": "create",
+  "game": "studio-original-001",
+  "title": "Studio Original 001 — agents' choice",
+  "prompt": "The player tried Neon Salvage and honestly did not like it. The studio is commissioned to create an ENTIRELY NEW game. The user's whole creative brief is: MOBILE. LIGHT. SIMPLE. FUN. Let the studio decide the concept, real game name, theme, visual style, mechanics, challenge, scoring and session length. The game ID and request title are administrative placeholders, not a required creative name: choose your own name for the actual game. Do not ask the player to choose concepts. Record the concept the council selected and why its moment-to-moment interaction should be enjoyable. Build a genuinely different core loop, not a reskin or extension of Neon Salvage. Prioritize an immediately understandable, satisfying interaction and easy replay over feature count. Use the existing mobile game host and interface contract, with responsive one-finger play. Keep it self-contained and quick to load: combined index.html/game.js/game.css at most 200,000 bytes; no external assets, libraries, services, accounts or downloads. Do not change any existing game. Implement the actual game and its end/replay loop. The coding agent must run concrete game-specific checks for its chosen scoring/progression and end conditions, in addition to the independent mobile gate. Explain what the checks actually prove; whether the player finds it fun remains a playtest question. Complete the tested publication to a new stable play URL.",
+  "acceptance": [
+    "The studio chooses and implements an original concept and real game name. The actual page presents that name and one short, clear instruction; no creative selection is passed back to the player.",
+    "The new game's core loop is meaningfully different from Neon Salvage, with a clear player action, immediate understandable feedback, a goal or challenge and a repeatable end/replay loop.",
+    "Mobile portrait play is usable at 390x844 and 360x780, with one-finger controls, readable UI, reachable buttons and no horizontal overflow or accidental page scrolling during gameplay.",
+    "The combined HTML/CSS/JS is at most 200,000 bytes and runs entirely from local game files without external libraries, assets, accounts, network services or downloads.",
+    "Touch start, actual player interaction, pause/resume, pointer cancellation, clean restart and replay work. The visible score or progress corresponds to real game state.",
+    "The coding agent executes and reports concrete checks of its chosen scoring/progression and success/failure or end conditions, plus syntax checking. The independent mobile acceptance and independent QA must pass before publication.",
+    "Publish to a new game URL, preserve all existing games, retain the accepted source and evidence, and verify the exact live files."
+  ]
 }
