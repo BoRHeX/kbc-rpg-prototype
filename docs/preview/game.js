@@ -95,16 +95,6 @@
     if(pointer){vx+=pointer.vx;vy+=pointer.vy;}
     const mag=Math.hypot(vx,vy); return mag>0?{x:vx/Math.max(1,mag),y:vy/Math.max(1,mag)}:{x:0,y:0};
   }
-  // Reviewed Cataclysm 0.2 mechanic: deterministic cooldown and frame-rate-scaled trigger.
-  function hesitationFactor(enemy, distance, dt, sample) {
-    enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);
-    enemy.fearCooldown=Math.max(0,enemy.fearCooldown-dt);
-    if(enemy.fearCooldown===0&&distance<115&&sample()<1-Math.exp(-0.8*dt)){
-      enemy.fearTimer=.38;
-      enemy.fearCooldown=3;
-    }
-    return enemy.fearTimer>0 ? .12 : 1;
-  }
   function spawnEnemy() {
     if(game.enemies.length>=cfg.maxEnemies)return;
     const p=game.player,angle=rnd(0,TWO),r=rnd(520,730);
@@ -112,7 +102,7 @@
     game.enemies.push({x:clamp(p.x+Math.cos(angle)*r,30,2370),y:clamp(p.y+Math.sin(angle)*r,30,2370),
       r:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
       speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
-      phase:rnd(0,TWO),weight:extra,hurt:0,fearTimer:0,fearCooldown:0});
+      phase:rnd(0,TWO),weight:extra,hurt:0});
   }
   function shotAtEnemy() {
     if(!game.enemies.length)return;
@@ -141,12 +131,10 @@
     }
     const input=moveInput();p.x=clamp(p.x+input.x*p.speed*dt,25,2375);
     p.y=clamp(p.y+input.y*p.speed*dt,25,2375);
-    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(.24,cfg.shotInterval/(1+.075*(p.level-1)));}
+    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=cfg.shotInterval/(1+.1*(p.level-1));}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
-      const factor=hesitationFactor(enemy,d,dt,rand);
-      enemy.x+=dx/d*enemy.speed*dt*factor;
-      enemy.y+=dy/d*enemy.speed*dt*factor;
+      enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(d<p.r+enemy.r-3&&p.inv===0){
         p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
@@ -176,8 +164,7 @@
         sound(740,.09,'sine');
         if(g.xp>=7+p.level*3){
           g.xp=0;p.level++;p.maxHp=Math.min(6,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);
-          p.speed+=8;p.damage+=.25;
-          if(p.level%3===0){p.maxHp=Math.min(8,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);notify('LEVEL '+p.level+' · SURVIVOR BONUS!',2.2);}\n          else notify('LEVEL '+p.level+' · CAT POWER UP!',2.2);sound(1050,.2);
+          p.speed+=8;p.damage+=.25;notify('LEVEL '+p.level+' · CAT POWER UP!',2.2);sound(1050,.2);
         }
       }else if(f.ttl<=0) g.fishItems.splice(i,1);
     }
@@ -238,7 +225,6 @@
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
       circle(0,0,e.r,e.hurt?'#d2fff0':'#6faa8f');
-      if(e.fearTimer>0){outline(0,0,e.r+5,'#f5cf75',3);circle(0,-e.r-9,5,'#f5cf75');}
       polygon(0,0,[[-e.r*.65,-e.r*.5],[-e.r*.9,-e.r*1.2],[-e.r*.12,-e.r*.8]],'#6faa8f');
       polygon(0,0,[[e.r*.65,-e.r*.5],[e.r*.9,-e.r*1.2],[e.r*.12,-e.r*.8]],'#6faa8f');
       circle(-e.r*.35,-2,3.4,'#fb8195');circle(e.r*.35,-2,3.4,'#fb8195');
@@ -317,7 +303,66 @@
       $('thumb').style.transform='translate(0,0)';}
   }
   canvas.addEventListener('pointerup',pointerEnd);
-  canvas.addEventListener('pointercancel',pointerEnd);
+  canvas.addEventListener('pointercancel', ev => {
+    if (pointer && ev.pointerId === pointer.id) {
+      try {
+        canvas.releasePointerCapture(ev.pointerId);
+      } catch (e) { /* ignore */ }
+      pointer = null;
+      $('stick').hidden = true;
+      $('thumb').style.transform = 'translate(0,0)';
+    }
+  });
+
+  /* Fallback touch handlers for Samsung Android pointer event quirk workaround */
+  const ua = navigator.userAgent || '';
+  const isSamsungAndroid = ua.includes('Android') && ua.includes('Samsung');
+  if (isSamsungAndroid) {
+    canvas.addEventListener('touchstart', ev => {
+      if (!game || game.mode !== 'running' || pointer) return;
+      ev.preventDefault();
+      const t = ev.changedTouches[0];
+      const rect = canvas.getBoundingClientRect();
+      const p = {
+        x: (t.clientX - rect.left) * W / rect.width,
+        y: (t.clientY - rect.top) * H / rect.height
+      };
+      pointer = { id: 'touch', startX: p.x, startY: p.y, vx: 0, vy: 0 };
+      $('stick').hidden = false;
+      const box = canvas.getBoundingClientRect();
+      const scale = box.width / W, sy = box.height / H;
+      $('stick').style.left = (p.x * scale - 57) + 'px';
+      $('stick').style.top = (p.y * sy - 57) + 'px';
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', ev => {
+      if (!pointer) return;
+      ev.preventDefault();
+      const t = ev.changedTouches[0];
+      const rect = canvas.getBoundingClientRect();
+      const p = {
+        x: (t.clientX - rect.left) * W / rect.width,
+        y: (t.clientY - rect.top) * H / rect.height
+      };
+      const dx = p.x - pointer.startX;
+      const dy = p.y - pointer.startY;
+      const d = Math.max(1, Math.hypot(dx, dy));
+      pointer.vx = dx / Math.max(55, d);
+      pointer.vy = dy / Math.max(55, d);
+      const scale = canvas.getBoundingClientRect().width / W;
+      $('thumb').style.transform = 'translate(' + pointer.vx * 33 * scale + 'px,' + pointer.vy * 33 * scale + 'px)';
+    }, { passive: false });
+
+    function touchEnd(ev) {
+      if (!pointer) return;
+      ev.preventDefault();
+      pointer = null;
+      $('stick').hidden = true;
+      $('thumb').style.transform = 'translate(0,0)';
+    }
+    canvas.addEventListener('touchend', touchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', touchEnd, { passive: false });
+  }
   window.addEventListener('keydown',ev=>{
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(ev.key))ev.preventDefault();
     keys[ev.key]=true;if(ev.key==='Escape'||ev.key===' ')pause();
