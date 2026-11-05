@@ -1,11 +1,14 @@
 name: Autonomous Cataclysm Game Studio
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'game_factory/STUDIO_TRIGGER.md'
   schedule:
     - cron: '15 7,19 * * *'
   workflow_dispatch:
 permissions:
   contents: write
-  pull-requests: write
   issues: read
 concurrency:
   group: autonomous-game-studio
@@ -13,36 +16,31 @@ concurrency:
 jobs:
   iterate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Collect tester feedback and avoid overlapping candidate work
+      - name: Collect tester feedback
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          count="$(gh pr list --state open --json headRefName --jq '[.[] | select(.headRefName | startswith("ai/autonomous-"))] | length')"
-          if [ "$count" -gt 0 ]; then
-            echo 'Unreviewed candidate exists; skip paid development to prevent runaway costs'
-            echo 'SKIP_CYCLE=true' >> "$GITHUB_ENV"
-            exit 0
-          fi
-          gh issue list --state all --limit 20 --json number,title,body,labels --jq '.[] | select((.labels | map(.name) | index("gameplay-feedback")) != null) | "Issue #\(.number): \(.title)\n\(.body)\n"' > game_factory/RECENT_TESTER_ISSUES.md\n          cat game_factory/RECENT_TESTER_ISSUES.md >> game_factory/TESTER_FEEDBACK.md
-      - name: Baseline tests
-        if: env.SKIP_CYCLE != 'true'
+          gh issue list --state all --limit 40 --json number,title,body,labels --jq '.[] | select((.labels | map(.name) | index("gameplay-feedback")) != null) | "Issue #\(.number): \(.title)\n\(.body)\n"' > game_factory/RECENT_TESTER_ISSUES.md
+          cat game_factory/RECENT_TESTER_ISSUES.md >> game_factory/TESTER_FEEDBACK.md
+      - name: Validate baseline
         run: |
           node --check studio/web/game.js
           python -m unittest discover -s game_factory/tests -v
           python -m unittest discover -s studio/tests -v
-      - name: Restore persistent Council memory
-        if: env.SKIP_CYCLE != 'true'
+      - name: Restore Council memory
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -50,15 +48,14 @@ jobs:
           mkdir -p artifacts
           run="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=autonomous-council-memory&per_page=50" --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')" || run=""
           if [ -n "$run" ]; then gh run download "$run" --name autonomous-council-memory --dir artifacts || true; fi
-      - name: Run seven real AI roles with bounded API calls
-        if: env.SKIP_CYCLE != 'true'
+      - name: Seven-agent development cycle
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
         run: |
           test -n "$OPENAI_API_KEY"
           python -m game_factory.autonomous_studio
-      - name: Preserve agent decisions
+      - name: Preserve agent memory
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -66,19 +63,27 @@ jobs:
           path: artifacts/autonomous.sqlite3
           if-no-files-found: ignore
           retention-days: 90
-      - name: Create reviewable candidate
-        if: success() && env.SKIP_CYCLE != 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Build isolated playable preview
         shell: bash
         run: |
           set -euo pipefail
-          branch="ai/autonomous-$GITHUB_RUN_ID"
+          mkdir -p docs/preview
+          cp docs/v03/index.html docs/preview/index.html
+          cp docs/v03/game.css docs/preview/game.css
+          cp docs/v03/game-config.json docs/preview/game-config.json
+          cp studio/web/game.js docs/preview/game.js
+          sed -i "s|fetch('/game-config.json')|fetch('./game-config.json')|g" docs/preview/game.js
+          sed -i 's/ALPHA 0.3/AUTONOMOUS PREVIEW/g' docs/preview/index.html
+          node --check docs/preview/game.js
+          printf 'Run %s\n' "$GITHUB_RUN_ID" > docs/preview/BUILD_INFO.txt
+      - name: Publish verified source and preview
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name 'BoRHeZ Autonomous Studio'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git switch -c "$branch"
-          git add studio/web/game.js game_factory/AUTONOMOUS_REPORT.md
+          git add studio/web/game.js game_factory/AUTONOMOUS_REPORT.md docs/preview
           git diff --cached --check
-          git commit -m "AI Studio: autonomous tested game iteration"
-          git push origin "$branch"
-          gh pr create --draft --base main --head "$branch" --title "Autonomous Cataclysm iteration #$GITHUB_RUN_ID" --body-file game_factory/AUTONOMOUS_REPORT.md || echo "::warning::Candidate branch saved but automatic PR creation blocked"
+          git commit -m "AI Studio: tested autonomous game iteration #$GITHUB_RUN_ID"
+          git push origin HEAD:main
+          echo "Playable preview: https://borhex.github.io/kbc-rpg-prototype/preview/" >> "$GITHUB_STEP_SUMMARY"
