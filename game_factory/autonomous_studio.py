@@ -8,7 +8,8 @@ import uuid
 from pathlib import Path
 from game_factory.agent_api import ask_agent
 from game_factory.agent_memory import CouncilMemory
-from game_factory.development_council import apply_exact_edits, verify_game, GAME_REL
+from game_factory.development_council import verify_game, GAME_REL
+from game_factory.line_editor import apply_line_edits
 
 ROOT = Path(__file__).resolve().parent.parent
 BACKLOG = ROOT / "game_factory" / "AUTONOMOUS_BACKLOG.md"
@@ -40,25 +41,18 @@ def cycle(memory_path: Path, feedback: str, model: str):
     # implementer concrete validation feedback and a chance to repair it.
     # Never publish an invalid or untested change.
     patch_contract = (
-        "Implement the selected task as an actual minimal code patch. "
-        "Return JSON object with proposed_action as an ARRAY (not an object, "
-        "not prose) containing 1 or 2 edit objects. Each edit MUST have exactly "
-        "path, old, new. path must be studio/web/game.js. old must be an EXACT "
-        "unique single line copied from the supplied source (8-500 characters). "
-        "new must be replacement JavaScript (8-3500 characters). "
-        "Copy old verbatim from exact_unique_anchor_lines. NEVER paraphrase an anchor. "
-        "Example shape: {\\\"proposed_action\\\":[{\\\"path\\\":\\\"studio/web/game.js\\\",\\\"old\\\":\\\"exact original line\\\",\\\"new\\\":\\\"replacement line\\\"}]}. "
-        "Do not invent an anchor. Do not include network access or dynamic eval. "
-        "You can change any small mechanic or UX behavior; no fixed zombie-only task."
+        "Implement the selected task using the deterministic line editor. "
+        "Return JSON with proposed_action as 1-2 edits, each having path, line, new. "
+        "line is the ONE-BASED ORIGINAL SOURCE LINE NUMBER from numbered_source. "
+        "new is JavaScript replacement for that entire source line (8-3500 chars). "
+        "Use a single line number even if new contains several JavaScript lines. "
+        "Do not include old text, do not invent line numbers, do not add network calls. "
+        "Example: {\\\"proposed_action\\\":[{\\\"path\\\":\\\"studio/web/game.js\\\",\\\"line\\\":42,\\\"new\\\":\\\"const value = 1;\\\"}]} "
+        "Implement a meaningful small fix; avoid unsupported claims."
     )
-    # Supply authoritative candidate lines from the COMPLETE source, not a
-    # truncated excerpt. Agents must copy anchors from this list verbatim.
-    candidates = [line for line in source.splitlines()
-                  if 8 <= len(line) <= 500 and source.count(line) == 1]
-    anchors = candidates[-170:]
+    numbered_source = "\\n".join(f"{i}: {line}" for i, line in enumerate(source.splitlines(), 1))
     evidence = {"producer": producer, "design": design, "engineer": engineer,
-                "critic": critic, "source": source,
-                "exact_unique_anchor_lines": anchors}
+                "critic": critic, "numbered_source": numbered_source}
     changed = None
     edits = None
     repair_error = None
@@ -66,14 +60,11 @@ def cycle(memory_path: Path, feedback: str, model: str):
         instruction = patch_contract
         if repair_error:
             instruction += ("\nPREVIOUS PATCH REJECTED BY VALIDATOR: " + repair_error +
-                            ". Return a corrected proposed_action ARRAY using exact source anchors.")
+                            ". Return corrected line numbers from numbered_source, not copied source anchors.")
         implementer = ask("implementer", instruction, evidence, 3500)
         edits = implementer.get("proposed_action")
-        # Accept the common single-edit-object response but still validate it.
-        if isinstance(edits, dict) and {"path", "old", "new"} <= edits.keys():
-            edits = [edits]
         try:
-            changed = apply_exact_edits(source, edits)
+            changed = apply_line_edits(source, edits)
             break
         except (ValueError, TypeError) as exc:
             repair_error = str(exc)
