@@ -7,7 +7,7 @@
 <header class="top">
   <a href="./" class="back">‹ <span>STUDIO</span></a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version">AI BUILD · RUN 41947541546</div>
+  <div class="version" id="build-version">AI PLAYTEST 42010567811</div>
 </header>
 <main class="shell">
   <section class="intro">
@@ -27,6 +27,8 @@
       <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
       <div class="hud-block"><small>HEALTH</small><b id="health">♥♥♥</b></div>
     </div>
+    <p id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px"></p>
+    <noscript>JavaScript is required to start the game. Enable it and reload.</noscript>
     <div id="arena" class="arena">
       <canvas id="canvas" width="720" height="1000" aria-label="Survive the night as a cat. Drag to move."></canvas>
       <div id="start-overlay" class="overlay">
@@ -34,7 +36,7 @@
         <div class="overline">BO RHEZ ARCADE · EPISODE 001</div>
         <h2 id="overlay-title">MIDNIGHT SURVIVAL</h2>
         <p id="overlay-copy">Drag to move your cat. Dodge zombies, collect fish, and fire automatically at nearby threats. Survive as long as you can.</p>
-        <button id="play" type="button" class="primary">▶ START RUN</button><small id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px;max-width:290px"></small>
+        <button id="play" type="button" class="primary" disabled>LOADING GAME…</button>
         <small id="best">BEST RUN: —</small>
       </div>
       <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
@@ -64,15 +66,43 @@
 </main>
 <footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
 <script>
-window.addEventListener('load', function(){ setTimeout(function(){ if(!window.CATACLYSM_READY){var status=document.getElementById('runtime-status');if(status){status.hidden=false;status.textContent='Game script did not initialize. Reload this page or open it in Chrome.';}} },2000); });
-window.addEventListener('error', function(event) {
-  var status=document.getElementById('runtime-status');
-  if(status){status.hidden=false;status.textContent='Game error: '+(event.message||'script failed to load');}
-});
-window.addEventListener('unhandledrejection', function(event) {
-  var status=document.getElementById('runtime-status');
-  if(status){status.hidden=false;status.textContent='Game error: '+String(event.reason||'unhandled promise');}
-});
+(function () {
+  var expected = '20261105-start-3';
+  var status = document.getElementById('runtime-status');
+  var play = document.getElementById('play');
+  var acknowledged = false;
+  var timer = setTimeout(function () {
+    if (!acknowledged) fail('Game initialization timed out. Reload this page.');
+  }, 10000);
+  function fail(message) {
+    clearTimeout(timer);
+    status.hidden = false;
+    status.textContent = message;
+    play.disabled = true;
+    play.textContent = 'RELOAD REQUIRED';
+  }
+  window.CATACLYSM_BOOT = {
+    fail: fail,
+    ready: function (build) {
+      document.getElementById('build-version').textContent = 'AI PLAYTEST 42010567811 · CODE ' + build;
+      if (build !== expected) {
+        fail('Game files are from different builds. Reload this page to update.');
+        throw Error('Game build mismatch: expected ' + expected + ', loaded ' + build);
+      }
+      acknowledged = true;
+      clearTimeout(timer);
+      window.CATACLYSM_READY = true;
+      play.disabled = false;
+      play.textContent = '▶ START RUN';
+    }
+  };
+  window.addEventListener('error', function (event) {
+    fail('Game error: ' + (event.message || 'resource failed to load') + '. Reload this page.');
+  });
+  window.addEventListener('unhandledrejection', function (event) {
+    fail('Game error: ' + String(event.reason || 'unhandled promise') + '. Reload this page.');
+  });
+})();
 </script>
-<script src="./game.js?v=20261105-2" defer onerror="document.getElementById('runtime-status').hidden=false;document.getElementById('runtime-status').textContent='Game code failed to load. Please reload.'"></script>
+<script src="./game.js?v=20261105-start-3" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>

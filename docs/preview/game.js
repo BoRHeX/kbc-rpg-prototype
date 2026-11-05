@@ -1,6 +1,7 @@
 /* CATACLYSM: fully original mobile-first Canvas arcade by BoRHeZ Games. */
 'use strict';
 (function () {
+  const BUILD = '20261105-start-3';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const W = 720, H = 1000, TWO = Math.PI * 2;
@@ -31,8 +32,11 @@
   function saveBest() {
     if (!game) return;
     const score = Math.floor(game.t*2 + game.kills*7 + game.fish*9);
-    const previous = Number(localStorage.getItem('cataclysm-best')||0);
-    try { if(score > previous) localStorage.setItem('cataclysm-best',String(score)); }
+    let previous = 0;
+    try {
+      previous = Number(localStorage.getItem('cataclysm-best')||0) || 0;
+      if(score > previous) localStorage.setItem('cataclysm-best',String(score));
+    }
     catch (err) { /* storage may be disabled */ }
     $('best').textContent = 'BEST SCORE: '+Math.max(score,previous).toLocaleString();
   }
@@ -370,7 +374,6 @@
   window.addEventListener('keyup',ev=>{keys[ev.key]=false;});
   window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&game&&game.mode==='running')pause();});
-  window.CATACLYSM_READY=true;
   $('play').onclick=resumeOrStart;$('pause').onclick=pause;
   $('restart').onclick=()=>{start();};$('mute').onclick=()=>{
     muted=!muted;$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
@@ -425,5 +428,12 @@
   }
   try { $('best').textContent='BEST SCORE: '+Number(localStorage.getItem('cataclysm-best')||0).toLocaleString(); }
   catch (err) {$('best').textContent='LOCAL SCORE UNAVAILABLE';}
+  // Read-only snapshots let QA verify simulation progress without changing game state.
+  window.CATACLYSM_DIAGNOSTICS = Object.freeze({
+    snapshot: () => ({build: BUILD, mode: game ? game.mode : 'ready',
+      time: game ? game.t : 0,
+      player: game ? {x: game.player.x, y: game.player.y} : null})
+  });
   last=performance.now();requestAnimationFrame(frame);
+  window.CATACLYSM_BOOT.ready(BUILD);
 })();
