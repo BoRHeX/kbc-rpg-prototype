@@ -1,4 +1,5 @@
 {
   "request_id": "neon-salvage-update-003",
-  "reason": "Deliver the already accepted pickup-feedback update from its committed source without repeating AI inference."
+  "reason": "Deliver the already accepted pickup-feedback update from its committed source without repeating AI inference.",
+  "cancel_deployment": "2b349c857fd854908fb1eb8a05a46067d5a4aafc"
 }

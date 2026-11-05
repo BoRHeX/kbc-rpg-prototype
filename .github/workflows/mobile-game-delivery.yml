@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       # This workflow starts after the accepted commit exists. Its GITHUB_SHA
       # therefore identifies the source actually being deployed.
@@ -44,22 +44,53 @@ jobs:
         env:
           REQUEST_ID: ${{ github.event.client_payload.request_id || inputs.request_id || '' }}
         run: python -m game_factory.mobile_jobs verify_published
+      - name: Cancel an explicitly marked obsolete deployment during recovery
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          obsolete="$(python - <<'PYCANCEL'
+          import json,re,os
+          from pathlib import Path
+          value=json.loads(Path('game_factory/DELIVERY_REQUEST.json').read_text()).get('cancel_deployment','')
+          if value and (not re.fullmatch(r'[0-9a-f]{40}',value) or value==os.environ['GITHUB_SHA']):
+              raise SystemExit('Refusing invalid/current deployment cancellation')
+          print(value)
+          PYCANCEL
+          )"
+          if [ -n "$obsolete" ]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/deployments/$obsolete/cancel" --silent || echo "::warning::Obsolete deployment cancellation was not accepted; successful deployment and live verification are still required"
+          fi
       - uses: actions/upload-pages-artifact@v3
         with:
           name: mobile-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: docs
       - name: Deploy the accepted source commit
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
         with:
           artifact_name: mobile-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Allow a competing Pages deployment to finish before one retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+      - name: Retry delivery once using the same accepted artifact
+        if: steps.deployment.outcome == 'failure'
+        id: deployment_retry
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: mobile-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
       - name: Verify exact live game bytes
         env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+          PAGES_URL: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
         run: python game_factory/verify_live.py artifacts/mobile/delivery-receipt.json "$PAGES_URL"
       - name: Record delivery evidence and the stable play link
         env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+          PAGES_URL: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
           PLAY_PATH: ${{ steps.accepted.outputs.play_path }}
           REQUEST_ID: ${{ steps.accepted.outputs.request_id }}
         run: |
