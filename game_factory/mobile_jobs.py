@@ -201,6 +201,11 @@ def review_command():
     memory = CouncilMemory(WORK / "memory.sqlite3")
     evidence = {"request": job["request"],
                 "tests": json.loads((WORK / "acceptance.json").read_text()),
+                "review_stage": {
+                    "decision": "Approve or reject the isolated game preview before publication.",
+                    "test_order": "The independent browser tests ran after the coding agent's report. Their executed results, not earlier sandbox limitations in that report, describe current browser acceptance.",
+                    "later_steps": "After preview approval the separate publisher commits source, deploys and verifies exact live bytes. Physical-device playtesting and human enjoyment feedback follow public delivery.",
+                },
                 "coder_report": (WORK / "CODER_REPORT.md").read_text()[:12000],
                 "source": {name: (ROOT / job["target"] / name).read_text()
                            for name in GAME_FILES if (ROOT / job["target"] / name).exists()},
@@ -210,6 +215,11 @@ def review_command():
             "Independently review ACTUAL source, request criteria and executed browser evidence. "
             "Approve only if the prompt has been implemented and evidence supports a playable isolated preview. "
             "Passing standard controls is insufficient if the requested gameplay is absent. "
+            "This is a PRE-PUBLICATION preview decision. Do not require publication or live-file verification "
+            "before approving the preview: the separate publisher performs those steps after approval. "
+            "Mark those delivery criteria pending for the publisher, rather than failed preview criteria. "
+            "Physical-device testing and human enjoyment are later playtests, not preview approval gates "
+            "unless the request explicitly requires physical-device evidence. A mobile-game requirement alone does not require it. "
             "proposed_action MUST be an object with approve_preview (JSON boolean), reason, "
             "criteria_results and remaining_limitations. Physical-device and fun testing remain unverified. "
             "Do not mistake a coder's earlier inability to run browsers for the later executed browser evidence.\n"
