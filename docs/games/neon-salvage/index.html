@@ -5,20 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080f20">
 <title>Neon Salvage</title>
-<link rel="stylesheet" href="./game.css?build=42084112851-1">
-<script src="./game.js?build=42084112851-1" defer></script>
+<link rel="stylesheet" href="./game.css?build=42084872030-1">
+<script src="./game.js?build=42084872030-1" defer></script>
 </head>
 <body>
 <main>
 <header><div><p class="eyebrow">DEEP SPACE / SECTOR 07</p><h1>Neon Salvage</h1></div><span class="badge">60s RUN</span></header>
-<section class="hud" aria-label="Run status"><div>SCORE<strong id="score">0</strong></div><div>TIME LEFT<strong id="time">60s</strong></div><div>HULL<strong id="hull">3 / 3</strong></div></section>
+<section class="hud" aria-label="Run status"><div>SCORE<strong id="score">0</strong></div><div>TIME LEFT<strong id="time">60s</strong></div><div>NEXT CORE<strong id="multiplier">x1</strong></div><div>HULL<strong id="hull">3 / 3</strong></div></section>
 <div class="arena">
+<p id="chain-feedback" role="status" aria-live="polite"></p>
 <canvas id="canvas" width="360" height="480" aria-label="Space salvage arena. Drag to move; collect cyan cores and avoid red debris."></canvas>
 <div id="overlay"><p class="eyebrow" id="status">SALVAGE SIGNAL ACQUIRED</p><h2 id="heading">Bring the light home.</h2><p id="message">Collect cyan cores. Dodge red debris.<br>Keep your three hull points for 60 seconds.</p><button id="play">Launch ship</button></div>
 </div>
 <div class="controls"><button id="pause" disabled>Pause</button><button id="restart">Restart</button></div>
-<p class="help"><span class="cyan">◆</span> CORES +10 <span class="red">◆</span> DEBRIS −1 HULL<br>Drag anywhere to steer · Arrow keys / WASD</p>
-<footer><span>ONE SHIP. ONE MINUTE.</span><span id="build-version">PLAYTEST 42084112851-1</span></footer>
+<p class="help"><span class="cyan">◆</span> CORES +10 × CHAIN (MAX x5) <span class="red">◆</span> DEBRIS −1 HULL<br>Drag anywhere to steer · Arrow keys / WASD</p>
+<footer><span>ONE SHIP. ONE MINUTE.</span><span id="build-version">PLAYTEST 42084872030-1</span></footer>
 </main>
 </body>
 </html>

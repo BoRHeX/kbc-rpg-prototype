@@ -3,7 +3,7 @@
   const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
   const el = id => document.getElementById(id);
   const W = 360, H = 480, reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let mode = 'ready', time = 0, score = 0, hull = 3, invincible = 0, flash = 0;
+  let mode = 'ready', time = 0, score = 0, hull = 3, multiplier = 1, chainLost = 0, invincible = 0, flash = 0;
   let player = {x:180,y:310}, cores = [], debris = [], sparks = [], pointer = null, target = null;
   let last = performance.now();
   const keys = new Set(), random = (a,b) => a + Math.random()*(b-a);
@@ -17,7 +17,7 @@
     return p;
   }
   function setup() {
-    time=0; score=0; hull=3; invincible=0; flash=0; sparks=[]; pointer=null; target=null; keys.clear();
+    time=0; score=0; hull=3; multiplier=1; chainLost=0; invincible=0; flash=0; sparks=[]; pointer=null; target=null; keys.clear();
     player={x:180,y:310}; cores=[];
     for(let i=0;i<5;i++) cores.push(core());
     debris=Array.from({length:6},(_,i)=>{
@@ -27,6 +27,8 @@
   }
   function ui() {
     el('score').textContent=score; el('time').textContent=Math.ceil(60-time)+'s'; el('hull').textContent=hull+' / 3';
+    el('multiplier').textContent='x'+multiplier;
+    el('chain-feedback').textContent=chainLost>0?'CHAIN LOST · RESET TO x1':'';
     el('pause').disabled=mode==='ready'||mode==='over'; el('pause').textContent=mode==='paused'?'Resume':'Pause';
     el('overlay').hidden=mode==='running';
   }
@@ -65,18 +67,18 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='running')pause();});
   function burst(x,y,color){if(!reduced.matches)for(let i=0;i<10;i++)sparks.push({x,y,vx:random(-65,65),vy:random(-65,65),life:.45,color});}
   function update(dt) {
-    time=Math.min(60,time+dt);invincible=Math.max(0,invincible-dt);flash=Math.max(0,flash-dt);
+    time=Math.min(60,time+dt);chainLost=Math.max(0,chainLost-dt);invincible=Math.max(0,invincible-dt);flash=Math.max(0,flash-dt);
     let dx=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);
     let dy=(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0);
     if(dx||dy){const len=Math.hypot(dx,dy);player.x+=dx/len*220*dt;player.y+=dy/len*220*dt;}
     else if(target){const dist=Math.hypot(target.x-player.x,target.y-player.y),f=Math.min(1,460*dt/(dist||1));player.x+=(target.x-player.x)*f;player.y+=(target.y-player.y)*f;}
     player.x=clamp(player.x,12,W-12);player.y=clamp(player.y,12,H-12);
-    cores.forEach((c,i)=>{if(Math.hypot(player.x-c.x,player.y-c.y)<21){score+=10;burst(c.x,c.y,'#73f4e9');cores[i]=core();}});
+    cores.forEach((c,i)=>{if(Math.hypot(player.x-c.x,player.y-c.y)<21){score+=10*multiplier;multiplier=Math.min(5,multiplier+1);burst(c.x,c.y,'#73f4e9');cores[i]=core();}});
     for(const d of debris){
       const speed=1+time/110;d.x+=d.vx*dt*speed;d.y+=d.vy*dt*speed;d.angle+=dt*.65;
       if(d.x<d.r||d.x>W-d.r){d.vx*=-1;d.x=clamp(d.x,d.r,W-d.r);}
       if(d.y<d.r||d.y>H-d.r){d.vy*=-1;d.y=clamp(d.y,d.r,H-d.r);}
-      if(invincible===0&&Math.hypot(player.x-d.x,player.y-d.y)<d.r+10){hull--;invincible=1.4;flash=.3;burst(player.x,player.y,'#ff647e');if(hull===0){finish();return;}}
+      if(invincible===0&&Math.hypot(player.x-d.x,player.y-d.y)<d.r+10){hull--;multiplier=1;chainLost=1.2;invincible=1.4;flash=.3;burst(player.x,player.y,'#ff647e');if(hull===0){finish();return;}}
     }
     sparks=sparks.filter(s=>{s.life-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;return s.life>0;});
     if(time>=60)finish();ui();
@@ -103,6 +105,6 @@
   function resize(){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);draw();}
   new ResizeObserver(resize).observe(canvas);
   function frame(now){const dt=Math.min(.1,Math.max(0,(now-last)/1000));last=now;if(mode==='running'){let remaining=dt;while(remaining>0&&mode==='running'){const step=Math.min(remaining,1/120);update(step);remaining-=step;}}draw();requestAnimationFrame(frame);}
-  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode,time,score,player:{x:player.x,y:player.y},hull,invincible,cores:cores.map(c=>({...c})),debris:debris.map(d=>({...d}))})});
+  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode,time,score,multiplier,player:{x:player.x,y:player.y},hull,invincible,cores:cores.map(c=>({...c})),debris:debris.map(d=>({...d}))})});
   setup();ui();resize();requestAnimationFrame(frame);
 })();
