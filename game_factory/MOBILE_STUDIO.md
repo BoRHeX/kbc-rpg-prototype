@@ -78,6 +78,14 @@ commit; use its commit history to compare or restore earlier source. A stale
 job cannot overwrite a game updated since its baseline was captured. A failed
 coding, testing or QA stage does not change the accepted source or deployment.
 
+**Repository setup:** Settings → Pages → Build and deployment → Source must be
+**GitHub Actions**. Do not combine this publisher with **Deploy from a branch**;
+the studio uploads the accepted `docs/` artifact itself. Source was corrected
+on 2026-11-05 and update 003 then passed deployment and exact live verification
+in [delivery run 42098600322](https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/42098600322).
+If delivery is blocked by an obsolete Pages deployment, inspect this setting
+before retrying development. Re-run the failed delivery job after fixing hosting.
+
 Publication and deployment are separate steps. After committing accepted source,
 the studio dispatches **Deliver Accepted Mobile Game** and waits for its live
 verification. The delivery workflow starts from the accepted source commit,
