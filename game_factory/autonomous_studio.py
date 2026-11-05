@@ -46,19 +46,26 @@ def cycle(memory_path: Path, feedback: str, model: str):
         "path, old, new. path must be studio/web/game.js. old must be an EXACT "
         "unique single line copied from the supplied source (8-500 characters). "
         "new must be replacement JavaScript (8-3500 characters). "
+        "Copy old verbatim from exact_unique_anchor_lines. NEVER paraphrase an anchor. "
         "Example shape: {\\\"proposed_action\\\":[{\\\"path\\\":\\\"studio/web/game.js\\\",\\\"old\\\":\\\"exact original line\\\",\\\"new\\\":\\\"replacement line\\\"}]}. "
         "Do not invent an anchor. Do not include network access or dynamic eval. "
         "You can change any small mechanic or UX behavior; no fixed zombie-only task."
     )
+    # Supply authoritative candidate lines from the COMPLETE source, not a
+    # truncated excerpt. Agents must copy anchors from this list verbatim.
+    candidates = [line for line in source.splitlines()
+                  if 8 <= len(line) <= 500 and source.count(line) == 1]
+    anchors = candidates[-170:]
     evidence = {"producer": producer, "design": design, "engineer": engineer,
-                "critic": critic, "source": source[:19000]}
+                "critic": critic, "source": source,
+                "exact_unique_anchor_lines": anchors}
     changed = None
     edits = None
     repair_error = None
     for attempt in range(3):
         instruction = patch_contract
         if repair_error:
-            instruction += ("\\nPREVIOUS PATCH REJECTED BY VALIDATOR: " + repair_error +
+            instruction += ("\nPREVIOUS PATCH REJECTED BY VALIDATOR: " + repair_error +
                             ". Return a corrected proposed_action ARRAY using exact source anchors.")
         implementer = ask("implementer", instruction, evidence, 3500)
         edits = implementer.get("proposed_action")
