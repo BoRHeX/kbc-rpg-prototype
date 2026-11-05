@@ -8,7 +8,8 @@ async function testPlatform(browser,label,userAgent) {
   const page=await context.newPage();
   const errors=[];
   page.on('pageerror', e=>errors.push(e.message));
-  page.on('console', m=>{if(m.type()==='error') errors.push(m.text())});
+  page.on('console', m=>{if(m.type()==='error' && !/favicon\.ico/.test(m.location().url)) errors.push(m.text()+' at '+m.location().url)});
+  page.on('response', r=>{if(r.status()>=400 && !/favicon\.ico/.test(r.url())) errors.push('HTTP '+r.status()+' '+r.url())});
   try {
     const response=await page.goto(base,{waitUntil:'load',timeout:15000});
     if(!response || !response.ok()) throw Error('Preview HTTP not OK');
@@ -24,11 +25,15 @@ async function testPlatform(browser,label,userAgent) {
     const canvas=page.locator('#canvas'), rect=await canvas.boundingBox();
     if(!rect) throw Error('Canvas not visible');
     const x=rect.x+rect.width*.45, y=rect.y+rect.height*.55;
+    const snapshot=()=>page.evaluate(()=>window.CATACLYSM_DIAGNOSTICS.snapshot());
+    const before=await snapshot();
     const cdp=await context.newCDPSession(page);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
     await page.waitForTimeout(90);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+75,y:y+35,id:1}]});
-    await page.waitForTimeout(180);
+    await page.waitForTimeout(350);
+    const after=await snapshot();
+    if(!after.player || Math.hypot(after.player.x-before.player.x,after.player.y-before.player.y)<2) throw Error('Touch drag did not move the actual player');
     const stickVisible=await page.locator('#stick').isVisible();
     const thumb=await page.locator('#thumb').evaluate(el=>el.style.transform);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
@@ -36,15 +41,22 @@ async function testPlatform(browser,label,userAgent) {
     if(!thumb || thumb==='translate(0,0)' || thumb==='translate(0px, 0px)') throw Error('Touch drag did not move joystick: '+thumb);
     await page.locator('#pause').tap();
     if(!await page.locator('#start-overlay').isVisible()) throw Error('Pause button did not display overlay');
+    const paused=await snapshot();
+    await page.waitForTimeout(300);
+    if((await snapshot()).time!==paused.time) throw Error('Simulation continues while paused');
     await page.locator('#play').tap();
     if(!await page.locator('#start-overlay').isHidden()) throw Error('Resume button did not work');
     await page.locator('#restart').tap();
     if(!await page.locator('#start-overlay').isHidden()) throw Error('Restart button did not work');
+    const restarted=await snapshot();
+    if(restarted.time>0.5) throw Error('Restart did not reset simulation time');
+    const label=await page.locator('#build-version').innerText();
+    if(!label.includes(restarted.build)) throw Error('Displayed code build differs from runtime');
     if(errors.length) throw Error('Browser errors: '+errors.slice(0,4).join('; '));
-    console.log('PASS '+label+': touch start, timer '+time+', touch drag, pause/resume/restart; no page errors');
+    console.log('PASS '+label+': touch start, timer '+time+', player displacement, frozen pause, resume/restart, build identity; no page errors');
   } finally {await context.close()}
 }
-(async()=>{const b=await chromium.launch({headless:true});try{
+(async()=>{const b=await chromium.launch({headless:true,channel:process.env.BORHEZ_BROWSER_CHANNEL || undefined});try{
   await testPlatform(b,'Samsung Android',samsungUA);
   await testPlatform(b,'Chrome Android','Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/125.0.0.0 Mobile Safari/537.36');
 } finally {await b.close()}})().catch(e=>{console.error('FAIL mobile acceptance:',e.stack||e);process.exit(1)});

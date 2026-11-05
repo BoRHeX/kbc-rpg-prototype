@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   develop:
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -30,8 +32,8 @@ jobs:
           node-version: '22'
       - name: Install independent browser QA tools BEFORE AI is given access
         run: |
-          npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
       - name: Read open tester bugs
         env:
           GH_TOKEN: ${{ github.token }}
@@ -110,6 +112,11 @@ jobs:
             echo "::error::No actual playable game modification produced"
             exit 1
           fi
+      - name: Stamp candidate BEFORE its final browser acceptance
+        env:
+          BUILD_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: python -m game_factory.stamp_preview --run-id "$BUILD_RUN" --source-sha "$SOURCE_SHA"
       - name: Final independent functional QA (mandatory)
         shell: bash
         run: |
@@ -161,29 +168,17 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: cataclysm-accepted-preview
           path: .
-      - name: Stamp deployed version from real successful run
-        env:
-          RUN_NUMBER: ${{ github.run_id }}
-        shell: bash
-        run: |
-          python - <<'PY'
-          import os, re
-          from pathlib import Path
-          run=os.environ["RUN_NUMBER"]
-          html=Path("docs/preview/index.html")
-          content=html.read_text()
-          content,count=re.subn(r'(<div\\s+class="version"[^>]*>)[^<]*(</div>)',
-              lambda m: m.group(1)+'AI PLAYTEST BUILD '+run+m.group(2), content, count=1)
-          if count != 1: raise SystemExit("Missing version label, cannot publish")
-          html.write_text(content)
-          Path("docs/preview/BUILD_INFO.txt").write_text("Run "+run+"\nBrowser QA: passed\nSamsung hardware QA: unverified\n")
-          PY
       - name: Publish accepted game (no AI key in publisher)
         shell: bash
         run: |
@@ -191,16 +186,25 @@ jobs:
           git config user.name 'BoRHeZ AI Game Studio'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/preview game_factory/AGENT_PLAN.md game_factory/AGENT_QA.md game_factory/CODER_REPORT.md
-          # Normalize trailing whitespace in generated Markdown before the strict Git check.
+          # Normalize every generated line, including real newline termination.
           python - <<'PY'
           from pathlib import Path
           for name in ('game_factory/AGENT_PLAN.md','game_factory/AGENT_QA.md','game_factory/CODER_REPORT.md'):
               path=Path(name)
-              if path.exists(): path.write_text(path.read_text().rstrip()+'\\n')
+              if path.exists(): path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines())+'\n')
           PY
           git add game_factory/AGENT_PLAN.md game_factory/AGENT_QA.md game_factory/CODER_REPORT.md
           git diff --cached --check
           git commit -m "AI Game Studio: browser-tested playable candidate #$GITHUB_RUN_ID"
+          git fetch origin main
+          git rebase origin/main
           git push origin HEAD:main
           echo "Preview: https://borhex.github.io/kbc-rpg-prototype/preview/" >> "$GITHUB_STEP_SUMMARY"
           echo "Human Samsung browser verification remains required" >> "$GITHUB_STEP_SUMMARY"
+      # A push made with GITHUB_TOKEN does not trigger another workflow/Pages build.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy the accepted commit to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

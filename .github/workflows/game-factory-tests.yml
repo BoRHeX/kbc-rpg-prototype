@@ -27,3 +27,27 @@ jobs:
         with:
           name: game-factory-evidence
           path: /tmp/borhez-factory-report.json
+  mobile-browser:
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Test the stamped release over HTTP
+        env:
+          BUILD_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          python -m game_factory.stamp_preview --run-id "$BUILD_RUN"
+          python -m http.server 8765 --directory docs >/tmp/game-http.log 2>&1 &
+          node game_factory/acceptance_gate.cjs || { cat /tmp/game-http.log; exit 1; }
