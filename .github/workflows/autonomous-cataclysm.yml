@@ -178,8 +178,8 @@ jobs:
           run=os.environ["RUN_NUMBER"]
           html=Path("docs/preview/index.html")
           content=html.read_text()
-          content,count=re.subn(r'<div class="version">[^<]*</div>',
-              '<div class="version">AI PLAYTEST BUILD '+run+'</div>', content, count=1)
+          content,count=re.subn(r'(<div\\s+class="version"[^>]*>)[^<]*(</div>)',
+              lambda m: m.group(1)+'AI PLAYTEST BUILD '+run+m.group(2), content, count=1)
           if count != 1: raise SystemExit("Missing version label, cannot publish")
           html.write_text(content)
           Path("docs/preview/BUILD_INFO.txt").write_text("Run "+run+"\nBrowser QA: passed\nSamsung hardware QA: unverified\n")
