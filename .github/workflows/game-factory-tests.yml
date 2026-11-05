@@ -50,4 +50,4 @@ jobs:
           set -euo pipefail
           python -m game_factory.stamp_preview --run-id "$BUILD_RUN"
           python -m http.server 8765 --directory docs >/tmp/game-http.log 2>&1 &
-          node game_factory/acceptance_gate.cjs
+          node game_factory/acceptance_gate.cjs || { cat /tmp/game-http.log; exit 1; }
