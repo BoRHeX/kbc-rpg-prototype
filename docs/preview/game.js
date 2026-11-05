@@ -370,6 +370,7 @@
   window.addEventListener('keyup',ev=>{keys[ev.key]=false;});
   window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&game&&game.mode==='running')pause();});
+  window.CATACLYSM_READY=true;
   $('play').onclick=resumeOrStart;$('pause').onclick=pause;
   $('restart').onclick=()=>{start();};$('mute').onclick=()=>{
     muted=!muted;$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
