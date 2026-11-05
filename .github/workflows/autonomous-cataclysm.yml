@@ -34,7 +34,7 @@ jobs:
             echo 'SKIP_CYCLE=true' >> "$GITHUB_ENV"
             exit 0
           fi
-          gh issue list --state all --limit 20 --json number,title,body,labels --jq '.[] | select((.labels | map(.name) | index("gameplay-feedback")) != null) | "Issue #\(.number): \(.title)\n\(.body)\n"' > game_factory/TESTER_FEEDBACK.md
+          gh issue list --state all --limit 20 --json number,title,body,labels --jq '.[] | select((.labels | map(.name) | index("gameplay-feedback")) != null) | "Issue #\(.number): \(.title)\n\(.body)\n"' > game_factory/RECENT_TESTER_ISSUES.md\n          cat game_factory/RECENT_TESTER_ISSUES.md >> game_factory/TESTER_FEEDBACK.md
       - name: Baseline tests
         if: env.SKIP_CYCLE != 'true'
         run: |
