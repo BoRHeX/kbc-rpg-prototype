@@ -1,0 +1,56 @@
+name: Publish Cataclysm AI Council playable preview
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'studio/web/game.js'
+permissions:
+  contents: write
+  pull-requests: read
+jobs:
+  preview:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'ai/cataclysm-') }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cataclysm-auto-preview
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+          path: site
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate candidate and publish isolated preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check candidate/studio/web/game.js
+          cd site
+          mkdir -p docs/preview
+          cp docs/v03/index.html docs/preview/index.html
+          cp docs/v03/game.css docs/preview/game.css
+          cp docs/v03/game-config.json docs/preview/game-config.json
+          cp ../candidate/studio/web/game.js docs/preview/game.js
+          # Candidate uses a root-relative config URL in the Studio build.
+          sed -i "s|fetch('/game-config.json')|fetch('./game-config.json')|g" docs/preview/game.js
+          node --check docs/preview/game.js
+          sed -i 's/ALPHA 0.3/AI COUNCIL PREVIEW/g; s/Alpha 0.3/AI Council Preview/g' docs/preview/index.html
+          printf 'Council candidate PR: %s\nSource SHA: %s\n' "${{ github.event.pull_request.number }}" "${{ github.event.pull_request.head.sha }}" > docs/preview/BUILD_INFO.txt
+          git config user.name 'BoRHeZ Games Preview Bot'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview
+          if git diff --cached --quiet; then
+            echo 'Preview already current'
+            exit 0
+          fi
+          git commit -m "Publish automated Council playable preview for PR #${{ github.event.pull_request.number }}"
+          git push origin HEAD:main
+          echo "Preview: https://borhex.github.io/kbc-rpg-prototype/preview/" >> "$GITHUB_STEP_SUMMARY"
