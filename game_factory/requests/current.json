@@ -12,3 +12,4 @@
     "Run node --check for game.js, node game_factory/check_neon_logic.cjs, and concrete pickup-feedback checks; retain functional mobile start/drag/pause/resume/restart and the 60-second result flow."
   ]
 }
+
