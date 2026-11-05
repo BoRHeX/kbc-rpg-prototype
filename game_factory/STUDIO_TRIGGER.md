@@ -13,3 +13,5 @@ Retry after screenshot-confirmed implementer patch-contract failure. Normalize e
 2026-11-05: Retry requested after run failed with 'Edit 1: expected one exact unique source-line match'. Full game source and canonical unique anchor lines are now passed to the Implementer. P0 issue #29 remains the target.
 
 2026-11-05: Autonomous line editor installed, unit tests added, original-source line numbers replace exact-match anchors. Retry P0 #29 with full seven-agent cycle and browser validation.
+
+2026-11-05: Restart after code-check failure. Coder now gets failed test output for up to 3 repair attempts; unsuccessful cycles save diagnostics artifacts and preserve baseline. Prioritize issue #29.
