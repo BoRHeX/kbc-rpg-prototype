@@ -1,0 +1,233 @@
+name: Mobile Minigame Studio
+run-name: Mobile game job · ${{ inputs.game || 'queued request' }}
+on:
+  push:
+    branches: [main]
+    paths: ['game_factory/requests/current.json']
+  schedule:
+    - cron: '15 7,19 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [create, update]
+        required: true
+        description: Create a new game or update an existing game
+      game:
+        type: string
+        required: true
+        description: Stable game ID (lowercase letters, digits and hyphens)
+      prompt:
+        type: string
+        required: true
+        description: What to build or change, including acceptance criteria
+
+# One job at a time; a new request never cancels a game being developed.
+concurrency:
+  group: borhez-mobile-game-jobs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      active: ${{ steps.job.outputs.active }}
+      job_digest: ${{ steps.job.outputs.job_digest }}
+      target: ${{ steps.job.outputs.target }}
+      game: ${{ steps.job.outputs.game }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Resolve and validate exactly one request
+        id: job
+        env:
+          JOB_MODE: ${{ inputs.mode }}
+          JOB_GAME: ${{ inputs.game }}
+          JOB_PROMPT: ${{ inputs.prompt }}
+        run: python -m game_factory.mobile_jobs prepare
+      - uses: actions/upload-artifact@v4
+        if: steps.job.outputs.active == 'true'
+        with:
+          name: mobile-job-definition
+          path: artifacts/mobile/job.json
+          if-no-files-found: error
+
+  develop:
+    needs: resolve
+    if: needs.resolve.outputs.active == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      issues: read
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
+      EXPECTED_JOB_DIGEST: ${{ needs.resolve.outputs.job_digest }}
+      GAME_TARGET: ${{ needs.resolve.outputs.target }}
+      GAME_ID: ${{ needs.resolve.outputs.game }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-job-definition
+          path: artifacts/mobile
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser tools before the coding agent runs
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Read feedback for this game
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue list --state open --search "$GAME_ID in:title" --limit 20 --json number,title,body > artifacts/mobile/feedback.md
+      - name: Producer and planning agents scope the requested game job
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.mobile_jobs plan
+      - name: Start the local playtest server
+        run: nohup python -m http.server 8765 --directory docs >/tmp/mobile-game-http.log 2>&1 &
+      - name: Coding agent implements the requested game
+        id: coder
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/mobile/CODER_PROMPT.md
+      - name: Check edit scope before executing repository tools
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          target=os.environ['GAME_TARGET']
+          allowed={target+'/'+p for p in ('index.html','game.js','game.css','game-config.json','BUILD_INFO.json','BUILD_INFO.txt')}
+          paths=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          bad=set(filter(None,paths))-allowed
+          if bad: raise SystemExit('Unauthorized coding-agent edits: '+repr(sorted(bad)))
+          PY
+      - name: Independent gameplay acceptance
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          { python -m game_factory.mobile_jobs validate && python -m game_factory.mobile_jobs stamp && node game_factory/mobile_acceptance.cjs; } 2>&1 | tee artifacts/mobile/gate.log
+      - name: Coding agent repairs a concrete failure (one bounded retry)
+        if: steps.gate.outcome == 'failure'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt: |
+            Repair this game job. Read artifacts/mobile/CODER_PROMPT.md,
+            artifacts/mobile/gate.log and acceptance.json if present.
+            Fix the actual code failure; follow the original permitted paths.
+            Update artifacts/mobile/CODER_REPORT.md with changes and evidence.
+            Do not modify job.json, tests, workflows, or other games.
+      - name: Recheck scope after repair and test the repaired candidate
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,subprocess
+          target=os.environ['GAME_TARGET']
+          allowed={target+'/'+p for p in ('index.html','game.js','game.css','game-config.json','BUILD_INFO.json','BUILD_INFO.txt')}
+          paths=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          bad=set(filter(None,paths))-allowed
+          if bad: raise SystemExit('Unauthorized coding-agent edits: '+repr(sorted(bad)))
+          PY
+          { python -m game_factory.mobile_jobs validate && python -m game_factory.mobile_jobs stamp && node game_factory/mobile_acceptance.cjs; } 2>&1 | tee artifacts/mobile/gate.log
+      - name: Independent QA agent checks source against the prompt and evidence
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.mobile_jobs review
+      - name: Seal exact accepted game bytes and evidence
+        run: python -m game_factory.mobile_jobs package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save run diagnostics, browser images and agent decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-job-diagnostics
+          path: artifacts/mobile
+          if-no-files-found: ignore
+          retention-days: 30
+
+  publish:
+    needs: [resolve, develop]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: borhez-game-publish
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+      - name: Validate candidate hashes and preserve accepted code history
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m game_factory.mobile_jobs publish
+          git config user.name 'BoRHeZ Mobile Game Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/games docs/preview game_factory/results
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "Deliver tested mobile game job #$GITHUB_RUN_ID"
+          fi
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy accepted games to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify the live URL serves the exact accepted game
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python game_factory/verify_live.py artifacts/mobile/release/receipt.json "$PAGES_URL"
+      - name: Record the delivered play link
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+          PLAY_PATH: ${{ steps.publish.outputs.play_path }}
+          REQUEST_ID: ${{ steps.publish.outputs.request_id }}
+        run: |
+          echo "### Delivered $REQUEST_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "Play: ${PAGES_URL%/}/$PLAY_PATH" >> "$GITHUB_STEP_SUMMARY"
+          echo "Prompt, code hashes, agent decisions and QA: game_factory/results/$REQUEST_ID.json" >> "$GITHUB_STEP_SUMMARY"

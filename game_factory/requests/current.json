@@ -1,0 +1,14 @@
+{
+  "id": "neon-salvage-create-001",
+  "mode": "create",
+  "game": "neon-salvage",
+  "title": "Neon Salvage",
+  "prompt": "Build an original one-minute mobile arcade game called Neon Salvage. Drag a small salvage ship around a dark space arena. Collect cyan energy cores for score, avoid moving red debris, and survive 60 seconds with three hull points. Show clear hit feedback, the remaining hull, time and score. End with a readable result and allow immediate replay. Use simple Canvas-drawn shapes, polished readable colors and one-finger controls. Implement real gameplay, not a mockup.",
+  "acceptance": [
+    "Touch start begins an active run; dragging moves the ship.",
+    "Collecting a cyan core increases score and replaces that core.",
+    "Red debris collisions reduce hull, provide visible feedback and have brief invulnerability to avoid draining all hull in one contact.",
+    "The run ends after 60 seconds or zero hull, with score and replay.",
+    "Pause freezes time and play; restart resets time, score and hull."
+  ]
+}

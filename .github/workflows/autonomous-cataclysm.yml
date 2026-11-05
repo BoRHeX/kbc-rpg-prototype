@@ -3,8 +3,6 @@ on:
   push:
     branches: [main]
     paths: ['game_factory/STUDIO_TRIGGER.md']
-  schedule:
-    - cron: '15 7,19 * * *'
   workflow_dispatch:
 concurrency:
   group: cataclysm-game-studio
