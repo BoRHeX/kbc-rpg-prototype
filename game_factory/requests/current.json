@@ -1,16 +1,16 @@
 {
-  "id": "studio-original-create-001",
-  "mode": "create",
-  "game": "studio-original-001",
-  "title": "Studio Original 001 — agents' choice",
-  "prompt": "The player tried Neon Salvage and honestly did not like it. The studio is commissioned to create an ENTIRELY NEW game. The user's whole creative brief is: MOBILE. LIGHT. SIMPLE. FUN. Let the studio decide the concept, real game name, theme, visual style, mechanics, challenge, scoring and session length. The game ID and request title are administrative placeholders, not a required creative name: choose your own name for the actual game. Do not ask the player to choose concepts. Record the concept the council selected and why its moment-to-moment interaction should be enjoyable. Build a genuinely different core loop, not a reskin or extension of Neon Salvage. Prioritize an immediately understandable, satisfying interaction and easy replay over feature count. Use the existing mobile game host and interface contract, with responsive one-finger play. Keep it self-contained and quick to load: combined index.html/game.js/game.css at most 200,000 bytes; no external assets, libraries, services, accounts or downloads. Do not change any existing game. Implement the actual game and its end/replay loop. The coding agent must run concrete game-specific checks for its chosen scoring/progression and end conditions, in addition to the independent mobile gate. Explain what the checks actually prove; whether the player finds it fun remains a playtest question. Complete the tested publication to a new stable play URL.",
-  "acceptance": [
-    "The studio chooses and implements an original concept and real game name. The actual page presents that name and one short, clear instruction; no creative selection is passed back to the player.",
-    "The new game's core loop is meaningfully different from Neon Salvage, with a clear player action, immediate understandable feedback, a goal or challenge and a repeatable end/replay loop.",
-    "Mobile portrait play is usable at 390x844 and 360x780, with one-finger controls, readable UI, reachable buttons and no horizontal overflow or accidental page scrolling during gameplay.",
-    "The combined HTML/CSS/JS is at most 200,000 bytes and runs entirely from local game files without external libraries, assets, accounts, network services or downloads.",
-    "Touch start, actual player interaction, pause/resume, pointer cancellation, clean restart and replay work. The visible score or progress corresponds to real game state.",
-    "The coding agent executes and reports concrete checks of its chosen scoring/progression and success/failure or end conditions, plus syntax checking. The independent mobile acceptance and independent QA must pass before publication.",
-    "Publish to a new game URL, preserve all existing games, retain the accepted source and evidence, and verify the exact live files."
-  ]
+    "id": "studio-original-create-001",
+    "mode": "create",
+    "game": "studio-original-001",
+    "title": "Studio Original 001 — agents' choice",
+    "prompt": "The player tried Neon Salvage and honestly did not like it. The studio is commissioned to create an ENTIRELY NEW game. The user's whole creative brief is: MOBILE. LIGHT. SIMPLE. FUN. Let the studio decide the concept, real game name, theme, visual style, mechanics, challenge, scoring and session length. The game ID and request title are administrative placeholders, not a required creative name: choose your own name for the actual game. Do not ask the player to choose concepts. Record the concept the council selected and why its moment-to-moment interaction should be enjoyable. Build a genuinely different core loop, not a reskin or extension of Neon Salvage. Prioritize an immediately understandable, satisfying interaction and easy replay over feature count. Use the existing mobile game host and interface contract, with responsive one-finger play. Keep it self-contained and quick to load: combined index.html/game.js/game.css at most 200,000 bytes; no external assets, libraries, services, accounts or downloads. Do not change any existing game. Implement the actual game and its end/replay loop. The coding agent must run concrete game-specific checks for its chosen scoring/progression and end conditions, in addition to the independent mobile gate. Explain what the checks actually prove; whether the player finds it fun remains a playtest question. Complete the tested publication to a new stable play URL.",
+    "acceptance": [
+        "The studio chooses and implements an original concept and real game name. The actual page presents that name and one short, clear instruction; no creative selection is passed back to the player.",
+        "The new game's core loop is meaningfully different from Neon Salvage, with a clear player action, immediate understandable feedback, a goal or challenge and a repeatable end/replay loop.",
+        "Mobile portrait play is usable at 390x844 and 360x780, with one-finger controls, readable UI, reachable buttons and no horizontal overflow or accidental page scrolling during gameplay.",
+        "The combined HTML/CSS/JS is at most 200,000 bytes and runs entirely from local game files without external libraries, assets, accounts, network services or downloads.",
+        "Touch start, actual player interaction, pause/resume, pointer cancellation, clean restart and replay work. The visible score or progress corresponds to real game state.",
+        "The coding agent executes and reports concrete checks of its chosen scoring/progression and success/failure or end conditions, plus syntax checking. The independent mobile acceptance and independent QA must pass before publication.",
+        "Publish to a new game URL, preserve all existing games, retain the accepted source and evidence, and verify the exact live files."
+    ]
 }
