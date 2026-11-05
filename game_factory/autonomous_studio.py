@@ -56,28 +56,38 @@ def cycle(memory_path: Path, feedback: str, model: str):
     changed = None
     edits = None
     repair_error = None
+    checks = None
+    failures = []
     for attempt in range(3):
         instruction = patch_contract
         if repair_error:
-            instruction += ("\nPREVIOUS PATCH REJECTED BY VALIDATOR: " + repair_error +
-                            ". Return corrected line numbers from numbered_source, not copied source anchors.")
+            instruction += ("\nPREVIOUS ATTEMPT FAILED: " + repair_error[:1800] +
+                            ". Correct the code or line numbers. Return proposed_action.")
         implementer = ask("implementer", instruction, evidence, 3500)
         edits = implementer.get("proposed_action")
         try:
             changed = apply_line_edits(source, edits)
+            GAME.write_text(changed)
+            checks = verify_game()
             break
-        except (ValueError, TypeError) as exc:
+        except (ValueError, TypeError, RuntimeError) as exc:
             repair_error = str(exc)
+            failures.append({"attempt": attempt + 1, "error": repair_error[:5000],
+                             "proposal": edits})
             ledger.record(ids["implementer"], run_id, "patch_rejected",
-                          {"attempt": attempt + 1, "error": repair_error})
+                          {"attempt": attempt + 1, "error": repair_error[:5000]})
+            GAME.write_text(source)
+            changed = None
     if changed is None:
-        raise RuntimeError("Implementer failed patch validation after three attempts: " + str(repair_error))
-    GAME.write_text(changed)
-    try:
-        checks = verify_game()
-    except Exception:
-        GAME.write_text(source)
-        raise
+        REPORT.write_text("# Autonomous Studio — failed cycle\\n\\n" +
+                          "Run: " + run_id + "\\n\\n" +
+                          "```json\\n" + json.dumps({"producer": producer,
+                          "research": research, "design": design, "critic": critic,
+                          "engineer": engineer, "failures": failures}, indent=2) +
+                          "\\n```\\n")
+        ledger.close()
+        raise RuntimeError("AI Coder could not produce tested code after three attempts. "
+                           "See uploaded diagnostics. Last error: " + str(repair_error)[:1000])
     qa = ask("qa", "Review ACTUAL successful test outputs and changed source. Identify gaps and reject release if needed. This is a draft, not a public release.", {"checks":checks,"edits":edits,"critic":critic})
     final = ask("producer", "Decide next backlog priority from work performed and QA; never claim deployment. Give concise game tester release notes.", {"task":producer,"qa":qa,"checks":checks})
     report = {"run_id":run_id,"producer":producer,"research":research,"design":design,"critic":critic,"engineer":engineer,"implementation":edits,"qa":qa,"next":final,"checks":checks}
