@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   issues: read
+  actions: read
 concurrency:
   group: autonomous-game-studio
   cancel-in-progress: false
