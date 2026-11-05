@@ -83,10 +83,11 @@ def analyse_frames(path, seconds):
                   {"role":"user","content":items}],max_tokens=1600)
     return result.choices[0].message.content
 
-def create_report(transcript, frames, seconds):
-    prompt=("You are BoRHeZ Games QA lead. This is Cataclysm 0.2 gameplay. "
+def create_report(transcript, frames, seconds, recording_name):
+    prompt=("You are BoRHeZ Games QA lead reviewing a mobile game recording. "
+      "Recording name: "+recording_name+". "
       "Produce a concise markdown report with: evidence/observations (timestamps where available), "
-      "issues and severity, reproducible tests, recommended Cataclysm 0.3 backlog, "
+      "issues and severity, reproducible tests, prioritized game-specific improvement backlog, "
       "and a suggested 45-120 second gameplay highlight edit as JSON on the last line "
       "with exact syntax EDIT_SEGMENTS=[{\"start\":0,\"end\":20}] and 2-5 segments. "
       "Keep segments inside the recording duration and do not claim to know unobserved events. "
@@ -122,7 +123,7 @@ def highlight(video, report, seconds):
     manifest=OUT/"cuts.txt"
     manifest.write_text("".join("file '"+p.name+"'\n" for p in paths))
     subprocess.run(["ffmpeg","-y","-v","error","-f","concat","-safe","0",
-        "-i",str(manifest),"-c","copy",str(OUT/"cataclysm_highlights.mp4")],check=True)
+        "-i",str(manifest),"-c","copy",str(OUT/"gameplay_highlights.mp4")],check=True)
     for p in paths: p.unlink()
     manifest.unlink()
 
@@ -155,6 +156,7 @@ def main():
     check.raise_for_status()
     if any(x.get("title")==title for x in check.json()):
         print("Already reviewed; skipping duplicate processing.");return
+    (OUT/"recording.json").write_text(json.dumps(metadata,indent=2,ensure_ascii=False)+"\n")
     video=OUT/"raw.mp4"
     download(token,file_id,video)
     seconds=duration(video)
@@ -162,13 +164,14 @@ def main():
     (OUT/"transcript.json").write_text(json.dumps(transcript,indent=2,ensure_ascii=False))
     frames=analyse_frames(video,seconds)
     (OUT/"visual_review.md").write_text(frames)
-    report=create_report(transcript,frames,seconds)
+    report=create_report(transcript,frames,seconds,metadata["name"])
     (OUT/"development_report.md").write_text(report)
     highlight(video,report,seconds)
     video.unlink()
     github_issue(title,"Automated gameplay review. Original Drive file ID: \`"+file_id+
        "\`.\n\n"+report[:55000]+
-       "\n\nFull transcript and edited highlight are attached to this GitHub Actions run as artifacts. "+
-       "Human review required before changing game code or publishing video.")
+       "\n\nFull transcript and edited highlight are stored as workflow artifacts. "+
+       "Only videos with a verified game-ID filename can automatically request a tested studio update. "+
+       "Video publication remains separate.")
 if __name__=="__main__":
     main()
