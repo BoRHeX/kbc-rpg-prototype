@@ -1,14 +1,13 @@
 {
-  "id": "neon-salvage-create-001",
-  "mode": "create",
+  "id": "neon-salvage-update-002",
+  "mode": "update",
   "game": "neon-salvage",
   "title": "Neon Salvage",
-  "prompt": "Build an original one-minute mobile arcade game called Neon Salvage. Drag a small salvage ship around a dark space arena. Collect cyan energy cores for score, avoid moving red debris, and survive 60 seconds with three hull points. Show clear hit feedback, the remaining hull, time and score. End with a readable result and allow immediate replay. Use simple Canvas-drawn shapes, polished readable colors and one-finger controls. Implement real gameplay, not a mockup.",
+  "prompt": "Update the existing Neon Salvage game with one scoring mechanic: a salvage-chain multiplier. Begin at x1. Each collected core awards 10 times the current multiplier, then increases the multiplier by one, capped at x5. Taking hull damage resets the multiplier to x1. Add a clear visible NEXT CORE multiplier in the HUD and brief feedback when the chain is lost. Restart/replay resets the multiplier to x1. Expose multiplier as a copied scalar in the existing read-only snapshot for inspection. Keep the existing one-minute game, hull/debris behavior, controls, responsive layout, pause/restart, style and stable URL working. Implement this in the existing game files; do not make a second game.",
   "acceptance": [
-    "Touch start begins an active run; dragging moves the ship.",
-    "Collecting a cyan core increases score and replaces that core.",
-    "Red debris collisions reduce hull, provide visible feedback and have brief invulnerability to avoid draining all hull in one contact.",
-    "The run ends after 60 seconds or zero hull, with score and replay.",
-    "Pause freezes time and play; restart resets time, score and hull."
+    "First and second consecutive pickups award 10 then 20 points; the next pickup multiplier rises visibly, capped at x5.",
+    "A hull-damaging collision resets the multiplier to x1 and gives clear chain-loss feedback.",
+    "Restart and replay reset score, time, hull and multiplier; pause freezes simulation.",
+    "The existing touch controls, one-minute end condition, visual style and game URL remain functional."
   ]
 }
