@@ -96,6 +96,10 @@ python -m unittest discover -s studio/tests -v
 node --check game_factory/mobile_acceptance.cjs
 ```
 
-Browser checks need Playwright and Chromium. The CI job installs them before
-the coding agent runs. `MOBILE_CODER_PROMPT.md` defines the exact game interface.
+Browser checks use Playwright and the GitHub runner's preinstalled Chrome.
+The CI job prepares the tools before the coding agent runs.
+`MOBILE_CODER_PROMPT.md` defines the exact game interface.
+`node game_factory/check_neon_logic.cjs` additionally checks Neon Salvage's
+scoring, damage protection, win/loss and replay in a seeded VM harness using
+actual game input handlers and read-only observations, without altering state.
 The active objective and ordered delivery evidence are tracked in issue #30.
