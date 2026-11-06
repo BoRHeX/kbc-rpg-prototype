@@ -6,8 +6,6 @@ on:
         description: "Optional Drive file ID; leave blank to review newest video"
         required: false
         default: ""
-  schedule:
-    - cron: "20 7 * * *"
   push:
     branches: [main]
     paths: [game_factory/requests/video_review_trigger.json]
