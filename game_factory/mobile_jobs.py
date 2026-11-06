@@ -48,6 +48,13 @@ def validate_request(value):
                 or not re.fullmatch(r"[0-9]{1,2}\.[0-9]{1,2}", version)):
             raise ValueError("Invalid Cataclysm release version")
         request["release_version"] = version
+    if "resume_council_run" in value:
+        run = value["resume_council_run"]
+        if request["mode"] != "update" or type(run) is not int or run < 1:
+            raise ValueError("Invalid prior council run ID")
+        if "evidence_drive_file_id" in request:
+            raise ValueError("Choose recovered council OR direct video, not both")
+        request["resume_council_run"] = run
     return request
 
 
@@ -299,7 +306,12 @@ def plan_command():
             # Private gameplay evidence never enters plan.json, CODER_PROMPT or
             # public GitHub artifacts. Only gameplay-only feature proposals do.
             private_file = Path(os.getenv("RUNNER_TEMP", "/tmp")) / "borhez_private_gameplay.json"
-            if "evidence_drive_file_id" in job["request"]:
+            if "resume_council_run" in job["request"]:
+                recovered_file = Path(os.getenv("RUNNER_TEMP", "/tmp")) / "borhez_council_recovered.json"
+                if not recovered_file.is_file():
+                    raise RuntimeError("Validated previous council decisions not recovered")
+                evidence["recovered_council"] = json.loads(recovered_file.read_text())
+            elif "evidence_drive_file_id" in job["request"]:
                 if not private_file.is_file():
                     raise RuntimeError("Requested private gameplay playback is missing")
                 evidence["private_gameplay"] = json.loads(private_file.read_text())
