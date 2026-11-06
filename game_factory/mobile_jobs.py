@@ -35,7 +35,20 @@ def validate_request(value):
         not isinstance(c, str) or not c.strip() or len(c) > 600 for c in checks
     ):
         raise ValueError("Supply 1–12 concise acceptance criteria")
-    return {k: value[k] for k in ("id", "game", "mode", "title", "prompt", "acceptance")}
+    request = {k: value[k] for k in ("id", "game", "mode", "title", "prompt", "acceptance")}
+    if "evidence_drive_file_id" in value:
+        fid = value["evidence_drive_file_id"]
+        if (request["mode"] != "update" or not isinstance(fid, str) or
+                not re.fullmatch(r"[A-Za-z0-9_-]{20,100}", fid)):
+            raise ValueError("Invalid private gameplay evidence file ID")
+        request["evidence_drive_file_id"] = fid
+    if "release_version" in value:
+        version = value["release_version"]
+        if (request["game"] != "cataclysm" or not isinstance(version, str)
+                or not re.fullmatch(r"[0-9]{1,2}\.[0-9]{1,2}", version)):
+            raise ValueError("Invalid Cataclysm release version")
+        request["release_version"] = version
+    return request
 
 
 def target_for(game):
@@ -282,22 +295,15 @@ def plan_command():
         if job["request"]["mode"] == "create":
             plan = creative_plan(memory, model, job, evidence, ask_agent)
         else:
-            # Updates follow the existing feedback-driven workflow; new concepts
-            # must never silently replace a known game's accepted identity.
-            plan = {}
-            tasks = {
-                "producer": "Scope this exact requested update. Define small playable improvements and measurable completion criteria; preserve the game.",
-                "researcher": "Inspect supplied source and feedback; identify relevant facts and existing behavior to preserve.",
-                "designer": "Specify requested game-loop changes and mobile feedback, preserving existing controls.",
-                "critic": "Challenge actual requested changes with specific risks: regression, touch, pause, restart, viewport, balance.",
-                "engineer": "Give the coder a concise implementation and verification plan; do not propose fragile line patches.",
-            }
-            for role, task in tasks.items():
-                identity = memory.register(role, model)
-                plan[role] = ask_agent(memory, identity, job["run_id"],
-                    task + "\nEVIDENCE:\n" + json.dumps({**evidence, "plan_so_far": plan}),
-                    ["artifacts/mobile/job.json", job["target"]],
-                    model=model, max_output_tokens=1200)
+            from game_factory.update_council import negotiate_update
+            # Private gameplay evidence never enters plan.json, CODER_PROMPT or
+            # public GitHub artifacts. Only gameplay-only feature proposals do.
+            private_file = Path(os.getenv("RUNNER_TEMP", "/tmp")) / "borhez_private_gameplay.json"
+            if "evidence_drive_file_id" in job["request"]:
+                if not private_file.is_file():
+                    raise RuntimeError("Requested private gameplay playback is missing")
+                evidence["private_gameplay"] = json.loads(private_file.read_text())
+            plan = negotiate_update(memory, model, job, evidence, ask_agent)
         (WORK / "plan.json").write_text(json.dumps(plan, indent=2) + "\n")
         prompt = (ROOT / "game_factory/MOBILE_CODER_PROMPT.md").read_text()
         if job["request"]["mode"] == "create":
@@ -310,6 +316,18 @@ def plan_command():
                   "If implementation is impossible, report the blocker instead "
                   "of silently changing the game. Document the selected candidate "
                   "ID and implementation evidence in CODER_REPORT.md.\n"
+            )
+        if job["request"]["mode"] == "update":
+            selection = plan["update_decision"]["selection"]
+            prompt += (
+                "\n\nBINDING COLLABORATIVE UPDATE DECISION (agreed BEFORE coding):\n"
+                + json.dumps(selection, indent=2)
+                + "\nImplement ALL selected playable features together, "
+                  "reconcile overlapping edits and preserve existing mechanics. "
+                  "Each proposed code operation is a suggestion, not an executable "
+                  "patch. Explain in CODER_REPORT.md how each selected feature "
+                  "and interface contract was implemented and tested; do not "
+                  "claim unsupplied evidence.\n"
             )
         (WORK / "CODER_PROMPT.md").write_text(prompt + "\n\nREQUEST:\n" +
             json.dumps(job, indent=2) + "\n\nAGENT PLAN:\n" + json.dumps(plan, indent=2))
@@ -340,6 +358,15 @@ def stamp_command():
     if job["request"]["game"] == "cataclysm":
         from game_factory.stamp_preview import stamp
         stamp(directory, job["run_id"], os.getenv("GITHUB_SHA", ""))
+        version = job["request"].get("release_version")
+        if version:
+            page = directory / "index.html"
+            content, count = re.subn(
+                r'(<span\b[^>]*\bid="game-version"[^>]*>)[^<]*(</span>)',
+                lambda m: m[1] + version + m[2], page.read_text())
+            if count != 1:
+                raise ValueError("Cataclysm version element missing or ambiguous")
+            page.write_text(content)
         return
     page = directory / "index.html"
     source = page.read_text()
@@ -375,7 +402,8 @@ def review_command():
                 "source": {name: (ROOT / job["target"] / name).read_text()
                            for name in GAME_FILES if (ROOT / job["target"] / name).exists()},
                 "physical_device_test": "not performed",
-                "creative_decision": json.loads((WORK / "plan.json").read_text()).get("creative_decision")}
+                "creative_decision": json.loads((WORK / "plan.json").read_text()).get("creative_decision"),
+                "update_decision": json.loads((WORK / "plan.json").read_text()).get("update_decision")}
     try:
         qa = ask_agent(memory, memory.register("qa", model), job["run_id"],
             "Independently review ACTUAL source, request criteria and executed browser evidence. "
@@ -383,6 +411,9 @@ def review_command():
             "Passing standard controls is insufficient if the requested gameplay is absent. "
             "For new-game jobs with a creative_decision, also verify the implemented "
             "core mechanic matches the Producer-selected concept; reject silent concept swaps. "
+            "For collaborative update jobs verify that ALL Producer-selected "
+            "features are implemented and integration contracts are respected; "
+            "do not approve cosmetic-only substitutions for gameplay content. "
             "This is a PRE-PUBLICATION preview decision. Do not require publication or live-file verification "
             "before approving the preview: the separate publisher performs those steps after approval. "
             "Mark those delivery criteria pending for the publisher, rather than failed preview criteria. "
