@@ -1,17 +1,18 @@
 {
-  "id": "yt-9c2e6cbf2e1b2bda20ea7d3d",
+  "id": "cataclysm-07-council-001",
   "game": "cataclysm",
   "mode": "update",
-  "title": "CATACLYSM · BoRHeZ Games",
-  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nUpdate Cataclysm to improve challenge and replayability by implementing enemy and boss difficulty scaling over subsequent runs and encounters, balancing the escape shield mechanic to prevent invulnerability exploits near the map edges, and adjusting the upgrade system to avoid trivializing player survivability and damage output. Also, fix the displayed version label to correctly reflect the internal build version.",
+  "title": "CATACLYSM 0.7 — autonomous code-language council experiment",
+  "release_version": "0.7",
+  "evidence_drive_file_id": "1jJQeOwrK0PdVauUSP6cXfdzJi5LRnW1d",
+  "prompt": "The studio, not the requester or a single video-review model, decides the next content update. Inspect the existing Cataclysm source and privately observe the attached real gameplay recording (commentary transcript plus short bursts of visual frames). Designer, Researcher and Engineer should each propose an independently conceived, meaningful gameplay addition in a structured code language naming target files, symbols and intended modifications. Critic challenges the proposals and resolves interaction conflicts; Producer chooses at least TWO compatible content additions and agrees a coherent implementation contract BEFORE any code is changed. Integrate the approved work together into one playful, lightweight, mobile-first game update. Invent fresh content that materially changes gameplay and replayability; do not merely retune numbers, rename version labels or add decorative polish. Preserve the existing Cataclysm identity, input, scoring, pause, upgrades, bosses, game saves and stable URL. Keep the private video and transcript out of the public repository and workflow artifacts. Keep the discussion and selected alternatives visible in the final studio evidence, distinguishing proposals from tested outcomes. Release as Cataclysm 0.7 only after independent tests and QA.",
   "acceptance": [
-    "Enemies and bosses increase in health and/or damage output progressively over multiple runs and boss encounters.",
-    "The escape shield no longer grants invulnerability when the player is near map edges or its duration/mechanics are limited to prevent indefinite safe camping.",
-    "Special upgrades provide meaningful power boosts but do not lead to absolute invincibility or one-shot kills without effort.",
-    "Boss fights serve as effective DPS checks with increased difficulty on subsequent encounters.",
-    "The version displayed in-game matches the actual game build (e.g., shows 0.6 if that is the current version).",
-    "New or adjusted enemy types maintain challenge as player power scales.",
-    "Upgrade selection and progression curve ensure players cannot easily max out all special abilities simultaneously leading to game imbalance.",
-    "Gameplay retains the core mechanics, visuals, and controls while enhancing content and difficulty scaling as requested."
+    "Designer, Researcher and Engineer independently propose three distinct, substantial content features with structured insert/modify/replace/remove operations and actual game-file symbols.",
+    "Critic evaluates compatibility, conflicts and tests for all three; Producer selects and records at least two compatible features with explicit integration order and shared code contracts before coding.",
+    "Each selected feature is actually implemented, playable, materially affects strategy or content, and is separately named and evidenced in the coder report and accepted receipt.",
+    "Private commentary transcript and 12 sampled gameplay frames are analyzed within the job; no raw recordings, identifiable speech, frames or private transcript are committed, logged or uploaded as public artifacts.",
+    "Cataclysm retains existing movement/touch cancellation, auto-fire, scoring, boss flow, upgrades, pause/resume, restart, persistence, no external runtime services and stable play URL.",
+    "Independent mobile-touch Chromium checks pass at 360x780 and 390x844, verifying gameplay, pause, restart, HUD and browser errors; QA rejects missing selected gameplay.",
+    "The accepted game presents version 0.7 and a new run/build identifier; source is published only after hash-controlled acceptance and live-byte verification."
   ]
 }
