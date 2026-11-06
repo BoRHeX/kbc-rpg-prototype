@@ -1,16 +1,17 @@
-# Automated Cataclysm gameplay processing
+# Automated gameplay review → Game Studio
 
 Workflow: `.github/workflows/gameplay-video-review.yml`. Processor: `game_factory/video_pipeline.py`.
 
 ## What happens
-1. On demand, or daily at 07:20 UTC, read the newest video in the private Google Drive YouTube folder.
+1. On demand, or daily at 07:20 UTC, read the newest video in the private Google Drive YouTube folder. Manual workflow dispatch with a blank Drive file ID selects the newest video.
 2. Download with Google OAuth **without making the video public**.
 3. Extract audio in eight-minute chunks and transcribe with OpenAI Whisper.
 4. Inspect sampled frames with a vision model (sampling is not full-motion video analysis).
-5. Write a timestamped QA report and Cataclysm 0.3 development backlog.
+5. Write a timestamped QA report and game-specific development backlog.
 6. Cut and concatenate a short gameplay highlight MP4.
-7. Open a GitHub issue with the report and attach the full transcript, review, and highlight to the workflow run as artifacts.
-8. Skip already-reviewed recordings. No automatic merges or YouTube publishing.
+7. Pass the on-runner transcript, visual review and QA report to `video_bridge.py`; only the condensed gameplay-only work order enters the **public** game repository when actionable.
+8. Do **not** publish raw voice, transcript, screenshots or edited highlight as public GitHub issues/Actions artifacts. These remain ephemeral on the GitHub runner; the original private video is retained in Google Drive.
+9. Skip queued, delivered and non-actionable video IDs using durable metadata. No automatic YouTube publishing.
 
 ## One-time authorization (required before first run)
 Repository owner must configure these GitHub Actions repository secrets:
@@ -24,14 +25,14 @@ The source folder is currently `1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K`. The initial 
 - Runner storage and GitHub Actions runtime must accommodate the original 664 MB video and temporary processing files.
 - Transcription/vision uses the paid OpenAI API. Sampled frames can miss short events.
 - Videos are not sent to Descript; the workflow uses FFmpeg for a first-pass highlight edit.
-- Raw footage is deleted from the runner before artifact upload. Artifacts are retained for 30 days.
-- Generated issues are evidence for developers, not proof that a bug exists.
-- Workflow needs repository Actions permission to create issues.
+- No private review media or transcript artifacts are uploaded. Runner ephemeral files are discarded after execution. If permanent private transcripts/highlights are required later, implement a dedicated authorized private storage destination.
+- The condensed update prompt, acceptance criteria, and game code are public in this repository. Keep personal or confidential details out of gameplay commentary; an AI content filter alone is not a formal privacy guarantee.
+- The workflow uses `contents: write` to push a validated update request but does not require issue-write permission.
 - Current workflow requires the four secrets before it can execute; installing code alone does not authorize Google Drive.
 
 ## Automatic handoff to Mobile Minigame Studio
 
-The video workflow preserves its normal QA issue, transcript and highlight,
+The video workflow generates a local QA report, transcript and highlight,
 then calls `game_factory/video_bridge.py`. A separate small GPT-4.1-mini
 JSON-mode call proposes one conservative **update** from the report, transcript
 and sampled visual observations. The existing studio request schema is validated
@@ -70,3 +71,22 @@ arriving while one is pending fails safely rather than replacing it. The
 bridge currently creates **updates only**, not brand-new game concepts.
 A successful dispatch does not itself prove studio acceptance or successful
 public deployment. Check the studio result receipt and delivery workflow.
+
+
+## Run the newest recording now (from the bookmarked dashboard)
+
+Open [BoRHeZ Games](https://borhex.github.io/kbc-rpg-prototype/games/#feedback),
+tap **PROCESS LATEST RECORDING** (the link opens the authenticated GitHub Actions
+workflow), tap **Run workflow**, leave the optional **Drive file ID** blank,
+then press **Run workflow**. No GitHub token is stored in the public page.
+
+The workflow also runs daily at 07:20 UTC, or can be triggered by pushing
+`game_factory/requests/video_review_trigger.json` to main through an authorized
+GitHub account. Its push input is automatically blank, selecting the newest
+recording. The manual default is blank too, not the old Cataclysm 0.2 ID.
+
+**Privacy:** Video and speech are transferred to Google Drive and the selected
+transcription/vision APIs for processing. The raw media and transcripts are not
+uploaded as public GitHub artifacts or issues. The resulting concise game work
+order, if any, is stored in a public repository. The user's private audio and
+unedited recording are never attached to that work order.
