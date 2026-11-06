@@ -1,16 +1,18 @@
-name: Gameplay video to AI development report
+name: Review gameplay and send feedback to Game Studio
 on:
   workflow_dispatch:
     inputs:
       drive_file_id:
-        description: "Google Drive gameplay recording file ID"
+        description: "Optional Drive file ID; leave blank to review newest video"
         required: false
-        default: "1GbMVr_GNoDA4mlpqX_zQBYWjUpO56Pam"
+        default: ""
   schedule:
     - cron: "20 7 * * *"
+  push:
+    branches: [main]
+    paths: [game_factory/requests/video_review_trigger.json]
 permissions:
   contents: write
-  issues: write
   actions: read
 concurrency:
   group: borhez-gameplay-video-reviews
@@ -38,7 +40,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_DRIVE_FOLDER_ID: "1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K"
-          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id || '' }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python game_factory/video_pipeline.py
@@ -48,19 +50,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python game_factory/video_bridge.py
-      - name: Preserve review and edited video
+      # Public repo: never upload private transcripts, recordings or screenshots.
+      - name: Document review privacy boundary
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gameplay-review-${{ github.run_id }}
-          path: |
-            artifacts/video_review/recording.json
-            artifacts/video_review/transcript.json
-            artifacts/video_review/visual_review.md
-            artifacts/video_review/development_report.md
-            artifacts/video_review/gameplay_highlights.mp4
-            artifacts/video_review/studio_request.json
-            artifacts/video_review/studio_handoff.json
-          if-no-files-found: warn
-          retention-days: 30
-          compression-level: 0
+        run: |
+          echo "### Gameplay review" >> "$GITHUB_STEP_SUMMARY"
+          echo "Private recording, transcript and media are not uploaded as GitHub artifacts." >> "$GITHUB_STEP_SUMMARY"
+          echo "Only a summarized gameplay-only work order may be committed publicly." >> "$GITHUB_STEP_SUMMARY"
