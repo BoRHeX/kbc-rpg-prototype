@@ -16,8 +16,8 @@
     "The accepted game presents version 0.7 and a new run/build identifier; source is published only after hash-controlled acceptance and live-byte verification."
   ],
   "infrastructure_retry": {
-    "attempt": 2,
-    "reason": "Initial run 42309014864 failed before model work because ffprobe was absent; workflow now installs ffmpeg before private gameplay playback",
-    "first_run": "42309014864"
+    "attempt": 3,
+    "reason": "Model returned invalid structured Designer proposal in run 42310851871; added bounded proposal schema correction and extended cap to 8 code operations, with passing factory tests",
+    "previous_run": "42310851871"
   }
 }
