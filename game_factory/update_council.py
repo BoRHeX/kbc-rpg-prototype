@@ -151,10 +151,14 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         require_text(a.get("risk"), "critic.risk")
         require_text(a.get("mitigation"), "critic.mitigation")
     recommended = critique.get("compatible_ids")
+    # The Critic may express one compatible GROUP as [[id, id, id]].
+    # Treat it as the same consensus as a flat list, without inventing votes.
+    if isinstance(recommended, list) and len(recommended) == 1 and isinstance(recommended[0], list):
+        recommended = recommended[0]
     if not isinstance(recommended, list) or not 2 <= len(recommended) <= 3 or (
         len(set(recommended)) != len(recommended) or not set(recommended) <= set(ROLES)
     ):
-        raise ValueError("Critic must recommend 2–3 compatible candidate IDs")
+        raise ValueError("Critic must recommend 2–3 compatible candidate IDs in one group")
     require_text(critique.get("rationale"), "critic.rationale")
     producer = ask_agent(memory, memory.register("producer", model), job["run_id"],
         "Lead a final code-level council decision. Select 2 or 3 COMPATIBLE "
