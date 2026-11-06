@@ -14,5 +14,10 @@
     "Cataclysm retains existing movement/touch cancellation, auto-fire, scoring, boss flow, upgrades, pause/resume, restart, persistence, no external runtime services and stable play URL.",
     "Independent mobile-touch Chromium checks pass at 360x780 and 390x844, verifying gameplay, pause, restart, HUD and browser errors; QA rejects missing selected gameplay.",
     "The accepted game presents version 0.7 and a new run/build identifier; source is published only after hash-controlled acceptance and live-byte verification."
-  ]
+  ],
+  "infrastructure_retry": {
+    "attempt": 2,
+    "reason": "Initial run 42309014864 failed before model work because ffprobe was absent; workflow now installs ffmpeg before private gameplay playback",
+    "first_run": "42309014864"
+  }
 }
