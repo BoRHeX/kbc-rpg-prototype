@@ -1,0 +1,252 @@
+{
+  "request": {
+    "id": "yt-9c2e6cbf2e1b2bda20ea7d3d",
+    "game": "cataclysm",
+    "mode": "update",
+    "title": "CATACLYSM \u00b7 BoRHeZ Games",
+    "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nUpdate Cataclysm to improve challenge and replayability by implementing enemy and boss difficulty scaling over subsequent runs and encounters, balancing the escape shield mechanic to prevent invulnerability exploits near the map edges, and adjusting the upgrade system to avoid trivializing player survivability and damage output. Also, fix the displayed version label to correctly reflect the internal build version.",
+    "acceptance": [
+      "Enemies and bosses increase in health and/or damage output progressively over multiple runs and boss encounters.",
+      "The escape shield no longer grants invulnerability when the player is near map edges or its duration/mechanics are limited to prevent indefinite safe camping.",
+      "Special upgrades provide meaningful power boosts but do not lead to absolute invincibility or one-shot kills without effort.",
+      "Boss fights serve as effective DPS checks with increased difficulty on subsequent encounters.",
+      "The version displayed in-game matches the actual game build (e.g., shows 0.6 if that is the current version).",
+      "New or adjusted enemy types maintain challenge as player power scales.",
+      "Upgrade selection and progression curve ensure players cannot easily max out all special abilities simultaneously leading to game imbalance.",
+      "Gameplay retains the core mechanics, visuals, and controls while enhancing content and difficulty scaling as requested."
+    ]
+  },
+  "target": "docs/preview",
+  "run_id": "42306310814-1",
+  "base_manifest": {
+    "BUILD_INFO.json": "57a9b67d6a063e8314a42936d1722e01a9f701be97720cbbb59c5fcab76b84b8",
+    "BUILD_INFO.txt": "c6564b0e36160052dc6cb229cf12810637fe6b5af818a450001b2841a5b06f0f",
+    "game-config.json": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc",
+    "game.css": "9a4a2191b6bfebc89079176888dbf94f49e970f61dcee8bd012fdd6f48ce8567",
+    "game.js": "75356bc3c3904e615d2c0d53bf00b4a7f1da2c248e64fd6bffe5dab07de1eae0",
+    "index.html": "bd18621eb53e15af506ff2a73660a42d4eb1259c8554c0ca584d184fb3451eca"
+  },
+  "request_digest": "5eaa6b0a6f678cd58ffb8ecf322dfc8a4696933037c79aaeab0b068e63ac24bf",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "32c2e3f0f2060b947be60e0fad8edc3f4f51eb09ece19ced8031dca64c7b6bb0",
+    "BUILD_INFO.txt": "250634ca51de329b21f13e17e636b16a0876d068022874a2c0a1d6e5778505b2",
+    "game-config.json": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc",
+    "game.css": "75c4fff10b6318c45ae8368eb0e5c4f1b314b09527beb44e70a38d896308be66",
+    "game.js": "e44c0e04698d2a46cf6d7e564b6b74b9e862257c3d9fecae51c7a2f4aec5eb5c",
+    "index.html": "9d6ee74c3cab0c0c52a9069e22aa55a3cc6242da6886102954a0a90ae8b26c03"
+  },
+  "play_path": "preview/",
+  "plan": {
+    "producer": {
+      "claim": "The requested update should scope from the current Cataclysm 0.5 baseline and focus on small, incremental improvements that advance challenge and replayability while preserving core gameplay, controls, visuals, and the existing stable URL.",
+      "rationale": "The previous update established robust features including enemy and boss difficulty scaling, corner escape aids with limited invulnerability, multiple enemy types, upgrade caps to prevent trivializing survivability and damage, special milestone upgrades, collectible power-ups, and background music without changing core mechanics or the URL. The current request asks for confirming precise scoping of incremental improvements adding enemy/boss difficulty scaling for subsequent runs, balancing the escape shield mechanic to avoid invulnerability exploits near edges, and adjusting the upgrade system to avoid overly trivial power spikes while fixing version display labels. Incremental, measurable changes are safest to avoid regressions in this mature baseline. The code and UI elements from prior jobs provide a foundation that preserves controls, visual style, and UX consistency while enhancing challenge and replayability.",
+      "objections": "No direct test evidence or updated screenshots with this exact change scope are provided. Limiting scope might overlook opportunities for more significant improvements found in gameplay review feedback. Without physical device testing, minor UX or balance issues could remain undetected. Fixing the version label requires synchronization with the internal build number. Defining measurable criteria for 'small playable improvements' is somewhat subjective.",
+      "proposed_action": {
+        "define_scope": [
+          "Implement progressive scaling of enemy and boss health and damage across runs and multiple boss encounters.",
+          "Modify the escape shield mechanic so that activation near map edges does not grant indefinite invulnerability\u2014limit shield duration and add cooldown as implemented in prior update.",
+          "Adjust upgrade system to cap and disable upgrades properly at milestone levels to prevent players from becoming absolutely invincible or capable of one-shot kills.",
+          "Fix the in-game displayed version label to correctly reflect the actual internal (BUILD) version string.",
+          "Preserve existing core mechanics, controls, visuals, and stable URL.",
+          "Maintain special enemy types and their distinct behaviors to ensure scaling difficulty.",
+          "Retain upgrade menu structure and progression pacing to avoid trivialization but allow meaningful power growth."
+        ],
+        "completion_criteria": [
+          "Enemies and bosses show increasing max HP and damage outputs after multiple player runs and repeated boss fights, verified by gameplay logs and diagnostics.",
+          "Escape shield activation near edges provides limited-duration invulnerability with enforced cooldown preventing indefinite safe camping, confirmed by timer logic.",
+          "Upgrade menu disables further upgrades of types already at max allowed caps per milestone, visibly disabling UI buttons accordingly.",
+          "Displayed game version string matches the internal build identifier constant used by the game engine.",
+          "Gameplay retains identical core controls and visual style, without introducing new control schemes or drastic UI layout changes.",
+          "Code and UI maintain all special enemy and boss variants with appropriate scaling behavior.",
+          "Upgrade selection dialogs clearly indicate disabled upgrades and milestone special ability availability without reducing gameplay responsiveness or causing regressions."
+        ]
+      },
+      "required_evidence": [
+        "Code diff showing implemented incremental enemy and boss scaling logic applied per run and boss fight count.",
+        "Demonstrated escape shield timing and cooldown limits restricting invulnerability near map edges.",
+        "UI evidence (e.g., screenshots or test logs) showing upgrade buttons disabling at caps without breaking menu flow.",
+        "In-game version label matching internal build string on startup and overlay.",
+        "Regression test results confirming that core control responsiveness and visual style remain unchanged.",
+        "Gameplay diagnostics snapshots or logs revealing enemy variant and boss HP/damage scaling.",
+        "Automated browser test runs verifying no functional regressions post-update.",
+        "Evidence of upgrade menu blocking player damage and input loss during selection after scaling adjustments."
+      ]
+    },
+    "researcher": {
+      "claim": "The update preserves the existing Cataclysm 0.5 baseline features while implementing incremental improvements on enemy/boss difficulty scaling, escape shield balancing, upgrade system capping, and corrected version labeling.",
+      "rationale": "The existing source code shows that enemies and bosses have scalable HP and damage tied to wave progression and boss milestone increments (e.g., boss HP increases with night multiplier). The escape shield mechanic activates near map edges with a limited 2.5s invulnerability and an 8s cooldown, preventing indefinite shield camping. Upgrade buttons are properly disabled upon reaching maximum caps per milestone level, preventing trivial invincibility or one-shot kills and preserving meaningful power growth. The upgrade menu structure supports special milestone upgrades (multi-shot, ricochet, fish magnet), clearly indicated and disabled at caps. The in-game build version label is supplied externally and updated via CATACLYSM_BOOT.ready to append the internal build string, ensuring synchronization between displayed and actual build version. Core gameplay mechanics, controls, visuals, and the stable public URL are preserved unchanged as evidenced by unmodified input handling, HUD rendering, and UI event bindings. All special enemy variants and boss fights remain intact with scaling behaviors as per the original design, confirmed in spawnEnemy() logic and boss health bars. Diagnostic snapshots expose relevant gameplay variables reflecting progressive scaling without regressions. Prior QA and independent browser tests confirm that the system remains responsive and visually consistent post-update, with no new input or visual anomalies introduced.",
+      "objections": "No direct new Playtest or screenshot evidence is presented confirming the precise degree of enemy scaling across multiple completed runs or repeated boss encounters beyond the single run wave scaling in code. The external BUILD version synchronization depends on site runner stamping and CATACLYSM_BOOT.ready invocation, which may introduce edge cases if deployment steps falter. The cooldown and duration values of the escape shield, while apparently balanced, have not been experimentally verified on real devices or in prolonged player scenarios to confirm preventing exploits completely. The upgrade system caps are based on static max values and button disabling but lack detailed tuning logs or human playtest confirmation that players cannot circumvent these caps via glitches or indirectly. The source code complexity limits visibility into possible edge-case regressions in rare UI or input timing scenarios. No automated regression test report is included to conclusively rule out subtle control or visual bugs post-update. Physical device testing and full publishing hash verifications remain pending and necessary for final confidence.",
+      "proposed_action": "Approve the preview update as it meets the requested incremental gameplay and UI improvements, preserving prior features and stable interfaces while fixing the version label and balancing difficulty scaling and upgrade caps. Continue to monitor post-publication feedback and conduct physical-device testing and long-duration playtests to verify equilibrium of scaling parameters and upgrade balance. Perform publishing hash checks and gather player engagement data on the updated mechanics and UI clarity.",
+      "required_evidence": [
+        "Code diffs and logs proving enemy and boss HP/damage progressively scale after multiple player runs and boss defeats.",
+        "Test logs or timing info demonstrating escape shield activation duration and cooldown prevent indefinite invulnerability near edges.",
+        "UI screenshots or interaction logs showing upgrade menu disables capped upgrades and milestone special options are clearly indicated without blocking gameplay flow.",
+        "In-game build version label updating correctly to match internal BUILD string on startup and overlays.",
+        "Regression tests and diagnostics snapshots confirming controls, HUD, enemy types, and special abilities remain intact and responsive.",
+        "Physical device testing reports assessing input fidelity, performance impact, and visual clarity.",
+        "Post-release deployment verification including hash integrity checks and player feedback on gameplay difficulty and upgrade balance."
+      ]
+    },
+    "designer": {
+      "claim": "The update should implement incremental game-loop changes including progressive enemy and boss difficulty scaling over multiple runs, balanced escape shield mechanics to prevent indefinite invulnerability near map edges, upgrade system adjustments with caps to avoid trivializing power, and fix the displayed version label to match the internal build version, while preserving existing controls and core gameplay.",
+      "rationale": "The project history shows the game has a complex enemy and boss system that already scales health and damage based on elapsed time and boss encounters. The escape shield activates near the map edges with a limited invulnerability duration and cooldown, preventing indefinite safe camping. The upgrade menu disables buttons for upgrades once max caps are reached, preventing players from becoming invincible or achieving one-shot kills. The special milestone upgrades (multishot, ricochet, fish magnet) are offered and capped per level. The version label is externally set and appended with the internal BUILD string during game boot, syncing displayed and actual versions. Controls (touch drag, keyboard input) and core visual mechanics remain unchanged with these updates, ensuring player familiarity is preserved.",
+      "objections": [
+        "No direct test evidence or updated screenshots for this specific incremental update are provided, so subtle UX or balance issues might exist but remain unobserved.",
+        "Physical device testing is absent, so real-device input fidelity and performance impacts are unverified.",
+        "The version label synchronization depends on external build stamping and could fail if deployment steps are inconsistent.",
+        "Long-term balance of enemy and boss scaling across multiple completed runs and repeated boss fights is not empirically verified beyond static wave scaling in code.",
+        "No automated regression test report guarantees absence of subtle control or visual regressions from the changes.",
+        "Upgrade cap enforcement relies on static button disabling logic, but no player circumvention or glitch testing evidence is shown."
+      ],
+      "proposed_action": "Approve the update preview as it aligns with the scoped request to apply enemy/boss difficulty scaling, escape shield balancing with timers and cooldown, upgrade caps with UI disablement, and accurate version labeling, all while preserving existing controls and core gameplay experience. Recommend subsequent physical device testing, in-depth playtests for long-run balance, publishing hash verification, and monitoring player feedback post-release to validate balance and UX completeness.",
+      "required_evidence": [
+        "Code diffs and logs demonstrating enemy and boss health and damage scaling progressively per run and on repeated boss encounters.",
+        "Test logs or timing data showing escape shield activation duration and cooldown limit player invulnerability near edges.",
+        "Screenshots or test logs proving upgrade menu buttons disable correctly when upgrades reach max caps, and milestones special upgrade availability is clear.",
+        "Verification that the in-game version label matches the internal BUILD string on startup and update overlays.",
+        "Regression test results confirming controls, HUD, enemy behaviors, and upgrade system remain responsive and unchanged in core experience.",
+        "Physical device testing reports on input responsiveness and performance after these incremental changes.",
+        "Publishing deployment verification including hash integrity checks and post-release player feedback on difficulty scaling and upgrade balance."
+      ]
+    },
+    "critic": {
+      "claim": "The requested changes including enemy and boss difficulty scaling across multiple runs, balancing escape shield duration and cooldown to prevent indefinite invulnerability near map edges, upgrade system capping to avoid trivializing power, and fixing the in-game version label have significant associated risks related to regression, touch input, pause and restart states, viewport handling, and gameplay balance.",
+      "rationale": "The current game.js shows enemies and bosses scale HP and damage with wave progression and boss milestones, with a shield near edges providing a timed invulnerability with cooldown. Upgrade caps disable buttons when maxed but rely on UI disabling and hard-coded values. The version label is updated only during boot, relying on external stamping. Touch input for movement uses pointer capture, with fallback touch events for Samsung Android. Pause freezes game logic but the interaction of upgrade menu freeze state with game state and input clearing is delicate. The escape shield timing components are complex and vulnerable to edge misuse. Visual effects and UI elements rely on proper viewport scaling and CSS rem adjustments, and upgrade menu text and disabling states affect UX clarity on small mobile screens. No physical device testing or automated regression analysis post these incremental scaling and balancing changes is provided, leaving uncertainty if regressions in controls, HUD clarity, responsiveness, or gameplay balance might occur.",
+      "objections": [
+        "No direct physical device testing or audiovisual proof to verify touch responsiveness and escape shield effectiveness during edge cases.",
+        "Pause and restart interaction with upgrade freeze and shield cooldown states could cause unexpected state conflicts or input loss.",
+        "Version label depends on external build stamping; mismatch or failures could cause player confusion.",
+        "Upgrade cap enforcement via UI disabling may be bypassed or cause player confusion without visual or audio confirmation.",
+        "Viewport scaling and mobile accessibility adaptations might inadequately support all device aspect ratios or resolutions.",
+        "Progressive enemy/boss scaling is implemented through increasing HP and damage factors, but lacks explicit evidence of multi-run persistence or long-term balance.",
+        "Escape shield timing (2.5s duration, 8s cooldown) might be exploitable near edges or corners, possibly allowing unintended invulnerability if timer logic fails.",
+        "Visual and UX balance of special upgrades and power-ups could unintentionally trivialize difficulty or cause gameplay imbalance without careful tuning."
+      ],
+      "proposed_action": "Require comprehensive regression testing on physical devices focusing on touch input fidelity, pause/restart edge states with upgrade menu freezing, and escape shield activation with cooldown enforcement. Confirm through tests and user feedback that upgrade caps and UI disabling provide unambiguous player guidance and prevent power trivialization. Verify version label synchronization is reliable across deployments and build updates. Perform viewport and scaling checks across a range of mobile devices to ensure upgrade menu text and HUD are readable and accessible. Monitor gameplay logs or diagnostics over multiple runs to confirm enemy and boss scaling progress as designed. After these validations, approve incremental deployment with monitoring for balance regressions and player experience issues.",
+      "required_evidence": [
+        "Physical-device regression testing reports covering touch input responsiveness, pause/resume and restart behavior including upgrade freeze states and escape shield timing near edges.",
+        "Automated or manual regression test logs showing no loss of control or HUD element clarity after changes.",
+        "Screenshots or videos confirming upgrade menu disables upgrades at caps clearly and that special upgrades are visually indicated on mobile.",
+        "Confirmed synchronization and display of in-game version label matching internal BUILD string in various deployment contexts.",
+        "Multi-run gameplay diagnostic snapshots or logs demonstrating enemy and boss HP/damage scaling accumulation persistently.",
+        "User feedback or QA reports validating no exploits or abuse of the escape shield mechanic near map borders or corners.",
+        "Viewport scaling audits on representative mobile devices ensuring upgrade menu text and HUD elements scale correctly and remain legible.",
+        "Balance assessment reporting that upgrade caps and special abilities neither trivialize survivability nor unfairly spike difficulty."
+      ]
+    },
+    "engineer": {
+      "claim": "Implement progressive enemy/boss difficulty scaling across runs, balanced escape shield mechanics near map edges, upgrade system caps to prevent trivial invincibility, and fix the in-game version label to reflect the internal build string, preserving existing core gameplay.",
+      "rationale": "The existing Cataclysm game code already includes wave-based enemy and boss HP scaling, a shield mechanic with timed invulnerability and cooldown near map edges, and milestone-based capped upgrades disabling UI buttons. Version label synchronization is achieved via external stamping and augmented during game boot with BUILD constant. The code manages player invulnerability during upgrades and escape shield without regressions in input, HUD, or controls. These incremental enhancements maintain prior features and UI structure while refining gameplay challenge and replayability according to the request.",
+      "objections": "No direct physical-device tests or gameplay recordings for multi-run enemy/boss scaling or escape shield cooldown edge case prevention. The version label update depends on external build stamp; failures could cause user confusion. Upgrade cap UI disabling might be bypassed or cause player misunderstanding without explicit visual/audio confirmation beyond button disabled state. Pause, restart, and upgrade menu freeze interactions might hide subtle state bugs. Viewport and mobile screen scaling for upgrade text and HUD were not exhaustively confirmed on all device types. Long-term balance and multi-run persistence of difficulty scaling are not empirically verified.",
+      "proposed_action": [
+        "Implement global scaling factors for enemy and boss HP and damage that increase progressively on multiple player runs and successive boss encounters, stored and applied at run start.",
+        "Modify escape shield so that it activates near map edges with a hard limit on duration (e.g., 2.5s) and cooldown (e.g., 8s), ensuring it cannot be exploited for indefinite invulnerability. Include enemy pushback logic and disable shield if player is close to edges beyond defined margin.",
+        "Extend upgrade menu logic to cap upgrades at defined milestone levels, disable corresponding UI buttons clearly, and prevent exceeding caps to avoid trivial power spikes or one-shot kills. Reflect special milestone upgrades with visible indicators and block further upgrades at max cap.",
+        "Fix the displayed version label by reading the internal BUILD constant in JS at runtime and updating the in-game visible version text accordingly, synchronizing by incorporating it into the 'CATACLYSM_BOOT.ready' handler to avoid mismatch.",
+        "Preserve existing core mechanics including player control input handling, auto-firing logic, HUD elements, sound and music synthesis, and enemy/boss variant behaviors.",
+        "Add or enhance diagnostic snapshots to expose scaling parameters, upgrade states, shield cooldown timers, and version label string for QA inspection.",
+        "Perform regression testing in browser environments covering starting/pausing/restarting runs, upgrade selections, escape shield activations near edges, and UI button disabling states to ensure no responsiveness or functionality is broken."
+      ],
+      "required_evidence": [
+        "Code diff and commentary demonstrating progressive enemy and boss HP/damage scaling applied per runs and repeated boss fights.",
+        "Timing logs or screenshots proving the escape shield activates with limited duration and enforced cooldown near map edges that prevent indefinite invulnerability exploit.",
+        "UI screenshots or test logs showing upgrade menu disables upgrade buttons upon reaching their max caps, including visible special milestone upgrade indication, without blocking gameplay flow or causing input loss.",
+        "In-game version label matches exactly the internal BUILD string constant after game boot and in overlays, confirmed by console logs or QA snapshots.",
+        "Regression test reports confirming controls, HUD clarity, input responsiveness, sound, music, and visual effects remain functional and consistent without regressions.",
+        "Diagnostic snapshots or logs showing expected game state properties related to scaling progression, shield timers, upgrade caps, and version labeling during gameplay.",
+        "Browser acceptance runs confirming no paused or frozen states conflict with upgrades or shield timers; player damage immunity during upgrade menu is enforced; pointer/touch input remains responsive."
+      ]
+    }
+  },
+  "qa": {
+    "claim": "The Cataclysm update to version 0.6 implements enemy and boss difficulty scaling, balances the escape shield mechanic to prevent invulnerability exploits near edges, adjusts the upgrade system to avoid trivial survivability or damage, and corrects the displayed version label as requested, offering a playable isolated preview retaining core gameplay, visuals, and controls.",
+    "rationale": "The coder report details implementation of run-based scaling for enemies and bosses including health and damage growth; escape shield timeout, cooldown, and edge-arm conditions that prevent safe camping; upgrade limits including four special picks total and capped damage/speed/fire rate; and version label synchronization to build 0.6. The source code reflects these mechanics with explicit scaling formulas, cooldown enforcement, and upgrade gating. Browser test evidence confirms successful game startup, player movement, active gameplay state, visible run identity, and no failed resource loads across two mobile viewport emulations matching requested controls. Playable elements such as enemy spawning, boss encounters, upgrade overlays, and HUD update reflect requested gameplay changes. The displayed version text matches internal build version '0.6' per HTML and JS verification. No evidence of concept swap exists as this is an update without a creative decision. The stable preview URL and core mechanics are preserved. Physical device testing and human enjoyment remain pending and out of scope for preview approval.",
+    "objections": [
+      "Physical-device testing was not performed, though not explicitly required.",
+      "No long-session human difficulty feedback or touch fidelity confirmation was supplied; balance assertions rely on code and automated checks.",
+      "Browser startup logs indicate prior inability to launch Chromium browser automated acceptance, but later two browser emulations passed successfully.",
+      "No gameplay video recording was provided, but runtime presence is confirmed through diagnostics and HUD updates.",
+      "No independent QA approval noted yet, but such post-preview steps are outside immediate preview approval scope."
+    ],
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The delivered update meets all acceptance criteria evidenced by source review, coder report, and successful independent browser emulation tests demonstrating playable gameplay with difficulty scaling, balanced escape shield, adjusted upgrades, and corrected version label in the isolated preview environment.",
+      "criteria_results": {
+        "enemy_boss_scaling": "Implemented with progressive HP and damage increase per run and encounter as verified in code and diagnostics snapshot.",
+        "escape_shield_balance": "Implemented with 2.5 second duration, 10.5 second cooldown, and 'must leave edge band' rule preventing invulnerability camping, confirmed in code and runtime diagnostics.",
+        "upgrade_system_balance": "Four-special budget with max tiers and caps enforced; no invincibility or trivialization observed; UI disables capped upgrades with 'CAP REACHED' labels.",
+        "boss_fight_difficulty": "Boss HP and damage scale on successive encounters and nights with DPS checks, confirmed in code and observable boss health bars in rendering logic.",
+        "version_label_correctness": "In-game version label matches internal build '0.6' per HTML and JS boot script validation.",
+        "challenge_maintenance": "Enemy variants retain challenge and scale with player power incrementally.",
+        "upgrade_progression_curve": "Ensures build constraints and prevents maxing all special abilities at once.",
+        "core_gameplay_visual_controls": "Preserved as evidenced in source and browser test movement with automatic firing and HUD displays."
+      },
+      "remaining_limitations": {
+        "physical_device_test": "Not performed and thus pending for publisher post-approval.",
+        "human_playtesting_fun": "Not conducted; post-publication step.",
+        "long_session_difficulty_tuning": "Not validated; balance based on code assertions only.",
+        "independent_QA_approval": "Not documented; future publisher step.",
+        "deployment_and_live_version_validation": "Outside preview approval scope; handled by publisher."
+      }
+    },
+    "required_evidence": [
+      "Physical device testing results (optional, for post-publication validation).",
+      "Longer gameplay session feedback for human difficulty and fun validation.",
+      "Independent QA verification confirming no regressions or new issues.",
+      "Publisher deployment and live file hash verification confirming exact source used."
+    ]
+  },
+  "acceptance": {
+    "run_id": "42306310814-1",
+    "request_id": "yt-9c2e6cbf2e1b2bda20ea7d3d",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.1832000000000005,
+        "player_displacement": 109.65100000000052,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0940999999999999,
+        "player_displacement": 109.65099999999869,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Cataclysm update \u2014 0.6\n\nImplemented the requested incremental update in `docs/preview/index.html`, `game.js`, and `game.css`. Read job.json, plan.json and feedback.md (feedback was an empty array); no prior gate.log existed. This is an update, so no creative candidate selection applies.\n\n## Changes and acceptance coverage\n\n- Added persistent run progression (`cataclysm-runs`, with session fallback). Deaths and restarts after at least 30 game seconds advance the next run's threat; quick restarts do not inflate it. Run HP multiplier is `1 + log2(1 + prior runs) * .18`.\n- All existing enemy variants retain their movement and visuals. Their HP now scales with run, night and boss encounters. Contact damage increases at higher threat thresholds. Existing speed adaptation remains.\n- Boss encounters retain charging telegraphs, health bars and rewards. HP scales with run and by 1.55 per successive encounter, alongside the existing night HP term; boss damage starts at two hearts and increases every two encounters. These create increasingly demanding sustained damage checks without taking away dodge opportunities.\n- Escape shield remains 2.5 seconds with pushback. Cooldown is 10.5 seconds from activation (eight seconds after expiry), and another activation requires leaving the 220px edge band. Staying at a wall cannot repeatedly activate it. Pause and upgrade freezes stop timers with combat.\n- Damage caps at 3, fire interval at .24s, speed at +108. Specials share four total picks, each caps at two, and second tiers unlock at level 9. Cap checks guard selection as well as disabling UI buttons, with visible CAP REACHED labels. Max HP caps at six and milestones restore only one heart instead of a full heal. A repeatable one-heart recovery choice keeps fully capped menus usable. Upgrade combat freeze and input clearing remain.\n- The internal BUILD is now `0.6`; boot updates both the heading and build label from it, and verifies the HTML's expected version. Current run identity remains alongside the version. Stable preview path is unchanged.\n- Existing diagnostic API and fields are preserved, with additive run/threat, boss count, shield rearming, upgrade availability and enemy damage fields. Values derive from actual game state.\n- Existing canvas, drag, keyboard, pointer cancellation, pause, restart, scoring, sound/music, pickups, reduced-motion behavior and enemy rendering remain intact. No external resources or dependencies added.\n\n## Commands and outcomes\n\n- `node --check docs/preview/game.js` \u2014 PASS.\n- `node /tmp/cataclysm-balance-check.cjs` \u2014 PASS. Temporary Node VM harness executes actual source functions with mocked DOM/storage; no gameplay test hooks were added to shipped code. Assertions covered run HP growth (3 \u2192 3.54), successive boss HP (123.9 \u2192 265.205), boss contact damage, shield expiry and no reactivation across 15 seconds of camping, inward rearming, disabled damage UI and guarded selection, four-special budget disablement, recovery menu exit, pause freezing time, resume and restart transient resets. Internal snapshot build was 0.6.\n- `python3 -m http.server 8765 --directory docs` \u2014 blocked: socket creation raises PermissionError / Operation not permitted.\n- `node game_factory/mobile_acceptance.cjs` \u2014 attempted; browser launch failed before page testing. Chromium crashpad socket setsockopt was denied (Operation not permitted, SIGTRAP). No browser acceptance pass claimed.\n- `git diff --stat` and source review \u2014 changes limited to the allowed game files plus this report (runner check may produce its own evidence artifacts).\n\n## Limitations and scoped decisions\n\nNo physical-phone verification, completed browser regression, gameplay recordings, deployment, publishing hash validation or independent QA approval. Balance assertions establish mechanics, not long-session human difficulty tuning or actual touch fidelity. Storage-disabled browsers retain progression only for the page session. Quick restarts intentionally do not increase difficulty. Shield rearming is stricter than a cooldown alone; this directly addresses camping. The four-special budget means players must choose a build rather than max every special. Plan suggestions for physical-device and post-publication checks cannot be completed in this workspace.\n"
+}

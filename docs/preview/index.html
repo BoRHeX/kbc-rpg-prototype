@@ -2,16 +2,16 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42288160079-1"></head>
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42306310814-1"></head>
 <body>
 <header class="top">
   <a href="../games/" class="back">← All games</a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42288160079-1">AI PLAYTEST BUILD 42288160079-1</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42306310814-1">AI PLAYTEST BUILD 42306310814-1</div>
 </header>
 <main class="shell">
   <section class="intro">
-    <h1>Cataclysm <span>0.5</span></h1>
+    <h1>Cataclysm <span id="game-version">0.6</span></h1>
     <p>One cat. One city. An inconvenient number of zombies.</p>
   </section>
     <div class="hud">
@@ -37,17 +37,18 @@
         <p id="upgrade-copy">Time and combat are frozen. Equip one upgrade to continue.</p>
 
         <button type="button" class="upgrade special" data-special data-upgrade="multi-shot" hidden>Special · Multi-shot<small>Add two spread shots · up to five shots</small></button>
-        <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · up to 3 bounces</small></button>
-        <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · up to 3 boosts</small></button>
-        <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · minimum 0.12 seconds</small></button>
-        <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · up to 2 bounces</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · up to 2 boosts</small></button>
+        <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · minimum 0.24 seconds</small></button>
+        <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder · cap 3 damage</small></button>
         <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · speed cap +108</small></button>
+        <button type="button" class="upgrade" data-upgrade="recover">Patch up<small>Restore one heart · available when other upgrades are capped</small></button>
       </section>
       <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
       <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
       <div class="notice" id="notice" hidden></div>
     </div>
-    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Speed: +18 movement and +12 pickup range (cap +108). Damage: +0.25 per shot. Fire rate: 15% shorter cooldown (minimum 0.12s). Spread shots are pink; ricochets turn gold.</p><p>Every 10th night brings a charging boss. Field crates: R = double damage for 12s, M = collect all fish + magnet for 12s, ♥ = heal one heart. Crates remain until collected. Bosses drop all three.</p><p>Night 3: blue Orbiters circle before closing in. Night 5: gold Stalkers flank your movement. Near walls, follow the mint arrow; nearby threats trigger a 2.5s escape shield (8s recharge).</p></div></details>
+    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Speed: +18 movement and +12 pickup range (cap +108). Damage: +0.25 per shot (cap 3). Four special picks total; second tiers unlock at level 9. Fire rate: 15% shorter cooldown (minimum 0.24s). Spread shots are pink; ricochets turn gold.</p><p>Each finished run (or restart after 30s) raises threat on this device. Enemy health rises each night. Every 10th night brings a stronger charging boss. Field crates: R = double damage for 12s, M = collect all fish + magnet for 12s, ♥ = heal one heart. Crates remain until collected. Bosses drop all three.</p><p>Night 3: blue Orbiters circle before closing in. Night 5: gold Stalkers flank your movement. Near walls, follow the mint arrow; nearby threats trigger a 2.5s escape shield (8s recharge after expiry; return inward to rearm).</p></div></details>
     <div class="below">
       <div class="help"><b>CONTROLS</b><p><span class="desktop">WASD / arrow keys</span><span class="mobile">Drag anywhere on the arena</span> to move. Your cat fires automatically. Collect fish to upgrade. </p></div>
       <div class="actions"><button id="mute" class="secondary" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart" class="secondary">↻ Restart</button></div>
@@ -55,7 +56,7 @@
 </main>
 <script>
 (function () {
-  var expected = '20261106-survival-04';
+  var expected = '0.6';
   var status = document.getElementById('runtime-status');
   var play = document.getElementById('play');
   var acknowledged = false;
@@ -73,6 +74,7 @@
   window.CATACLYSM_BOOT = {
     fail: fail,
     ready: function (build) {
+      document.getElementById('game-version').textContent = build;
       document.getElementById('build-version').textContent = document.getElementById('build-version').dataset.run + ' · CODE ' + build;
       if (build !== expected) {
         fail('Game files are from different builds. Reload this page to update.');
@@ -93,5 +95,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42288160079-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42306310814-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>

@@ -30,3 +30,6 @@ a:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 #upgrade-overlay .upgrade{text-align:left;padding:10px 14px;line-height:1.3}
 #upgrade-overlay .upgrade small{color:#e0eee9;font-size:12px;line-height:1.4}
 #upgrade-overlay h2{letter-spacing:0}#upgrade-overlay p{max-width:310px}
+
+.upgrade:disabled{opacity:.45;cursor:not-allowed;border-style:dashed}.upgrade:disabled small{color:#b0b8c3}
+.upgrade:disabled::after{content:'CAP REACHED';display:block;font-size:10px;letter-spacing:1px;margin-top:4px;color:#f5cf75}

@@ -1,11 +1,11 @@
 /* CATACLYSM: fully original mobile-first Canvas arcade by BoRHeZ Games. */
 'use strict';
 (function () {
-  const BUILD = '20261106-survival-04';
+  const BUILD = '0.6';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MIN_SHOT_INTERVAL = .12;
+  const MIN_SHOT_INTERVAL = .24;
   const W = 720, H = 1000, TWO = Math.PI * 2;
   const cfg = {speed:235,enemySpeed:63,spawnInterval:1.65,shotInterval:.62,
     enemyHp:3,spawnRamping:.010,fishDropChance:.65,maxEnemies:95};
@@ -32,7 +32,28 @@
     }
     for(let i=0;i<260;i++) stars.push({x:rand()*2400,y:rand()*2400,r:rnd(.7,2.1)});
   }
-  let personalBest = 0;
+  let personalBest = 0, completedRuns = 0;
+  try { completedRuns = Math.max(0, Math.floor(Number(localStorage.getItem('cataclysm-runs')) || 0)); }
+  catch (err) { /* session progression works without storage */ }
+  function recordRun() {
+    if (!game || game.runRecorded || (game.t < 30 && game.mode !== 'dead')) return;
+    game.runRecorded = true; completedRuns++;
+    try { localStorage.setItem('cataclysm-runs', String(completedRuns)); } catch (err) { /* session only */ }
+  }
+  function difficulty() {
+    return game.runScale * (1 + (game.wave - 1) * .065 + game.bossEncounters * .10);
+  }
+  function upgradeAvailable(type) {
+    const p=game.player;
+    const special = ['multi-shot','ricochet','fish-magnet'].includes(type);
+    if (special && (p.level%3!==0 || p.multishot+p.ricochet+p.magnet>=4)) return false;
+    const tier=Math.min(2,1+Math.floor(p.level/9));
+    return type==='damage'?p.damage<3 : type==='speed'?p.speed<cfg.speed+108 :
+      type==='fire-rate'?p.shotInterval>MIN_SHOT_INTERVAL :
+      type==='multi-shot'?p.multishot<Math.min(2,tier) :
+      type==='ricochet'?p.ricochet<Math.min(2,tier) :
+      type==='fish-magnet'?p.magnet<Math.min(2,tier) : type==='recover';
+  }
   function readBest() {
     try {
       const stored = Number(localStorage.getItem('cataclysm-best'));
@@ -111,8 +132,9 @@
     const g=game,p=g.player;
     g.escapeCooldown=Math.max(0,g.escapeCooldown-dt);g.escape=Math.max(0,g.escape-dt);
     g.edgeWarning=Math.min(p.x,p.y,2400-p.x,2400-p.y)<220;
-    if(g.edgeWarning&&g.escapeCooldown===0&&g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<145)){
-      g.escape=2.5;g.escapeCooldown=8;p.inv=Math.max(p.inv,2.5);
+    if(!g.edgeWarning)g.escapeArmed=true;
+    if(g.edgeWarning&&g.escapeArmed&&g.escapeCooldown===0&&g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<145)){
+      g.escapeArmed=false;g.escape=2.5;g.escapeCooldown=10.5;p.inv=Math.max(p.inv,2.5);
       for(const e of g.enemies){const d=dist(e.x,e.y,p.x,p.y);
         if(d<210){const a=Math.atan2(e.y-p.y,e.x-p.x);
           e.x=clamp(p.x+Math.cos(a)*230,20,2380);e.y=clamp(p.y+Math.sin(a)*230,20,2380);}}
@@ -123,13 +145,14 @@
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
   }
   function start() {
+    recordRun();
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
       shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
-    game={mode:'running',t:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
+    game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
       powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
-      escape:0,escapeCooldown:0,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
+      escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
@@ -137,7 +160,7 @@
   }
   function end() {
     if(!game || game.mode==='dead')return;
-    game.mode='dead';saveBest();$('overlay-title').textContent='NINE LIVES. ZERO LEFT.';
+    game.mode='dead';recordRun();saveBest();$('overlay-title').textContent='NINE LIVES. ZERO LEFT.';
     $('overlay-copy').textContent='You survived '+Math.floor(game.t)+' seconds, defeated '+
       game.kills+' zombies, and rescued '+game.fish+' fish. Ready for another run?';
     $('play').textContent='↻ PLAY AGAIN'; $('start-overlay').hidden=false;
@@ -166,32 +189,30 @@
     game.pendingUpgrade=true;game.mode='upgrade';clearInput();
     const milestone=game.player.level%3===0;
     if(milestone){
-      game.player.maxHp=Math.min(9,game.player.maxHp+1);
-      game.player.hp=game.player.maxHp;
+      game.player.maxHp=Math.min(6,game.player.maxHp+1);
+      game.player.hp=Math.min(game.player.maxHp,game.player.hp+1);
     }
     $('upgrade-title').textContent='LEVEL '+game.player.level+(milestone?' · SPECIAL':' · CHOOSE ONE');
-    $('upgrade-copy').textContent=milestone?'Full heal + one max heart (cap 9). Choose a special or basic upgrade. Combat is frozen.':'Combat paused. Pick one. Every third level: special abilities + a heart.';
+    $('upgrade-copy').textContent=milestone?'+1 heart, max HP cap 6. Specials: four total picks; tier 2 at level 9. Combat frozen.':'Combat paused. Choose one. Every third level: specials and +1 heart.';
     document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone;});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
     updateHud();sound(1050,.2);
     document.querySelectorAll('[data-upgrade]').forEach(b=>{
-      b.disabled=(b.dataset.upgrade==='speed'&&game.player.speed>=cfg.speed+108)||
-        (b.dataset.upgrade==='fire-rate'&&game.player.shotInterval<=MIN_SHOT_INTERVAL)||
-        (b.dataset.upgrade==='multi-shot'&&game.player.multishot>=2)||
-        (b.dataset.upgrade==='ricochet'&&game.player.ricochet>=3)||
-        (b.dataset.upgrade==='fish-magnet'&&game.player.magnet>=3);
+      b.disabled=!upgradeAvailable(b.dataset.upgrade);
+      b.title=b.disabled?'Cap reached or special budget exhausted':'';
     });
     $('upgrade-overlay').querySelector('button:not([hidden]):not(:disabled)').focus({preventScroll:true});
   }
   function chooseUpgrade(type) {
-    if(!game||game.mode!=='upgrade'||!game.pendingUpgrade)return;
+    if(!game||game.mode!=='upgrade'||!game.pendingUpgrade||!upgradeAvailable(type))return;
     const p=game.player;
     if(type==='fire-rate')p.shotInterval=Math.max(MIN_SHOT_INTERVAL,p.shotInterval*.85);
-    else if(type==='damage')p.damage+=.25;
+    else if(type==='damage')p.damage=Math.min(3,p.damage+.25);
+    else if(type==='recover')p.hp=Math.min(p.maxHp,p.hp+1);
     else if(type==='speed')p.speed=Math.min(cfg.speed+108,p.speed+18);
     else if(p.level%3===0&&type==='multi-shot')p.multishot=Math.min(2,p.multishot+1);
-    else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(3,p.ricochet+1);
-    else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(3,p.magnet+1);
+    else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(2,p.ricochet+1);
+    else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(2,p.magnet+1);
     else return;
     game.upgrades.push({level:p.level,type});game.pendingUpgrade=false;
     $('upgrade-overlay').hidden=true;$('pause').hidden=false;
@@ -217,9 +238,11 @@
     let variant=(p.level>=3||p.speed>cfg.speed) ? (game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
     if(game.wave>=5&&game.spawnCount%5===0)variant='stalker';
     else if(game.wave>=3&&game.spawnCount%3===0)variant='orbiter';
+    const scale=difficulty();
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
     game.enemies.push({...position,
-      variant,dash:0,r:variant==='weaver'?15:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
+      variant,dash:0,r:variant==='weaver'?15:extra===2?25:18, hp:(cfg.enemyHp+(extra-1)*3)*scale, max:(cfg.enemyHp+(extra-1)*3)*scale,
+      damage:1+Math.floor((scale-1)/1.5),
       speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
       phase:rnd(0,TWO),weight:extra,hurt:0});
   }
@@ -250,9 +273,10 @@
     game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind});
   }
   function spawnBoss(night) {
-    const p=game.player, hp=65+night*4;
+    game.bossEncounters++;
+    const hp=(65+night*4)*game.runScale*Math.pow(1.55,game.bossEncounters-1);
     game.enemies.push({...safeSpawn(650,60),
-      variant:'boss',r:44,hp,max:hp,speed:cfg.enemySpeed,phase:0,weight:20,hurt:0,night});
+      variant:'boss',r:44,hp,max:hp,damage:2+Math.floor((game.bossEncounters-1)/2),speed:cfg.enemySpeed,phase:0,weight:20,hurt:0,night});
     notify('NIGHT '+night+' · THE ALLEY KING',3);sound(110,.5,'sawtooth');
   }
   function addFish(x,y,value=1) {
@@ -315,8 +339,8 @@
       enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(g.mode==='running'&&!g.pendingUpgrade&&d<p.r+enemy.r-3&&p.inv===0){
-        p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
-        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -1');
+        p.hp=Math.max(0,p.hp-enemy.damage);p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
+        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+enemy.damage);
       }
     }
     for(let i=g.shots.length-1;i>=0;i--){
@@ -509,7 +533,7 @@
     ctx.fillStyle='#8bdac9';ctx.font='bold 15px system-ui';ctx.fillText('NIGHT '+g.wave,20,35);
     ctx.fillStyle='#9ab8c2';ctx.font='13px system-ui';ctx.fillText('CAT LVL '+p.level,20,56);
     ctx.fillStyle='#ffdda5';ctx.fillText(Object.entries(g.buffs).filter(([,v])=>v>0).map(([k,v])=>k.toUpperCase()+' '+Math.ceil(v)+'s').join(' · '),20,76);
-    if(g.edgeWarning){ctx.fillStyle='#7cf2d0';ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(g.escape>0?'SHIELD ACTIVE · MOVE INWARD':'EDGE · Follow the mint arrow',W/2,H-55);ctx.textAlign='left';}
+    if(g.edgeWarning){ctx.fillStyle='#7cf2d0';ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(g.escape>0?'SHIELD ACTIVE · MOVE INWARD':(g.escapeArmed?'EDGE · Follow the mint arrow':'SHIELD SPENT · Return inward to rearm'),W/2,H-55);ctx.textAlign='left';}
     ctx.fillStyle='#162d41';ctx.fillRect(20,H-21,160,8);
     ctx.fillStyle='#77f3c1';ctx.fillRect(20,H-21,160*(g.xp/(7+p.level*3)),8);
   }
@@ -637,6 +661,10 @@
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
     snapshot: () => ({build: BUILD, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
+      run:game?game.run:completedRuns+1,runScale:game?game.runScale:1,
+      difficulty:game?difficulty():1,bossEncounters:game?game.bossEncounters:0,
+      escapeArmed:!!(game&&game.escapeArmed),
+      upgradeAvailability:game?Object.fromEntries(['damage','speed','fire-rate','multi-shot','ricochet','fish-magnet','recover'].map(k=>[k,upgradeAvailable(k)])):{},
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
@@ -647,7 +675,7 @@
       bossMilestone:game?game.bossMilestone:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage})):[],
       shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,hp:game.player.hp,maxHp:game.player.maxHp,
