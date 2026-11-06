@@ -334,6 +334,22 @@ def plan_command():
             )
         if job["request"]["mode"] == "update":
             selection = plan["update_decision"]["selection"]
+            if job["request"].get("redesign"):
+                prompt += (
+                    "\n\nBINDING PLAYER-SPECIFIED COMPLETE REDESIGN:\n"
+                    "The request intentionally REPLACES the previous game "
+                    "mechanics. Do NOT preserve its obsolete tray/tiles/ball "
+                    "rules. Preserve ONLY the existing game's stable URL, "
+                    "host controls contract (play, pause, restart), mobile "
+                    "input accessibility and read-only BORHEZ_GAME.snapshot "
+                    "API. Implement EVERY gameplay acceptance item in the "
+                    "player's request, not only two selected council subfeatures. "
+                    "Use the council's code-level proposals as implementation "
+                    "advice; the player-specified game takes precedence. "
+                    "Support a complete player loss/replay loop and prevent "
+                    "runaway uncatchable probe states. "
+                    "Document specific physics and gameplay tests.\n"
+                )
             prompt += (
                 "\n\nBINDING COLLABORATIVE UPDATE DECISION (agreed BEFORE coding):\n"
                 + json.dumps(selection, indent=2)
