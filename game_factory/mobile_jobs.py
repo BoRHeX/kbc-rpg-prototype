@@ -278,23 +278,73 @@ def publish_bundle(root, bundle):
     return receipt
 
 
+
 def catalog(root):
+    """Regenerate game cards without replacing the designed studio homepage."""
     latest = {}
     for path in (root / "game_factory/results").glob("*.json"):
         receipt = json.loads(path.read_text())
         game = receipt["request"]["game"]
         if game not in latest or int(receipt["run_id"].split("-")[0]) > int(latest[game]["run_id"].split("-")[0]):
             latest[game] = receipt
-    links = ['<a href="../preview/">Cataclysm — survival playtest</a>']
-    for game, receipt in sorted(latest.items()):
-        if game != "cataclysm":
-            links.append('<a href="./' + html.escape(game) + '/">' + html.escape(receipt["request"]["title"]) + '</a>')
+
     directory = root / "docs/games"
     directory.mkdir(parents=True, exist_ok=True)
-    (directory / "index.html").write_text('''<!doctype html><html lang="en"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>BoRHeZ Games</title>
-<style>body{background:#0b1120;color:#f1f5f9;font:18px system-ui;margin:40px auto;max-width:640px;padding:20px}a{display:block;color:#67e8f9;padding:22px;border:1px solid #334155;border-radius:12px;margin:16px 0;text-decoration:none}p{color:#94a3b8}</style>
-<h1>BoRHeZ Games</h1><p>Small games. Open one and play.</p>''' + "\n".join(links) + "\n</html>\n")
+    page = directory / "index.html"
+    begin = "<!-- BEGIN GENERATED GAME CARDS -->"
+    end = "<!-- END GENERATED GAME CARDS -->"
+    if not page.exists():
+        page.write_text(
+            '<!doctype html><html lang="en"><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<title>BoRHeZ Games</title><h1>BoRHeZ Games</h1>'
+            '<a href="../preview/">Cataclysm</a><div class="games-grid">'
+            + begin + "\n" + end + "</div></html>\n"
+        )
+
+    summaries = {
+        "neon-salvage": "Collect glowing cores, chain multipliers, and dodge red debris in a 60-second run.",
+        "studio-original-001": "Bounce a peach from your tray and clear the jam tiles. Quick, simple, replayable.",
+    }
+    symbols = {"neon-salvage": "🚀", "studio-original-001": "🍑"}
+    cards = []
+    ordered = sorted(latest.items(), key=lambda item: int(item[1]["run_id"].split("-")[0]), reverse=True)
+    for game, receipt in ordered:
+        if game == "cataclysm":
+            continue
+        target = directory / game / "index.html"
+        if not target.is_file():
+            raise ValueError("Catalog game is missing its published index.html: " + game)
+        markup = target.read_text(encoding="utf-8")
+        match = re.search(r"<title[^>]*>(.*?)</title>", markup, flags=re.I | re.S)
+        title = html.unescape(re.sub(r"<[^>]+>", "", match.group(1))).strip() if match else ""
+        title = title or receipt["request"]["title"]
+        title = html.escape(title[:100])
+        safe_id = html.escape(game, quote=True)
+        description = html.escape(summaries.get(game, "An original mobile browser game. Open and play."))
+        symbol = html.escape(symbols.get(game, "✦"))
+        cards.append(
+            f'<article class="game-card {safe_id}">'
+            f'<div class="game-art" aria-hidden="true"><span class="symbol">{symbol}</span></div>'
+            f'<div class="body"><div class="label">ORIGINAL MOBILE ARCADE</div>'
+            f'<h3>{title}</h3><p>{description}</p>'
+            f'<a class="btn btn-small" href="./{safe_id}/">▶ PLAY GAME <span aria-hidden="true">↗</span></a>'
+            f'</div></article>'
+        )
+
+    source = page.read_text(encoding="utf-8")
+    prefix, found, tail = source.partition(begin)
+    if not found:
+        raise ValueError("Game catalog is missing the start marker; refusing to overwrite its design")
+    _, found, suffix = tail.partition(end)
+    if not found:
+        raise ValueError("Game catalog is missing the end marker; refusing to overwrite its design")
+    refreshed = prefix + begin + "\n" + "\n".join(cards) + "\n" + end + suffix
+    game_count = 1 + sum(game != "cataclysm" for game in latest)
+    refreshed = re.sub(r'(<strong id="game-count">)[^<]*(</strong>)',
+                       lambda m: m[1] + str(game_count) + " playable games" + m[2], refreshed)
+    page.write_text(refreshed, encoding="utf-8")
+
 
 
 def verify_published(root, request_id):
