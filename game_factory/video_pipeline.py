@@ -135,6 +135,23 @@ def github_issue(title,body):
     r.raise_for_status()
     print("Created review issue:",r.json()["html_url"])
 
+def already_processed(file_id):
+    """Avoid repeated API charges for queued, accepted or deliberately skipped videos."""
+    key = "yt-" + hashlib.sha256(file_id.encode("utf-8")).hexdigest()[:24]
+    if (pathlib.Path("game_factory/results") / (key + ".json")).exists():
+        return True
+    if (pathlib.Path("game_factory/review_markers") / (key + ".json")).exists():
+        return True
+    current = pathlib.Path("game_factory/requests/current.json")
+    if current.exists():
+        try:
+            if json.loads(current.read_text(encoding="utf-8")).get("id") == key:
+                return True
+        except (ValueError, OSError):
+            pass
+    return False
+
+
 def main():
     missing=[k for k in ("GOOGLE_CLIENT_ID","GOOGLE_CLIENT_SECRET","GOOGLE_REFRESH_TOKEN",
                         "OPENAI_API_KEY") if not os.getenv(k)]
@@ -148,7 +165,10 @@ def main():
     metadata=drive_api("files/"+file_id,token,{"fields":"id,name,mimeType,parents,size"}).json()
     if metadata.get("mimeType","").split("/")[0]!="video" or FOLDER not in metadata.get("parents",[]):
         sys.exit("Refusing to process: file is not a video in the authorized YouTube folder")
-    # Scheduled runs avoid repeat paid analysis by checking an existing issue title.
+    # Check durable requests/receipts/markers before initiating paid inference.
+    if already_processed(file_id):
+        print("Recording already processed or queued. No repeat API calls."); return
+    # Retain backwards compatibility for old reviews recorded as GitHub issues.
     title="Gameplay review: "+metadata["name"]+" ["+file_id+"]"
     check=session.get("https://api.github.com/repos/"+GH+"/issues",
        headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"]},
@@ -168,10 +188,8 @@ def main():
     (OUT/"development_report.md").write_text(report)
     highlight(video,report,seconds)
     video.unlink()
-    github_issue(title,"Automated gameplay review. Original Drive file ID: \`"+file_id+
-       "\`.\n\n"+report[:55000]+
-       "\n\nFull transcript and edited highlight are stored as workflow artifacts. "+
-       "Only videos with a verified game-ID filename can automatically request a tested studio update. "+
-       "Video publication remains separate.")
+    # This public repository must not receive private commentary or a raw transcript.
+    print("Gameplay QA complete; handing ephemeral transcript/report to Studio bridge.")
+
 if __name__=="__main__":
     main()
