@@ -17,6 +17,7 @@
     }
   }).catch(() => { /* defaults are a complete playable configuration */ });
   let game = null, last = 0, keys = {}, pointer = null, muted = false, audio = null;
+  let musicBus = null, musicNext = 0, musicBeat = 0;
   let seeded = 424242, stars = [], city = [], noticeTTL = 0;
   const rand = () => ((seeded = (Math.imul(1664525, seeded) + 1013904223) >>> 0) / 4294967296);
   const clamp = (v, lo, hi) => Math.min(hi,Math.max(lo,v));
@@ -66,7 +67,57 @@
       gain.gain.setValueAtTime(volume,audio.currentTime);
       gain.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+len);
       o.connect(gain);gain.connect(audio.destination);o.start();o.stop(audio.currentTime+len);
+      o.onended=()=>{o.disconnect();gain.disconnect();};
     }catch(e){/* optional audio */ }
+  }
+  // Two short synthesized voices; no assets, timers, or unbounded audio graph.
+  function music() {
+    if(!audio)return;
+    if(!musicBus){musicBus=audio.createGain();musicBus.connect(audio.destination);}
+    const active=!muted&&game&&game.mode==='running';
+    musicBus.gain.setTargetAtTime(active?.45:0,audio.currentTime,.025);
+    if(!active){musicNext=audio.currentTime;return;}
+    if(musicNext<audio.currentTime)musicNext=audio.currentTime;
+    const boss=game.enemies.some(e=>e.variant==='boss');
+    while(musicNext<audio.currentTime+.12){
+      const notes=boss?[110,130.81,146.83,103.83]:[130.81,155.56,174.61,116.54];
+      const root=notes[Math.floor(musicBeat/8)%4];
+      [root,root*[2,3,2.5,3][musicBeat%4]].forEach((hz,i)=>{
+        const o=audio.createOscillator(),v=audio.createGain();
+        o.type=i?'sine':'triangle';o.frequency.value=hz;
+        v.gain.setValueAtTime(i?.018:.025,musicNext);
+        v.gain.exponentialRampToValueAtTime(.0001,musicNext+.28);
+        o.connect(v);v.connect(musicBus);o.start(musicNext);o.stop(musicNext+.3);
+        o.onended=()=>{o.disconnect();v.disconnect();};
+      });
+      musicBeat++;musicNext+=boss?.22:.32;
+    }
+  }
+  function safeSpawn(radius=600, margin=30) {
+    const p=game.player;
+    // Near a wall, spawn only on the inward side; never clamp a ring onto the cat.
+    for(let i=0;i<32;i++){
+      const a=rnd(0,TWO),x=p.x+Math.cos(a)*radius,y=p.y+Math.sin(a)*radius;
+      if(x<margin||x>2400-margin||y<margin||y>2400-margin)continue;
+      if((p.x<300&&x<p.x+180)||(p.x>2100&&x>p.x-180)||
+         (p.y<300&&y<p.y+180)||(p.y>2100&&y>p.y-180))continue;
+      return {x,y};
+    }
+    const a=Math.atan2(1200-p.y,1200-p.x);
+    return {x:clamp(p.x+Math.cos(a)*radius,margin,2400-margin),
+      y:clamp(p.y+Math.sin(a)*radius,margin,2400-margin)};
+  }
+  function edgeAid(dt) {
+    const g=game,p=g.player;
+    g.escapeCooldown=Math.max(0,g.escapeCooldown-dt);g.escape=Math.max(0,g.escape-dt);
+    g.edgeWarning=Math.min(p.x,p.y,2400-p.x,2400-p.y)<220;
+    if(g.edgeWarning&&g.escapeCooldown===0&&g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<145)){
+      g.escape=2.5;g.escapeCooldown=8;p.inv=Math.max(p.inv,2.5);
+      for(const e of g.enemies){const d=dist(e.x,e.y,p.x,p.y);
+        if(d<210){const a=Math.atan2(e.y-p.y,e.x-p.x);
+          e.x=clamp(p.x+Math.cos(a)*230,20,2380);e.y=clamp(p.y+Math.sin(a)*230,20,2380);}}
+      notify('ESCAPE SHIELD · Follow the arrow inward',2.5);sound(740,.18);
+    }
   }
   function notify(message,duration=1.5) {
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
@@ -78,11 +129,11 @@
       shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
       powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
-      kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
+      escape:0,escapeCooldown:0,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
-    sound(700,.12);last=performance.now();updateHud();
+    musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();updateHud();
   }
   function end() {
     if(!game || game.mode==='dead')return;
@@ -119,7 +170,7 @@
       game.player.hp=game.player.maxHp;
     }
     $('upgrade-title').textContent='LEVEL '+game.player.level+(milestone?' · SPECIAL':' · CHOOSE ONE');
-    $('upgrade-copy').textContent=milestone?'Full heal + one max heart (cap 9). Choose a special or basic upgrade. Combat is frozen.':'Time and combat are frozen. Choose one. Special abilities + a heart every third level.';
+    $('upgrade-copy').textContent=milestone?'Full heal + one max heart (cap 9). Choose a special or basic upgrade. Combat is frozen.':'Combat paused. Pick one. Every third level: special abilities + a heart.';
     document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone;});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
     updateHud();sound(1050,.2);
@@ -161,10 +212,13 @@
   }
   function spawnEnemy() {
     if(game.mode!=='running'||game.enemies.length>=cfg.maxEnemies)return;
-    const p=game.player,angle=rnd(0,TWO),r=rnd(520,730);
-    const variant=(p.level>=3||p.speed>cfg.speed) ? (++game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
+    const p=game.player,position=safeSpawn(rnd(560,730));
+    game.spawnCount++;
+    let variant=(p.level>=3||p.speed>cfg.speed) ? (game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
+    if(game.wave>=5&&game.spawnCount%5===0)variant='stalker';
+    else if(game.wave>=3&&game.spawnCount%3===0)variant='orbiter';
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
-    game.enemies.push({x:clamp(p.x+Math.cos(angle)*r,30,2370),y:clamp(p.y+Math.sin(angle)*r,30,2370),
+    game.enemies.push({...position,
       variant,dash:0,r:variant==='weaver'?15:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
       speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
       phase:rnd(0,TWO),weight:extra,hurt:0});
@@ -197,7 +251,7 @@
   }
   function spawnBoss(night) {
     const p=game.player, hp=65+night*4;
-    game.enemies.push({x:clamp(p.x+330,60,2340),y:clamp(p.y-330,60,2340),
+    game.enemies.push({...safeSpawn(650,60),
       variant:'boss',r:44,hp,max:hp,speed:cfg.enemySpeed,phase:0,weight:20,hurt:0,night});
     notify('NIGHT '+night+' · THE ALLEY KING',3);sound(110,.5,'sawtooth');
   }
@@ -225,13 +279,25 @@
     if(g.spawn<=0){
       spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
     }
+    edgeAid(dt);
     const input=moveInput();p.x=clamp(p.x+input.x*p.speed*dt,25,2375);
     p.y=clamp(p.y+input.y*p.speed*dt,25,2375);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval);}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
       let vx=dx/d,vy=dy/d,pace=1;
-      if(enemy.variant==='weaver'){
+      if(enemy.variant==='orbiter'){
+        // Circle at close range, then periodically cut inward.
+        const orbit=d<240&&enemy.phase%12<8;
+        if(orbit){vx=-dy/d;vy=dx/d;pace=1.2;}
+      }else if(enemy.variant==='stalker'){
+        // Flank the direction of travel rather than following the same pursuit line.
+        const side=Math.sin(enemy.phase*.35)>0?1:-1;
+        const tx=p.x+input.x*160-dy/d*side*110,ty=p.y+input.y*160+dx/d*side*110;
+        const length=Math.max(1,dist(enemy.x,enemy.y,tx,ty));
+        vx=(tx-enemy.x)/length;vy=(ty-enemy.y)/length;pace=1.15;
+        if(d<100){vx=dx/d;vy=dy/d;}
+      }else if(enemy.variant==='weaver'){
         const weave=Math.sin(enemy.phase*1.8)*.85;
         vx-=dy/d*weave;vy+=dx/d*weave;pace=.95;
       }else if(enemy.variant==='dasher'||enemy.variant==='boss'){
@@ -324,6 +390,7 @@
       ' · Bounces '+game.player.ricochet+' · Pickup '+Math.round(135+game.player.magnet*65+(game.player.speed-cfg.speed)*2/3)+'px';
     $('fish').textContent=game.fish;$('kills').textContent=game.kills;
     const p=game.player;
+    $('health').parentElement.classList.toggle('hurt',p.inv>0&&game.escape===0);
     $('health').textContent=p.hp+' / '+p.maxHp;
     $('health').setAttribute('aria-label',p.hp+' HP remaining out of '+p.maxHp+' maximum');
   }
@@ -378,8 +445,8 @@
       ctx.fillText(item.kind==='rage'?'R':item.kind==='magnet'?'M':'♥',item.x,item.y+8);ctx.textAlign='left';
     }
     for(const s of g.shots){
-      const color=s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#b9fff1';
-      if(s.kind!=='normal'&&s.trail.length){
+      const color=s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#71e5ff';
+      if(s.trail.length){
         ctx.beginPath();ctx.moveTo(s.trail[0].x,s.trail[0].y);
         for(const point of s.trail)ctx.lineTo(point.x,point.y);
         ctx.lineTo(s.x,s.y);ctx.strokeStyle=color;ctx.lineWidth=4;ctx.stroke();
@@ -390,9 +457,12 @@
     for(const e of g.enemies){
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
-      const color=e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
+      const color=e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
       if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
       circle(0,0,e.r,e.hurt?'#d2fff0':color);
+      if(e.variant==='orbiter')outline(0,0,e.r+7,color,3);
+      if(e.variant==='stalker')polygon(0,-e.r,[[0,-12],[-8,0],[8,0]],color);
+      if(e.hurt)outline(0,0,e.r+5,'#ffffff',3);
       if(e.variant==='weaver')outline(0,0,e.r+4,color);
       polygon(0,0,[[-e.r*.65,-e.r*.5],[-e.r*.9,-e.r*1.2],[-e.r*.12,-e.r*.8]],'#6faa8f');
       polygon(0,0,[[e.r*.65,-e.r*.5],[e.r*.9,-e.r*1.2],[e.r*.12,-e.r*.8]],'#6faa8f');
@@ -403,6 +473,7 @@
       ctx.restore();
     }
     ctx.save();ctx.translate(p.x,p.y);
+    if(g.escape>0)outline(0,0,36,'#7cf2d0',4);
     circle(0,14,27,'#000a15aa');
     if(p.inv>0&&(reducedMotion||Math.floor(p.inv*12)%2===0))ctx.globalAlpha=.36;
     // tail
@@ -421,6 +492,11 @@
     ctx.restore();
     for(const e of g.particles){ctx.globalAlpha=clamp(e.life/e.ttl,0,1);circle(e.x,e.y,e.r,e.col);}
     ctx.globalAlpha=1;
+    if(g.edgeWarning){
+      const angle=Math.atan2(1200-p.y,1200-p.x);
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(angle);
+      polygon(65,0,[[20,0],[-4,-13],[-4,-5],[-27,-5],[-27,5],[-4,5],[-4,13]],'#7cf2d0');ctx.restore();
+    }
     ctx.restore();
     const grad=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,650);
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
@@ -433,6 +509,7 @@
     ctx.fillStyle='#8bdac9';ctx.font='bold 15px system-ui';ctx.fillText('NIGHT '+g.wave,20,35);
     ctx.fillStyle='#9ab8c2';ctx.font='13px system-ui';ctx.fillText('CAT LVL '+p.level,20,56);
     ctx.fillStyle='#ffdda5';ctx.fillText(Object.entries(g.buffs).filter(([,v])=>v>0).map(([k,v])=>k.toUpperCase()+' '+Math.ceil(v)+'s').join(' · '),20,76);
+    if(g.edgeWarning){ctx.fillStyle='#7cf2d0';ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(g.escape>0?'SHIELD ACTIVE · MOVE INWARD':'EDGE · Follow the mint arrow',W/2,H-55);ctx.textAlign='left';}
     ctx.fillStyle='#162d41';ctx.fillRect(20,H-21,160,8);
     ctx.fillStyle='#77f3c1';ctx.fillRect(20,H-21,160*(g.xp/(7+p.level*3)),8);
   }
@@ -449,6 +526,7 @@
   function frame(now) {
     const dt=Math.min(.05,Math.max(0,(now-last)/1000||0));last=now;
     if(game&&game.mode==='running')tick(dt);
+    music();
     if(game)renderWorld();else staticScreen();
     requestAnimationFrame(frame);
   }
@@ -561,6 +639,8 @@
       time: game ? game.t : 0,
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
+      escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
+      music:{enabled:!muted,active:!!(audio&&musicBus&&!muted&&game&&game.mode==='running'),beat:musicBeat,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
       pendingUpgrade:!!(game&&game.pendingUpgrade),
       fishItems:game?game.fishItems.map(f=>({...f})):[],
       powerups:game?game.powerups.map(f=>({...f})):[],buffs:game?{...game.buffs}:{},

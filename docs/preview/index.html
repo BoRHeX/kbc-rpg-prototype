@@ -2,12 +2,12 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42245249797-1"></head>
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42288160079-1"></head>
 <body>
 <header class="top">
   <a href="../games/" class="back">← All games</a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42245249797-1">AI PLAYTEST BUILD 42245249797-1</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42288160079-1">AI PLAYTEST BUILD 42288160079-1</div>
 </header>
 <main class="shell">
   <section class="intro">
@@ -20,7 +20,6 @@
       <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
       <div class="hud-block"><small>HP / MAX</small><b id="health">3 / 3</b></div>
     </div>
-    <details class="score-guide"><summary>Score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Speed: +18 movement and +12 pickup range (cap +108). Damage: +0.25 per shot. Fire rate: 15% shorter cooldown (minimum 0.12s). Spread shots are pink; ricochets turn gold.</p><p>Every 10th night brings a charging boss. Field crates: R = double damage for 12s, M = collect all fish + magnet for 12s, ♥ = heal one heart. Crates remain until collected. Bosses drop all three.</p></div></details>
     <p class="personal-best">Personal best · this device: <b id="best">0</b></p>
     <p id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px"></p>
     <noscript>JavaScript is required to start the game. Enable it and reload.</noscript>
@@ -48,6 +47,7 @@
       <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
       <div class="notice" id="notice" hidden></div>
     </div>
+    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Speed: +18 movement and +12 pickup range (cap +108). Damage: +0.25 per shot. Fire rate: 15% shorter cooldown (minimum 0.12s). Spread shots are pink; ricochets turn gold.</p><p>Every 10th night brings a charging boss. Field crates: R = double damage for 12s, M = collect all fish + magnet for 12s, ♥ = heal one heart. Crates remain until collected. Bosses drop all three.</p><p>Night 3: blue Orbiters circle before closing in. Night 5: gold Stalkers flank your movement. Near walls, follow the mint arrow; nearby threats trigger a 2.5s escape shield (8s recharge).</p></div></details>
     <div class="below">
       <div class="help"><b>CONTROLS</b><p><span class="desktop">WASD / arrow keys</span><span class="mobile">Drag anywhere on the arena</span> to move. Your cat fires automatically. Collect fish to upgrade. </p></div>
       <div class="actions"><button id="mute" class="secondary" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart" class="secondary">↻ Restart</button></div>
@@ -93,5 +93,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42245249797-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42288160079-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>

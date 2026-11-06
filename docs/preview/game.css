@@ -22,3 +22,11 @@
 a:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 .score-guide{margin:0 0 10px;border:1px solid var(--line);border-radius:9px;background:#111d30;font-size:12px;color:#c7d8ec}.score-guide summary{padding:12px;cursor:pointer;min-height:44px}.score-guide summary b{color:var(--green)}.score-guide>div{padding:0 12px 8px;line-height:1.5}.score-guide p{margin:8px 0}.notice{max-width:85%;white-space:normal;text-align:center;pointer-events:none}.arena{touch-action:auto}.joystick{opacity:.65}
+
+/* Centered run information, directly beside the play area. */
+.score-guide{max-width:690px;margin:10px auto;text-align:center}.score-guide>div{text-align:left}
+.score-guide summary{font-size:14px}.score-guide summary b{font-size:18px}
+.hud-block.hurt{background:#54293d;border-color:#ffb5c5;box-shadow:inset 0 0 0 2px #ffb5c5}
+#upgrade-overlay .upgrade{text-align:left;padding:10px 14px;line-height:1.3}
+#upgrade-overlay .upgrade small{color:#e0eee9;font-size:12px;line-height:1.4}
+#upgrade-overlay h2{letter-spacing:0}#upgrade-overlay p{max-width:310px}
