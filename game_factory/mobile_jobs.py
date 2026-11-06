@@ -44,10 +44,13 @@ def validate_request(value):
         request["evidence_drive_file_id"] = fid
     if "release_version" in value:
         version = value["release_version"]
-        if (request["game"] != "cataclysm" or not isinstance(version, str)
-                or not re.fullmatch(r"[0-9]{1,2}\.[0-9]{1,2}", version)):
-            raise ValueError("Invalid Cataclysm release version")
+        if not isinstance(version, str) or not re.fullmatch(r"[0-9]{1,2}\.[0-9]{1,2}", version):
+            raise ValueError("Invalid game release version")
         request["release_version"] = version
+    if "redesign" in value:
+        if request["mode"] != "update" or value["redesign"] is not True:
+            raise ValueError("Only an update can request a game redesign")
+        request["redesign"] = True
     if "resume_council_run" in value:
         run = value["resume_council_run"]
         if request["mode"] != "update" or type(run) is not int or run < 1:
@@ -390,6 +393,13 @@ def stamp_command():
     # Each accepted version requests fresh CSS/JS while retaining its stable play URL.
     source = re.sub(r'((?:src|href)=["\'])(\./)?(game\.(?:js|css))(?:\?[^"\']*)?(["\'])',
                     lambda m: m[1] + (m[2] or "") + m[3] + "?build=" + job["run_id"] + m[4], source)
+    version = job["request"].get("release_version")
+    if version:
+        source, count = re.subn(
+            r'(<span\b[^>]*\bid="game-version"[^>]*>)[^<]*(</span>)',
+            lambda m: m[1] + version + m[2], source)
+        if count != 1:
+            raise ValueError("Requested game version element missing")
     page.write_text(source)
     (directory / "BUILD_INFO.json").write_text(json.dumps({
         "run_id": job["run_id"], "request_id": job["request"]["id"],
