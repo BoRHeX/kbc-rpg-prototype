@@ -113,6 +113,154 @@ def prepare_command():
     print(json.dumps(job["request"], indent=2))
 
 
+CREATIVE_PITCH_ROLES = ("designer", "researcher", "engineer")
+CREATIVE_CONCEPT_FIELDS = (
+    "title", "core_loop", "player_action", "scoring_and_end",
+    "visual_theme", "differentiator",
+)
+
+
+def creative_text(value, label, limit=600):
+    """Reject absent or vague structured decisions instead of silently inventing one."""
+    if not isinstance(value, str) or not value.strip() or len(value) > limit:
+        raise ValueError("Creative decision requires non-empty text: " + label)
+    return value.strip()
+
+
+def creative_pitch(role, result):
+    action = result.get("proposed_action")
+    concept = action.get("concept") if isinstance(action, dict) else None
+    if not isinstance(concept, dict):
+        raise ValueError(role + " must propose a concrete concept object")
+    return {"candidate_id": role, **{
+        field: creative_text(concept.get(field), role + "." + field)
+        for field in CREATIVE_CONCEPT_FIELDS
+    }}
+
+
+def creative_plan(memory, model, job, evidence, ask_agent):
+    """Five existing council calls: 3 independent pitches, critique, Producer decision.
+
+    This applies ONLY to create jobs. The result is reviewable evidence, not
+    private reasoning. The Producer selection is bound into the coder contract.
+    """
+    plan, pitches = {}, {}
+    lenses = {
+        "designer": "Prioritize surprising tactile interaction and a memorable visual identity.",
+        "researcher": "Prioritize a distinctive rule, discovery or timing mechanic with clear player learning.",
+        "engineer": "Prioritize a surprising but feasible simulation, physical interaction or risk/reward mechanic.",
+    }
+    common = (
+        "For this NEW game, propose exactly ONE concrete, original and playable "
+        "mobile game concept. Choose your own title and distinctive core mechanic. "
+        "Do not recycle an existing BoRHeZ game or merely swap its art. "
+        "Your proposed_action MUST be an object containing a concept object with "
+        "these exact non-empty string keys: title, core_loop, player_action, "
+        "scoring_and_end, visual_theme, differentiator. Define the real gameplay, "
+        "not an abstract list of constraints. Limit the round to a simple "
+        "one-finger mobile game; existing code/test contract is binding. "
+        "Make a complete independent proposal without seeing other candidates. "
+        "Keep the concept concise, plausible and clearly differentiated."
+    )
+    refs = ["artifacts/mobile/job.json", "game_factory/MOBILE_CODER_PROMPT.md"]
+    for role in CREATIVE_PITCH_ROLES:
+        identity = memory.register(role, model)
+        task = common + " " + lenses[role] + "\nEVIDENCE:\n" + json.dumps(evidence)
+        result = ask_agent(memory, identity, job["run_id"], task, refs,
+                           model=model, max_output_tokens=1600)
+        plan[role] = result
+        pitches[role] = creative_pitch(role, result)
+
+    # Detect exact repeated titles/loops before spending more agent calls.
+    for field in ("title", "core_loop"):
+        normalized = [re.sub(r"\s+", " ", pitches[r][field].casefold()).strip()
+                      for r in CREATIVE_PITCH_ROLES]
+        if len(set(normalized)) != len(normalized):
+            raise ValueError("Independent creative pitches duplicated " + field)
+
+    critic_prompt = (
+        "Compare ALL three actual concept proposals, not generic project risks. "
+        "For each candidate explicitly evaluate originality, first-minute fun, "
+        "one-finger clarity, implementation feasibility and replay potential. "
+        "Your proposed_action MUST be an object containing assessments: an array "
+        "with EXACTLY one object for each candidate_id designer, researcher, "
+        "engineer, each with string strength, risk, mitigation; plus "
+        "preferred_candidate_id (one candidate ID) and reason (string). "
+        "Highlight specific failures and how to test them. Do NOT invent a "
+        "fourth concept or claim a game was tested.\nEVIDENCE:\n"
+        + json.dumps({"request": job["request"], "candidates": list(pitches.values())})
+    )
+    plan["critic"] = ask_agent(memory, memory.register("critic", model),
+                               job["run_id"], critic_prompt, refs,
+                               model=model, max_output_tokens=1800)
+    critique = plan["critic"].get("proposed_action")
+    if not isinstance(critique, dict) or not isinstance(critique.get("assessments"), list):
+        raise ValueError("Critic must provide a comparison of all concepts")
+    assessments = critique["assessments"]
+    ids = [entry.get("candidate_id") if isinstance(entry, dict) else None
+           for entry in assessments]
+    if len(ids) != len(CREATIVE_PITCH_ROLES) or set(ids) != set(CREATIVE_PITCH_ROLES):
+        raise ValueError("Critic failed to assess every candidate once")
+    for entry in assessments:
+        for field in ("strength", "risk", "mitigation"):
+            creative_text(entry.get(field), "critic." + field)
+    if critique.get("preferred_candidate_id") not in pitches:
+        raise ValueError("Critic preferred candidate is unknown")
+    creative_text(critique.get("reason"), "critic.reason")
+
+    producer_prompt = (
+        "You are the final creative decision-maker BEFORE any coding. Choose ONE "
+        "of the three supplied candidate IDs. Use the actual Critic assessments "
+        "and compare originality, gameplay appeal, simplicity and feasibility. "
+        "Do not replace the chosen concept with a new unreviewed game. "
+        "Your proposed_action MUST be an object with: selected_candidate_id "
+        "(one of designer, researcher, engineer), selection_reason (concrete string), "
+        "rejected_candidates (array of exactly two objects with candidate_id "
+        "and reason strings covering the two not selected), and "
+        "implementation_directives (array of 2–5 specific short strings describing "
+        "the selected game, its strongest mechanic and its critical test cases). "
+        "Explicitly explain tradeoffs and preserve the concept's identity. "
+        "Do not claim any implementation or test has happened.\nEVIDENCE:\n"
+        + json.dumps({"request": job["request"], "candidates": list(pitches.values()),
+                      "critic_evaluation": critique})
+    )
+    plan["producer"] = ask_agent(memory, memory.register("producer", model),
+                                 job["run_id"], producer_prompt, refs,
+                                 model=model, max_output_tokens=2000)
+    selection = plan["producer"].get("proposed_action")
+    if not isinstance(selection, dict):
+        raise ValueError("Producer must make a structured selection")
+    chosen = selection.get("selected_candidate_id")
+    if chosen not in pitches:
+        raise ValueError("Producer selected a concept that was not proposed")
+    reason = creative_text(selection.get("selection_reason"), "producer.selection_reason", 1200)
+    rejected = selection.get("rejected_candidates")
+    if not isinstance(rejected, list) or len(rejected) != 2:
+        raise ValueError("Producer must explain both rejected concepts")
+    rejected_ids = [x.get("candidate_id") if isinstance(x, dict) else None for x in rejected]
+    if set(rejected_ids) != set(pitches) - {chosen} or len(set(rejected_ids)) != 2:
+        raise ValueError("Producer rejection identities do not match")
+    for rejected_item in rejected:
+        creative_text(rejected_item.get("reason"), "producer.rejection_reason")
+    directives = selection.get("implementation_directives")
+    if not isinstance(directives, list) or not 2 <= len(directives) <= 5:
+        raise ValueError("Producer must give 2–5 concrete implementation directives")
+    directives = [creative_text(x, "producer.directive") for x in directives]
+    plan["creative_decision"] = {
+        "schema_version": 1,
+        "candidates": list(pitches.values()),
+        "critique": critique,
+        "selection": {
+            "selected_candidate_id": chosen,
+            "concept": pitches[chosen],
+            "selection_reason": reason,
+            "rejected_candidates": rejected,
+            "implementation_directives": directives,
+        },
+    }
+    return plan
+
+
 def plan_command():
     from game_factory.agent_api import ask_agent
     from game_factory.agent_memory import CouncilMemory
@@ -130,22 +278,39 @@ def plan_command():
                 "game_contract": (ROOT / "game_factory/MOBILE_CODER_PROMPT.md").read_text()}
     if (WORK / "feedback.md").exists():
         evidence["tester_feedback"] = (WORK / "feedback.md").read_text()[:12000]
-    plan = {}
-    tasks = {
-        "producer": "Scope this exact requested job. Define a small playable result and measurable completion criteria. Do not substitute a different game or ignore the prompt.",
-        "researcher": "Inspect the supplied source and identify relevant facts and constraints. For a new game, describe the minimum implementation; for an update, identify existing behavior to preserve.",
-        "designer": "Specify the core loop, mobile controls and feedback needed by this prompt. Keep it simple, playable with one finger, and compatible with the standard game contract.",
-        "critic": "Challenge the plan with concrete failure cases: unresponsive start, fake progress, touch input, pause, restart, viewport overflow, balance and missing prompt requirements.",
-        "engineer": "Give the coding agent a concise implementation and verification plan. It can edit real files and run tools. Preserve working behavior on updates. Do not propose fragile line patches.",
-    }
     try:
-        for role, task in tasks.items():
-            identity = memory.register(role, model)
-            plan[role] = ask_agent(memory, identity, job["run_id"],
-                task + "\nEVIDENCE:\n" + json.dumps({**evidence, "plan_so_far": plan}),
-                ["artifacts/mobile/job.json", job["target"]], model=model, max_output_tokens=1200)
+        if job["request"]["mode"] == "create":
+            plan = creative_plan(memory, model, job, evidence, ask_agent)
+        else:
+            # Updates follow the existing feedback-driven workflow; new concepts
+            # must never silently replace a known game's accepted identity.
+            plan = {}
+            tasks = {
+                "producer": "Scope this exact requested update. Define small playable improvements and measurable completion criteria; preserve the game.",
+                "researcher": "Inspect supplied source and feedback; identify relevant facts and existing behavior to preserve.",
+                "designer": "Specify requested game-loop changes and mobile feedback, preserving existing controls.",
+                "critic": "Challenge actual requested changes with specific risks: regression, touch, pause, restart, viewport, balance.",
+                "engineer": "Give the coder a concise implementation and verification plan; do not propose fragile line patches.",
+            }
+            for role, task in tasks.items():
+                identity = memory.register(role, model)
+                plan[role] = ask_agent(memory, identity, job["run_id"],
+                    task + "\nEVIDENCE:\n" + json.dumps({**evidence, "plan_so_far": plan}),
+                    ["artifacts/mobile/job.json", job["target"]],
+                    model=model, max_output_tokens=1200)
         (WORK / "plan.json").write_text(json.dumps(plan, indent=2) + "\n")
         prompt = (ROOT / "game_factory/MOBILE_CODER_PROMPT.md").read_text()
+        if job["request"]["mode"] == "create":
+            selection = plan["creative_decision"]["selection"]
+            prompt += (
+                "\n\nBINDING CREATIVE DECISION (selected BEFORE coding):\n"
+                + json.dumps(selection, indent=2)
+                + "\nImplement this selected concept only. Rejected concepts are "
+                  "recorded alternatives, not implementation options. "
+                  "If implementation is impossible, report the blocker instead "
+                  "of silently changing the game. Document the selected candidate "
+                  "ID and implementation evidence in CODER_REPORT.md.\n"
+            )
         (WORK / "CODER_PROMPT.md").write_text(prompt + "\n\nREQUEST:\n" +
             json.dumps(job, indent=2) + "\n\nAGENT PLAN:\n" + json.dumps(plan, indent=2))
     finally:
@@ -209,12 +374,15 @@ def review_command():
                 "coder_report": (WORK / "CODER_REPORT.md").read_text()[:12000],
                 "source": {name: (ROOT / job["target"] / name).read_text()
                            for name in GAME_FILES if (ROOT / job["target"] / name).exists()},
-                "physical_device_test": "not performed"}
+                "physical_device_test": "not performed",
+                "creative_decision": json.loads((WORK / "plan.json").read_text()).get("creative_decision")}
     try:
         qa = ask_agent(memory, memory.register("qa", model), job["run_id"],
             "Independently review ACTUAL source, request criteria and executed browser evidence. "
             "Approve only if the prompt has been implemented and evidence supports a playable isolated preview. "
             "Passing standard controls is insufficient if the requested gameplay is absent. "
+            "For new-game jobs with a creative_decision, also verify the implemented "
+            "core mechanic matches the Producer-selected concept; reject silent concept swaps. "
             "This is a PRE-PUBLICATION preview decision. Do not require publication or live-file verification "
             "before approving the preview: the separate publisher performs those steps after approval. "
             "Mark those delivery criteria pending for the publisher, rather than failed preview criteria. "
@@ -323,11 +491,39 @@ def catalog(root):
         safe_id = html.escape(game, quote=True)
         description = html.escape(summaries.get(game, "An original mobile browser game. Open and play."))
         symbol = html.escape(symbols.get(game, "✦"))
+        # Show the human-readable decision and rejected alternatives only when
+        # a new game's receipt actually contains a validated creative selection.
+        decision_html = ""
+        decision = receipt.get("plan", {}).get("creative_decision")
+        if isinstance(decision, dict) and isinstance(decision.get("selection"), dict):
+            selected = decision["selection"]
+            concept = selected.get("concept", {})
+            rejected = selected.get("rejected_candidates", [])
+            proposals = {c.get("candidate_id"): c for c in decision.get("candidates", [])
+                         if isinstance(c, dict)}
+            def h(value):
+                return html.escape(str(value)[:800], quote=True)
+            reasons = "".join(
+                "<li><b>" + h(proposals.get(r["candidate_id"], {}).get("title", r["candidate_id"]))
+                + "</b>: " + h(r["reason"]) + "</li>"
+                for r in rejected if isinstance(r, dict)
+                and r.get("candidate_id") in proposals and isinstance(r.get("reason"), str)
+            )
+            decision_html = (
+                '<details class="creative-decision"><summary>Creative decision · 3 pitches</summary>'
+                '<div class="creative-decision-body"><p><b>Selected: ' + h(concept.get("title", "Untitled"))
+                + '</b> · ' + h(concept.get("core_loop", "")) + '</p><p><b>Why:</b> '
+                + h(selected.get("selection_reason", "")) + '</p>'
+                + ('<p><b>Rejected alternatives:</b></p><ul>' + reasons + '</ul>' if reasons else '')
+                + '<a href="https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/results/'
+                + h(receipt["request"]["id"]) + '.json" target="_blank" rel="noopener noreferrer">'
+                'Full agent proposals, critique &amp; QA ↗</a></div></details>'
+            )
         cards.append(
             f'<article class="game-card {safe_id}">'
             f'<div class="game-art" aria-hidden="true"><span class="symbol">{symbol}</span></div>'
             f'<div class="body"><div class="label">ORIGINAL MOBILE ARCADE</div>'
-            f'<h3>{title}</h3><p>{description}</p>'
+            f'<h3>{title}</h3><p>{description}</p>{decision_html}'
             f'<a class="btn btn-small" href="./{safe_id}/">▶ PLAY GAME <span aria-hidden="true">↗</span></a>'
             f'</div></article>'
         )
