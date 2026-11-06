@@ -6,8 +6,6 @@ on:
   push:
     branches: [main]
     paths: ['game_factory/requests/current.json']
-  schedule:
-    - cron: '15 7,19 * * *'
   workflow_dispatch:
     inputs:
       mode:
