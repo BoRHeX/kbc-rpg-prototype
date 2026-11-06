@@ -1,0 +1,93 @@
+name: Publish BoRHeZ Games Hub
+on:
+  push:
+    branches: [main]
+    paths: ['docs/games/index.html']
+  workflow_dispatch:
+
+# Serialize with accepted game deliveries so Pages deployments don't collide.
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check catalog and local game targets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          home = Path('docs/games/index.html')
+          content = home.read_text(encoding='utf-8')
+          assert '<title>BoRHeZ Games' in content
+          assert '<!-- BEGIN GENERATED GAME CARDS -->' in content
+          assert '<!-- END GENERATED GAME CARDS -->' in content
+          assert Path('docs/preview/index.html').is_file()
+          assert 'href="../preview/"' in content
+          for item in re.findall(r'href="\./([a-z0-9-]+)/"', content):
+              assert (Path('docs/games') / item / 'index.html').is_file(), item
+          print('Dashboard and all linked game directories verified')
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: bo-rhez-hub-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy studio homepage
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: bo-rhez-hub-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Retry once if deployment collided
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry the identical Pages artifact
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: bo-rhez-hub-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Verify the public dashboard bytes
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib, os, time, urllib.request
+          from pathlib import Path
+          expected = hashlib.sha256(Path('docs/games/index.html').read_bytes()).hexdigest()
+          base = os.environ['PAGES_URL'].rstrip('/') + '/games/'
+          for attempt in range(12):
+              url = base + '?verify=' + os.environ['GITHUB_SHA'] + '&attempt=' + str(attempt)
+              try:
+                  request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache'})
+                  with urllib.request.urlopen(request, timeout=15) as response:
+                      observed = hashlib.sha256(response.read()).hexdigest()
+                  if expected == observed:
+                      print('LIVE DASHBOARD VERIFIED', base)
+                      break
+                  raise RuntimeError('Live dashboard bytes differ from expected source')
+              except Exception as error:
+                  if attempt == 11:
+                      raise SystemExit('Dashboard delivery not verified: ' + str(error))
+                  time.sleep(5)
+          PY
