@@ -99,6 +99,44 @@ class MobileJobTests(unittest.TestCase):
             self.assertTrue((root / "game_factory/results/first-job.json").exists())
             self.assertIn('href="./tiny-orbit/"', (root / "docs/games/index.html").read_text())
 
+    def test_locked_game_redesign_and_version_contract(self):
+        req = request("update", "peach-gravity-sling-01")
+        req.update({"redesign": True, "release_version": "0.1"})
+        normalized = validate_request(req)
+        self.assertIs(normalized["redesign"], True)
+        self.assertEqual(normalized["release_version"], "0.1")
+        invalid = dict(req, redesign=False)
+        with self.assertRaises(ValueError):
+            validate_request(invalid)
+        invalid = dict(req, release_version="alpha")
+        with self.assertRaises(ValueError):
+            validate_request(invalid)
+
+    def test_stamp_updates_actual_version_on_existing_game(self):
+        import game_factory.mobile_jobs as mobile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            game_dir = root / "docs/games/studio-original-001"
+            game_dir.mkdir(parents=True)
+            (game_dir / "index.html").write_text(
+                '<small id="build-version">LOCAL BUILD</small>'
+                '<span id="game-version">OLD</span>'
+                '<script src="./game.js"></script>'
+                '<link href="./game.css">')
+            work = root / "artifacts/mobile"
+            work.mkdir(parents=True)
+            (work / "job.json").write_text(json.dumps({
+                "request": {"id": "peach-gravity-sling-01", "mode": "update",
+                            "game": "studio-original-001",
+                            "release_version": "0.1"},
+                "target": "docs/games/studio-original-001", "run_id": "123456-1"}))
+            with patch.object(mobile, "ROOT", root), patch.object(mobile, "WORK", work):
+                mobile.stamp_command()
+            content = (game_dir / "index.html").read_text()
+            self.assertIn('id="game-version">0.1</span>', content)
+            self.assertIn('PLAYTEST 123456-1', content)
+
     def test_symlink_is_not_a_publishable_asset(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
