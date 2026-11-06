@@ -1,7 +1,10 @@
 name: BoRHeZ Game Factory
 on:
   push:
-    branches: [feature/borhez-game-factory-v0]
+    branches: [main, feature/borhez-game-factory-v0]
+    paths:
+      - 'game_factory/**'
+      - '.github/workflows/game-factory-tests.yml'
   pull_request:
     branches: [main, feature/borhez-games-studio-v0]
   workflow_dispatch:
