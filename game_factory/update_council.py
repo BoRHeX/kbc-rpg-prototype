@@ -27,9 +27,9 @@ def parse_feature(role, response):
         raise ValueError(role + " did not supply a structured feature")
     ops = feature.get("code_changes")
     tests = feature.get("tests")
-    if not isinstance(ops, list) or not 1 <= len(ops) <= 4:
-        raise ValueError(role + " must propose 1–4 code changes")
-    if not isinstance(tests, list) or not 1 <= len(tests) <= 4:
+    if not isinstance(ops, list) or not 1 <= len(ops) <= 8:
+        raise ValueError(role + " must propose 1–8 code changes")
+    if not isinstance(tests, list) or not 1 <= len(tests) <= 6:
         raise ValueError(role + " must propose testable evidence")
     clean_ops = []
     for operation in ops:
@@ -76,7 +76,7 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         "feature (not a cosmetic-only or version-only change), while preserving core "
         "controls, accessible mobile layout and existing mechanics. "
         "Your proposed_action MUST contain feature: {name, player_experience, "
-        "code_changes:[{file,operation,symbol,pseudo_code}], tests:[string]}. "
+        "code_changes:[{file,operation,symbol,pseudo_code}], tests:[string]}. Provide 1–8 code changes and 1–6 tests. "
         "Allowed file names: game.js, game.css, index.html, game-config.json; "
         "allowed operations: insert, modify, replace, remove. "
         "Describe intended edits; NEVER claim code was changed or tested. "
@@ -92,8 +92,41 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         }, ensure_ascii=False)
         answer = ask_agent(memory, memory.register(role, model), job["run_id"],
                            task, refs, model=model, max_output_tokens=1700)
+        # A valid JSON response is not necessarily valid structured code.
+        # Let the same agent correct ONE format error instead of aborting the
+        # entire paid run or inventing missing content on its behalf.
+        try:
+            proposal = parse_feature(role, answer)
+        except ValueError as error:
+            correction = (
+                "Your independent feature proposal failed schema validation: "
+                + str(error) + ". Correct ONLY YOUR OWN proposal; do not "
+                "invent another agent's decision. Reply as JSON with claim, "
+                "rationale, objections, required_evidence and proposed_action. "
+                "proposed_action MUST be exactly an object with feature, "
+                "where feature has name, player_experience, code_changes "
+                "(ARRAY with 1–8 objects, each having file, operation, symbol, "
+                "pseudo_code), and tests (ARRAY of 1–6 specific strings). "
+                "Allowed files: game.js, game.css, index.html, game-config.json. "
+                "Allowed operations: insert, modify, replace, remove. "
+                "Example shape: "
+                + json.dumps({
+                    "proposed_action": {"feature": {
+                        "name": "your own feature",
+                        "player_experience": "specific player-visible behavior",
+                        "code_changes": [{"file": "game.js", "operation": "modify",
+                                          "symbol": "existing function name",
+                                          "pseudo_code": "precise implementation sketch"}],
+                        "tests": ["Specific observable test"]}}
+                }) + ". Retain the original gameplay idea. Do not quote "
+                "private player dialogue."
+            )
+            answer = ask_agent(
+                memory, identity, job["run_id"], correction, refs,
+                model=model, max_output_tokens=2000)
+            proposal = parse_feature(role, answer)
         plan[role] = answer
-        proposals[role] = parse_feature(role, answer)
+        proposals[role] = proposal
     critic = ask_agent(memory, memory.register("critic", model), job["run_id"],
         "Debate the three submitted CODE CHANGE proposals. Identify conflicting "
         "symbols, interactions, implementation risks and missing tests. "
