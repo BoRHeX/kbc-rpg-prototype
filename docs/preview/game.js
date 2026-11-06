@@ -77,6 +77,7 @@
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
       shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
+      powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
       kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
@@ -122,14 +123,21 @@
     document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone;});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
     updateHud();sound(1050,.2);
-    $('upgrade-overlay').querySelector('button').focus({preventScroll:true});
+    document.querySelectorAll('[data-upgrade]').forEach(b=>{
+      b.disabled=(b.dataset.upgrade==='speed'&&game.player.speed>=cfg.speed+108)||
+        (b.dataset.upgrade==='fire-rate'&&game.player.shotInterval<=MIN_SHOT_INTERVAL)||
+        (b.dataset.upgrade==='multi-shot'&&game.player.multishot>=2)||
+        (b.dataset.upgrade==='ricochet'&&game.player.ricochet>=3)||
+        (b.dataset.upgrade==='fish-magnet'&&game.player.magnet>=3);
+    });
+    $('upgrade-overlay').querySelector('button:not([hidden]):not(:disabled)').focus({preventScroll:true});
   }
   function chooseUpgrade(type) {
     if(!game||game.mode!=='upgrade'||!game.pendingUpgrade)return;
     const p=game.player;
     if(type==='fire-rate')p.shotInterval=Math.max(MIN_SHOT_INTERVAL,p.shotInterval*.85);
     else if(type==='damage')p.damage+=.25;
-    else if(type==='speed')p.speed+=18;
+    else if(type==='speed')p.speed=Math.min(cfg.speed+108,p.speed+18);
     else if(p.level%3===0&&type==='multi-shot')p.multishot=Math.min(2,p.multishot+1);
     else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(3,p.ricochet+1);
     else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(3,p.magnet+1);
@@ -154,7 +162,7 @@
   function spawnEnemy() {
     if(game.mode!=='running'||game.enemies.length>=cfg.maxEnemies)return;
     const p=game.player,angle=rnd(0,TWO),r=rnd(520,730);
-    const variant=p.level>=3 ? (++game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
+    const variant=(p.level>=3||p.speed>cfg.speed) ? (++game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
     game.enemies.push({x:clamp(p.x+Math.cos(angle)*r,30,2370),y:clamp(p.y+Math.sin(angle)*r,30,2370),
       variant,dash:0,r:variant==='weaver'?15:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
@@ -172,22 +180,48 @@
     for(let i=-p.multishot;i<=p.multishot;i++){
       const a=p.aim+i*.18;
       game.shots.push({x:p.x+dx*18,y:p.y+dy*18,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
-        life:.85+p.ricochet*.25,r:6,damage:p.damage,bounces:p.ricochet,hit:[]});
+        life:.85+p.ricochet*.25,r:6,damage:p.damage*(game.buffs.rage>0?2:1),bounces:p.ricochet,hit:[],
+        kind:p.multishot>0?'spread':'normal',trail:[],flash:0});
     }
     sound(420+rnd(0,140),.05,'square',.018);
   }
   function burst(x,y,col,n=10) {
-    if(reducedMotion)return;
+    if(reducedMotion||game.particles.length>=500)return;
     for(let i=0;i<n;i++){const a=rnd(0,TWO),s=rnd(50,205);
       game.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
         life:rnd(.18,.55),ttl:.55,col,r:rnd(2,5)});
     }
   }
+  function dropPower(x,y,kind) {
+    game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind});
+  }
+  function spawnBoss(night) {
+    const p=game.player, hp=65+night*4;
+    game.enemies.push({x:clamp(p.x+330,60,2340),y:clamp(p.y-330,60,2340),
+      variant:'boss',r:44,hp,max:hp,speed:cfg.enemySpeed,phase:0,weight:20,hurt:0,night});
+    notify('NIGHT '+night+' · THE ALLEY KING',3);sound(110,.5,'sawtooth');
+  }
+  function addFish(x,y,value=1) {
+    // Merge nearby drops at the rendering budget; never discard earned XP.
+    if(game.fishItems.length>=180){
+      const f=game.fishItems.reduce((a,b)=>dist(a.x,a.y,x,y)<dist(b.x,b.y,x,y)?a:b);
+      f.value+=value;return;
+    }
+    game.fishItems.push({x,y,r:12,value,phase:rnd(0,TWO),attracted:false});
+  }
   function tick(dt) {
     if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
     g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
-    g.wave=1+Math.floor(g.t/24);g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
+    g.wave=1+Math.floor(g.t/24);
+    const milestone=Math.floor(g.wave/10)*10;
+    if(milestone>g.bossMilestone){g.bossMilestone=milestone;spawnBoss(milestone);}
+    for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
+    if(g.t>=g.nextPower){
+      const angle=rnd(0,TWO);dropPower(p.x+Math.cos(angle)*170,p.y+Math.sin(angle)*170,
+        ['rage','magnet','heal'][g.powerCount++%3]);g.nextPower+=24;
+    }
+    g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
     if(g.spawn<=0){
       spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
     }
@@ -200,15 +234,19 @@
       if(enemy.variant==='weaver'){
         const weave=Math.sin(enemy.phase*1.8)*.85;
         vx-=dy/d*weave;vy+=dx/d*weave;pace=.95;
-      }else if(enemy.variant==='dasher'){
+      }else if(enemy.variant==='dasher'||enemy.variant==='boss'){
         // A bright stationary wind-up precedes each short, committed dash.
-        const cycle=enemy.phase%9;
+        const cycle=enemy.phase%(enemy.variant==='boss'?7:9);
         if(cycle<2){pace=.25;enemy.dashX=vx;enemy.dashY=vy;}
         else if(cycle<3.2){pace=2.5;vx=enemy.dashX??vx;vy=enemy.dashY??vy;}
         else pace=.8;
       }
-      enemy.x=clamp(enemy.x+vx*enemy.speed*pace*dt,20,2380);
-      enemy.y=clamp(enemy.y+vy*enemy.speed*pace*dt,20,2380);
+      // Extra speed is countered dynamically, including enemies already alive.
+      // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
+      const adaptation=Math.max(0,p.speed-cfg.speed)*.85;
+      const chase=d>330?Math.max(enemy.speed+adaptation,p.speed*1.08):enemy.speed+adaptation;
+      enemy.x=clamp(enemy.x+vx*chase*pace*dt,20,2380);
+      enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(g.mode==='running'&&!g.pendingUpgrade&&d<p.r+enemy.r-3&&p.inv===0){
         p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
@@ -216,39 +254,58 @@
       }
     }
     for(let i=g.shots.length-1;i>=0;i--){
-      const s=g.shots[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
+      const s=g.shots[i];
+      s.trail.push({x:s.x,y:s.y});if(s.trail.length>(reducedMotion?1:6))s.trail.shift();
+      s.flash=Math.max(0,s.flash-dt);s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
       if(s.life<=0){g.shots.splice(i,1);continue;}
       const idx=g.enemies.findIndex(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r);
       if(idx>=0){
         const e=g.enemies[idx];e.hp-=s.damage;e.hurt=.12;burst(s.x,s.y,'#a5f8ff',4);
         s.hit.push(e);
         if(s.bounces>0){
-          s.bounces--;
+          s.bounces--;s.kind='bounce';s.flash=.16;burst(s.x,s.y,'#ffd568',9);
           const next=g.enemies.filter(n=>!s.hit.includes(n)).sort((a,b)=>dist(a.x,a.y,s.x,s.y)-dist(b.x,b.y,s.x,s.y))[0];
           if(next){const a=Math.atan2(next.y-s.y,next.x-s.x);s.vx=Math.cos(a)*600;s.vy=Math.sin(a)*600;s.life=Math.max(.5,s.life);}
           else {s.vx*=-1;s.vy*=-1;}
         }else g.shots.splice(i,1);
         if(e.hp<=0){
           g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
-          if(rand()<cfg.fishDropChance)g.fishItems.push({x:e.x,y:e.y,r:12,ttl:14,phase:rnd(0,TWO)});
+          if(e.variant==='boss'){
+            addFish(e.x,e.y,12);
+            ['rage','magnet','heal'].forEach((kind,i)=>dropPower(e.x+(i-1)*55,e.y+35,kind));
+            notify('ALLEY KING DEFEATED · +20 KILLS',3);
+          }else if(rand()<cfg.fishDropChance)addFish(e.x,e.y);
           g.enemies.splice(idx,1);sound(620,.06,'triangle',.02);
         }
       }
     }
     for(let i=g.fishItems.length-1;i>=0;i--){
-      const f=g.fishItems[i];f.ttl-=dt;f.phase+=dt*4;
+      const f=g.fishItems[i];f.phase+=dt*4;
       const d=dist(f.x,f.y,p.x,p.y);
-      if(d<135+p.magnet*65){f.x+=(p.x-f.x)/Math.max(d,1)*320*dt;f.y+=(p.y-f.y)/Math.max(d,1)*320*dt;}
+      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3||g.buffs.magnet>0)f.attracted=true;
+      if(f.attracted){const step=Math.min(d,(p.speed+240)*dt);
+        f.x+=(p.x-f.x)/Math.max(d,1)*step;f.y+=(p.y-f.y)/Math.max(d,1)*step;}
       if(d<28){
-        g.fish++;g.xp++;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
-        g.pickupEffects.push({x:f.x,y:f.y,life:.9});
+        g.fish+=f.value;g.xp+=f.value;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
+        g.pickupEffects.push({x:f.x,y:f.y,life:.9,value:f.value});
         if(g.pickupEffects.length>24)g.pickupEffects.shift();
         sound(880,.28,'sine',.035);
         if(g.xp>=7+p.level*3){
           g.xp-=7+p.level*3;p.level++;offerUpgrade();return;
         }
-      }else if(f.ttl<=0) g.fishItems.splice(i,1);
+      }
     }
+    for(let i=g.powerups.length-1;i>=0;i--){
+      const item=g.powerups[i];
+      if(dist(item.x,item.y,p.x,p.y)<p.r+23){
+        if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
+        else g.buffs[item.kind]=12;
+        g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);sound(1100,.2);
+        notify(item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 12s',2);
+      }
+    }
+    // A merged fish cache can earn several levels; resolve one choice at a time.
+    if(g.xp>=7+p.level*3){g.xp-=7+p.level*3;p.level++;offerUpgrade();return;}
     for(let i=g.pickupEffects.length-1;i>=0;i--){g.pickupEffects[i].life-=dt;if(g.pickupEffects[i].life<=0)g.pickupEffects.splice(i,1);}
     for(let i=g.particles.length-1;i>=0;i--){
       const s=g.particles[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.vx*=.96;s.vy*=.96;s.life-=dt;
@@ -261,6 +318,10 @@
     if(!game)return;
     $('time').textContent=String(Math.floor(game.t/60)).padStart(2,'0')+':'+
       String(Math.floor(game.t%60)).padStart(2,'0');
+    $('score').textContent=Math.floor(game.t*2+game.kills*7+game.fish*9);
+    $('build-stats').textContent='Speed '+Math.round(game.player.speed)+' · Damage '+game.player.damage.toFixed(2)+
+      ' · Shots/s '+(1/game.player.shotInterval).toFixed(2)+' · Spread '+(1+game.player.multishot*2)+
+      ' · Bounces '+game.player.ricochet+' · Pickup '+Math.round(135+game.player.magnet*65+(game.player.speed-cfg.speed)*2/3)+'px';
     $('fish').textContent=game.fish;$('kills').textContent=game.kills;
     const p=game.player;
     $('health').textContent=p.hp+' / '+p.maxHp;
@@ -299,7 +360,7 @@
     }
     for(const s of stars) circle(s.x,s.y,s.r,'#386378');
     for(const f of g.fishItems){
-      circle(f.x,f.y,18,'#dfc26b33');ctx.save();ctx.translate(f.x,f.y+Math.sin(f.phase)*4);
+      circle(f.x,f.y,18,'#dfc26b33');ctx.save();ctx.translate(f.x,f.y+(reducedMotion?0:Math.sin(f.phase)*4));
       polygon(9,0,[[0,0],[11,-8],[11,8]],'#f6cb62');
       ctx.fillStyle='#ffdc7b';ctx.beginPath();ctx.ellipse(0,0,12,7,0,0,TWO);ctx.fill();
       circle(-6,-1,1.6,'#523322');ctx.restore();
@@ -308,14 +369,29 @@
       ctx.save();ctx.globalAlpha=f.life/.9;
       outline(f.x,f.y,reducedMotion?23:20+(1-f.life/.9)*30,'#ffdc7b',3);
       ctx.fillStyle='#ffdc7b';ctx.font='bold 18px system-ui';ctx.textAlign='center';
-      ctx.fillText('+1 FISH',f.x,f.y-(reducedMotion?26:26+(1-f.life/.9)*24));ctx.restore();
+      ctx.fillText('+'+f.value+' FISH',f.x,f.y-(reducedMotion?26:26+(1-f.life/.9)*24));ctx.restore();
     }
-    for(const s of g.shots){circle(s.x,s.y,10,'#7bffdd44');circle(s.x,s.y,5,'#b9fff1');}
+    for(const item of g.powerups){
+      const color=item.kind==='rage'?'#ff94cd':item.kind==='magnet'?'#a6b7ff':'#86f1b7';
+      circle(item.x,item.y,24,'#101c30');outline(item.x,item.y,24,color,3);
+      ctx.fillStyle=color;ctx.font='bold 23px system-ui';ctx.textAlign='center';
+      ctx.fillText(item.kind==='rage'?'R':item.kind==='magnet'?'M':'♥',item.x,item.y+8);ctx.textAlign='left';
+    }
+    for(const s of g.shots){
+      const color=s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#b9fff1';
+      if(s.kind!=='normal'&&s.trail.length){
+        ctx.beginPath();ctx.moveTo(s.trail[0].x,s.trail[0].y);
+        for(const point of s.trail)ctx.lineTo(point.x,point.y);
+        ctx.lineTo(s.x,s.y);ctx.strokeStyle=color;ctx.lineWidth=4;ctx.stroke();
+      }
+      circle(s.x,s.y,s.kind==='normal'?5:7,color);
+      if(s.flash>0)outline(s.x,s.y,15,'#fff1a6',3);
+    }
     for(const e of g.enemies){
-      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(Math.sin(e.phase)*.08);
+      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
-      const color=e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
-      if(e.variant==='dasher'&&e.phase%9<2)outline(0,0,e.r+8,'#ffe6a1',3);
+      const color=e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
+      if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
       circle(0,0,e.r,e.hurt?'#d2fff0':color);
       if(e.variant==='weaver')outline(0,0,e.r+4,color);
       polygon(0,0,[[-e.r*.65,-e.r*.5],[-e.r*.9,-e.r*1.2],[-e.r*.12,-e.r*.8]],'#6faa8f');
@@ -328,7 +404,7 @@
     }
     ctx.save();ctx.translate(p.x,p.y);
     circle(0,14,27,'#000a15aa');
-    if(p.inv>0&&Math.floor(p.inv*12)%2===0)ctx.globalAlpha=.36;
+    if(p.inv>0&&(reducedMotion||Math.floor(p.inv*12)%2===0))ctx.globalAlpha=.36;
     // tail
     ctx.strokeStyle='#ffc7dd';ctx.lineWidth=8;ctx.lineCap='round';
     ctx.beginPath();ctx.moveTo(-15,12);ctx.quadraticCurveTo(-37,9,-32,-14);ctx.stroke();
@@ -349,8 +425,14 @@
     const grad=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,650);
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#0a172bee';ctx.fillRect(10,10,240,78);
+    const boss=g.enemies.find(e=>e.variant==='boss');
+    if(boss){ctx.fillStyle='#101b2f';ctx.fillRect(260,16,330,48);
+      ctx.fillStyle='#ffd1e4';ctx.font='bold 15px system-ui';ctx.fillText('ALLEY KING · NIGHT '+boss.night,270,34);
+      ctx.fillStyle='#48243c';ctx.fillRect(270,44,310,10);ctx.fillStyle='#f783b0';ctx.fillRect(270,44,310*boss.hp/boss.max,10);}
     ctx.fillStyle='#8bdac9';ctx.font='bold 15px system-ui';ctx.fillText('NIGHT '+g.wave,20,35);
     ctx.fillStyle='#9ab8c2';ctx.font='13px system-ui';ctx.fillText('CAT LVL '+p.level,20,56);
+    ctx.fillStyle='#ffdda5';ctx.fillText(Object.entries(g.buffs).filter(([,v])=>v>0).map(([k,v])=>k.toUpperCase()+' '+Math.ceil(v)+'s').join(' · '),20,76);
     ctx.fillStyle='#162d41';ctx.fillRect(20,H-21,160,8);
     ctx.fillStyle='#77f3c1';ctx.fillRect(20,H-21,160*(g.xp/(7+p.level*3)),8);
   }
@@ -480,10 +562,13 @@
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       pendingUpgrade:!!(game&&game.pendingUpgrade),
+      fishItems:game?game.fishItems.map(f=>({...f})):[],
+      powerups:game?game.powerups.map(f=>({...f})):[],buffs:game?{...game.buffs}:{},
+      bossMilestone:game?game.bossMilestone:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase})):[],
-      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max})):[],
+      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,hp:game.player.hp,maxHp:game.player.maxHp,
         level:game.player.level,damage:game.player.damage,speed:game.player.speed,

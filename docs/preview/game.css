@@ -20,3 +20,5 @@
 .secondary{min-height:44px}.help p{max-width:480px}
 @media(max-width:700px){.top{min-height:62px}.shell{padding-top:12px;padding-bottom:16px}.intro{margin-bottom:12px}.intro h1{margin-top:4px}.below{padding-top:10px}.actions{order:-1}.logo{font-size:10px}}
 a:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+.score-guide{margin:0 0 10px;border:1px solid var(--line);border-radius:9px;background:#111d30;font-size:12px;color:#c7d8ec}.score-guide summary{padding:12px;cursor:pointer;min-height:44px}.score-guide summary b{color:var(--green)}.score-guide>div{padding:0 12px 8px;line-height:1.5}.score-guide p{margin:8px 0}.notice{max-width:85%;white-space:normal;text-align:center;pointer-events:none}.arena{touch-action:auto}.joystick{opacity:.65}

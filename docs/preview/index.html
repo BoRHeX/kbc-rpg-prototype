@@ -2,16 +2,16 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42152073432-1"></head>
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42245249797-1"></head>
 <body>
 <header class="top">
   <a href="../games/" class="back">← All games</a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42152073432-1">AI PLAYTEST BUILD 42152073432-1</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42245249797-1">AI PLAYTEST BUILD 42245249797-1</div>
 </header>
 <main class="shell">
   <section class="intro">
-    <h1>Cataclysm <span>0.4</span></h1>
+    <h1>Cataclysm <span>0.5</span></h1>
     <p>One cat. One city. An inconvenient number of zombies.</p>
   </section>
     <div class="hud">
@@ -20,6 +20,7 @@
       <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
       <div class="hud-block"><small>HP / MAX</small><b id="health">3 / 3</b></div>
     </div>
+    <details class="score-guide"><summary>Score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Speed: +18 movement and +12 pickup range (cap +108). Damage: +0.25 per shot. Fire rate: 15% shorter cooldown (minimum 0.12s). Spread shots are pink; ricochets turn gold.</p><p>Every 10th night brings a charging boss. Field crates: R = double damage for 12s, M = collect all fish + magnet for 12s, ♥ = heal one heart. Crates remain until collected. Bosses drop all three.</p></div></details>
     <p class="personal-best">Personal best · this device: <b id="best">0</b></p>
     <p id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px"></p>
     <noscript>JavaScript is required to start the game. Enable it and reload.</noscript>
@@ -41,7 +42,7 @@
         <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · up to 3 boosts</small></button>
         <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · minimum 0.12 seconds</small></button>
         <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder</small></button>
-        <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>Move faster to escape and collect fish</small></button>
+        <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · speed cap +108</small></button>
       </section>
       <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
       <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
@@ -92,5 +93,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42152073432-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42245249797-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>
