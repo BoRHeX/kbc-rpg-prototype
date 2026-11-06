@@ -66,7 +66,14 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         "engineer": "Propose a technically feasible, substantially different interactive system or enemy behavior.",
     }
     private = evidence.get("private_gameplay", {})
-    base = {k: v for k, v in evidence.items() if k != "private_gameplay"}
+    base = {k: v for k, v in evidence.items()
+            if k not in ("private_gameplay", "recovered_council")}
+    recovered = evidence.get("recovered_council")
+    if recovered:
+        if recovered.get("source_run_id") != job["request"].get("resume_council_run"):
+            raise ValueError("Recovered council decisions are from an unexpected run")
+        if set(recovered.get("roles", {})) != {*ROLES, "critic"}:
+            raise ValueError("Recovered council does not include all four roles")
     transcript = str(private.get("transcript", ""))[:28000]
     visual = str(private.get("visual_observations", ""))[:12000]
     shared = (
@@ -86,6 +93,11 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
     )
     refs = ["artifacts/mobile/job.json", job["target"], "private gameplay evidence (not published)"]
     for role in ROLES:
+        if recovered:
+            answer = recovered["roles"][role]
+            plan[role] = answer
+            proposals[role] = parse_feature(role, answer)
+            continue
         task = shared + " " + lenses[role] + "\nEVIDENCE:\n" + json.dumps({
             **base, "gameplay_audio_observations": transcript,
             "gameplay_visual_observations": visual
@@ -128,7 +140,7 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             proposal = parse_feature(role, answer)
         plan[role] = answer
         proposals[role] = proposal
-    critic = ask_agent(memory, memory.register("critic", model), job["run_id"],
+    critic = recovered["roles"]["critic"] if recovered else ask_agent(memory, memory.register("critic", model), job["run_id"],
         "Debate the three submitted CODE CHANGE proposals. Identify conflicting "
         "symbols, interactions, implementation risks and missing tests. "
         "Your proposed_action MUST contain assessments: exactly three objects "
