@@ -1,9 +1,11 @@
 {
   "mode": "process_newest",
-  "requested_for": "Cataclysm 0.3 gameplay review",
+  "requested_for": "Cataclysm 0.5 gameplay review and 0.6 development",
   "game_hint": "cataclysm",
-  "source": "studio_dashboard_setup",
-  "request_key": "cataclysm-review-01-first-handoff",
-  "attempt": 2,
-  "reason": "re-run after Python module import fix"
+  "expected_filename": "cataclysm__review-03.mp4",
+  "expected_drive_file_id": "1egpBfOUcEHHzS0zvgd4UdjB4_i8SWlgV",
+  "source": "user_requested_on_demand",
+  "request_key": "cataclysm-review-03-to-v0.6-20261106",
+  "attempt": 1,
+  "reason": "Review the newest Cataclysm 0.5 gameplay, summarize actionable feedback, and hand a validated update to the autonomous Mobile Game Studio"
 }
