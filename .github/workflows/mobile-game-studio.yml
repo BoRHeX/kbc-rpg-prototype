@@ -61,7 +61,9 @@ jobs:
   develop:
     needs: resolve
     if: needs.resolve.outputs.active == 'true'
-    runs-on: ubuntu-latest
+    # Ubuntu 26.04 currently breaks openai/codex-action@v1 drop-sudo socket ACL check.
+    # Pin only the coding job; preserve default sandbox privilege restrictions.
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     permissions:
       contents: read
