@@ -1,17 +1,17 @@
 {
-  "id": "studio-original-create-003",
-  "game": "studio-original-003",
-  "mode": "create",
-  "title": "BoRHeZ Studio Original #003 — Creative Council blind competition",
-  "prompt": "Create ONE fully playable original HTML5 mobile minigame through the NEW three-proposal/critic/Producer concept-selection pipeline. This is a live integration test of the upgraded autonomous studio. Let Designer, Researcher and Engineer independently invent distinctly different game ideas; have Critic assess each and Producer commit to one selected proposal before coding. Preserve the winning and rejected proposals with explicit reasons in the release receipt and dashboard.\n\nAll artistic and gameplay choices, including actual public game title, genre, art, rules, score and replay structure, belong to the agents. Choose a SIMPLE, intuitive, FUN, lightweight portrait-mobile game playable with one finger. Prefer a genuinely fresh interaction over a cosmetic reskin. Avoid Cataclysm's survival combat, Neon Salvage's collect/dodge, Peach Bounce's paddle and tile breaking, and Threadlight's ordered needle/path embroidery. The new game should still feel fundamentally different from all four.\n\nA real working game is required—not concept art, a technical demo, a proposal or empty UI. Use only HTML/CSS/JS in the permitted directory docs/games/studio-original-003 with no external assets, authentication, network services, ads, analytics or paid runtime calls. Match existing factory constraints: responsive at 360x780 and 390x844, usable touch pointer cancel/re-entry, visible score and state, start, pause/resume, restart, a clear goal and a short end condition, with reduced-motion support. Keep technical logs/agent reasoning records outside the game surface.\n\nIndependent browser acceptance and QA must verify not only standard controls but that the IMPLEMENTED game actually matches the Producer's selected pre-coding concept. Publish only tested accepted source with a dedicated stable URL and linked creative decision on the dashboard. If creative-decision validation fails, stop and expose diagnostics rather than quietly substituting a concept.",
+  "id": "yt-7e798bd53c0c3ba53587dbe0",
+  "game": "cataclysm",
+  "mode": "update",
+  "title": "CATACLYSM · BoRHeZ Games",
+  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nUpdate Cataclysm to improve player experience by addressing corner trapping, adding background music, and expanding enemy variety while enhancing UI elements and visual feedback.",
   "acceptance": [
-    "Three independent concrete concepts from Designer, Researcher and Engineer are recorded before critique and coding; each includes a real named mechanic and scoring/end rules.",
-    "Critic compares all three concepts with strengths, risks and mitigations; Producer selects exactly one, explains both rejections and issues binding implementation directives.",
-    "Coding agent implements the named Producer-selected game and documents concrete features that realize its core loop; independent QA rejects an unrelated game.",
-    "The resulting complete minigame is original, differs fundamentally from all current BoRHeZ titles, and can be understood and controlled with one finger.",
-    "Both 360x780 and 390x844 Chromium mobile-emulated touch acceptance runs pass with no resource/JavaScript errors or visible interface overflow.",
-    "Start, pause/resume, restart, score, actual gameplay response, correct state reset, real end condition and stable diagnostics function.",
-    "No runtime third-party assets, network dependencies, logins, telemetry or payments; game remains self-contained within permitted HTML/CSS/JS files.",
-    "The accepted game is listed on the dashboard with a stable play link and an inspectable creative decision, and exact live bytes are verified before reporting delivery."
+    "Enemies do not spawn directly behind the player when positioned in corners or near edges, thus preventing unavoidable damage after a few seconds in a corner.",
+    "If player is cornered, a warning indicator or escape aid mechanics are provided to reduce or avoid continuous damage.",
+    "Background music is implemented during gameplay loops and boss fights, complementing existing sound effects without performance impact.",
+    "At least two new enemy types with distinct behaviors or attack patterns are added, appearing in progressively later nights to increase gameplay diversity.",
+    "Player health display is enhanced either by adding numeric HP or a clearer flashing/visual effect to the health bar for better readability.",
+    "Score and stats UI elements are repositioned from the current inconvenient top-right location to a more ergonomic position nearer the gameplay center or customizable by player.",
+    "The upgrade menu text layout is simplified or redesigned for better readability on smaller mobile screens without losing detail.",
+    "Basic cosmetic or animation enhancements are added for the player character or weapon effects (e.g., different bullet colors or enemy hit animations) without altering core mechanics."
   ]
 }
