@@ -17,7 +17,7 @@ interface through an adapter. More control schemes can be added later.
 | Stage | Responsibility | Output |
 | --- | --- | --- |
 | Resolve | Validate the request and existing game; skip completed job IDs | Fixed job definition and baseline hashes |
-| Plan | Producer, Researcher, Designer, Critic, Engineer | One scoped implementation plan |
+| Plan (new game) | Designer, Researcher and Engineer independently pitch concrete games; Critic evaluates all; Producer selects one | Three proposals, comparison, explicit choice and two rejection reasons |\n| Plan (update) | Existing Producer, Researcher, Designer, Critic and Engineer | Feedback-driven scoped change plan, preserving the current game |
 | Code | Codex with file editing and shell tools | Actual HTML/CSS/JS plus an implementation report |
 | Test | Independent Chromium mobile/touch checks | Start, timer, actor movement, canvas, pause/resume, restart, resources, run identity |
 | Repair | Coder receives the actual failure, once | Corrected candidate or a failed job |
@@ -60,10 +60,37 @@ the next prompt follows the current job's result. This is a bounded studio,
 not an unlimited background spending loop.
 
 `OPENAI_API_KEY` is the existing repository Actions secret. API inference uses
-the configured provider account. Each job has five planning-role calls and one QA-role call, each with at most
+the configured provider account. Each job still has five planning-role calls and one QA-role call (no extra model calls for concept competition), each with at most
 one recovery for malformed or truncated JSON and a per-reply output ceiling of
 4,000 tokens. There is one coding run and at most one coding repair. Workflow
 timeouts also apply; token and dollar costs are not guaranteed by timeouts.
+
+## Creative decisions for new games
+
+For `mode=create` the studio uses the five existing council calls differently,
+**without increasing the number of planning API calls**:
+
+1. Designer, Researcher and Engineer independently propose one concrete game
+   concept each, without seeing the other two pitches.
+2. Critic evaluates all three actual concepts for distinctiveness, first-minute
+   play, feasibility, mobile accessibility and replayability, naming an expected
+   failure mode and mitigation for each.
+3. Producer selects exactly one proposal, explains two rejections, and publishes
+   implementation directives **before coding starts**.
+4. The coding agent must implement that selected game, not silently substitute
+   its own idea. Independent QA checks that source matches the selected concept.
+
+All five role outputs and a normalized `creative_decision` object are saved
+in `plan.json` and embedded in the accepted result JSON. A completed new-game
+card exposes a compact **Creative decision · 3 pitches** section linked to its
+full public result. This is a log of explicit outputs and reasons, **not** the
+agents' private internal reasoning.
+
+For `mode=update` the studio retains the previous feedback-driven workflow,
+and existing games/releases remain unchanged. Missing structured pitches,
+incomplete critique or an invented fourth proposal stop creation before any
+coding call. Model proposals and selected reasons are untrusted model outputs;
+passing schema checks does not by itself establish game originality or fun.
 
 ## Play and inspect delivery
 
