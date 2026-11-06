@@ -53,11 +53,12 @@ Or open **Actions → Mobile Minigame Studio → Run workflow**, choose `create`
 or `update`, and enter the game ID and prompt. Use `cataclysm` for updates to
 the existing preview. Other game IDs map to `docs/games/<game-id>/`.
 
-The runner checks for a pending request twice daily at 07:15 and 19:15 UTC
-(08:15 and 20:15 Belgrade in winter). A request already present in
-`game_factory/results/` causes no model calls. Submit one job at a time;
-the next prompt follows the current job's result. This is a bounded studio,
-not an unlimited background spending loop.
+The Mobile Minigame Studio does not run on a clock. It starts only after
+an explicit new-game/update request through `workflow_dispatch`, a change to
+`game_factory/requests/current.json`, or a video-review handoff. A request
+already present in `game_factory/results/` causes no model calls. Submit one
+job at a time; the next prompt follows the current job's result. This is a
+bounded studio, not an unlimited background spending loop.
 
 `OPENAI_API_KEY` is the existing repository Actions secret. API inference uses
 the configured provider account. Each job still has five planning-role calls and one QA-role call (no extra model calls for concept competition), each with at most
