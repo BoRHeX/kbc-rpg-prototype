@@ -1,11 +1,11 @@
 {
   "mode": "process_newest",
-  "requested_for": "Cataclysm 0.5 gameplay review and 0.6 development",
+  "requested_for": "Cataclysm 0.6 gameplay review for next iteration 0.7",
   "game_hint": "cataclysm",
-  "expected_filename": "cataclysm__review-03.mp4",
-  "expected_drive_file_id": "1egpBfOUcEHHzS0zvgd4UdjB4_i8SWlgV",
+  "expected_filename": "cataclysm__review-04.mp4",
+  "expected_drive_file_id": "1jJQeOwrK0PdVauUSP6cXfdzJi5LRnW1d",
   "source": "user_requested_on_demand",
-  "request_key": "cataclysm-review-03-to-v0.6-20261106",
+  "request_key": "cataclysm-review-04-20261106",
   "attempt": 1,
-  "reason": "Review the newest Cataclysm 0.5 gameplay, summarize actionable feedback, and hand a validated update to the autonomous Mobile Game Studio"
+  "reason": "Process the newly uploaded Cataclysm gameplay recording through the existing independent review and Mobile Game Studio update cycle. No preselected development changes."
 }
