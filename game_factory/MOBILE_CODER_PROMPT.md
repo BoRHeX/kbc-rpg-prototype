@@ -22,6 +22,16 @@ lock gameplay gestures to the canvas without preventing use of page controls.
 The game must have a clear objective, visible score, a win/loss condition,
 feedback for success/damage, and repeatable play. Respect reduced motion.
 
+For a NEW game, when a `creative_decision` appears in `plan.json`, the
+Producer's `selection.concept` is binding. Implement its named core loop,
+scoring, end state and visual theme, incorporating the specific
+`implementation_directives`. The other candidate pitches are rejected
+alternatives, not permission to choose another idea. If the selected concept
+cannot be implemented safely within the scope, document the blocker and
+fail rather than quietly substituting an unrelated game. In
+`CODER_REPORT.md`, name the selected `candidate_id`, describe the finished
+mechanic, and state where the implementation diverges, if anywhere.
+
 For a NEW game:
 
 - Canvas: `id="canvas"`. One-finger drag must move the playable actor.

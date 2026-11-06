@@ -25,7 +25,7 @@ class PrivateReviewWorkflowTests(unittest.TestCase):
         self.assertIn("video_review_trigger.json", source)
         self.assertNotIn("actions/upload-artifact", source)
         self.assertNotIn("issues: write", source)
-        self.assertIn("video_bridge.py", source)
+        self.assertIn("python -m game_factory.video_bridge", source)
 
     def test_dashboard_launch_is_authenticated_github_workflow(self):
         source = (ROOT / "docs/games/index.html").read_text(encoding="utf-8")
