@@ -168,6 +168,7 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
     if isinstance(recommended, list) and len(recommended) == 1 and isinstance(recommended[0], list):
         recommended = recommended[0]
     if not isinstance(recommended, list) or not 2 <= len(recommended) <= 3 or (
+        any(not isinstance(x, str) for x in recommended) or
         len(set(recommended)) != len(recommended) or not set(recommended) <= set(ROLES)
     ):
         raise ValueError("Critic must recommend 2–3 compatible candidate IDs in one group")
@@ -193,7 +194,11 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
     if not isinstance(result, dict):
         raise ValueError("Producer has not agreed a structured implementation contract")
     ids = result.get("selected_ids")
+    # Some agents return their selected compatible group wrapped in a list.
+    if isinstance(ids, list) and len(ids) == 1 and isinstance(ids[0], list):
+        ids = ids[0]
     if not isinstance(ids, list) or not 2 <= len(ids) <= 3 or (
+        any(not isinstance(x, str) for x in ids) or
         len(set(ids)) != len(ids) or not set(ids) <= set(recommended)
     ):
         raise ValueError("Producer must select 2–3 Critic-approved proposals")
