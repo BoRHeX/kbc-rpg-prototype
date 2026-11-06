@@ -1,17 +1,17 @@
 {
-  "id": "yt-7e798bd53c0c3ba53587dbe0",
+  "id": "yt-9c2e6cbf2e1b2bda20ea7d3d",
   "game": "cataclysm",
   "mode": "update",
   "title": "CATACLYSM · BoRHeZ Games",
-  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nUpdate Cataclysm to improve player experience by addressing corner trapping, adding background music, and expanding enemy variety while enhancing UI elements and visual feedback.",
+  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nUpdate Cataclysm to improve challenge and replayability by implementing enemy and boss difficulty scaling over subsequent runs and encounters, balancing the escape shield mechanic to prevent invulnerability exploits near the map edges, and adjusting the upgrade system to avoid trivializing player survivability and damage output. Also, fix the displayed version label to correctly reflect the internal build version.",
   "acceptance": [
-    "Enemies do not spawn directly behind the player when positioned in corners or near edges, thus preventing unavoidable damage after a few seconds in a corner.",
-    "If player is cornered, a warning indicator or escape aid mechanics are provided to reduce or avoid continuous damage.",
-    "Background music is implemented during gameplay loops and boss fights, complementing existing sound effects without performance impact.",
-    "At least two new enemy types with distinct behaviors or attack patterns are added, appearing in progressively later nights to increase gameplay diversity.",
-    "Player health display is enhanced either by adding numeric HP or a clearer flashing/visual effect to the health bar for better readability.",
-    "Score and stats UI elements are repositioned from the current inconvenient top-right location to a more ergonomic position nearer the gameplay center or customizable by player.",
-    "The upgrade menu text layout is simplified or redesigned for better readability on smaller mobile screens without losing detail.",
-    "Basic cosmetic or animation enhancements are added for the player character or weapon effects (e.g., different bullet colors or enemy hit animations) without altering core mechanics."
+    "Enemies and bosses increase in health and/or damage output progressively over multiple runs and boss encounters.",
+    "The escape shield no longer grants invulnerability when the player is near map edges or its duration/mechanics are limited to prevent indefinite safe camping.",
+    "Special upgrades provide meaningful power boosts but do not lead to absolute invincibility or one-shot kills without effort.",
+    "Boss fights serve as effective DPS checks with increased difficulty on subsequent encounters.",
+    "The version displayed in-game matches the actual game build (e.g., shows 0.6 if that is the current version).",
+    "New or adjusted enemy types maintain challenge as player power scales.",
+    "Upgrade selection and progression curve ensure players cannot easily max out all special abilities simultaneously leading to game imbalance.",
+    "Gameplay retains the core mechanics, visuals, and controls while enhancing content and difficulty scaling as requested."
   ]
 }
