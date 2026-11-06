@@ -1,18 +1,17 @@
 {
-  "id": "cataclysm-lite-ui-001",
-  "mode": "update",
+  "id": "yt-28ba8077235e3d08fe8bd759",
   "game": "cataclysm",
-  "title": "Cataclysm 0.4 — Lite player interface",
-  "prompt": "UI-ONLY follow-up to accepted Cataclysm build 42147234285-1. User wants LITE games: clean, focused playable experience, while ALL studio documentation, agents, devlogs and source history live only on the BoRHeZ Games dashboard at ../games/. Edit ONLY Cataclysm HTML/CSS and the minimal JS needed to remove obsolete UI. Make the header's existing back anchor a real navigation link to ../games/ labeled '← All games' or '← Arcade', with accessible touch target, not ./ (which currently loops to the current game). Title should read Cataclysm 0.4 rather than stale 0.3 (latest gameplay update already added new enemies/abilities), with the existing one-line subtitle; keep technical build-version element intact for stamper/QA. REMOVE the entire three-tab strip (GAME, AI FACTORY, DEV NOTES), the obsolete factory-tab/notes-tab sections and old council cards, and all related tab navigation and loadCouncil JS/CSS. Don't call /factory-report.json. The game occupies the page directly: title, subtitle, small score/HUD (time, fish, kills, HP), the playable canvas with existing overlays and upgrade choices, and compact controls (sound on/off and restart, pause in-game). Preserve id=best ONCE, but move its existing best-score display from the Start overlay into a small always-visible personal-best line/score strip so it remains visible while playing. This is a local-device best score, not a global leaderboard; label accordingly. Keep keyboard/touch controls and simple help text; avoid extra panels, animations, dependencies, network requests, new mechanics, or sound sliders. Do not change the combat/enemy/upgrade/economy logic or health behavior. Preserve the existing start, pause, resume, restart, game-over, upgrade freeze, score saving and muted audio. Do not edit studio workflows/tests/publisher/other games. Add accessible labels/aria-pressed for mute if helpful. Maintain the game diagnostics contract, #play/#pause/#restart, #canvas, #build-version and boot/version handshake, so trusted touch acceptance passes. Include smoke checks that no tab/factory/notes remnants exist in HTML/JS and that best score updates on game over. Coder report should explain exact UI diffs, not invent gameplay improvements. Deliver only after normal independent acceptance+QA and hashed live verification. Future studios will inherit this minimal game-page design: dashboard is documentation/control, individual games are gameplay.",
+  "mode": "update",
+  "title": "CATACLYSM · BoRHeZ Games",
+  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nImprove Cataclysm 0.4 game mechanics and gameplay balance based on detailed player feedback and QA findings.",
   "acceptance": [
-    "The game page has a working prominent link to ../games/ with accessible visible 'Arcade' or 'All games' label; no link points to ./ for back navigation.",
-    "No Game/AI Factory/Dev Notes tabs remain; no factory or devlog content or dead UI code remains, and Cataclysm gameplay is visible immediately below title, subtitle and a minimal HUD.",
-    "Cataclysm's visible heading is updated from stale 0.3 to 0.4; build-version element and publisher run-ID stamping remain intact, including boot/version agreement.",
-    "Best score is an always-visible small personal-best value, not a global leaderboard, with exactly one id=best and a value that stays correct after game over, restart and local storage errors.",
-    "Only essential controls remain: touch/keyboard movement, auto-fire, in-arena pause, restart, simple sound on/off toggle; no settings complexity or additional network dependency.",
-    "Preserve all existing Cataclysm gameplay: fish, HP, new variant enemies, three/special level-up options, health milestones, pickup effects, pause/resume and save-best; no mechanics changes.",
-    "Page is mobile-first and stays within 360px/390px viewports with no horizontal overflow or obstructive HUD; good touch targets and readable controls.",
-    "Existing Playwright touch-start/actor-movement/pointer-cancel/pause/resume/restart tests pass at 360x780 and 390x844 with zero JS/page resource errors.",
-    "Coder must run Node syntax check and focused static checks of removed elements and best score. Independent QA must approve and the publisher verify exact live file hashes; no claim of physical Samsung testing."
+    "Enemies scale their movement speed or attack patterns to counterplayer movement speed upgrades, preventing infinite outrunning of fish.",
+    "Fish pickup mechanics are adjusted so fish do not disappear merely by outrunning; player is incentivized to collect fish despite movement speed.",
+    "Special projectile effects such as multi-shot and bouncing bullets have visually distinct, clear feedback (e.g., trails, impact flashes).",
+    "Add boss fights appearing at defined progression milestones (e.g., every 10 nights) to increase game challenge and engagement.",
+    "Introduce collectible items or power-ups beyond level-up menu to diversify build strategies and long-term progression.",
+    "UI displays additional information about score calculation and upgrade effects (tooltips or overlays) for better player understanding.",
+    "Balance upgrade choices so that movement speed, fire rate, and damage upgrades are each viable and strategically meaningful.",
+    "Verify that all HUD and control elements remain clear and functional during intense gameplay, especially with large enemy crowds."
   ]
 }
