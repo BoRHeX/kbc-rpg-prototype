@@ -93,7 +93,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue list --state open --search "$GAME_ID in:title" --limit 20 --json number,title,body > artifacts/mobile/feedback.md
-      - name: Producer and planning agents scope the requested game job
+      - name: Private gameplay playback (only for explicitly attached Drive evidence)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        shell: bash
+        run: |
+          if python -c 'import json; j=json.load(open("artifacts/mobile/job.json")); raise SystemExit(0 if j["request"].get("evidence_drive_file_id") else 1)'; then
+            python -m pip install --disable-pip-version-check openai requests
+            python -m game_factory.private_playback
+          else
+            echo "No private gameplay attachment in this request."
+          fi
+      - name: Designer, Researcher, Engineer, Critic and Producer negotiate code before implementation
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
