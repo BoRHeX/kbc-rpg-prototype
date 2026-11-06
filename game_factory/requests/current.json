@@ -1,17 +1,17 @@
 {
-  "id": "yt-28ba8077235e3d08fe8bd759",
-  "game": "cataclysm",
-  "mode": "update",
-  "title": "Cataclysm 0.5 — gameplay review 02",
-  "prompt": "Update the existing Cataclysm 0.4 mobile game to Cataclysm 0.5, implementing the evidence-grounded gameplay feedback extracted from cataclysm__review-02.mp4. Update the visible game version to 0.5 without changing the stable public game URL or internal build/version diagnostics. Preserve the existing compact Lite game-only interface, controls, score saving, and working gameplay. Address the acceptance criteria below with tested, cohesive mechanics, not placeholder UI. Follow the normal independent browser acceptance, QA, and hashed live deployment checks.",
+  "id": "studio-original-create-002",
+  "mode": "create",
+  "game": "studio-original-002",
+  "title": "BoRHeZ Studio Original #002 — AI creative challenge",
+  "prompt": "Create a completely ORIGINAL, FUN, lightweight mobile browser minigame from scratch. This is a blind creative challenge: the BoRHeZ AI Studio producer, researcher, designer, critic, engineer and coding agent choose the title, theme, genre, art direction, rules, scoring, progression and feedback. Do NOT copy or re-skin Cataclysm (cat/zombie survival), Neon Salvage (collect-and-dodge space debris), or Studio Original #001 / Peach Jam (bounce a peach from a tray and clear tiles). Find a distinctly different core mechanic and game feel.\n\nNon-negotiable product constraints: make one finished, instantly playable HTML5/JavaScript mobile game for portrait phone browsers (360x780 and 390x844), no accounts, ads, monetization, login, external assets, network dependencies, or heavyweight frameworks. Aim for one-finger intuitive controls and very short satisfying replayable sessions; make game states and player goals obvious. Provide working start, pause/resume, restart, scoring, clear win/loss or end condition, basic sound toggle if sound is included, and a concise title/subtitle. Keep development reports and AI-agent panels on the studio dashboard rather than in the game.\n\nAgent freedom is the point of this experiment: don't ask the user to select options; make and implement your own coherent creative decisions. Do not merely write a concept, mockup, placeholder animation, or game proposal—produce working code. Respect repository game file contract and independent QA. Keep the stable game identity studio-original-002 and target docs/games/studio-original-002/.\n\nBefore delivery, independently run normal mobile touch/browser acceptance checks, document the actual mechanic and limitations in the coding report, and publish only with accepted QA and verified live bytes. Never claim actual Samsung testing.",
   "acceptance": [
-    "Enemies scale their movement speed or attack patterns to counterplayer movement speed upgrades, preventing infinite outrunning of fish.",
-    "Fish pickup mechanics are adjusted so fish do not disappear merely by outrunning; player is incentivized to collect fish despite movement speed.",
-    "Special projectile effects such as multi-shot and bouncing bullets have visually distinct, clear feedback (e.g., trails, impact flashes).",
-    "Add boss fights appearing at defined progression milestones (e.g., every 10 nights) to increase game challenge and engagement.",
-    "Introduce collectible items or power-ups beyond level-up menu to diversify build strategies and long-term progression.",
-    "UI displays additional information about score calculation and upgrade effects (tooltips or overlays) for better player understanding.",
-    "Balance upgrade choices so that movement speed, fire rate, and damage upgrades are each viable and strategically meaningful.",
-    "Verify that all HUD and control elements remain clear and functional during intense gameplay, especially with large enemy crowds."
+    "The studio invents and implements one cohesive original playable mobile arcade game with a core mechanic distinct from Cataclysm, Neon Salvage, and Peach Jam; not a reskin or placeholder.",
+    "The AI agents select and implement the game's visible title, aesthetic, rules, interactions, scoring and replayability without additional user concept input.",
+    "At 360x780 and 390x844 mobile viewports, the full game is immediately understandable, readable, touch-responsive and free of horizontal overflow or obstructive overlays.",
+    "A single touch/pointer provides intuitive control and can be cancelled and re-entered without sticking; keyboard support may be provided if suitable.",
+    "Start, pause, resume, restart, scoring and a real end state are implemented; score and state correctly reset on restart.",
+    "The game uses self-contained permitted HTML/CSS/JS files, minimal assets, and no accounts, ads, telemetry, API calls or runtime external dependencies.",
+    "Automated acceptance verifies real gameplay input, movement/action, and stable runtime diagnostics with no JavaScript console or resource errors.",
+    "Independent QA approves after inspecting source and test evidence, then publisher records accepted bytes and verifies the live game at the dedicated stable URL."
   ]
 }
