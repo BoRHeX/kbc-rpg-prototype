@@ -2,12 +2,12 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42136897024-1"></head>
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42147234285-1"></head>
 <body>
 <header class="top">
   <a href="./" class="back">‹ <span>STUDIO</span></a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42136897024-1">AI PLAYTEST BUILD 42136897024-1</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42147234285-1">AI PLAYTEST BUILD 42147234285-1</div>
 </header>
 <main class="shell">
   <section class="intro">
@@ -41,7 +41,11 @@
       </div>
       <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
         <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
-        <p>Time and combat are frozen. Equip one upgrade to continue.</p>
+        <p id="upgrade-copy">Time and combat are frozen. Equip one upgrade to continue.</p>
+
+        <button type="button" class="upgrade special" data-special data-upgrade="multi-shot" hidden>Special · Multi-shot<small>Add two spread shots · up to five shots</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · up to 3 bounces</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · up to 3 boosts</small></button>
         <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · minimum 0.12 seconds</small></button>
         <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder</small></button>
         <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>Move faster to escape and collect fish</small></button>
@@ -74,7 +78,7 @@
 <footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
 <script>
 (function () {
-  var expected = '20261106-core-03';
+  var expected = '20261106-survival-04';
   var status = document.getElementById('runtime-status');
   var play = document.getElementById('play');
   var acknowledged = false;
@@ -112,5 +116,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42136897024-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42147234285-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>
