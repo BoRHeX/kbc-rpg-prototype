@@ -90,7 +90,8 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             **base, "gameplay_audio_observations": transcript,
             "gameplay_visual_observations": visual
         }, ensure_ascii=False)
-        answer = ask_agent(memory, memory.register(role, model), job["run_id"],
+        identity = memory.register(role, model)
+        answer = ask_agent(memory, identity, job["run_id"],
                            task, refs, model=model, max_output_tokens=1700)
         # A valid JSON response is not necessarily valid structured code.
         # Let the same agent correct ONE format error instead of aborting the
