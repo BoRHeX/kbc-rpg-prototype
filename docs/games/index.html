@@ -1,7 +1,137 @@
-<!doctype html><html lang="en"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>BoRHeZ Games</title>
-<style>body{background:#0b1120;color:#f1f5f9;font:18px system-ui;margin:40px auto;max-width:640px;padding:20px}a{display:block;color:#67e8f9;padding:22px;border:1px solid #334155;border-radius:12px;margin:16px 0;text-decoration:none}p{color:#94a3b8}</style>
-<h1>BoRHeZ Games</h1><p>Small games. Open one and play.</p><a href="../preview/">Cataclysm — survival playtest</a>
-<a href="./neon-salvage/">Neon Salvage</a>
-<a href="./studio-original-001/">Studio Original 001 — agents&#x27; choice</a>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080e1e">
+<meta name="description" content="BoRHeZ Games: a living arcade of original mobile games and autonomous AI game-development experiments.">
+<title>BoRHeZ Games — Your Arcade & Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#080e1e;--panel:#101c32;--line:#293956;--muted:#9baec9;--text:#edf6ff;--mint:#6ff0d0;--blue:#7eb7ff;--pink:#ff9ba8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px;overflow-x:hidden;background:radial-gradient(ellipse 70% 38% at 8% -2%,#1a3652 0,transparent 72%),radial-gradient(ellipse 58% 34% at 95% 8%,#293050 0,transparent 72%),var(--bg);color:var(--text)}
+button,a{-webkit-tap-highlight-color:transparent}a{color:inherit;text-decoration:none}button{font:inherit}a:focus-visible,button:focus-visible{outline:3px solid var(--mint);outline-offset:4px}
+.skip{position:absolute;top:-100px;left:20px;padding:12px;background:#fff;color:#111;z-index:20}.skip:focus{top:10px}
+.wrap{width:min(1160px,calc(100% - 40px));margin-inline:auto}.topbar{position:sticky;top:0;z-index:10;background:#080e1edb;border-bottom:1px solid #24354a;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:70px}.brand{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:900;letter-spacing:.1px}.brandmark{display:grid;place-items:center;width:40px;height:40px;background:linear-gradient(145deg,#65efc2,#80abff);border-radius:13px;color:#071427;box-shadow:0 6px 35px #4bd8d72b;font-size:23px}.brand b{color:var(--mint)}.brand small{display:block;font-size:10px;font-weight:650;letter-spacing:2px;color:var(--muted);margin-top:2px}
+.navlinks{display:flex;align-items:center;gap:5px}.navlinks a{font-size:12px;font-weight:750;color:#b3c5dc;padding:12px 14px;border-radius:10px}.navlinks a:hover{background:#ffffff0b;color:white}
+.navlinks .github-link{display:flex;gap:7px;align-items:center;border:1px solid #344767;margin-left:6px}
+.hero{display:grid;grid-template-columns:1.14fr .86fr;align-items:center;gap:54px;padding-block:72px 64px}.eyebrow{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:850;letter-spacing:1.7px;text-transform:uppercase;color:var(--mint)}.signal{width:8px;height:8px;border-radius:50%;background:#70e7be;box-shadow:0 0 0 5px #70e7be1a,0 0 17px #63f6ca70}
+h1,h2,h3,p{margin-top:0}.hero h1{margin:18px 0;font-size:clamp(39px,5.6vw,70px);line-height:1.06;letter-spacing:-2.8px;max-width:720px}.hero h1 em{font-style:normal;background:linear-gradient(100deg,#7cf4cd,#84c1ff 68%,#c6afff);color:transparent;background-clip:text;-webkit-background-clip:text}
+.hero p{font-size:16px;line-height:1.75;color:#aabdd4;max-width:590px;margin-bottom:27px}.actions{display:flex;gap:11px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:47px;padding:12px 18px;border:1px solid #385171;border-radius:12px;background:#152842;color:#e9f5ff;font-size:13px;font-weight:850;transition:transform .2s,background .2s,border-color .2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px);background:#1c3454;border-color:#5b7ba5}.btn-primary{background:linear-gradient(110deg,#6cecc6,#8fbfff);border:0;color:#08182a;box-shadow:0 10px 28px #64d3ca21}.btn-primary:hover{background:linear-gradient(110deg,#83f6d4,#afcfff)}.btn-small{min-height:42px;padding:10px 15px}.arrow{font-size:17px;line-height:1}
+.overview{position:relative;border:1px solid #3d5774;background:linear-gradient(145deg,#162c49db,#111b34f0 62%,#1c2045);border-radius:22px;padding:22px;overflow:hidden;box-shadow:0 26px 70px #0005}.overview:before{content:"";position:absolute;width:240px;height:240px;right:-130px;top:-140px;background:#72f5dc25;filter:blur(54px)}.overview > *{position:relative}.overview-head{display:flex;align-items:center;justify-content:space-between;font-weight:850;font-size:12px;letter-spacing:.4px}.tag{font-size:10px;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;padding:7px 9px;border-radius:7px;border:1px solid #5a998d;background:#4ce0b81b;color:#83f5ce}.mini-panel{border:1px solid #314461;background:#0814279d;border-radius:16px;padding:23px;margin-top:24px;display:flex;justify-content:space-between;align-items:center;gap:15px}.mini-panel b{display:block;font-size:32px;line-height:1;letter-spacing:-1px}.mini-panel small{font-size:11px;color:#a9bed8;letter-spacing:.5px;display:block;margin-bottom:10px}.mini-panel svg{width:75px;height:75px;flex-shrink:0}.overview-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.stat{border:1px solid #34465d;background:#131f34;border-radius:12px;padding:13px}.stat strong{display:block;font-size:12px;color:#e6f6ff}.stat span{font-size:11px;line-height:1.5;color:#98adc6}
+.section{padding-top:30px;padding-bottom:24px;scroll-margin-top:90px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:20px}.section-heading h2{font-size:clamp(26px,3vw,36px);letter-spacing:-1.2px;margin:6px 0 4px}.section-heading p{font-size:13px;color:var(--muted);margin:0;line-height:1.7}
+.section-num{font-size:11px;color:#6ceec5;letter-spacing:2px;font-weight:850}.soft-link{color:var(--mint);font-size:12px;font-weight:850;white-space:nowrap}.soft-link:hover{text-decoration:underline}
+.feature{border-radius:23px;overflow:hidden;border:1px solid #466781;background:linear-gradient(110deg,#152e44,#12203a 70%,#211e3b);display:grid;grid-template-columns:1fr 1fr;min-height:330px;box-shadow:0 24px 55px #0003}
+.feature-copy{padding:32px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}.pill{border-radius:30px;background:#6ef2ca17;color:#8ef7d8;border:1px solid #66eec050;font-size:10px;letter-spacing:1.15px;font-weight:850;padding:7px 10px;text-transform:uppercase}.feature h3{font-size:clamp(28px,3vw,41px);line-height:1.1;letter-spacing:-1.2px;margin:19px 0 10px}.feature h3 span{color:#86f1d7}.feature p{font-size:13px;color:#b3c8dc;line-height:1.75;max-width:420px;margin-bottom:21px}.meta{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}.meta span{font-size:11px;color:#b9d1e6;border:1px solid #3b516a;padding:6px 9px;border-radius:8px}
+.feature-art{min-height:300px;position:relative;overflow:hidden;background:radial-gradient(circle at 52% 18%,#426b83 0,transparent 47%),linear-gradient(145deg,#12253e,#121a35)}.feature-art svg{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
+.games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.game-card{border:1px solid #34485f;border-radius:19px;overflow:hidden;background:linear-gradient(155deg,#15243a,#10192e);display:flex;flex-direction:column;transition:transform .2s,border-color .2s,box-shadow .2s}.game-card:hover{transform:translateY(-3px);border-color:#5980a3;box-shadow:0 16px 40px #0005}
+.game-art{height:155px;position:relative;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid #405470}.game-art:before{content:"";position:absolute;inset:0;opacity:.8;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(to bottom,transparent,#000)}
+.game-art .symbol{position:relative;font-size:80px;filter:drop-shadow(0 12px 15px #0009);line-height:1}
+.game-card.neon-salvage .game-art{background:radial-gradient(ellipse at 50% 40%,#226189,#0e1b41 58%,#12162c)}
+.game-card.studio-original-001 .game-art{background:radial-gradient(ellipse at 50% 35%,#7a4168,#2e2a55 65%,#17203f)}
+.game-card .body{padding:24px;display:flex;flex-direction:column;align-items:flex-start;flex:1}.game-card .label{font-size:10px;color:#8ceccd;font-weight:850;letter-spacing:1.3px;text-transform:uppercase}.game-card h3{font-size:25px;letter-spacing:-.75px;margin:9px 0 8px}.game-card p{font-size:13px;line-height:1.7;color:#a7bad2;margin-bottom:22px;flex:1}
+.studio-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.studio-card{display:flex;flex-direction:column;align-items:flex-start;padding:23px;border:1px solid #31435c;background:#121d31;border-radius:17px;min-height:214px}.studio-card .icon{width:46px;height:46px;border-radius:14px;background:#253e52;display:grid;place-items:center;font-size:23px;margin-bottom:17px}.studio-card h3{font-size:17px;margin:0 0 9px}.studio-card p{font-size:12px;color:#a2bad0;line-height:1.65;flex:1;margin-bottom:16px}.studio-card a{color:var(--mint);font-weight:850;font-size:12px}
+.workflow{border:1px solid #36536a;border-radius:20px;background:linear-gradient(140deg,#12263c,#101b30);padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;margin-block:8px 42px}.workflow h3{font-size:23px;margin:10px 0}.workflow p{font-size:13px;color:#b6c8d9;line-height:1.8;margin-bottom:0}.filename{border:1px dashed #5e8096;border-radius:11px;background:#0b172a;padding:15px 15px;margin:10px 0;font-size:13px;font-weight:800;letter-spacing:.1px;word-break:break-word}.copy-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.small-note{font-size:11px;color:#91a8c2;line-height:1.7}.privacy{display:flex;gap:12px;background:#241d28;border:1px solid #66515b;border-radius:12px;padding:15px;margin-top:17px;font-size:12px;line-height:1.6;color:#ead0d6}.privacy strong{color:#ffbac6}
+footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:12px}.foot-inner{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}.foot-inner a{color:#b7d3eb}.foot-inner a:hover{color:var(--mint)}
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:25px;padding-block:55px 45px}.overview{max-width:550px}.studio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.feature{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.wrap{width:min(100% - 28px,1160px)}.topbar-inner{min-height:61px}.brandmark{width:35px;height:35px;font-size:20px}.brand{font-size:13px}.brand small{font-size:8px}.navlinks{gap:0}.navlinks a{font-size:11px;padding:11px 7px}.navlinks .github-link{display:none}.hero{padding-top:42px;padding-bottom:25px}.hero h1{font-size:42px;letter-spacing:-2px}.hero p{font-size:14px}.feature{grid-template-columns:1fr}.feature-copy{padding:26px}.feature-art{min-height:200px;order:-1}.games-grid,.studio-grid,.workflow{grid-template-columns:1fr}.section-heading{align-items:start}.section-heading .soft-link{display:none}.workflow{padding:20px;gap:18px}.game-art{height:135px}.overview{padding:17px}.mini-panel{margin-top:18px;padding:17px}.mini-panel b{font-size:27px}.stat{padding:10px}.foot-inner{align-items:start;flex-direction:column}}
+@media(max-width:380px){.navlinks a{padding:10px 5px}.hero h1{font-size:38px}.actions .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.game-card{transition:none}.btn:hover,.game-card:hover{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#games">Skip to games</a>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="./" aria-label="BoRHeZ Games home"><span class="brandmark" aria-hidden="true">✦</span><span>BoRHeZ <b>GAMES</b><small>THE LIVING ARCADE</small></span></a>
+    <nav class="navlinks" aria-label="Main navigation"><a href="#games">PLAY</a><a href="#studio">STUDIO</a><a href="#feedback">FEEDBACK</a><a class="github-link" href="https://github.com/BoRHeX/kbc-rpg-prototype" target="_blank" rel="noopener noreferrer">GITHUB <span aria-hidden="true">↗</span></a></nav>
+  </div>
+</header>
+<main>
+  <section class="wrap hero" aria-labelledby="hero-title">
+    <div>
+      <div class="eyebrow"><span class="signal" aria-hidden="true"></span> AI-BUILT · HUMAN-PLAYED · ALWAYS EVOLVING</div>
+      <h1 id="hero-title">Your arcade.<br><em>Your experiment.</em></h1>
+      <p>Play original mobile games. Record what works, say what doesn't, and let the AI Game Studio build the next version. Every playtest becomes a chance to improve.</p>
+      <div class="actions"><a class="btn btn-primary" href="#games">Explore the games <span class="arrow" aria-hidden="true">↓</span></a><a class="btn" href="#studio">Open the studio <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <aside class="overview" aria-label="Studio overview">
+      <div class="overview-head"><span>STUDIO / CONTROL ROOM</span><span class="tag">ONLINE</span></div>
+      <div class="mini-panel">
+        <div><small>FEATURED BUILD</small><b>CATACLYSM <span style="color:var(--mint)">0.3</span></b></div>
+        <svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="39" stroke="#79f4d0" stroke-width="2" stroke-dasharray="6 6"/><path d="M31 41 36 18 47 33 61 33 72 18 76 45 72 68 58 78 43 78 29 66Z" fill="#12253b" stroke="#92f7d9" stroke-width="3"/><circle cx="43" cy="49" r="3" fill="#8af9d5"/><circle cx="63" cy="49" r="3" fill="#8af9d5"/><path d="M48 59 53 63 58 59" stroke="#8af9d5" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="overview-foot"><div class="stat"><strong>3 playable games</strong><span>All in your browser</span></div><div class="stat"><strong>5 planning agents</strong><span>Plus coding and QA</span></div></div>
+    </aside>
+  </section>
+
+  <section class="wrap section" id="games">
+    <div class="section-heading"><div><div class="section-num">01 / THE ARCADE</div><h2>Pick a game. Hit play.</h2><p>Real playable HTML5 games. No download or account required.</p></div><a class="soft-link" href="#feedback">How feedback works ↗</a></div>
+    <article class="feature">
+      <div class="feature-copy"><span class="pill">★ FEATURED RELEASE · 0.3</span><h3>CATACLYSM<span>.</span></h3><p>One cat. One city. An inconvenient number of zombies. Survive, collect fish, and choose upgrades as the night gets harder.</p><div class="meta"><span>ONE-FINGER PLAY</span><span>SURVIVAL</span><span>SAMSUNG PLAYTEST PENDING</span></div><a class="btn btn-primary" href="../preview/">▶ PLAY CATACLYSM <span aria-hidden="true">↗</span></a></div>
+      <div class="feature-art" role="img" aria-label="Stylized night city with a glowing-eyed cat and lurking zombies">
+        <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><radialGradient id="sky"><stop stop-color="#355e72"/><stop offset="1" stop-color="#0c182f"/></radialGradient><linearGradient id="road" x2="0" y2="1"><stop stop-color="#183b4b"/><stop offset="1" stop-color="#081524"/></linearGradient></defs>
+          <rect width="600" height="360" fill="url(#sky)"/><circle cx="470" cy="80" r="45" fill="#c6e4e4" opacity=".8"/><circle cx="470" cy="80" r="60" stroke="#bedbdc" opacity=".18"/>
+          <g fill="#0d2136"><rect x="0" y="120" width="110" height="200"/><rect x="92" y="87" width="70" height="233"/><rect x="150" y="145" width="100" height="175"/><rect x="330" y="130" width="120" height="190"/><rect x="440" y="155" width="72" height="165"/><rect x="507" y="108" width="93" height="212"/></g>
+          <g fill="#86d6c7" opacity=".32"><path d="M20 155h12v12H20zm40 0h12v12H60zm40 0h12v12h-12zM116 115h11v13h-11zm25 36h11v13h-11zM177 172h12v12h-12zm34 35h12v12h-12zm148-1h12v12h-12zm40-33h12v12h-12zm79 27h12v12h-12zm52-45h12v12h-12zm35 25h12v12h-12z"/></g>
+          <path d="M0 296 218 254h175l207 42v64H0Z" fill="url(#road)"/><path d="M292 272 280 360M320 272 341 360" stroke="#7fd9ba" stroke-dasharray="16 20" opacity=".25"/>
+          <g transform="translate(176 183)"><ellipse cx="0" cy="108" rx="67" ry="17" fill="#050e20" opacity=".65"/><path d="M-46 34-39-14-15 12H15L39-14 47 37l-8 55-31 17h-19l-30-19Z" fill="#071626" stroke="#7df1cb" stroke-width="4"/><path d="M-22 47h15M11 47h15" stroke="#84fad6" stroke-width="6" stroke-linecap="round"/><path d="M-8 69 0 75 8 69" stroke="#84fad6" stroke-width="2" fill="none"/></g>
+          <g fill="#071827"><ellipse cx="399" cy="270" rx="30" ry="49"/><circle cx="399" cy="210" r="24"/><ellipse cx="496" cy="280" rx="25" ry="42"/><circle cx="496" cy="229" r="22"/></g>
+          <g fill="#a9ff7c"><circle cx="390" cy="210" r="3"/><circle cx="409" cy="210" r="3"/><circle cx="489" cy="229" r="3"/><circle cx="503" cy="229" r="3"/></g>
+        </svg>
+      </div>
+    </article>
+    <div class="games-grid" aria-label="Other playable games">
+      <!-- BEGIN GENERATED GAME CARDS -->
+      <article class="game-card studio-original-001">
+        <div class="game-art" aria-hidden="true"><span class="symbol">🍑</span></div>
+        <div class="body"><div class="label">ORIGINAL MOBILE ARCADE</div><h3>Peach Bounce</h3><p>Bounce a peach from your tray and clear the jam tiles. Quick, simple, replayable.</p><a class="btn btn-small" href="./studio-original-001/">▶ PLAY GAME <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="game-card neon-salvage">
+        <div class="game-art" aria-hidden="true"><span class="symbol">🚀</span></div>
+        <div class="body"><div class="label">ORIGINAL MOBILE ARCADE</div><h3>Neon Salvage</h3><p>Collect glowing cores, chain multipliers, and dodge red debris in a 60-second run.</p><a class="btn btn-small" href="./neon-salvage/">▶ PLAY GAME <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <!-- END GENERATED GAME CARDS -->
+    </div>
+  </section>
+
+  <section class="wrap section" id="studio">
+    <div class="section-heading"><div><div class="section-num">02 / THE STUDIO</div><h2>Behind the games.</h2><p>Direct links to the real workflows, source code, and development history.</p></div></div>
+    <div class="studio-grid">
+      <article class="studio-card"><div class="icon" aria-hidden="true">⚙</div><h3>Game Studio</h3><p>Five planning agents, coding, browser tests, QA, and verified publication.</p><a href="https://github.com/BoRHeX/kbc-rpg-prototype/actions/workflows/mobile-game-studio.yml" target="_blank" rel="noopener noreferrer">OPEN WORKFLOW ↗</a></article>
+      <article class="studio-card"><div class="icon" aria-hidden="true">◉</div><h3>Video Reviewer</h3><p>Drive recordings become transcripts, visual observations, and gameplay feedback.</p><a href="https://github.com/BoRHeX/kbc-rpg-prototype/actions/workflows/gameplay-video-review.yml" target="_blank" rel="noopener noreferrer">OPEN WORKFLOW ↗</a></article>
+      <article class="studio-card"><div class="icon" aria-hidden="true">☷</div><h3>Development Board</h3><p>Track reported bugs, production tasks, and agent development discussions.</p><a href="https://github.com/BoRHeX/kbc-rpg-prototype/issues" target="_blank" rel="noopener noreferrer">VIEW ISSUES ↗</a></article>
+    </div>
+  </section>
+
+  <section class="wrap section" id="feedback">
+    <div class="section-heading"><div><div class="section-num">03 / THE NEXT ITERATION</div><h2>Play. Record. Improve.</h2><p>One recording can become the next development brief.</p></div></div>
+    <div class="workflow">
+      <div><div class="eyebrow"><span class="signal" aria-hidden="true"></span> YOUR NEXT CATACLYSM PLAYTEST</div><h3>Give the studio your feedback.</h3><p>Play Cataclysm 0.3, record gameplay and commentary, and upload the MP4 to the configured Drive folder. The automated bridge uses the game ID at the start of the filename. Successful updates keep the same play link.</p><div class="privacy"><span aria-hidden="true">ⓘ</span><div><strong>Privacy check before uploading:</strong> Google Drive footage is private, but the current reviewer creates issues in a public GitHub repository. Don't assume spoken commentary and generated reports will stay private until that reporting workflow is changed.</div></div></div>
+      <div><div class="small-note">COPY THIS NAME FOR YOUR NEXT RECORDING</div><div class="filename" id="example-filename">cataclysm__review-01.mp4</div><div class="copy-row"><button class="btn btn-small" id="copy-name" type="button">COPY FILENAME ⧉</button><a class="btn btn-small" href="https://drive.google.com/drive/folders/1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K" target="_blank" rel="noopener noreferrer">OPEN DRIVE ↗</a></div><p id="copy-status" role="status" class="small-note" style="margin:12px 0 0">Use two underscores after the game ID. The first real video-to-game handoff still needs verification.</p></div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap foot-inner"><div>© BoRHeZ Games · Built by humans and AI agents · Powered by curiosity</div><div><a href="https://github.com/BoRHeX/kbc-rpg-prototype" target="_blank" rel="noopener noreferrer">Source & version history ↗</a></div></div></footer>
+<script>
+(function(){
+  var button=document.getElementById('copy-name');
+  var output=document.getElementById('copy-status');
+  button.addEventListener('click',async function(){
+    var value=document.getElementById('example-filename').textContent.trim();
+    try{
+      if(!navigator.clipboard || !navigator.clipboard.writeText)throw Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(value);
+      output.textContent='Copied. Rename the recording before uploading it to Drive.';
+    }catch(e){
+      output.textContent='Copy unavailable in this browser. Select and copy the filename above.';
+    }
+  });
+})();
+</script>
+</body>
 </html>
