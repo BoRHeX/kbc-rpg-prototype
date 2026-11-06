@@ -4,6 +4,8 @@ import re
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+import game_factory.video_bridge as video_bridge
 
 from game_factory.video_bridge import (
     build_request, game_from_filename, game_title, stable_job_id,
@@ -80,6 +82,19 @@ class VideoBridgeTests(unittest.TestCase):
             with self.subTest(item=str(item)[:100]):
                 with self.assertRaises(ValueError):
                     build_request("video-1", "neon-salvage", "Neon Salvage", item)
+
+
+    def test_no_action_marker_is_private_data_free_and_idempotent(self):
+        with patch.object(video_bridge, "ROOT", self.root), patch.object(video_bridge, "git", return_value=""):
+            result = video_bridge.mark_no_action("private-file-id", "neon-salvage")
+            self.assertEqual(result["status"], "skipped_no_actionable_update")
+            marker = self.root / "game_factory/review_markers" / (stable_job_id("private-file-id") + ".json")
+            data = json.loads(marker.read_text())
+            self.assertEqual(data["status"], "no_actionable_gameplay_update")
+            self.assertEqual(data["game"], "neon-salvage")
+            self.assertNotIn("private-file-id", marker.read_text())
+            repeated = video_bridge.mark_no_action("private-file-id", "neon-salvage")
+            self.assertEqual(repeated["status"], "already_skipped")
 
 
 if __name__ == "__main__":
