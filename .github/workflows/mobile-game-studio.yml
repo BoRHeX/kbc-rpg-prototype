@@ -66,6 +66,7 @@ jobs:
     permissions:
       contents: read
       issues: read
+      actions: read
     env:
       BORHEZ_BROWSER_CHANNEL: chrome
       EXPECTED_JOB_DIGEST: ${{ needs.resolve.outputs.job_digest }}
@@ -93,6 +94,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue list --state open --search "$GAME_ID in:title" --limit 20 --json number,title,body > artifacts/mobile/feedback.md
+      - name: Recover previous game council decisions instead of replaying video
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -m game_factory.council_resume
       - name: Install FFmpeg for gameplay evidence extraction
         run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
       - name: Private gameplay playback (only for explicitly attached Drive evidence)
@@ -183,6 +188,12 @@ jobs:
           path: artifacts/mobile/release
           if-no-files-found: error
           retention-days: 30
+      # Agent memory stores input tasks, which can contain the creator's
+      # spoken commentary. Preserve public gameplay proposals in plan.json,
+      # never package the private conversation ledger into artifacts.
+      - name: Remove private agent task ledger from diagnostic artifacts
+        if: always()
+        run: rm -f artifacts/mobile/memory.sqlite3
       - name: Save run diagnostics, browser images and agent decisions
         if: always()
         uses: actions/upload-artifact@v4
