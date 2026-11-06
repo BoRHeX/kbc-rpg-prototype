@@ -1,4 +1,3 @@
-Run 42010567811
-Original independent browser QA: PASSED
-Repeated browser QA in failed publishing attempt: PASSED
-Real Samsung hardware verification: PENDING
+Run 42136897024-1
+Source 42077a4b2c6b8ff9b4ecf2fc1773fd77ba411602
+Physical Samsung hardware verification: PENDING

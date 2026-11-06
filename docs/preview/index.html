@@ -2,17 +2,17 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css"></head>
+<title>CATACLYSM · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42136897024-1"></head>
 <body>
 <header class="top">
   <a href="./" class="back">‹ <span>STUDIO</span></a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version">AI PLAYTEST 42010567811</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42136897024-1">AI PLAYTEST BUILD 42136897024-1</div>
 </header>
 <main class="shell">
   <section class="intro">
     <div class="overline">ORIGINAL MOBILE GAME · DEVELOPMENT BUILD</div>
-    <h1>Cataclysm<span>.</span></h1>
+    <h1>Cataclysm <span>0.3</span></h1>
     <p>One cat. One city. An inconvenient number of zombies.</p>
   </section>
   <nav class="tabs">
@@ -25,7 +25,7 @@
       <div class="hud-block"><small>TIME</small><b id="time">00:00</b></div>
       <div class="hud-block"><small>FISH</small><b id="fish">0</b></div>
       <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
-      <div class="hud-block"><small>HEALTH</small><b id="health">♥♥♥</b></div>
+      <div class="hud-block"><small>HP / MAX</small><b id="health">3 / 3</b></div>
     </div>
     <p id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px"></p>
     <noscript>JavaScript is required to start the game. Enable it and reload.</noscript>
@@ -39,6 +39,13 @@
         <button id="play" type="button" class="primary" disabled>LOADING GAME…</button>
         <small id="best">BEST RUN: —</small>
       </div>
+      <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
+        <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
+        <p>Time and combat are frozen. Equip one upgrade to continue.</p>
+        <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · minimum 0.12 seconds</small></button>
+        <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder</small></button>
+        <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>Move faster to escape and collect fish</small></button>
+      </section>
       <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
       <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
       <div class="notice" id="notice" hidden></div>
@@ -67,7 +74,7 @@
 <footer>© BoRHeZ Games · Experimental original game · Studio integration</footer>
 <script>
 (function () {
-  var expected = '20261105-start-3';
+  var expected = '20261106-core-03';
   var status = document.getElementById('runtime-status');
   var play = document.getElementById('play');
   var acknowledged = false;
@@ -78,13 +85,14 @@
     clearTimeout(timer);
     status.hidden = false;
     status.textContent = message;
+    document.getElementById('overlay-copy').textContent = message + ' If reloading does not help, clear this site’s cached files and report code ' + expected + '.';
     play.disabled = true;
     play.textContent = 'RELOAD REQUIRED';
   }
   window.CATACLYSM_BOOT = {
     fail: fail,
     ready: function (build) {
-      document.getElementById('build-version').textContent = 'AI PLAYTEST 42010567811 · CODE ' + build;
+      document.getElementById('build-version').textContent = document.getElementById('build-version').dataset.run + ' · CODE ' + build;
       if (build !== expected) {
         fail('Game files are from different builds. Reload this page to update.');
         throw Error('Game build mismatch: expected ' + expected + ', loaded ' + build);
@@ -104,5 +112,5 @@
   });
 })();
 </script>
-<script src="./game.js?v=20261105-start-3" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42136897024-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>

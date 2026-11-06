@@ -1,16 +1,18 @@
 /* CATACLYSM: fully original mobile-first Canvas arcade by BoRHeZ Games. */
 'use strict';
 (function () {
-  const BUILD = '20261105-start-3';
+  const BUILD = '20261106-core-03';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MIN_SHOT_INTERVAL = .12;
   const W = 720, H = 1000, TWO = Math.PI * 2;
   const cfg = {speed:235,enemySpeed:63,spawnInterval:1.65,shotInterval:.62,
     enemyHp:3,spawnRamping:.010,fishDropChance:.65,maxEnemies:95};
-  fetch('./game-config.json').then(r => r.ok ? r.json() : null).then(data => {
+  fetch('./game-config.json', {cache:'no-store'}).then(r => r.ok ? r.json() : null).then(data => {
     if (!data || typeof data !== 'object') return;
     for (const [key, value] of Object.entries(data)) {
-      if (Object.hasOwn(cfg, key) && typeof value === 'number' &&
+      if (Object.prototype.hasOwnProperty.call(cfg, key) && typeof value === 'number' &&
           Number.isFinite(value) && value > 0) cfg[key] = value;
     }
   }).catch(() => { /* defaults are a complete playable configuration */ });
@@ -62,9 +64,10 @@
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
-      shots:0,aim:0,level:1,damage:1};
+      shots:0,aim:0,level:1,damage:1,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,player,enemies:[],shots:[],fishItems:[],particles:[],
-      kills:0,fish:0,xp:0,wave:1,spawn:0,shake:0,now:0};
+      kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
+    clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
     sound(700,.12);last=performance.now();updateHud();
@@ -78,7 +81,8 @@
     $('pause').hidden=true;$('stick').hidden=true;pointer=null;sound(150,.4,'triangle');
   }
   function pause() {
-    if(!game || game.mode==='dead')return;
+    if(!game || game.mode==='dead'||game.mode==='upgrade')return;
+    clearInput();
     if(game.mode==='running'){
       game.mode='paused';$('overlay-title').textContent='PAUSED';
       $('overlay-copy').textContent='Your cat is taking a well-deserved break. Resume to continue the same run.';
@@ -89,6 +93,33 @@
       last=performance.now();
     }
   }
+  function clearInput() {
+    if(pointer && typeof pointer.id==='number') {
+      try { canvas.releasePointerCapture(pointer.id); } catch(e) { /* already released */ }
+    }
+    pointer=null;keys={};$('stick').hidden=true;$('thumb').style.transform='translate(0,0)';
+  }
+  function offerUpgrade() {
+    game.pendingUpgrade=true;game.mode='upgrade';clearInput();
+    $('upgrade-title').textContent='LEVEL '+game.player.level+' · CHOOSE ONE';
+    $('upgrade-overlay').hidden=false;$('pause').hidden=true;
+    updateHud();sound(1050,.2);
+    $('upgrade-overlay').querySelector('button').focus({preventScroll:true});
+  }
+  function chooseUpgrade(type) {
+    if(!game||game.mode!=='upgrade'||!game.pendingUpgrade)return;
+    const p=game.player;
+    if(type==='fire-rate')p.shotInterval=Math.max(MIN_SHOT_INTERVAL,p.shotInterval*.85);
+    else if(type==='damage')p.damage+=.25;
+    else if(type==='speed')p.speed+=18;
+    else return;
+    game.upgrades.push({level:p.level,type});game.pendingUpgrade=false;
+    $('upgrade-overlay').hidden=true;$('pause').hidden=false;
+    clearInput();game.mode='running';last=performance.now();notify('UPGRADE EQUIPPED');
+  }
+  document.querySelectorAll('[data-upgrade]').forEach(button=>{
+    button.addEventListener('click',()=>chooseUpgrade(button.dataset.upgrade));
+  });
   function resumeOrStart() { if(game && game.mode==='paused')pause();else start(); }
   function moveInput() {
     let vx=0,vy=0;
@@ -121,12 +152,14 @@
     sound(420+rnd(0,140),.05,'square',.018);
   }
   function burst(x,y,col,n=10) {
+    if(reducedMotion)return;
     for(let i=0;i<n;i++){const a=rnd(0,TWO),s=rnd(50,205);
       game.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
         life:rnd(.18,.55),ttl:.55,col,r:rnd(2,5)});
     }
   }
   function tick(dt) {
+    if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
     g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
     g.wave=1+Math.floor(g.t/24);g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
@@ -135,14 +168,14 @@
     }
     const input=moveInput();p.x=clamp(p.x+input.x*p.speed*dt,25,2375);
     p.y=clamp(p.y+input.y*p.speed*dt,25,2375);
-    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=cfg.shotInterval/(1+.1*(p.level-1));}
+    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval);}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
       enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(d<p.r+enemy.r-3&&p.inv===0){
         p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
-        sound(190,.21,'sawtooth');if(p.hp<=0){end();return;}notify('OUCH! ♥ -1');
+        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -1');
       }
     }
     for(let i=g.shots.length-1;i>=0;i--){
@@ -167,8 +200,7 @@
         g.fish++;g.xp++;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
         sound(740,.09,'sine');
         if(g.xp>=7+p.level*3){
-          g.xp=0;p.level++;p.maxHp=Math.min(6,p.maxHp+1);p.hp=Math.min(p.maxHp,p.hp+1);
-          p.speed+=8;p.damage+=.25;notify('LEVEL '+p.level+' · CAT POWER UP!',2.2);sound(1050,.2);
+          g.xp-=7+p.level*3;p.level++;offerUpgrade();return;
         }
       }else if(f.ttl<=0) g.fishItems.splice(i,1);
     }
@@ -184,7 +216,9 @@
     $('time').textContent=String(Math.floor(game.t/60)).padStart(2,'0')+':'+
       String(Math.floor(game.t%60)).padStart(2,'0');
     $('fish').textContent=game.fish;$('kills').textContent=game.kills;
-    $('health').textContent='♥'.repeat(game.player.hp)+'♡'.repeat(Math.max(0,game.player.maxHp-game.player.hp));
+    const p=game.player;
+    $('health').textContent=p.hp+' / '+p.maxHp;
+    $('health').setAttribute('aria-label',p.hp+' HP remaining out of '+p.maxHp+' maximum');
   }
   function circle(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,TWO);ctx.fillStyle=c;ctx.fill();}
   function outline(x,y,r,c,w=2){ctx.beginPath();ctx.arc(x,y,r,0,TWO);ctx.strokeStyle=c;ctx.lineWidth=w;ctx.stroke();}
@@ -198,7 +232,7 @@
     const cameraX=clamp(p.x-W/2,0,2400-W),cameraY=clamp(p.y-H/2,0,2400-H);
     ctx.fillStyle='#0e1d2b';ctx.fillRect(0,0,W,H);
     ctx.save();
-    ctx.translate(-cameraX+(rand()-.5)*g.shake*10,-cameraY+(rand()-.5)*g.shake*10);
+    ctx.translate(-cameraX+(reducedMotion?0:(rand()-.5)*g.shake*10),-cameraY+(reducedMotion?0:(rand()-.5)*g.shake*10));
     ctx.fillStyle='#162b3d';ctx.fillRect(0,0,2400,2400);
     ctx.strokeStyle='#274254';ctx.lineWidth=2;
     for(let x=0;x<2400;x+=90){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,2400);ctx.stroke();}
@@ -307,6 +341,7 @@
       $('thumb').style.transform='translate(0,0)';}
   }
   canvas.addEventListener('pointerup',pointerEnd);
+  canvas.addEventListener('lostpointercapture',pointerEnd);
   canvas.addEventListener('pointercancel', ev => {
     if (pointer && ev.pointerId === pointer.id) {
       try {
@@ -368,8 +403,10 @@
     canvas.addEventListener('touchcancel', touchEnd, { passive: false });
   }
   window.addEventListener('keydown',ev=>{
+    if(ev.target.closest && ev.target.closest('input, textarea, select'))return;
+    if((ev.key===' '||ev.key==='Enter')&&ev.target.closest&&ev.target.closest('button, a'))return;
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(ev.key))ev.preventDefault();
-    keys[ev.key]=true;if(ev.key==='Escape'||ev.key===' ')pause();
+    keys[ev.key]=true;if(!ev.repeat&&(ev.key==='Escape'||ev.key===' '))pause();
   });
   window.addEventListener('keyup',ev=>{keys[ev.key]=false;});
   window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();});
@@ -432,7 +469,16 @@
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
     snapshot: () => ({build: BUILD, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
-      player: game ? {x: game.player.x, y: game.player.y} : null})
+      score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
+      kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
+      pendingUpgrade:!!(game&&game.pendingUpgrade),
+      upgrades:game?game.upgrades.map(u=>({...u})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp})):[],
+      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life})):[],
+      input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
+      player: game ? {x: game.player.x, y: game.player.y,hp:game.player.hp,maxHp:game.player.maxHp,
+        level:game.player.level,damage:game.player.damage,speed:game.player.speed,
+        shotInterval:game.player.shotInterval} : null})
   });
   last=performance.now();requestAnimationFrame(frame);
   window.CATACLYSM_BOOT.ready(BUILD);
