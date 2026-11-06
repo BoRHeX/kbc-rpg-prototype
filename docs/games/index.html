@@ -59,12 +59,12 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
       <div class="actions"><a class="btn btn-primary" href="#games">Explore the games <span class="arrow" aria-hidden="true">↓</span></a><a class="btn" href="#studio">Open the studio <span aria-hidden="true">↗</span></a></div>
     </div>
     <aside class="overview" aria-label="Studio overview">
-      <div class="overview-head"><span>STUDIO / CONTROL ROOM</span><span class="tag">ONLINE</span></div>
+      <div class="overview-head"><span>STUDIO / CONTROL ROOM</span><span class="tag">LIVE REPOSITORY</span></div>
       <div class="mini-panel">
         <div><small>FEATURED BUILD</small><b>CATACLYSM <span style="color:var(--mint)">0.3</span></b></div>
         <svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="39" stroke="#79f4d0" stroke-width="2" stroke-dasharray="6 6"/><path d="M31 41 36 18 47 33 61 33 72 18 76 45 72 68 58 78 43 78 29 66Z" fill="#12253b" stroke="#92f7d9" stroke-width="3"/><circle cx="43" cy="49" r="3" fill="#8af9d5"/><circle cx="63" cy="49" r="3" fill="#8af9d5"/><path d="M48 59 53 63 58 59" stroke="#8af9d5" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
-      <div class="overview-foot"><div class="stat"><strong>3 playable games</strong><span>All in your browser</span></div><div class="stat"><strong>5 planning agents</strong><span>Plus coding and QA</span></div></div>
+      <div class="overview-foot"><div class="stat"><strong id="game-count">3 playable games</strong><span>All in your browser</span></div><div class="stat"><strong>5 planning agents</strong><span>Plus coding and QA</span></div></div>
     </aside>
   </section>
 
@@ -112,7 +112,7 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
     <div class="section-heading"><div><div class="section-num">03 / THE NEXT ITERATION</div><h2>Play. Record. Improve.</h2><p>One recording can become the next development brief.</p></div></div>
     <div class="workflow">
       <div><div class="eyebrow"><span class="signal" aria-hidden="true"></span> YOUR NEXT CATACLYSM PLAYTEST</div><h3>Give the studio your feedback.</h3><p>Play Cataclysm 0.3, record gameplay and commentary, and upload the MP4 to the configured Drive folder. The automated bridge uses the game ID at the start of the filename. Successful updates keep the same play link.</p><div class="privacy"><span aria-hidden="true">ⓘ</span><div><strong>Privacy check before uploading:</strong> Google Drive footage is private, but the current reviewer creates issues in a public GitHub repository. Don't assume spoken commentary and generated reports will stay private until that reporting workflow is changed.</div></div></div>
-      <div><div class="small-note">COPY THIS NAME FOR YOUR NEXT RECORDING</div><div class="filename" id="example-filename">cataclysm__review-01.mp4</div><div class="copy-row"><button class="btn btn-small" id="copy-name" type="button">COPY FILENAME ⧉</button><a class="btn btn-small" href="https://drive.google.com/drive/folders/1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K" target="_blank" rel="noopener noreferrer">OPEN DRIVE ↗</a></div><p id="copy-status" role="status" class="small-note" style="margin:12px 0 0">Use two underscores after the game ID. The first real video-to-game handoff still needs verification.</p></div>
+      <div><div class="small-note">COPY THIS NAME FOR YOUR NEXT RECORDING</div><div class="filename" id="example-filename">cataclysm__review-01.mp4</div><div class="copy-row"><button class="btn btn-small" id="copy-name" type="button">COPY FILENAME ⧉</button><a class="btn btn-small" href="https://drive.google.com/drive/u/0/my-drive" target="_blank" rel="noopener noreferrer">OPEN DRIVE ↗</a></div><p id="copy-status" role="status" class="small-note" style="margin:12px 0 0">Use two underscores after the game ID. The first real video-to-game handoff still needs verification.</p></div>
     </div>
   </section>
 </main>
