@@ -1,7 +1,7 @@
 /* CATACLYSM: fully original mobile-first Canvas arcade by BoRHeZ Games. */
 'use strict';
 (function () {
-  const BUILD = '0.6';
+  const BUILD = '0.7';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -45,13 +45,14 @@
   }
   function upgradeAvailable(type) {
     const p=game.player;
-    const special = ['multi-shot','ricochet','fish-magnet'].includes(type);
-    if (special && (p.level%3!==0 || p.multishot+p.ricochet+p.magnet>=4)) return false;
+    const special = ['multi-shot','ricochet','fish-magnet','pet-companion'].includes(type);
+    if (special && (p.level%3!==0 || p.multishot+p.ricochet+p.magnet+p.petPicks>=4)) return false;
     const tier=Math.min(2,1+Math.floor(p.level/9));
     return type==='damage'?p.damage<3 : type==='speed'?p.speed<cfg.speed+108 :
       type==='fire-rate'?p.shotInterval>MIN_SHOT_INTERVAL :
       type==='multi-shot'?p.multishot<Math.min(2,tier) :
       type==='ricochet'?p.ricochet<Math.min(2,tier) :
+      type==='pet-companion'?p.petPicks<Math.min(2,tier)&&!game.entities.petCompanion :
       type==='fish-magnet'?p.magnet<Math.min(2,tier) : type==='recover';
   }
   function readBest() {
@@ -149,9 +150,9 @@
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
-      shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
+      autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
-      powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
+      entities:{petCompanion:null},hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
@@ -210,6 +211,7 @@
     else if(type==='damage')p.damage=Math.min(3,p.damage+.25);
     else if(type==='recover')p.hp=Math.min(p.maxHp,p.hp+1);
     else if(type==='speed')p.speed=Math.min(cfg.speed+108,p.speed+18);
+    else if(type==='pet-companion'){p.petPicks++;summonPet();}
     else if(p.level%3===0&&type==='multi-shot')p.multishot=Math.min(2,p.multishot+1);
     else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(2,p.ricochet+1);
     else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(2,p.magnet+1);
@@ -238,6 +240,7 @@
     let variant=(p.level>=3||p.speed>cfg.speed) ? (game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
     if(game.wave>=5&&game.spawnCount%5===0)variant='stalker';
     else if(game.wave>=3&&game.spawnCount%3===0)variant='orbiter';
+    if(game.wave>=6&&game.spawnCount%9===0)variant='ghost';
     const scale=difficulty();
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
     game.enemies.push({...position,
@@ -247,7 +250,7 @@
       phase:rnd(0,TWO),weight:extra,hurt:0});
   }
   function shotAtEnemy() {
-    if(!game.enemies.length)return;
+    if(game.player.autoFireDisabled||!game.enemies.length)return;
     const p=game.player;
     let enemy=null,best=460;
     for(const e of game.enemies){const d=dist(e.x,e.y,p.x,p.y);if(d<best){best=d;enemy=e;}}
@@ -261,6 +264,79 @@
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0});
     }
     sound(420+rnd(0,140),.05,'square',.018);
+  }
+  // Content updates use simulation seconds, so pause and upgrades freeze every timer.
+  function summonPet() {
+    const p=game.player;
+    game.entities.petCompanion={x:clamp(p.x+45,25,2375),y:p.y,r:13,life:35,
+      shotTimer:0,flash:0};
+  }
+  function updatePet(dt) {
+    const g=game,p=g.player,pet=g.entities.petCompanion;
+    if(!pet)return;
+    pet.life-=dt;pet.flash=Math.max(0,pet.flash-dt);
+    if(pet.life<=0){g.entities.petCompanion=null;notify('COMPANION · See you next time');return;}
+    const tx=clamp(p.x+48,25,2375),ty=clamp(p.y+35,25,2375);
+    const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+60)*dt);
+    pet.x+=(tx-pet.x)/d*step;pet.y+=(ty-pet.y)/d*step;
+    pet.shotTimer-=dt;
+    if(pet.shotTimer>0)return;
+    let target=null,best=420;
+    for(const e of g.enemies){const distance=dist(pet.x,pet.y,e.x,e.y);if(distance<best){best=distance;target=e;}}
+    // Ghost silence only affects the player's weapon. The ally has its own cooldown.
+    if(target){const a=Math.atan2(target.y-pet.y,target.x-pet.x);
+      g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
+        life:.85,r:5,damage:p.damage*(g.buffs.rage>0?2:1)*.5,bounces:0,
+        hit:[],kind:'pet',trail:[],flash:0});
+      pet.flash=.15;pet.shotTimer=.8;
+    }
+  }
+  function updateGhosts(dt) {
+    const g=game,p=g.player;
+    p.silence=Math.max(0,p.silence-dt);p.phaseCooldown=Math.max(0,p.phaseCooldown-dt);
+    if(p.phaseCooldown===0&&g.enemies.some(e=>e.variant==='ghost'&&dist(e.x,e.y,p.x,p.y)<220)){
+      p.silence=2;p.phaseCooldown=8;notify('GHOST PHASE · Fire silenced 2s',2);sound(260,.18,'sine',.02);
+    }
+    p.autoFireDisabled=p.silence>0;
+  }
+  function gasRadius(cloud) {
+    const active=cloud.age-1;
+    return active<0?0:110*Math.min(1,active/2,(6-active)/2);
+  }
+  function gasSpawn() {
+    const g=game,p=g.player,pet=g.entities.petCompanion;
+    // Keep the full cloud inside the map, outside the cat, ally and ghost bodies.
+    for(let i=0;i<32;i++){
+      const spot=safeSpawn(rnd(270,380),130);
+      if(dist(spot.x,spot.y,p.x,p.y)<250||
+        (pet&&dist(spot.x,spot.y,pet.x,pet.y)<160)||
+        g.enemies.some(e=>e.variant==='ghost'&&dist(spot.x,spot.y,e.x,e.y)<140))continue;
+      return {...spot,age:0};
+    }
+    return null;
+  }
+  function updateGas(dt) {
+    const g=game,p=g.player,h=g.hazards;
+    if(g.wave<8)return;
+    h.spawnTimer-=dt;
+    if(h.spawnTimer<=0){
+      const cloud=gasSpawn();
+      if(cloud){h.toxicGasClouds.push(cloud);notify('TOXIC GAS · Clear the green ring',2.5);sound(340,.3,'triangle',.025);}
+      h.spawnTimer=cloud?30:1;
+    }
+    let exposed=false;
+    for(let i=h.toxicGasClouds.length-1;i>=0;i--){
+      const c=h.toxicGasClouds[i];c.age+=dt;
+      if(c.age>=7){h.toxicGasClouds.splice(i,1);continue;}
+      if(c.age>=1&&dist(c.x,c.y,p.x,p.y)<gasRadius(c)+p.r)exposed=true;
+    }
+    // One exposure clock prevents overlapping clouds multiplying damage.
+    h.exposure=exposed?(h.exposure||0)+dt:0;
+    if(h.exposure>=1){h.exposure-=1;
+      if(p.inv===0){p.hp=Math.max(0,p.hp-1);p.inv=.35;g.shake=.3;
+        burst(p.x,p.y,'#b6ee75',10);notify('TOXIC GAS · Move out!');sound(170,.1);
+        if(p.hp<=0){updateHud();end();}}
+    }
   }
   function burst(x,y,col,n=10) {
     if(reducedMotion||game.particles.length>=500)return;
@@ -304,6 +380,8 @@
       spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
     }
     edgeAid(dt);
+    updateGas(dt);if(g.mode!=='running')return;
+    updateGhosts(dt);updatePet(dt);
     const input=moveInput();p.x=clamp(p.x+input.x*p.speed*dt,25,2375);
     p.y=clamp(p.y+input.y*p.speed*dt,25,2375);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval);}
@@ -468,8 +546,25 @@
       ctx.fillStyle=color;ctx.font='bold 23px system-ui';ctx.textAlign='center';
       ctx.fillText(item.kind==='rage'?'R':item.kind==='magnet'?'M':'♥',item.x,item.y+8);ctx.textAlign='left';
     }
+    for(const c of g.hazards.toxicGasClouds){
+      const warning=c.age<1,r=warning?110:gasRadius(c);
+      circle(c.x,c.y,r,'#91d75730');
+      outline(c.x,c.y,r,'#b6ee75',warning?3:2);
+      if(!reducedMotion&&!warning)outline(c.x,c.y,r*.75+Math.sin(c.age*5)*3,'#95d66b66',2);
+      if(warning){ctx.fillStyle='#d4ffac';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('GAS!',c.x,c.y);ctx.textAlign='left';}
+    }
+    const pet=g.entities.petCompanion;
+    if(pet){
+      ctx.save();ctx.translate(pet.x,pet.y);
+      circle(0,8,15,'#000a15aa');circle(0,0,13,'#ffce86');
+      polygon(0,0,[[-11,-5],[-12,-21],[-2,-12]],'#ffce86');
+      polygon(0,0,[[11,-5],[12,-21],[2,-12]],'#ffce86');
+      circle(-5,0,2,'#173141');circle(5,0,2,'#173141');
+      if(pet.flash>0)outline(0,0,19,'#ffe7ab',3);
+      ctx.fillStyle='#ffddaa';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(Math.ceil(pet.life)+'s',0,30);ctx.textAlign='left';ctx.restore();
+    }
     for(const s of g.shots){
-      const color=s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#71e5ff';
+      const color=s.kind==='pet'?'#ffce86':s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#71e5ff';
       if(s.trail.length){
         ctx.beginPath();ctx.moveTo(s.trail[0].x,s.trail[0].y);
         for(const point of s.trail)ctx.lineTo(point.x,point.y);
@@ -478,11 +573,12 @@
       circle(s.x,s.y,s.kind==='normal'?5:7,color);
       if(s.flash>0)outline(s.x,s.y,15,'#fff1a6',3);
     }
-    for(const e of g.enemies){
-      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
+    for(const e of [...g.enemies.filter(e=>e.variant!=='ghost'),...g.enemies.filter(e=>e.variant==='ghost')]){
+      ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
-      const color=e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
+      const color=e.variant==='ghost'?'#c7adff':e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
       if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
+      if(e.variant==='ghost')outline(0,0,e.r+9,'#c7adff',3);
       circle(0,0,e.r,e.hurt?'#d2fff0':color);
       if(e.variant==='orbiter')outline(0,0,e.r+7,color,3);
       if(e.variant==='stalker')polygon(0,-e.r,[[0,-12],[-8,0],[8,0]],color);
@@ -497,6 +593,7 @@
       ctx.restore();
     }
     ctx.save();ctx.translate(p.x,p.y);
+    if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
     if(g.escape>0)outline(0,0,36,'#7cf2d0',4);
     circle(0,14,27,'#000a15aa');
     if(p.inv>0&&(reducedMotion||Math.floor(p.inv*12)%2===0))ctx.globalAlpha=.36;
@@ -664,7 +761,7 @@
       run:game?game.run:completedRuns+1,runScale:game?game.runScale:1,
       difficulty:game?difficulty():1,bossEncounters:game?game.bossEncounters:0,
       escapeArmed:!!(game&&game.escapeArmed),
-      upgradeAvailability:game?Object.fromEntries(['damage','speed','fire-rate','multi-shot','ricochet','fish-magnet','recover'].map(k=>[k,upgradeAvailable(k)])):{},
+      upgradeAvailability:game?Object.fromEntries(['damage','speed','fire-rate','multi-shot','ricochet','fish-magnet','pet-companion','recover'].map(k=>[k,upgradeAvailable(k)])):{},
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
@@ -673,12 +770,16 @@
       fishItems:game?game.fishItems.map(f=>({...f})):[],
       powerups:game?game.powerups.map(f=>({...f})):[],buffs:game?{...game.buffs}:{},
       bossMilestone:game?game.bossMilestone:0,
+      petCompanion:game&&game.entities.petCompanion?{...game.entities.petCompanion}:null,
+      toxicGasClouds:game?game.hazards.toxicGasClouds.map(c=>({...c,radius:gasRadius(c)})):[],
+      gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
       enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage})):[],
-      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces})):[],
+      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,hp:game.player.hp,maxHp:game.player.maxHp,
+        autoFireDisabled:game.player.autoFireDisabled,silence:game.player.silence,phaseCooldown:game.player.phaseCooldown,petPicks:game.player.petPicks,
         level:game.player.level,damage:game.player.damage,speed:game.player.speed,
         shotInterval:game.player.shotInterval,multishot:game.player.multishot,ricochet:game.player.ricochet,magnet:game.player.magnet} : null})
   });
