@@ -60,6 +60,51 @@ class UpdateCouncilTests(unittest.TestCase):
         self.assertEqual(selected["selected_ids"], ["designer", "engineer"])
         self.assertEqual(len(selected["features"]), 2)
 
+    def test_one_correction_reuses_same_designer_and_preserves_autonomy(self):
+        answers = {
+            "designer": answer(feature("New route")),
+            "researcher": answer(feature("New boss")),
+            "engineer": answer(feature("New progression")),
+            "critic": answer({"assessments": [
+                {"candidate_id": role, "risk": "Overlap", "mitigation": "Separate state"}
+                for role in ("designer", "researcher", "engineer")],
+                "compatible_ids": ["designer", "researcher"],
+                "rationale": "Distinct state"}),
+            "producer": answer({"selected_ids": ["designer", "researcher"],
+                "decision_reason": "Different interactions",
+                "interface_contracts": ["shared state", "restart resets state"],
+                "integration_steps": ["add route", "add boss"],
+                "verification": ["play test", "restart test"]}),
+        }
+        calls = []
+        def ask(memory, role, run_id, task, refs, **kwargs):
+            calls.append(role)
+            if role == "designer" and calls.count("designer") == 1:
+                return answer({"feature": {"name": "New route",
+                    "player_experience": "Player visits a new place",
+                    "code_changes": [], "tests": ["Try new route"]}})
+            return answers[role]
+        job = {"run_id": "123-1", "target": "docs/preview",
+               "request": {"game": "cataclysm", "mode": "update"}}
+        result = negotiate_update(Memory(), "model", job,
+                                  {"job": job["request"]}, ask)
+        self.assertEqual(calls, ["designer", "designer", "researcher",
+                                 "engineer", "critic", "producer"])
+        self.assertEqual(result["update_decision"]["selection"]["selected_ids"],
+                         ["designer", "researcher"])
+
+    def test_two_invalid_designer_proposals_fail_before_other_agents(self):
+        calls = []
+        def ask(memory, role, *args, **kwargs):
+            calls.append(role)
+            return answer({"feature": {"name": "Idea", "player_experience": "Idea",
+                "code_changes": [], "tests": ["test"]}})
+        job = {"run_id": "123-1", "target": "docs/preview",
+               "request": {"game": "cataclysm", "mode": "update"}}
+        with self.assertRaisesRegex(ValueError, "1–8 code changes"):
+            negotiate_update(Memory(), "model", job, {}, ask)
+        self.assertEqual(calls, ["designer", "designer"])
+
     def test_scope_rejects_path_escape(self):
         with self.assertRaisesRegex(ValueError, "outside game file scope"):
             parse_feature("engineer", answer(feature("Hidden changes", "../secret.env")))
