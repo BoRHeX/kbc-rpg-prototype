@@ -31,16 +31,27 @@
     }
     for(let i=0;i<260;i++) stars.push({x:rand()*2400,y:rand()*2400,r:rnd(.7,2.1)});
   }
+  let personalBest = 0;
+  function readBest() {
+    try {
+      const stored = Number(localStorage.getItem('cataclysm-best'));
+      if (Number.isFinite(stored) && stored >= 0) personalBest = Math.max(personalBest, stored);
+    } catch (err) { /* keep this session's best when storage is disabled */ }
+  }
+  function renderBest() {
+    $('best').textContent = personalBest.toLocaleString();
+  }
+  readBest();
   function saveBest() {
     if (!game) return;
     const score = Math.floor(game.t*2 + game.kills*7 + game.fish*9);
-    let previous = 0;
-    try {
-      previous = Number(localStorage.getItem('cataclysm-best')||0) || 0;
-      if(score > previous) localStorage.setItem('cataclysm-best',String(score));
+    readBest();
+    if (score > personalBest) {
+      personalBest = score;
+      try { localStorage.setItem('cataclysm-best',String(personalBest)); }
+      catch (err) { /* the visible session best still survives restart */ }
     }
-    catch (err) { /* storage may be disabled */ }
-    $('best').textContent = 'BEST SCORE: '+Math.max(score,previous).toLocaleString();
+    renderBest();
   }
   function sound(freq=480,len=.08,type='sine',volume=.035) {
     if(muted) return;
@@ -458,57 +469,10 @@
   $('play').onclick=resumeOrStart;$('pause').onclick=pause;
   $('restart').onclick=()=>{start();};$('mute').onclick=()=>{
     muted=!muted;$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
+    $('mute').setAttribute('aria-pressed',String(muted));
+    $('mute').setAttribute('aria-label',muted?'Unmute sound':'Mute sound');
   };
-  document.querySelectorAll('[data-tab]').forEach(btn=>{
-    btn.onclick=()=>{
-      const target=btn.dataset.tab;
-      document.querySelectorAll('[data-tab]').forEach(e=>e.classList.toggle('active',e===btn));
-      ['game','factory','notes'].forEach(name=>$(name+'-tab').hidden=name!==target);
-      if(target!=='game'&&game&&game.mode==='running')pause();
-      if(target==='factory')loadCouncil();
-    };
-  });
-  function agentCard(role,ev){
-    const icons={Design:'✦',Balance:'⚖',Engineering:'⚙',Quality:'✓',Publishing:'↑'};
-    const title=String(role||'Unknown');
-    const status=ev&&ev.vote?String(ev.vote).toUpperCase():'NOT RUN';
-    return '<article class="factory-card"><div class="symbol">'+(icons[title]||'◈')+'</div>'+
-      '<b>'+escapeHTML(title)+'</b><p>'+escapeHTML(ev ? ev.argument : 'No automated experiment evidence loaded.')+'</p>'+
-      '<span class="tag">'+escapeHTML(status)+'</span></article>';
-  }
-  function escapeHTML(s) {
-    return String(s==null?'':s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  }
-  let councilLoaded=false;
-  async function loadCouncil(){
-    if(councilLoaded)return;
-    councilLoaded=true;
-    const crew=['Design','Balance','Engineering','Quality','Publishing'];
-    try{
-      const resp=await fetch('/factory-report.json',{cache:'no-cache'});
-      if(!resp.ok)throw Error('No experiment report available ('+resp.status+')');
-      const report=await resp.json();
-      $('factory-status').textContent='REAL TEST RUN · '+report.status+' · '+(report.experiments||[]).length+
-        ' candidate configurations evaluated';
-      const ballots=report.ballots||[];
-      $('factory-cards').innerHTML=crew.map(role=>agentCard(role,ballots.find(v=>v.department===role))).join('');
-      const winner=report.recommendation||{};
-      const options=(report.experiments||[]).slice(0,8).map(x=>
-        '<div class="line"><b>'+escapeHTML(x.name)+'</b> · score '+escapeHTML(x.score)+
-        ' · success '+escapeHTML(x.survival_rate)+' · average duration '+escapeHTML(x.avg_duration)+
-        's</div>').join('');
-      $('factory-report').innerHTML='<b>Development council proposal</b>'+
-        '<p>'+escapeHTML(report.decision||'No decision')+'</p>'+
-        '<p>Preferred candidate: <b>'+escapeHTML(winner.name||'none')+'</b></p>'+
-        '<p>'+escapeHTML(report.limitations||'')+'</p><h3>Experiment results</h3>'+options;
-    }catch(err){
-      $('factory-status').textContent='No council report loaded: '+err.message;
-      $('factory-cards').innerHTML=crew.map(x=>agentCard(x,null)).join('');
-      $('factory-report').textContent='Run python game_factory/council.py to generate and inspect experimental evidence.';
-    }
-  }
-  try { $('best').textContent='BEST SCORE: '+Number(localStorage.getItem('cataclysm-best')||0).toLocaleString(); }
-  catch (err) {$('best').textContent='LOCAL SCORE UNAVAILABLE';}
+  renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
     snapshot: () => ({build: BUILD, mode: game ? game.mode : 'ready',
