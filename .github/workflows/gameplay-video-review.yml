@@ -33,6 +33,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
           python -m pip install --disable-pip-version-check openai requests
+      - name: Verify Studio bridge import before processing media
+        run: python -m game_factory.video_bridge
       - name: Download, transcribe, analyse, edit and report
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -49,7 +51,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: python game_factory/video_bridge.py
+        run: python -m game_factory.video_bridge
       # Public repo: never upload private transcripts, recordings or screenshots.
       - name: Document review privacy boundary
         if: always()
