@@ -3,5 +3,7 @@
   "requested_for": "Cataclysm 0.3 gameplay review",
   "game_hint": "cataclysm",
   "source": "studio_dashboard_setup",
-  "request_key": "cataclysm-review-01-first-handoff"
+  "request_key": "cataclysm-review-01-first-handoff",
+  "attempt": 2,
+  "reason": "re-run after Python module import fix"
 }
