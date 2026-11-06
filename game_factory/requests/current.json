@@ -2,8 +2,8 @@
   "id": "yt-28ba8077235e3d08fe8bd759",
   "game": "cataclysm",
   "mode": "update",
-  "title": "CATACLYSM · BoRHeZ Games",
-  "prompt": "Apply evidence-grounded feedback from the recorded gameplay review. Preserve unrelated working behavior, controls and the stable URL.\nImprove Cataclysm 0.4 game mechanics and gameplay balance based on detailed player feedback and QA findings.",
+  "title": "Cataclysm 0.5 — gameplay review 02",
+  "prompt": "Update the existing Cataclysm 0.4 mobile game to Cataclysm 0.5, implementing the evidence-grounded gameplay feedback extracted from cataclysm__review-02.mp4. Update the visible game version to 0.5 without changing the stable public game URL or internal build/version diagnostics. Preserve the existing compact Lite game-only interface, controls, score saving, and working gameplay. Address the acceptance criteria below with tested, cohesive mechanics, not placeholder UI. Follow the normal independent browser acceptance, QA, and hashed live deployment checks.",
   "acceptance": [
     "Enemies scale their movement speed or attack patterns to counterplayer movement speed upgrades, preventing infinite outrunning of fish.",
     "Fish pickup mechanics are adjusted so fish do not disappear merely by outrunning; player is incentivized to collect fish despite movement speed.",
