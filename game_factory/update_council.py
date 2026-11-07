@@ -222,9 +222,14 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
     shared = (
         "You are discussing the game in a CODE LANGUAGE: structured JSON with "
         "function symbols, target files, operations and pseudocode, not just prose. "
-        "Propose exactly ONE independently conceived, meaningful gameplay CONTENT "
-        "feature (not a cosmetic-only or version-only change), while preserving core "
-        "controls, accessible mobile layout and existing mechanics. "
+        + ("Propose exactly ONE independently conceived, measurable physics "
+           "or visual-feedback REFINEMENT to the existing game, with concrete "
+           "code operations and observable effects, while preserving core "
+           if physics_visual else
+           "Propose exactly ONE independently conceived, meaningful gameplay "
+           "CONTENT feature (not a cosmetic-only or version-only change), "
+           "while preserving core ")
+        + "controls, accessible mobile layout and existing mechanics. "
         "Your proposed_action MUST contain feature: {name, player_experience, "
         "code_changes:[{file,operation,symbol,pseudo_code}], tests:[string]}. Provide 1–8 code changes and 1–6 tests. "
         "Allowed file names: game.js, game.css, index.html, game-config.json; "
