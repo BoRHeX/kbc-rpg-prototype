@@ -15,7 +15,9 @@ ENDPOINT = "https://api.openai.com/v1/responses"
 
 def ask_agent(memory: CouncilMemory, agent_id: str, run_id: str,
               task: str, evidence: list[str], model: str | None = None,
-              max_output_tokens: int = 1200) -> dict:
+              max_output_tokens: int = 1200,
+              response_schema: dict | None = None,
+              format_name: str = "game_council_decision") -> dict:
     if not 128 <= max_output_tokens <= 4000:
         raise ValueError("Output token limit must be between 128 and 4000")
     token = os.getenv("OPENAI_API_KEY")
@@ -48,7 +50,11 @@ def ask_agent(memory: CouncilMemory, agent_id: str, run_id: str,
                              "agent_history": summary}),
         "store": False,
         "max_output_tokens": max_output_tokens,
-        "text": {"format": {"type": "json_object"}},
+        "text": {"format": (
+            {"type": "json_schema", "name": format_name, "strict": True,
+             "schema": response_schema}
+            if response_schema is not None else {"type": "json_object"}
+        )},
     }
     # Retry only a malformed/truncated model reply, once. Successful earlier
     # roles are not rerun. HTTP errors, refusals and content filters stop here.
