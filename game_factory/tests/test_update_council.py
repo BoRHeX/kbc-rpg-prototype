@@ -93,7 +93,7 @@ class UpdateCouncilTests(unittest.TestCase):
         self.assertIn("recognizable fruit", observed["designer"])
         self.assertIn("probe physics", observed["researcher"])
         self.assertIn("preserve the 0.1 game loop", observed["producer"])
-        self.assertIn("NOT new content", observed["critic"])
+        self.assertIn("not a request for additional content", observed["critic"])
         self.assertNotIn("CONTENT feature", observed["designer"])
 
     def test_one_correction_reuses_same_designer_and_preserves_autonomy(self):
