@@ -58,6 +58,17 @@ def validate_request(value):
         if "evidence_drive_file_id" in request:
             raise ValueError("Choose recovered council OR direct video, not both")
         request["resume_council_run"] = run
+    if "resume_candidate_run" in value or "resume_candidate_branch" in value:
+        run = value.get("resume_candidate_run")
+        branch = value.get("resume_candidate_branch")
+        if (request["mode"] != "update" or type(run) is not int or run < 1
+                or not isinstance(branch, str)
+                or not re.fullmatch(r"recovery/[a-z0-9-]{2,80}", branch)):
+            raise ValueError("Candidate resume requires one valid past run and recovery branch")
+        if "resume_council_run" in request or "evidence_drive_file_id" in request:
+            raise ValueError("Resume candidate instead of restarting council/video processing")
+        request["resume_candidate_run"] = run
+        request["resume_candidate_branch"] = branch
     return request
 
 
