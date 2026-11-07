@@ -105,6 +105,24 @@ class UpdateCouncilTests(unittest.TestCase):
             negotiate_update(Memory(), "model", job, {}, ask)
         self.assertEqual(calls, ["designer", "designer"])
 
+    def test_response_schemas_restrict_files_operations_and_roles(self):
+        from game_factory.update_council import (
+            FEATURE_SCHEMA, CRITIC_SCHEMA, PRODUCER_SCHEMA)
+        feature = FEATURE_SCHEMA["properties"]["proposed_action"]["properties"]["feature"]
+        op = feature["properties"]["code_changes"]["items"]
+        self.assertEqual(set(op["properties"]["file"]["enum"]),
+                         {"index.html","game.js","game.css","game-config.json"})
+        self.assertEqual(set(op["properties"]["operation"]["enum"]),
+                         {"insert","modify","replace","remove"})
+        self.assertEqual(set(feature["required"]),
+                         {"name","player_experience","code_changes","tests"})
+        self.assertFalse(feature["additionalProperties"])
+        self.assertEqual(set(CRITIC_SCHEMA["properties"]["proposed_action"]["required"]),
+                         {"assessments","compatible_ids","rationale"})
+        self.assertEqual(set(PRODUCER_SCHEMA["properties"]["proposed_action"]["required"]),
+                         {"selected_ids","decision_reason","interface_contracts",
+                          "integration_steps","verification"})
+
     def test_long_redesign_description_does_not_cancel_council(self):
         response = answer(feature("Depth fruit perspective"))
         response["proposed_action"]["feature"]["player_experience"] = (
