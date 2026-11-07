@@ -51,6 +51,11 @@ def validate_request(value):
         if request["mode"] != "update" or value["redesign"] is not True:
             raise ValueError("Only an update can request a game redesign")
         request["redesign"] = True
+    if "focus" in value:
+        if (request["mode"] != "update" or value["focus"] != "physics_visual"
+                or request.get("redesign")):
+            raise ValueError("Physics/visual focus requires a non-redesign update")
+        request["focus"] = "physics_visual"
     if "resume_council_run" in value:
         run = value["resume_council_run"]
         if request["mode"] != "update" or type(run) is not int or run < 1:
