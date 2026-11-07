@@ -133,8 +133,8 @@ def parse_feature(role, response):
     tests = feature.get("tests")
     if not isinstance(ops, list) or not 1 <= len(ops) <= 8:
         raise ValueError(role + " must propose 1–8 code changes")
-    if not isinstance(tests, list) or not 1 <= len(tests) <= 6:
-        raise ValueError(role + " must propose testable evidence")
+    if not isinstance(tests, list):
+        raise ValueError(role + " tests must be an array")
     clean_ops = []
     for operation in ops:
         if not isinstance(operation, dict):
@@ -157,12 +157,24 @@ def parse_feature(role, response):
         or isinstance(candidate, list) and any(
             isinstance(v, str) and v.strip() for v in candidate)
     ), None)
+    experience = require_text(description, role + ".player_experience")
+    normalized_tests = [
+        require_text(t, role + ".test", 250) for t in tests
+        if isinstance(t, str) and t.strip()
+    ][:6]
+    if not normalized_tests:
+        # The Producer still has to define and verify an actual test.
+        # This is a visibly labeled test proposal, not an observed result.
+        normalized_tests = [
+            "PRODUCER/QA TEST NEEDED: Verify the actual gameplay effect: "
+            + experience[:260]
+        ]
     return {
         "candidate_id": role,
         "name": require_text(feature.get("name"), role + ".name", 100),
-        "player_experience": require_text(description, role + ".player_experience"),
+        "player_experience": experience,
         "code_changes": clean_ops,
-        "tests": [require_text(t, role + ".test", 250) for t in tests],
+        "tests": normalized_tests,
     }
 
 
