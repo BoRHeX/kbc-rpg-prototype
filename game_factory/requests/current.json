@@ -21,8 +21,8 @@
     "Independent 360x780 and 390x844 mobile touch/browser tests, JS syntax, pause/freeze, restart/reset, visual change and game-specific physics/loss/wave checks must pass before hash-verified production delivery."
   ],
   "retry_note": {
-    "attempt": 3,
-    "previous_run": 42316402731,
-    "reason": "Replace JSON-only model responses with strict provider-enforced JSON schemas (allowed files and operations), plus tolerant semantic-text parsing; all factory/browser regressions passed run 42316738253"
+    "attempt": 4,
+    "previous_run": 42316813160,
+    "reason": "Strict council schema now constrains all array sizes and normalizes empty planning tests as explicit unverified QA tasks; factory and mobile-browser regression run 42317081421 succeeded"
   }
 }
