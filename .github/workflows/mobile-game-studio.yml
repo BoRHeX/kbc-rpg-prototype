@@ -59,6 +59,8 @@ jobs:
   develop:
     needs: resolve
     if: needs.resolve.outputs.active == 'true'
+    outputs:
+      needs_repair: ${{ steps.gate.outcome == 'failure' }}
     # Ubuntu 26.04 currently breaks openai/codex-action@v1 drop-sudo socket ACL check.
     # Pin only the coding job; preserve default sandbox privilege restrictions.
     runs-on: ubuntu-24.04
@@ -94,6 +96,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue list --state open --search "$GAME_ID in:title" --limit 20 --json number,title,body > artifacts/mobile/feedback.md
+      - name: Restore preserved game candidate and council plan if requested
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -m game_factory.candidate_recovery
       - name: Recover previous game council decisions instead of replaying video
         env:
           GH_TOKEN: ${{ github.token }}
@@ -115,6 +122,7 @@ jobs:
             echo "No private gameplay attachment in this request."
           fi
       - name: Designer, Researcher, Engineer, Critic and Producer negotiate code before implementation
+        if: steps.candidate.outputs.restored != 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
@@ -123,6 +131,7 @@ jobs:
         run: nohup python -m http.server 8765 --directory docs >/tmp/mobile-game-http.log 2>&1 &
       - name: Coding agent implements the requested game
         id: coder
+        if: steps.candidate.outputs.restored != 'true'
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
@@ -147,42 +156,30 @@ jobs:
         run: |
           set -euo pipefail
           { python -m game_factory.mobile_jobs validate && python -m game_factory.mobile_jobs stamp && node game_factory/mobile_acceptance.cjs; } 2>&1 | tee artifacts/mobile/gate.log
-      - name: Coding agent repairs a concrete failure (one bounded retry)
+      # A Codex drop-sudo sandbox cannot be started twice in one runner job.
+      # Handoff a strictly allowlisted game candidate for a fresh repair job.
+      - name: Stage candidate when independent gameplay gate fails
         if: steps.gate.outcome == 'failure'
-        uses: openai/codex-action@v1
+        run: python -m game_factory.mobile_repair stage
+      - name: Upload candidate for separately sandboxed one-shot repair
+        if: steps.gate.outcome == 'failure'
+        uses: actions/upload-artifact@v4
         with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          permission-profile: ':workspace'
-          allow-bots: true
-          prompt: |
-            Repair this game job. Read artifacts/mobile/CODER_PROMPT.md,
-            artifacts/mobile/gate.log and acceptance.json if present.
-            Fix the actual code failure; follow the original permitted paths.
-            Update artifacts/mobile/CODER_REPORT.md with changes and evidence.
-            Do not modify job.json, tests, workflows, or other games.
-      - name: Recheck scope after repair and test the repaired candidate
-        if: steps.gate.outcome == 'failure'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import os,subprocess
-          target=os.environ['GAME_TARGET']
-          allowed={target+'/'+p for p in ('index.html','game.js','game.css','game-config.json','BUILD_INFO.json','BUILD_INFO.txt')}
-          paths=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
-          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
-          bad=set(filter(None,paths))-allowed
-          if bad: raise SystemExit('Unauthorized coding-agent edits: '+repr(sorted(bad)))
-          PY
-          { python -m game_factory.mobile_jobs validate && python -m game_factory.mobile_jobs stamp && node game_factory/mobile_acceptance.cjs; } 2>&1 | tee artifacts/mobile/gate.log
+          name: mobile-repair-input
+          path: artifacts/mobile/repair-input
+          if-no-files-found: error
+          retention-days: 7
       - name: Independent QA agent checks source against the prompt and evidence
+        if: steps.gate.outcome == 'success'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COUNCIL_MODEL: gpt-4.1-mini
         run: python -m game_factory.mobile_jobs review
       - name: Seal exact accepted game bytes and evidence
+        if: steps.gate.outcome == 'success'
         run: python -m game_factory.mobile_jobs package
       - uses: actions/upload-artifact@v4
+        if: steps.gate.outcome == 'success'
         with:
           name: mobile-accepted-game
           path: artifacts/mobile/release
