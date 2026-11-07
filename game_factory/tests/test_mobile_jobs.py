@@ -36,6 +36,21 @@ class MobileJobTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 validate_request(value)
 
+    def test_focused_physics_visual_update_is_not_a_redesign(self):
+        req = request("update", "peach-gravity-sling-02")
+        req.update({"game": "studio-original-001", "focus": "physics_visual",
+                    "release_version": "0.2"})
+        result = validate_request(req)
+        self.assertEqual(result["focus"], "physics_visual")
+        self.assertNotIn("redesign", result)
+        self.assertEqual(result["release_version"], "0.2")
+        with self.assertRaises(ValueError):
+            validate_request({**req, "redesign": True})
+        with self.assertRaises(ValueError):
+            validate_request({**req, "focus": "other"})
+        with self.assertRaises(ValueError):
+            validate_request({**req, "mode": "create"})
+
     def test_create_update_and_duplicate_job_semantics(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
