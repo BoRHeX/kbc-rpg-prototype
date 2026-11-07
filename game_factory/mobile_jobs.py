@@ -350,6 +350,26 @@ def plan_command():
             )
         if job["request"]["mode"] == "update":
             selection = plan["update_decision"]["selection"]
+            if job["request"].get("focus") == "physics_visual":
+                prompt += (
+                    "\n\nBINDING 0.2 PHYSICS AND VISUAL REFINEMENT:\n"
+                    "Retain the shipped Gravity Sling 0.1 game identity, "
+                    "core mechanics, read-only diagnostics, stable URL and "
+                    "one-axis gameplay controls. "
+                    "Implement BOTH a meaningful probe/ship physical dynamics "
+                    "improvement and a clear visual/perspective/feedback "
+                    "improvement, even if some optional council suggestions "
+                    "are not selected. Reconcile changes in source so the "
+                    "visual trail, catch indicator and HUD reflect ACTUAL "
+                    "simulation state, not a fabricated animation. "
+                    "Prioritize flight consistency, catch feedback, readable "
+                    "depth-scaled fruit and low-overhead phone rendering. "
+                    "Do not invent new enemies, weapons, manual fire controls "
+                    "or unrelated game content. "
+                    "Preserve known playable winning and losing cases. "
+                    "Run real game-specific tests for physics, scoring, "
+                    "correct-order fruit, depletion and center-vs-edge catches.\n"
+                )
             if job["request"].get("redesign"):
                 prompt += (
                     "\n\nBINDING PLAYER-SPECIFIED COMPLETE REDESIGN:\n"
