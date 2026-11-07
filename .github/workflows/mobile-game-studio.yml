@@ -200,8 +200,105 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
-  publish:
+  repair:
     needs: [resolve, develop]
+    if: needs.develop.outputs.needs_repair == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
+      EXPECTED_JOB_DIGEST: ${{ needs.resolve.outputs.job_digest }}
+      GAME_TARGET: ${{ needs.resolve.outputs.target }}
+      GAME_ID: ${{ needs.resolve.outputs.game }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-job-definition
+          path: artifacts/mobile
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-repair-input
+          path: artifacts/mobile/repair-input
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright before Codex removes sudo privileges
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Restore exact failed candidate and council instructions
+        run: python -m game_factory.mobile_repair restore
+      - name: Start the local playtest server
+        run: nohup python -m http.server 8765 --directory docs >/tmp/mobile-game-http.log 2>&1 &
+      - name: Coding agent repairs the observed failure in a fresh sandbox
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt: |
+            Repair this game job, preserving the complete current candidate.
+            Read artifacts/mobile/CODER_PROMPT.md, artifacts/mobile/plan.json,
+            artifacts/mobile/gate.log and CODER_REPORT.md.
+            Implement only the smallest source change needed to pass the
+            actual gate. Do not rebuild the game or change the player brief.
+            If the gate reported infrastructure trouble, document it and
+            leave existing gameplay intact. No access to private transcripts.
+            Allowed edits: index.html, game.js, game.css, game-config.json
+            inside the supplied game target, plus CODER_REPORT.md.
+            Do not modify tests, workflows, job metadata or other games.
+      - name: Verify repaired source stays inside its game directory
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          target=os.environ['GAME_TARGET']
+          allowed={target+'/'+p for p in ('index.html','game.js','game.css','game-config.json','BUILD_INFO.json','BUILD_INFO.txt')}
+          paths=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          bad=set(filter(None,paths))-allowed
+          if bad: raise SystemExit('Unauthorized coding-agent edits: '+repr(sorted(bad)))
+          PY
+      - name: Independently validate and playtest repaired game
+        run: |
+          python -m game_factory.mobile_jobs validate
+          python -m game_factory.mobile_jobs stamp
+          node game_factory/mobile_acceptance.cjs
+      - name: Independent QA reviews repaired source and executed browser tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.mobile_jobs review
+      - name: Seal accepted candidate hashes
+        run: python -m game_factory.mobile_jobs package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+          if-no-files-found: error
+          retention-days: 30
+      - name: Exclude private agent ledger from diagnostics
+        if: always()
+        run: rm -f artifacts/mobile/memory.sqlite3
+      - name: Save repair evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-repair-diagnostics
+          path: artifacts/mobile
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publish:
+    needs: [resolve, develop, repair]
+    if: always() && needs.resolve.result == 'success' && ((needs.develop.result == 'success' && needs.develop.outputs.needs_repair != 'true') || needs.repair.result == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     concurrency:
