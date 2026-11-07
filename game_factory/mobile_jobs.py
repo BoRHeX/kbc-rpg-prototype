@@ -414,8 +414,21 @@ def stamp_command():
         source, count = re.subn(
             r'(<span\b[^>]*\bid="game-version"[^>]*>)[^<]*(</span>)',
             lambda m: m[1] + version + m[2], source)
+        if count == 0:
+            # The publisher owns release identifiers; an otherwise valid
+            # game must not fail because an autonomous coder forgot a span.
+            # Prefer wrapping an already displayed version in the heading,
+            # avoiding duplicate labels when the model wrote "0.1" literally.
+            def stamp_heading(match):
+                heading = match.group(0)
+                term = re.compile(r'(?<![0-9.])' + re.escape(version) + r'(?![0-9])')
+                if term.search(heading):
+                    return term.sub('<span id="game-version">' + version + '</span>', heading, count=1)
+                return heading.replace('</h1>', ' <span id="game-version">' + version + '</span></h1>')
+            source, count = re.subn(r'<h1\b[^>]*>[\s\S]*?</h1>', stamp_heading,
+                                    source, count=1, flags=re.IGNORECASE)
         if count != 1:
-            raise ValueError("Requested game version element missing")
+            raise ValueError("Cannot stamp exactly one visible game version")
     page.write_text(source)
     (directory / "BUILD_INFO.json").write_text(json.dumps({
         "run_id": job["run_id"], "request_id": job["request"]["id"],
