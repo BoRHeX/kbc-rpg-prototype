@@ -186,6 +186,7 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
     """
     plan, proposals = {}, {}
     redesign = job["request"].get("redesign", False)
+    physics_visual = job["request"].get("focus") == "physics_visual"
     if redesign:
         # The player approved the replacement game's concept. These agents
         # develop distinct subsystems of that concept, rather than substituting
@@ -194,6 +195,12 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             "designer": "Propose a concrete visual/perspective and fruit-wave progression subsystem of the SPECIFIED gravity sling redesign, including ordered targets and readable mobile instructions.",
             "researcher": "Propose a concrete gravity-bound probe flight, catch-zone, automatic sling and loss subsystem of the SPECIFIED redesign, referencing state and collision rules.",
             "engineer": "Propose a concrete ship/hull collision, one-axis input and deterministic gameplay integration subsystem of the SPECIFIED redesign, including survivable difficulty scaling.",
+        }
+    elif physics_visual:
+        lenses = {
+            "designer": "Focus exclusively on the EXISTING Gravity Sling visual language: recognizable fruit, depth projection, ship silhouette, readable HUD, and flight/catch feedback. Propose ONE coherent visual-feedback improvement with player-facing gameplay legibility and measurable rendering tests, not extra enemies or a new game.",
+            "researcher": "Focus exclusively on the EXISTING Gravity Sling probe physics: continuous ship-relative attraction, controlled curvature/turning, catch quality, swing launch, probe loss and predictable recovery. Propose ONE coherent physical-model improvement grounded in the existing game.js functions and measurable motion tests.",
+            "engineer": "Focus exclusively on the EXISTING Gravity Sling integration quality: fixed-step numerical stability, meaningful steering influence, ordered target interception, collision semantics, winnability, and responsive mobile rendering. Propose ONE concrete implementation refinement with repeatable source-level and browser tests.",
         }
     else:
         lenses = {
@@ -238,6 +245,23 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             "coder must implement the ENTIRE requested concept regardless "
             "of which two or three subsystem proposals are selected. "
             "Do not invent unrelated enemies, paid mechanics or new controls."
+        )
+    if physics_visual:
+        shared += (
+            " IMPORTANT: This is a focused 0.2 REFINEMENT, NOT new content. "
+            "Read the current playable Gravity Sling source. Retain the 0.1 "
+            "game's core loop, ordered waves, hull and probe economy, "
+            "left-right one-finger steering, automatic sling/catch, stable URL, "
+            "read-only diagnostics, and working pause/restart. "
+            "Do not invent new weapons, enemies, controls, unrelated mechanics, "
+            "external assets or alternate game genres. "
+            "Each proposal must concretely improve either real probe/ship "
+            "dynamics, flight readability/visual depth, or testable "
+            "integration of those improvements. "
+            "The requester asked for better physics AND better visuals: "
+            "the final combined plan MUST address both. "
+            "Treat gameplay legibility and meaningful motion feedback as "
+            "functional content rather than cosmetic-only work."
         )
     refs = ["artifacts/mobile/job.json", job["target"], "private gameplay evidence (not published)"]
     for role in ROLES:
@@ -299,6 +323,11 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
          "complementary subsystems of one binding concept, not three alternative games. "
          "Critique the combined gravity sling specification and do not reject core "
          "requirements. " if redesign else "")
+        + ("This is a physics+visual REFINEMENT of an already playable game, "
+           "not a request for additional content. Identify interface conflicts "
+           "and recommend a compatible set covering BOTH physics and visual "
+           "feedback; treat the existing 0.1 controls as invariant. "
+           if physics_visual else "")
         + "Debate the three submitted CODE CHANGE proposals. Identify conflicting "
         "symbols, interactions, implementation risks and missing tests. "
         "Your proposed_action MUST contain assessments: exactly three objects "
@@ -333,7 +362,13 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         raise ValueError("Critic must recommend 2–3 compatible candidate IDs in one group")
     require_text(critique.get("rationale"), "critic.rationale")
     producer = ask_agent(memory, memory.register("producer", model), job["run_id"],
-        ("The user has specified the complete replacement game concept. Preserve EVERY "
+        ("The user requested a 0.2 PHYSICS AND VISUAL improvement. "
+         "Select compatible proposals including at least one probe/physics "
+         "proposal and the visual-feedback proposal. Resolve rendering-vs-physics "
+         "data contracts and require observable gameplay evidence. "
+         "No unrelated enemies, weapons, levels or controls; preserve the "
+         "0.1 game loop and stable URL. " if physics_visual else "")
+        + ("The user has specified the complete replacement game concept. Preserve EVERY "
          "requested mechanic (horizontal ship movement, gravitational probe, sling/catch "
          "zone, hull/probe loss, depth fruit, ordered slowing waves); select compatible "
          "subsystem proposals for integration WITHOUT substituting your own concept. "
@@ -348,8 +383,11 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         "integration_steps (2–8 specific code-level strings referencing selected "
         "candidates and their target symbols), verification (2–8 concrete "
         "playtest checks). Select ONLY supplied features, not a new proposal. "
-        "Use critique to resolve compatibility. Make meaningful new playable "
-        "content, not only tuning or cosmetics. No invented tests or commits. "
+        "Use critique to resolve compatibility. "
+        + ("Make physics and visual upgrades with measurable gameplay "
+           "readability, not unrelated new content. " if physics_visual
+           else "Make meaningful new playable content, not only tuning or cosmetics. ")
+        + "No invented tests or commits. "
         "Do not repeat player speech or any private data.\nEVIDENCE:\n"
         + json.dumps({"request": job["request"], "proposals": proposals,
                       "critic": critique}, ensure_ascii=False),
