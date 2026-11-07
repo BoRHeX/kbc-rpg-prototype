@@ -15,9 +15,51 @@ ALLOWED_OPS = {"insert", "modify", "replace", "remove"}
 
 
 def require_text(value, field, limit=850):
-    if not isinstance(value, str) or not value.strip() or len(value) > limit:
-        raise ValueError("Missing/oversized council field: " + field)
-    return value.strip()
+    """Normalize model prose rather than reject useful long explanations.
+
+    Limits in these fields are presentation budgets, not authorization or
+    executable-code boundaries. The caller still validates file names,
+    operations, IDs and all structural arrays strictly.
+    """
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        value = "\n".join(item.strip() for item in value if item.strip())
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("Missing council field: " + field)
+    value = value.strip()
+    # A provider answer is already limited to 4,000 output tokens. A verbose
+    # free-form description should not terminate an entire paid studio job.
+    # Preserve the beginning and clearly mark any extremely long summary.
+    hard_cap = max(12000, limit)
+    if len(value) > hard_cap:
+        value = value[:hard_cap].rstrip() + " [council summary truncated]"
+    return value
+
+
+def merge_feature_answer(original, correction):
+    """Combine complementary schema corrections without inventing a feature.
+
+    If a correction supplies a missing description but omits already valid
+    code_changes, reuse those original operations. Never combine features
+    that have changed names or replace an explicit valid field.
+    """
+    before = original.get("proposed_action") if isinstance(original, dict) else None
+    after = correction.get("proposed_action") if isinstance(correction, dict) else None
+    a = before.get("feature") if isinstance(before, dict) else None
+    b = after.get("feature") if isinstance(after, dict) else None
+    if not isinstance(a, dict) or not isinstance(b, dict):
+        return correction
+    original_name = a.get("name")
+    corrected_name = b.get("name")
+    if (isinstance(original_name, str) and isinstance(corrected_name, str)
+            and original_name.strip().casefold() != corrected_name.strip().casefold()):
+        return correction
+    merged = dict(a)
+    for k, value in b.items():
+        if value not in (None, "", []):
+            merged[k] = value
+    result = dict(correction)
+    result["proposed_action"] = {**after, "feature": merged}
+    return result
 
 
 def parse_feature(role, response):
@@ -157,9 +199,10 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
                 }) + ". Retain the original gameplay idea. Do not quote "
                 "private player dialogue."
             )
-            answer = ask_agent(
+            repaired = ask_agent(
                 memory, identity, job["run_id"], correction, refs,
                 model=model, max_output_tokens=2000)
+            answer = merge_feature_answer(answer, repaired)
             proposal = parse_feature(role, answer)
         plan[role] = answer
         proposals[role] = proposal
