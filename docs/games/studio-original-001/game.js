@@ -1,106 +1,133 @@
 (() => {
   'use strict';
-  const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
-  const play = document.getElementById('play'), pause = document.getElementById('pause');
-  const scoreLabel = document.getElementById('score'), clock = document.getElementById('clock'), status = document.getElementById('status');
-  const W = 360, H = 500, LIMIT = 75, R = 10, trayY = 445, trayHalf = 44;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let mode = 'ready', time = 0, score = 0, player = {x:180,y:trayY}, peach, tiles, sparks = [], flash = 0;
-  let pointer = null, keys = new Set(), last = null, accumulator = 0, outcome = '';
-  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-  function serve() { peach = {x:player.x,y:trayY-23,vx:85,vy:-265}; }
-  function reset(next) {
-    mode = next; time = 0; score = 0; player = {x:180,y:trayY};
-    tiles = Array.from({length:15},(_,i)=>({x:20+(i%5)*65,y:65+Math.floor(i/5)*35,w:60,h:25,hit:false}));
-    sparks = []; flash = 0; outcome = ''; pointer = null; keys.clear(); accumulator = 0; last = null; serve(); ui();
+  const canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
+  const $=id=>document.getElementById(id), reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const W=360,H=500,DT=1/120,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const state={}, event={queue:[]}, keys=new Set();
+  let pointer=null,last=null,accumulator=0;
+  const game={state,step,draw,hud:{update:ui}};
+  function setupCollisionDetection(){state.hull=3;state.invulnerability=0;}
+  function initializeWaves(){
+    state.next=1;state.fruits=Array.from({length:3},(_,i)=>({id:i+1,lane:([0,-.62,.62][(i+state.wave-1)%3]),depth:1+i*.2,cleared:false,flash:0,contact:0}));
   }
-  function ui() {
-    scoreLabel.textContent = `${score} / 15`; clock.textContent = `${Math.ceil(LIMIT-time)}s`;
-    play.textContent = mode === 'over' ? 'Play again' : 'Play';
-    play.disabled = mode === 'running' || mode === 'paused';
-    pause.disabled = mode === 'ready' || mode === 'over'; pause.textContent = mode === 'paused' ? 'Resume' : 'Pause';
-    status.textContent = mode === 'ready' ? 'Make a little jam. Clear the tiles in 75 seconds!' : mode === 'paused' ? 'Taking a breather. Tap Resume.' : mode === 'over' ? outcome : 'Bounce off the tray’s edges to aim!';
+  function deploy(){state.probe={x:state.player.x,y:state.player.y-25,vx:0,vy:-350,active:true,age:0,catchZoneRadius:{inner:12,outer:62}};}
+  function reset(mode){
+    Object.assign(state,{mode,time:0,score:0,player:{x:180,y:440},wave:1,probes:5,breakTime:0,message:'Follow NEXT. Slide under the returning probe.',messageTime:0,result:'',catches:0,lastLaunchSpeed:350});
+    setupCollisionDetection();initializeWaves();deploy();event.queue.length=0;pointer=null;keys.clear();accumulator=0;last=null;ui();
   }
-  function end(won) { mode = 'over'; outcome = won ? 'Sweet! All 15 jars filled. Play again?' : `Time! ${score} of 15 tiles. One more bounce?`; pointer = null; keys.clear(); ui(); }
-  function hit(tile) {
-    if (tile.hit) return;
-    tile.hit = true; score++;
-    if (!reduced) for(let i=0;i<7;i++) sparks.push({x:tile.x+30,y:tile.y+12,vx:(i-3)*30,vy:-55-Math.random()*65,life:.45});
-    if (score === 15) end(true);
+  function end(message){state.mode='over';state.result=message;pointer=null;keys.clear();}
+  function loseProbe(reason){
+    if(!state.probe.active)return;
+    state.probe.active=false;state.probes--;state.deployDelay=.65;
+    event.queue.push({type:'probeLost',message:reason});
+    if(state.probes<=0)end('Probe supply exhausted. Tap Play again.');
   }
-  function step(dt) {
-    if(mode !== 'running') return;
-    time = Math.min(LIMIT,time+dt);
-    if(time >= LIMIT) { end(false); return; }
-    const direction = Number(keys.has('arrowright') || keys.has('d')) - Number(keys.has('arrowleft') || keys.has('a'));
-    player.x = clamp(player.x+direction*330*dt,trayHalf,W-trayHalf);
-    const oldX = peach.x, oldY = peach.y;
-    peach.x += peach.vx*dt; peach.y += peach.vy*dt;
-    if(peach.x < R || peach.x > W-R) { peach.x=clamp(peach.x,R,W-R); peach.vx *= -1; }
-    if(peach.y < R) { peach.y=R; peach.vy=Math.abs(peach.vy); }
-    for(const tile of tiles) {
-      if(tile.hit || peach.x+R<tile.x || peach.x-R>tile.x+tile.w || peach.y+R<tile.y || peach.y-R>tile.y+tile.h) continue;
-      hit(tile);
-      if(oldY+R<=tile.y || oldY-R>=tile.y+tile.h) {peach.vy *= -1; peach.y=oldY;}
-      else {peach.vx *= -1; peach.x=oldX;}
-      break;
-    }
-    if(peach.vy>0 && oldY+R<=trayY && peach.y+R>=trayY && Math.abs(peach.x-player.x)<trayHalf+R) {
-      peach.y=trayY-R;
-      const angle = clamp((peach.x-player.x)/trayHalf,-1,1)*1.02;
-      peach.vx = Math.sin(angle)*290; peach.vy = -Math.cos(angle)*290;
-      // A slight angle keeps a perfectly centered bounce from repeating forever.
-      if(Math.abs(peach.vx)<28) peach.vx=28;
-    }
-    if(peach.y>H+R) { serve(); flash=.65; }
-    flash=Math.max(0,flash-dt);
-    sparks=sparks.filter(s=>{s.x+=s.vx*dt;s.y+=s.vy*dt;s.vy+=200*dt;s.life-=dt;return s.life>0;});
-  }
-  function rounded(x,y,w,h,r,color) { ctx.fillStyle=color; ctx.beginPath(); ctx.roundRect(x,y,w,h,r);ctx.fill(); }
-  function draw() {
-    const box=canvas.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
-    const cw=Math.round(box.width*dpr), ch=Math.round(box.height*dpr);
-    if(canvas.width!==cw || canvas.height!==ch) {canvas.width=cw;canvas.height=ch;}
-    ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#fff0da';ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle='#f4dfc6';ctx.lineWidth=1;
-    for(let y=25;y<H;y+=35){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    for(const t of tiles) {
-      if(t.hit) {rounded(t.x+24,t.y+8,12,9,4,'#ebd7c0');continue;}
-      rounded(t.x,t.y+3,t.w,t.h,8,'#db8590');rounded(t.x,t.y,t.w,t.h-3,7,['#ed8794','#f5a180','#e7a16c'][Math.floor((t.y-65)/35)]);
-      rounded(t.x+9,t.y+5,18,4,2,'#ffe3cf');
-    }
-    ctx.fillStyle='#ba867955';ctx.beginPath();ctx.ellipse(player.x,trayY+20,42,5,0,0,Math.PI*2);ctx.fill();
-    rounded(player.x-trayHalf,trayY,trayHalf*2,13,6,'#608e78');rounded(player.x-trayHalf,trayY,trayHalf*2,4,2,'#8cb99b');
-    if(flash>0){ctx.fillStyle='#96546b';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('Fresh peach!',180,395);}
-    ctx.fillStyle='#f8a279';ctx.beginPath();ctx.arc(peach.x,peach.y,R,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='#df776b';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(peach.x-4,peach.y,7,-1,1);ctx.stroke();
-    ctx.fillStyle='#639777';ctx.beginPath();ctx.ellipse(peach.x+4,peach.y-11,5,2,-.6,0,Math.PI*2);ctx.fill();
-    for(const s of sparks){ctx.globalAlpha=s.life/.45;rounded(s.x,s.y,4,4,2,'#d96583');}ctx.globalAlpha=1;
-    if(mode!=='running') {
-      rounded(32,211,296,92,18,'#fffaf1f2');ctx.textAlign='center';ctx.fillStyle='#713f58';ctx.font='bold 25px system-ui';
-      ctx.fillText(mode==='ready'?'Ready to make jam?':mode==='paused'?'Peach on pause':score===15?'Sweet success!':'Nice jam session!',180,250);
-      ctx.font='14px system-ui';ctx.fillText(mode==='ready'?'Tap Play below':mode==='paused'?'Tap Resume below':`${score} / 15 • Tap Play again`,180,278);
+  function project(f){const near=clamp(1-f.depth,0,1.1);return {x:180+f.lane*(35+near*112),y:65+near*370,r:7+near*15};}
+  function updateFruit(dt){
+    if(state.breakTime>0){state.breakTime-=dt;if(state.breakTime<=0)initializeWaves();return;}
+    for(const f of state.fruits){if(f.cleared)continue;f.flash=Math.max(0,f.flash-dt);f.contact=Math.max(0,f.contact-dt);
+      // Depth velocity decreases continuously toward the ship; no expired ordered targets.
+      f.depth-=(.027+Math.max(0,f.depth)*(.13+state.wave*.012))*dt;
+      if(f.depth<-.15){f.depth=1.05;f.contact=0;}
     }
   }
-  function frame(now) {
-    if(last===null) last=now;
-    const dt=Math.min((now-last)/1000,.1);last=now;
-    if(mode==='running'){accumulator+=dt;while(accumulator>=1/120){step(1/120);accumulator-=1/120;}ui();}
-    draw();requestAnimationFrame(frame);
+  function hitFruit(f){
+    if(f.id!==state.next){f.flash=.5;event.queue.push({type:'wrongOrder',message:`Order locked: hit #${state.next} first`});return;}
+    f.cleared=true;state.next++;state.score+=100;event.queue.push({type:'fruitHit',message:`#${f.id} collected · +100`});
+    if(state.next>3){state.score+=150;event.queue.push({type:'waveCleared',message:'Wave cleared · +150'});if(state.wave===3)end('All three waves rescued! Tap Play again.');else{state.wave++;state.breakTime=2;}}
   }
-  function togglePause(){if(mode!=='running' && mode!=='paused')return;mode=mode==='running'?'paused':'running';pointer=null;keys.clear();last=null;ui();}
-  play.addEventListener('click',()=>{if(mode==='ready'||mode==='over')reset('running');});
-  pause.addEventListener('click',togglePause);
-  document.getElementById('restart').addEventListener('click',()=>reset('running'));
-  function move(e){const b=canvas.getBoundingClientRect();player.x=clamp((e.clientX-b.left)/b.width*W,trayHalf,W-trayHalf);}
-  canvas.addEventListener('pointerdown',e=>{if(mode!=='running'||pointer!==null||!e.isPrimary)return;pointer=e.pointerId;canvas.setPointerCapture(pointer);move(e);e.preventDefault();});
-  canvas.addEventListener('pointermove',e=>{if(e.pointerId===pointer && mode==='running'){move(e);e.preventDefault();}});
-  for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>{if(e.pointerId===pointer)pointer=null;});
-  window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k) && mode==='running'){keys.add(k);e.preventDefault();}});
-  window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-  window.addEventListener('blur',()=>{if(mode==='running')togglePause();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden && mode==='running')togglePause();});
-  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode,time,score,player:{x:player.x,y:player.y},remaining:15-score,peach:{x:peach.x,y:peach.y},result:outcome})});
+  function gravitySlingSubsystem(dt){
+    const p=state.probe,s=state.player;
+    if(!p.active){state.deployDelay-=dt;if(state.deployDelay<=0&&state.mode==='running')deploy();return;}
+    const oldX=p.x,oldY=p.y;p.age+=dt;
+    // Bounded ship-centered attraction, with lateral damping to prevent endless orbits.
+    const dx=s.x-p.x,dy=s.y-p.y,d=Math.max(35,Math.hypot(dx,dy));
+    p.vx+=clamp(dx*1.3-p.vx*.9,-170,170)*dt;
+    p.vy+=clamp(180*dy/d+(p.age>6?100:0),-240,280)*dt;
+    const speed=Math.hypot(p.vx,p.vy);if(speed>430){p.vx*=430/speed;p.vy*=430/speed;}
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(state.breakTime<=0)for(const f of state.fruits){
+      if(f.cleared||f.depth>1||f.contact>0)continue;const q=project(f);
+      // Segment collision avoids tunneling at high probe speeds.
+      const sx=p.x-oldX,sy=p.y-oldY,t=clamp(((q.x-oldX)*sx+(q.y-oldY)*sy)/(sx*sx+sy*sy||1),0,1);
+      if(Math.hypot(oldX+sx*t-q.x,oldY+sy*t-q.y)<q.r+6){f.contact=.5;hitFruit(f);p.vy=Math.max(60,Math.abs(p.vy)*.7);break;}
+    }
+    // A return crosses the upper half of the annulus. Offset defines catch quality.
+    if(p.vy>0&&oldY<s.y-20&&p.y>=s.y-20&&Math.abs(p.x-s.x)<=p.catchZoneRadius.outer){
+      const quality=1-clamp(Math.abs(p.x-s.x)/p.catchZoneRadius.outer,0,1),launch=315+quality*65;
+      p.vy=-launch;p.vx=clamp((p.x-s.x)*1.1,-68,68);p.age=0;state.catches++;state.lastLaunchSpeed=launch;
+      event.queue.push({type:'probeCaught',message:`${quality>.7?'Center':'Edge'} catch · sling ${Math.round(launch)}`});
+    }
+    if(p.x<-35||p.x>W+35||p.y<-60||p.y>H+25)loseProbe('Probe escaped · replacement incoming');
+  }
+  function shipCollisions(){
+    if(state.breakTime>0)return;
+    for(const f of state.fruits){if(f.cleared||f.depth>1)continue;const q=project(f);
+      if(Math.abs(q.x-state.player.x)<q.r+17&&Math.abs(q.y-state.player.y)<q.r+11&&state.invulnerability<=0){
+        state.hull--;state.invulnerability=1.6;f.depth=1.05;f.contact=0;loseProbe('Hull hit · probe destroyed');
+        event.queue.push({type:'hullDamaged',message:'Hull damaged! Brief shield active'});
+        if(state.hull<=0)end('Hull lost. Tap Play again.');break;
+      }
+    }
+  }
+  function step(dt){
+    if(state.mode!=='running')return;state.time+=dt;state.invulnerability=Math.max(0,state.invulnerability-dt);state.messageTime=Math.max(0,state.messageTime-dt);
+    const direction=Number(keys.has('arrowright')||keys.has('d'))-Number(keys.has('arrowleft')||keys.has('a'));
+    state.player.x=clamp(state.player.x+direction*280*dt,28,W-28);
+    updateFruit(dt);gravitySlingSubsystem(dt);if(state.mode==='running')shipCollisions();
+    for(const e of event.queue){state.message=e.message;state.messageTime=1.4;}event.queue.length=0;game.hud.update(state);
+  }
+  function ui(){
+    $('score').textContent=state.score;$('wave').textContent=`${state.wave} / 3`;$('hull').textContent=state.hull;$('probes').textContent=state.probes;
+    $('next').textContent=state.breakTime>0?'WAVE CLEAR · incoming…':state.next>3?'ALL FRUIT CLEARED':`NEXT: #${state.next} · collect 1 → 2 → 3`;
+    $('play').disabled=['running','paused'].includes(state.mode);$('play').textContent=state.mode==='over'?'Play again':'Play';
+    $('pause').disabled=['ready','over'].includes(state.mode);$('pause').textContent=state.mode==='paused'?'Resume':'Pause';
+    const message=state.mode==='ready'?'Tap Play. Clear three waves to win.':state.mode==='paused'?'Paused · tap Resume':state.mode==='over'?state.result:state.messageTime>0?state.message:'Slide to line up fruit and catch the returning probe.';
+    if($('status').textContent!==message)$('status').textContent=message;
+  }
+  function circle(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+  function text(t,x,y,size,color='#eaf5ff'){ctx.fillStyle=color;ctx.font=`700 ${size}px system-ui`;ctx.textAlign='center';ctx.fillText(t,x,y);}
+  function renderFruitWaveAndPerspective(){
+    ctx.fillStyle='#0b132c';ctx.fillRect(0,0,W,H);
+    for(let i=0;i<32;i++)circle((i*73+19)%360,(i*47)%220,1,'#6c83aa');
+    ctx.strokeStyle='#294565';ctx.lineWidth=1;
+    for(let x=-220;x<650;x+=90){ctx.beginPath();ctx.moveTo(180+(x-180)*.12,65);ctx.lineTo(x,500);ctx.stroke();}
+    for(let i=0;i<10;i++){const n=i/9,y=65+n*n*435;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.strokeStyle='#67e5d4';ctx.beginPath();ctx.moveTo(0,65);ctx.lineTo(W,65);ctx.stroke();text('FRUIT ORBIT',180,42,11,'#819fbe');
+    if(state.breakTime>0){text('WAVE CLEAR',180,210,22,'#67e5d4');return;}
+    for(const f of [...state.fruits].sort((a,b)=>b.depth-a.depth)){
+      if(f.cleared||f.depth>1)continue;const q=project(f);
+      if(f.id===state.next){ctx.strokeStyle='#ffe08c';ctx.lineWidth=3;ctx.beginPath();ctx.arc(q.x,q.y,q.r+5,0,Math.PI*2);ctx.stroke();}
+      circle(q.x,q.y,q.r,f.flash>0?'#fff':['#ffae8b','#b6e07b','#df9bff'][f.id-1]);
+      ctx.fillStyle='#69b893';ctx.beginPath();ctx.ellipse(q.x+4,q.y-q.r-2,6,3,-.5,0,7);ctx.fill();
+      text(f.id,q.x,q.y+5,Math.max(13,q.r*.85),'#19213f');
+    }
+  }
+  function renderProbeAndTether(){
+    const s=state.player,p=state.probe;
+    ctx.strokeStyle='#67e5d477';ctx.lineWidth=2;
+    for(const r of [p.catchZoneRadius.inner,p.catchZoneRadius.outer]){ctx.beginPath();ctx.ellipse(s.x,s.y,r,r*.62,0,0,Math.PI*2);ctx.stroke();}
+    text('CATCH / SLING',s.x,491,10,'#67e5d4');
+    if(p.active){ctx.strokeStyle='#67e5d44d';ctx.setLineDash(reduced?[]:[5,7]);ctx.lineDashOffset=reduced?0:-state.time*14;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([]);circle(p.x,p.y,7,'#f9f5bc');circle(p.x-2,p.y-2,2,'#fff');}
+    ctx.fillStyle=state.invulnerability>0?'#ffae8b':'#67e5d4';ctx.beginPath();ctx.moveTo(s.x,s.y-17);ctx.lineTo(s.x+20,s.y+13);ctx.lineTo(s.x,s.y+6);ctx.lineTo(s.x-20,s.y+13);ctx.closePath();ctx.fill();
+    for(let i=0;i<state.probes;i++)circle(145+i*17,477,3,'#ffe08c');
+  }
+  function renderHullDamageEffects(){if(state.invulnerability>0){ctx.strokeStyle='#ffae8b';ctx.lineWidth=4;ctx.strokeRect(3,3,W-6,H-6);}}
+  function draw(){
+    const b=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.round(b.width*dpr),h=Math.round(b.height*dpr);
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}ctx.setTransform(w/W,0,0,h/H,0,0);
+    renderFruitWaveAndPerspective();renderProbeAndTether();renderHullDamageEffects();
+    if(state.mode!=='running'){ctx.fillStyle='#101b35ee';ctx.fillRect(25,190,310,105);text(state.mode==='ready'?'GRAVITY SLING':state.mode==='paused'?'PAUSED':state.hull>0&&state.probes>0?'ORBIT RESCUED!':'ROUND OVER',180,229,23);text(state.mode==='ready'?'Tap Play below · slide left and right':state.mode==='paused'?'Tap Resume below':`Score ${state.score} · Play again below`,180,265,13);}
+  }
+  function frame(now){if(last===null)last=now;const dt=Math.min((now-last)/1000,.1);last=now;if(state.mode==='running'){accumulator+=dt;while(accumulator>=DT){game.step(DT);accumulator-=DT;}}game.draw();requestAnimationFrame(frame);}
+  function togglePause(){if(!['running','paused'].includes(state.mode))return;state.mode=state.mode==='running'?'paused':'running';pointer=null;keys.clear();last=null;ui();}
+  $('play').addEventListener('click',()=>{if(['ready','over'].includes(state.mode))reset('running');});$('pause').addEventListener('click',togglePause);$('restart').addEventListener('click',()=>reset('running'));
+  function move(e){const b=canvas.getBoundingClientRect();state.player.x=clamp((e.clientX-b.left)/b.width*W,28,W-28);}
+  canvas.addEventListener('pointerdown',e=>{if(state.mode!=='running'||pointer!==null||!e.isPrimary)return;pointer=e.pointerId;canvas.setPointerCapture(pointer);move(e);e.preventDefault();});
+  canvas.addEventListener('pointermove',e=>{if(e.pointerId===pointer&&state.mode==='running'){move(e);e.preventDefault();}});
+  for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,e=>{if(e.pointerId===pointer)pointer=null;});
+  window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','a','d'].includes(k)&&state.mode==='running'){keys.add(k);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+  window.addEventListener('blur',()=>{if(state.mode==='running')togglePause();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.mode==='running')togglePause();});
+  window.BORHEZ_GAME=Object.freeze({snapshot:()=>({mode:state.mode,time:state.time,score:state.score,player:{...state.player},hull:state.hull,probes:state.probes,wave:state.wave,next:state.next,invulnerability:state.invulnerability,breakTime:state.breakTime,catches:state.catches,lastLaunchSpeed:state.lastLaunchSpeed,probe:{...state.probe,catchZoneRadius:{...state.probe.catchZoneRadius}},fruits:state.fruits.map(f=>({...f,...project(f)})),result:state.result})});
   reset('ready');requestAnimationFrame(frame);
 })();

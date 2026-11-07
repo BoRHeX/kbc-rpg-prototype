@@ -1,0 +1,671 @@
+{
+  "request": {
+    "id": "peach-gravity-sling-01",
+    "game": "studio-original-001",
+    "mode": "update",
+    "title": "Peach Bounce 0.1 \u2014 Gravity Sling",
+    "prompt": "DIRECT PLAYER DESIGN BRIEF \u2014 IMPLEMENT, NOT JUST DISCUSS. Transform the existing Peach Bounce game at its SAME stable URL into a new, self-contained, lightweight mobile HTML5 game called \"Peach Bounce 0.1 \u00b7 Gravity Sling\". The old paddle/tray, bouncing peach and 15 jam tiles are OBSOLETE; replace the core gameplay, art, instructions, scoring, and end state. The existing host contracts (Play/Pause/Restart, real touch, keyboard, responsive Canvas, read-only BORHEZ_GAME snapshot, accessibility and publication) remain.\n\nTHE GAME: A 2D space/fruit arcade seen in tilted 2.5D perspective: a converging runway/depth grid toward a horizon near the top, with oncoming fruit starting small in the distance and visibly growing as they approach the ship at the bottom. Depth changes apparent size and position; gameplay remains Canvas 2D, no heavy 3D engine.\n\nCONTROLS: The ONLY gameplay input is sliding the gravity ship LEFT and RIGHT with one finger or left/right/A/D keyboard. No tap-to-fire, aiming joystick, up/down ship movement, keyboard-only mechanics or extra buttons during play. Probe launch, recapture and relaunch happen autonomously through gravity physics and ship positioning.\n\nPROBE PHYSICS: The ship owns a finite reserve of visible probes and exerts a gravity-like attraction field on an active probe; each simulation step updates its actual position and velocity. The active probe travels upfield to collect/destroy fruit on contact, then gravity draws it back toward the moving ship. A visible annular CATCH / SLING ZONE around the ship recaptures the returning probe and automatically slings it outward/upfield; a closer return to the ship's center creates a FASTER launch than a grazing return. Ship movement alters the gravitational center and therefore trajectory, so lateral skill matters. Use bounded acceleration/velocity and deterministic fixed-step integration to avoid chaotic jumps, teleporting, permanent stalls or impossible early losses. Show an animated tether/field effect if useful, without adding another control.\n\nDAMAGE AND LOSSES: Fruit colliding DIRECTLY with the ship (not intercepted by the probe) causes exactly one hull damage event with brief invulnerability, destroys the current probe and reduces the ship's visible HULL count. If the active probe escapes too far/fully leaves the permitted arena, it is irretrievably lost and the visible PROBES reserve decreases. A replacement probe must automatically deploy (without a fire control) when available. If hull or probe supply is exhausted, end the round clearly and offer replay. Make normal play winnable: avoid immediately losing all probes due to uncontrollable starting velocities.\n\nFRUIT WAVES: Incoming fruit arrive in distinct groups/waves with breaks. They move closer and grow as depth decreases but their *forward approach speed progressively slows near the ship*, giving time to intercept. Each group has a clear ORDERED destruction sequence, indicated legibly using numbered or colored fruit and a 'NEXT' indicator. Only the correct next fruit counts as cleared; wrong-order impacts cannot let the player bypass the order (give feedback and retain the target). Order determines the effective quickest solution; targets must remain reachable and waves cannot become impossible solely because the ship is constrained to horizontal movement. A cleared group advances to the next wave, with gradual tactical variety and appropriately balanced challenge. Show WAVES, SCORE, HULL and PROBES.\n\nAGENT DEVELOPMENT: Designer, Researcher, and Engineer each independently propose actual code-level subsystems OF THIS SAME CONCEPT: perspective/waves, gravity probe/catch physics, and ship/loss/input integration. Critic compares compatibility and Producer agrees at least two compatible proposals, but the coder must implement ALL the mandatory game mechanics above regardless of which proposed subsystems are selected. Do not replace the concept with other minigames. Record agreements and test evidence; only deploy if the whole playable gravity-sling game passes QA. Keep it instant-loading and usable on mobile portrait.",
+    "acceptance": [
+      "The existing studio-original-001 game URL is retained and visible page title shows Peach Bounce 0.1 \u2014 Gravity Sling; old tray, 15 jam tiles and old timer/win logic are replaced by the new gameplay, not cosmetically reskinned.",
+      "Only left/right horizontal ship dragging and keyboard left/right/A/D move the player; no manual shooting or vertical player control, while play/pause/restart buttons work.",
+      "Draw a 2D tilted depth perspective with a distant horizon, receding lanes, and fruit sprites that visibly enlarge while approaching the ship; no external 3D or runtime dependencies.",
+      "An active probe has persistent physical position and velocity; ship-relative gravity curves the trajectory. The probe automatically flies upfield, intercepts fruit, and can return to the ship without teleporting.",
+      "A visible catch-zone captures returning probes and automatically relaunches them; central catches create measurably faster launches than edge catches, and ship x-movement changes the trajectory.",
+      "On direct fruit-to-ship collision, hull decreases once, the active probe is destroyed, damage cooldown prevents multiple immediate hull losses and the HUD reflects the consequences.",
+      "An escaped probe is permanently lost, visible probe count drops and another automatically deploys from finite stock. Hull or probe exhaustion ends the game; restart restores original counts.",
+      "Fruit arrive in spaced groups/waves, approaching from distance while progressively SLOWING their depth travel as they near the ship, giving controllable interception windows.",
+      "Every wave has an explicitly displayed NEXT ordered target. Correct next-target hits remove fruit and increase progress; wrong-order contacts do not remove later targets or reward skipping.",
+      "Wave completion advances progression with readable score/wave/HULL/PROBES status, clear win/lose or survival end condition, replay, and increasing but fair challenge.",
+      "The gameplay council records independent code-symbol proposals, Critic compatibility and Producer agreed integration; integrated source implements the full player specification rather than merely two selected optional subfeatures.",
+      "Independent 360x780 and 390x844 mobile touch/browser tests, JS syntax, pause/freeze, restart/reset, visual change and game-specific physics/loss/wave checks must pass before hash-verified production delivery."
+    ],
+    "release_version": "0.1",
+    "redesign": true,
+    "resume_candidate_run": 42317178651,
+    "resume_candidate_branch": "recovery/peach-gravity-sling-01"
+  },
+  "target": "docs/games/studio-original-001",
+  "run_id": "42318389183-1",
+  "base_manifest": {
+    "BUILD_INFO.json": "a3b0d123cf7cefb6a85cb5adc88cea2f11f40dd52091c1b96d78544aafb0e318",
+    "game.css": "d2e00d5a81993138a1d609af584d1f8e0a93b6e6f51362a3e617f777e0736672",
+    "game.js": "409af170603c1e9f88957a9d1fb7c211373629f118af911ac13404c10e7dc28c",
+    "index.html": "ff340e48b733b87cdb8c90fd8d4838c2480d1c175de2293f663944aee938d17f"
+  },
+  "request_digest": "afd2b51bd9e2f282e4095a856c3104a603e42a45c081fb3e2a7ea7d7f1bb7cda",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "b62c721e07ccdf1239170a2990cc9b16a92e7c8f50ee44df912d361ee53a2742",
+    "game.css": "a8b41734830d51a8de34fa3d504dcee6ad6b6cb862f011e8b238a86b82032b33",
+    "game.js": "755bc307f8b9c20c70ae4847dd68fbdef767c9d0a572f3994ba9199e85f7ed83",
+    "index.html": "21a5a625fc75821f7837dce76589595291dc2d743f366661bd66c1acfb8457fb"
+  },
+  "play_path": "games/studio-original-001/",
+  "plan": {
+    "designer": {
+      "claim": "Implement a Fruit Wave Progression subsystem with in-view ordered targets, a tilted 2.5D runway perspective and clear visual NEXT indicators for the Gravity Sling game.",
+      "rationale": "This subsystem preserves core controls and mobile layout but transforms the gameplay into discrete waves of fruit approaching the ship along a convergent depth grid. Fruit visually grow as they approach, slowing near the ship to allow interception. Each wave enforces an ordered target hit sequence, visibly numbering or coloring fruit and displaying a NEXT indicator. This creates a tactical, readable progression that matches the gravity sling concept and provides clear goals and timing to the player.",
+      "objections": [
+        "Integrating 2.5D perspective rendering with visible depth scaling in Canvas 2D may add complexity and performance demands on mobile devices.",
+        "Maintaining clear and legible wave/NEXT indicators within limited mobile viewport space requires careful UI design to avoid clutter.",
+        "Enforcing strict fruit destruction order might frustrate players if the targets are not clearly distinguishable or reachable given the gravity sling physics and horizontal ship control.",
+        "Only one subsystem of several is proposed here; full gravity sling mechanics and ship/probe physics integration remain to be combined by the coder."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Fruit Wave Progression and 2.5D Perspective Rendering",
+          "player_experience": "Players see fruit spawning at a small scale at a distant horizon on a converging depth grid. Fruit advance toward the ship, visibly enlarging as they approach, with approach speed slowing near the player to allow timed interception. Each fruit wave enforces an ordered sequence which is clearly indicated by numbered or color-coded fruit overlays and a textual NEXT target label above the ship HUD. Waves progress after the correct target fruit is hit; wrong-order collisions prompt feedback but no progress. The perspective and wave system give intuitive spatial context and pacing to the gravity sling gameplay on mobile devices.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "function renderFruitWaveAndPerspective(ctx, wave, playerX) {\n  // Draw converging runway grid lines from bottom (ship) to horizon\n  // Calculate each fruit's screen position by interpolating depth\n  // Scale fruit sprite based on depth (small far, larger near)\n  // Draw fruit with numeric or colored label according to required order\n  // Highlight the current 'NEXT' target fruit with distinct glow or outline\n  // Draw a textual 'NEXT' label near bottom center HUD to show next target's index/color\n} // call this function within game loop's draw() after setting canvas transform to create tilted 2.5D effect"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "update fruit positions along depth axis with slowing velocity near ship; progress wave state when correct target fruit is hit; reject wrong order hits with feedback (e.g. flash or sound); advance to next wave when all targets cleared"
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "initializeWaves",
+              "pseudo_code": "initialize array of wave objects, each with ordered targets and spawning depth positions; stagger fruit entry times to create spaced waves"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "ui",
+              "pseudo_code": "display wave count, score, HULL and PROBES; prominently show 'NEXT: #fruitIndex' or colored target label at bottom center"
+            },
+            {
+              "file": "index.html",
+              "operation": "modify",
+              "symbol": "header and status text",
+              "pseudo_code": "update instructions to mention ordered fruit waves and NEXT target; keep controls and buttons unchanged to preserve core contract"
+            }
+          ],
+          "tests": [
+            "Verify fruit spawn with smaller scale and increase size smoothly approaching ship along convergent lanes.",
+            "Check that fruits approach slower near ship position compared to far distance, allowing player interception.",
+            "Verify correct 'NEXT' fruit is visually distinct and numbered or colored distinctly in wave.",
+            "Confirm hitting fruit out of order triggers no progress but visible feedback.",
+            "Check wave completion advances to next wave and score increments accordingly.",
+            "Validate the NEXT target label updates accurately after each correct fruit collected."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Visual frame captures or screenshots showing visible converging runway perspective with depth-scaled fruit.",
+        "Runtime logs or snapshots confirming wave progression logic and ordered target enforcement.",
+        "Automated tests outputs for fruit position updates, scale changes and correct target hit detection.",
+        "Accessibility check that NEXT target indicator is clear and readable on mobile viewport.",
+        "Performance benchmark on low-end mobile devices confirming smooth animation and rendering at 60fps or stable 30fps.",
+        "Source code verification of inserted functions and modifications matching described pseudo code."
+      ]
+    },
+    "researcher": {
+      "claim": "Implement a gravity-sling probe subsystem managing probe flight physics, automatic catch and sling launches within a catch zone dynamically affected by ship position, loss of probes outside arena, and hull damage on direct fruit-ship collision with corresponding state updates and end conditions.",
+      "rationale": "This feature realizes the core Gravity Sling design: a single active probe influenced by ship-centered gravity moves outward, intercepts targets, returns for automatic recapture and relaunch with launch velocity dependent on catch position. It introduces a visible annular catch zone and a tether effect for player feedback. It governs probe loss if escaped beyond arena bounds and hull damage on fruit-ship collision, decrementing resources and triggering game over on depletion. All operate in the 2D tilted perspective and preserve the existing left-right ship input, pause/restart controls, and diagnostic API, fulfilling the detailed gameplay contract and maintaining mobile optimized interactive controls.",
+      "objections": [
+        "Implementation complexity: precise fixed-step deterministic integration and smooth player experience require careful tuning and physics validation.",
+        "Visual tether and catch zone effects may need refinements to ensure clarity without cluttering the existing UI.",
+        "Ensuring the autolaunch speed modulation by catch proximity is noticeable but balanced might necessitate playtesting.",
+        "Adding new state and collision subsystems risks subtle bugs, especially with concurrent wave and fruit order logic.",
+        "Automatic probe deployment logic must not interrupt core control and should handle edge cases of rapid loss or minimal probe count gracefully."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Gravity Sling Probe Flight, Catch Zone, Autolaunch and Loss",
+          "player_experience": "Players manipulate the ship horizontally to influence an attracted probe's curved trajectory which autonomously flies upfield to intercept ordered fruit waves, then returns to the dynamic annular catch zone around the ship. Catching the probe near the center slings it faster outward, encouraging skillful positioning. Losing the probe outside the arena reduces probe reserve, and hull damage occurs only on direct fruit-ship collisions with brief invulnerability. Visual tether and catch zone ring animations provide immersive feedback. The game ends if hull or probes are exhausted, while preserving smooth one-finger horizontal input, mobile layout, pause/restart functionality, and clear HUD updates.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// Define ship gravity field parameters: radius, strength\n// Track probe state: position, velocity, activeProbeId, probeReserve, hull, invulnTimer\n// On each game step:\n//   Compute gravity vector from ship center to probe, update probe velocity with bounded accel\n//   Update probe position with fixed step integration\n//   Detect collision: probe-fruit (destroy fruit if next in order), fruit-ship (apply hull damage, destroy probe)\n//   Detect if probe returns inside annular catch zone:\n//     If caught, compute slingshot velocity proportional to catch distance from center\n//     Relaunch probe upward using modified launch velocity\n//   Detect if probe escapes arena bounds:\n//     Reduce probeReserve, destroy probe, auto-deploy new probe if available\n//   Manage hull damage cooldown to prevent immediate repeated hits\n//   Update HUD with hull, probes, score\n// Add visual tether line from ship to probe with slight oscillation\n// Draw visible catch zone ring around ship\n// Hook into existing step and draw loops to update and render this subsystem\n// Manage probe loss and hull exhaustion to finish game and trigger replay/reset mechanisms"
+            }
+          ],
+          "tests": [
+            "Test probe launches automatically with initial velocity and gravity influence from ship position",
+            "Test probe intercepting correct next fruit removes that fruit and increments score",
+            "Test probe returning within catch zone triggers relaunch with velocity scaling by catch radius position",
+            "Test losing the probe beyond arena boundary reduces probeReserve and deploys replacement probe if available",
+            "Test direct fruit-ship collision reduces hull by one, triggers brief invulnerability and destroys current probe",
+            "Test game ends when hull or probeReserve reaches zero and HUD displays clear end state with replay option"
+          ]
+        }
+      },
+      "required_evidence": [
+        "Code analysis showing gravity calculations and fixed-step integration of probe trajectory respecting ship position and velocity limits",
+        "Visual confirmation of catch zone ring and tether line animations during probe return",
+        "Game logs or snapshots indicating correct score increment on next fruit hit and no score on wrong order",
+        "State transition evidence for probe loss and auto-redeploy logic",
+        "Hull damage and cooldown state updates on direct fruit-ship collisions with appropriate probe destruction",
+        "End state triggered precisely on hull or probe reserve exhaustion with UI feedback and replay enabled"
+      ]
+    },
+    "engineer": {
+      "claim": "Introduce a Ship Collision and Hull Integrity subsystem that detects direct collisions between oncoming fruit and the ship's hull with invulnerability cooldown and hull damage tracking, integrated with existing one-axis ship movement and probe gravity probe mechanics.",
+      "rationale": "The gravity sling gameplay redesign centralizes a single-axis gravity-ship attracting and relaunching a probe to intercept fruits, but fruit can collide directly with the ship causing hull damage and probe loss. The proposal implements the required direct ship collision detection, applying a brief invulnerability cooldown to prevent rapid successive damage, decreasing hull integrity, destroying the active probe, and visually reflecting these events. This respects the core input constraints and maintains deterministic gameplay with fixed-step integration and bounded velocity. Difficulty scaling manifests by fruit waves whose approach speed slows near the ship but aggressive contact still damages hull life, ensuring survivable challenge progression. This feature operates independently yet fully integrates with existing probe physics, wave order, and UI feedback enabling complete compliance with the gravity sling concept's mandatory damage and loss subsystem.",
+      "objections": [
+        "Additional CPU cost of collision checks at each physics step could affect performance on low-power mobile devices.",
+        "Balancing invulnerability cooldown and hull damage may require tuning to avoid excessive difficulty or trivial game over scenarios.",
+        "No new controls or visual complexity are introduced; player feedback relies only on visual hull count and brief damage indication, which might be insufficient for some users.",
+        "Implementation must ensure deterministic fixed-step updates without chaotic collisions or teleportation, demanding careful physics integration and testing, which may complicate the codebase."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Ship Hull Collision & Damage Subsystem",
+          "player_experience": "Players experience a clear risk of direct fruit collision causing hull damage and probe destruction with brief damage immunity. The ship position remains controllable on the horizontal axis only, retaining one-finger mobile accessibility. Visual feedback on hull hits and probe loss adds tension and encourages skillful lateral movement to avoid damage, deepening engagement while progressing through waves of fruit increasing in challenge but allowing survivable play.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "setupCollisionDetection",
+              "pseudo_code": "function setupCollisionDetection() { initialize hull count, invulnerability timer, collision cooldown; }"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Inside step(dt): for each fruit approaching ship at ship y-level, detect bounding box overlap with ship hull area; if collision and not in invulnerability: decrement hull, set invulnerability timer, mark active probe as destroyed, spawn replacement if available; if hull reaches zero, trigger game over; handle invulnerability timer countdown."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "ui",
+              "pseudo_code": "Add hull count display update; show brief visual cue (e.g., flash or color change) on hull damage during invulnerability period."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "reset",
+              "pseudo_code": "Initialize hull count and clear invulnerability timer and collision flags."
+            }
+          ],
+          "tests": [
+            "Verify hull count starts at maximum and decrements exactly once when a fruit collides directly with ship hull.",
+            "Confirm invulnerability timer prevents multiple rapid damage events from a cluster of collisions.",
+            "Check active probe is destroyed immediately upon ship-hull collision and replacement probes deploy automatically if available.",
+            "Validate that the game ends cleanly when hull count reaches zero with appropriate UI feedback and replay option.",
+            "Test that ship horizontal movement remains constrained and input responsiveness unaffected by collision logic.",
+            "Ensure deterministic step updates with fixed timestep do not allow fruit tunneling or missed collisions during fast approach phases."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Unit test logs confirming hull damage and invulnerability timing behave as intended.",
+        "Integration test results showing probe destruction and automatic redeployment on hull hits.",
+        "Automated deterministic fixed-step collision detection passes without physics anomalies across multiple fruit waves.",
+        "User interface screenshots or recordings demonstrating hull damage visual feedback and game-over conditions properly displayed.",
+        "Performance profiling on mobile-equivalent devices verifying no frame rate degradation due to collision checks.",
+        "Playtest feedback or session logs verifying survivable difficulty and no uncontrollable early losses due to hull collisions."
+      ]
+    },
+    "critic": {
+      "claim": "The combined gravity sling gameplay redesign integrating the designer, researcher, and engineer proposals offers a coherent and complementary experience that enhances spatial awareness, skillful probe management, and risk-reward tension while preserving mobile accessibility.",
+      "rationale": "Each proposal addresses a distinct yet interlocking gameplay aspect: the designer enhances spatial perception with a 2.5D perspective and ordered fruit waves that create clarity in objectives and timing; the researcher implements a gravity sling probe system requiring skillful horizontal ship positioning to intercept fruits and manage probe lifecycle; the engineer ensures direct fruit-ship collisions carry meaningful risk with hull damage and probe destruction that complement the probe's survival mechanics. Together, they balance intuitive spatial navigation, engaging interception dynamics, and meaningful consequences to mistakes, aligning well with mobile one-finger input constraints.",
+      "objections": [
+        "Potential naming conflicts or functional overlap may arise due to multiple step() modifications by designer, researcher, and engineer, possibly causing unintended interaction bugs if not carefully integrated.",
+        "The repeated reliance on timed invulnerability, collision detection, and probe replacement logic across subsystems increases implementation complexity and risks subtle state synchronization errors.",
+        "Missing explicit tests for concurrency of probe and hull interactions\u2014for example, probe loss from hull collision while fruit is intercepted or wave progression amid rapid sequence triggers\u2014introduce uncertainty about robustness under edge gameplay scenarios.",
+        "Visual feedback channels may conflict or clutter the HUD (e.g., NEXT label, catch zone ring, hull damage cues) on small mobile screens, potentially distracting or overwhelming players if improperly layered or prioritized.",
+        "No explicit testing for mobile performance impact from continuous 2.5D scaling calculations and animated tether/catch zone visual effects, risking frame rate drops or input lag during intense gameplay moments."
+      ],
+      "proposed_action": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Collision of step() function modifications with physics and collision logic from other proposals may cause inconsistent fruit progression or visual glitches.",
+            "mitigation": "Collaborate with researcher and engineer to modularize step() updates, invoke core physics and collision routines centrally, and ensure rendering and state updates are decoupled and sequenced predictably."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Complex probe state management and boundary conditions may lead to probe loss without proper relaunch or scoring inconsistencies, especially combined with hull damage triggers.",
+            "mitigation": "Implement comprehensive state machine tests covering all probe lifecycle events, integrate probe loss and catch logic tightly with hull system, and add rigorous boundary condition unit tests to ensure consistent transitions."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Collision detection using bounding boxes at fixed timestep may cause missed fast fruit-ship collisions or invulnerability windows overlapping probe relaunch timing, risking unfair damage or game interruptions.",
+            "mitigation": "Refine collision detection with swept volumes or predictive checks to prevent tunneling, tightly coordinate invulnerability timers with probe state updates, and thoroughly profile ship horizontal control responsiveness under collision scenarios."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "researcher",
+          "engineer"
+        ],
+        "rationale": "All three proposals are designed to operate on separate but interlinked aspects: designer focuses on visual representation and wave management, researcher on probe physics and interception mechanics, and engineer on ship collision and damage systems. Their code changes touch complementary areas with some overlap primarily in the main game step and UI but do not conflict on core requirements or fundamental mechanics. Together, they form a cohesive gravity sling gameplay experience while preserving mobile accessibility and control simplicity."
+      },
+      "required_evidence": [
+        "Integration test logs verifying combined step() function behavior with designer, researcher, and engineer subsystems active.",
+        "Performance profiling data on mobile devices measuring frame rate and input latency during complex wave progression with probe and collision events.",
+        "Visual UI assessment reports ensuring no HUD element clashes or overwhelming feedback on typical and edge-case gameplay states.",
+        "Unit and automated tests covering probe lifecycle transitions, hull damage timing, fruit wave progression, and collision accuracy under fast object movements.",
+        "Code review documentation confirming modularization of overlapping step() changes and event state synchronization among proposals."
+      ]
+    },
+    "producer": {
+      "claim": "Integrate the designer, researcher, and engineer subsystems to deliver a fully functional Peach Bounce 0.1 Gravity Sling game as per the player's specification.",
+      "rationale": "The designer provides the wave progression and 2.5D perspective rendering that realize the visual depth and pacing. The researcher implements the gravity sling probe physics, catch zone, autonomous launching, and probe loss mechanics essential to gameplay. The engineer ensures ship hull collision, damage handling, invulnerability, and probe destruction mechanics. The critic confirms compatibility among these three, noting modular functions touching complementary game aspects with manageable overlap primarily in step() and UI updates. Together, they satisfy all required mechanics: horizontal ship movement, gravitational probe behavior, sling/catch mechanics, hull and probe loss, depth fruit with ordered waves and progressive slowing near the ship, and proper UI/hud feedback. Selecting and integrating all three enables meaningful, playable content fulfilling the complete user-requested concept without substitution.",
+      "objections": [
+        "Integration complexity arises from overlapping modifications to the main game loop's step() function and UI updates, risking state inconsistencies or visual glitches.",
+        "Timing coordination is critical between probe lifecycle events, hull damage invulnerability, and wave progression to avoid unfair gameplay issues.",
+        "Collision detection must be precise under fixed timestep constraints to prevent tunneling or missed collisions during fast fruit approaches."
+      ],
+      "proposed_action": {
+        "selected_ids": [
+          "designer",
+          "researcher",
+          "engineer"
+        ],
+        "decision_reason": "Selecting all three subsystems because each covers a necessary, distinct gameplay aspect that collectively realize the complete requested game concept without substituting or omitting any mandatory mechanic. Their combined integration creates a coherent and fully featured gameplay experience as required.",
+        "interface_contracts": [
+          "game.step(dt): central fixed timestep update responsible for invoking designer wave and fruit updates, researcher probe physics updates, and engineer collision/hull damage checks in deterministic order",
+          "game.draw(ctx): rendering sequence calling designer.renderFruitWaveAndPerspective(ctx), researcher.renderProbeAndTether(ctx), and engineer.renderHullDamageEffects(ctx)",
+          "game.state: shared mutable game state object with ship position (x,y), probe state (position, velocity, active status, reserve count), fruit wave progression (ordered targets, current index), hull count, invulnerability timer, and score",
+          "probe.catchZoneRadius: defined annular radius values accessed by researcher and referenced by engineer for collision boundaries",
+          "game.hud.update(counters): interface invoked by all subsystems to consistently render wave, NEXT target indication, score, hull, probes, and damage feedback",
+          "event.queue: shared local event queue used by subsystems to dispatch and respond to gameplay events like fruitHit, probeLost, hullDamaged, waveCleared"
+        ],
+        "integration_steps": [
+          "Modularize game.step to sequence subsystem updates: first designer updates fruit positions and wave state, then researcher updates probe physics and checks probe-fruit collisions, finally engineer performs fruit-ship collision detection and hull damage processing",
+          "Integrate designer.renderFruitWaveAndPerspective within main draw loop after canvas transform setup for 2.5D perspective rendering",
+          "Add researcher rendering of active probe, tether line animations, and catch zone ring after fruit rendering",
+          "Incorporate engineer's hull damage visual cues overlay in HUD rendering stage",
+          "Synchronize probe loss and relaunch logic between researcher physics and engineer collision/hull damage states to ensure automatic probe replacement upon loss or hull damage",
+          "Implement event queue processing at end of each step to handle state transitions triggered by fruit hits, probe catches, hull damage, and wave completions",
+          "Ensure UI updates reflect latest counts of hull, probes, score, current wave, and NEXT target label by aggregating data from all subsystems",
+          "Conduct coordinated fixed timestep integration tests covering edge cases such as fast fruit approach, probe catch timing, damage invulnerability cooldown, and wave progression"
+        ],
+        "verification": [
+          "Validate fruit wave rendering matches designer specs: converging lanes, depth scaling, NEXT target highlighting, and ordered wave enforcement",
+          "Confirm probe autonomously launches, follows ship-induced curved gravity trajectory, intercepts correct fruit, and relaunches properly upon catch with speed variation based on catch position",
+          "Test hull damage occurs exactly once per fruit-ship collision with correct invulnerability duration, active probe is destroyed and replaced if probes remain",
+          "Verify probe loss beyond arena bounds reduces probe reserve counter and spawns a new probe if available without interrupting gameplay",
+          "Check wave progression and scoring respond only to correct ordered fruit hits; wrong-order hits provide player feedback but no progression",
+          "Ensure all HUD elements (score, wave, HULL, PROBES, NEXT label) update accurately and remain legible at mobile portrait resolutions",
+          "Playtest for smooth, responsive one-finger horizontal ship input with no vertical controls",
+          "Confirm game ends cleanly on hull or probe exhaustion with replay option visible, physics remain stable with no teleporting or permanent stalls"
+        ]
+      },
+      "required_evidence": [
+        "Code-level proposals for designer, researcher, and engineer subsystems including symbols inserted/modified and their pseudo-code descriptions",
+        "Critic compatibility assessment and risk mitigations describing integration approach",
+        "Tests reports confirming event sequencing, fixed timestep integration behavior, and UI/UX correctness",
+        "Playtest evidence on mobile devices demonstrating stable physics, controls, HUD accuracy, and game end logic"
+      ]
+    },
+    "update_decision": {
+      "schema_version": 1,
+      "proposals": [
+        {
+          "candidate_id": "designer",
+          "name": "Fruit Wave Progression and 2.5D Perspective Rendering",
+          "player_experience": "Players see fruit spawning at a small scale at a distant horizon on a converging depth grid. Fruit advance toward the ship, visibly enlarging as they approach, with approach speed slowing near the player to allow timed interception. Each fruit wave enforces an ordered sequence which is clearly indicated by numbered or color-coded fruit overlays and a textual NEXT target label above the ship HUD. Waves progress after the correct target fruit is hit; wrong-order collisions prompt feedback but no progress. The perspective and wave system give intuitive spatial context and pacing to the gravity sling gameplay on mobile devices.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "function renderFruitWaveAndPerspective(ctx, wave, playerX) {\n  // Draw converging runway grid lines from bottom (ship) to horizon\n  // Calculate each fruit's screen position by interpolating depth\n  // Scale fruit sprite based on depth (small far, larger near)\n  // Draw fruit with numeric or colored label according to required order\n  // Highlight the current 'NEXT' target fruit with distinct glow or outline\n  // Draw a textual 'NEXT' label near bottom center HUD to show next target's index/color\n} // call this function within game loop's draw() after setting canvas transform to create tilted 2.5D effect"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "update fruit positions along depth axis with slowing velocity near ship; progress wave state when correct target fruit is hit; reject wrong order hits with feedback (e.g. flash or sound); advance to next wave when all targets cleared"
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "initializeWaves",
+              "pseudo_code": "initialize array of wave objects, each with ordered targets and spawning depth positions; stagger fruit entry times to create spaced waves"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "ui",
+              "pseudo_code": "display wave count, score, HULL and PROBES; prominently show 'NEXT: #fruitIndex' or colored target label at bottom center"
+            },
+            {
+              "file": "index.html",
+              "operation": "modify",
+              "symbol": "header and status text",
+              "pseudo_code": "update instructions to mention ordered fruit waves and NEXT target; keep controls and buttons unchanged to preserve core contract"
+            }
+          ],
+          "tests": [
+            "Verify fruit spawn with smaller scale and increase size smoothly approaching ship along convergent lanes.",
+            "Check that fruits approach slower near ship position compared to far distance, allowing player interception.",
+            "Verify correct 'NEXT' fruit is visually distinct and numbered or colored distinctly in wave.",
+            "Confirm hitting fruit out of order triggers no progress but visible feedback.",
+            "Check wave completion advances to next wave and score increments accordingly.",
+            "Validate the NEXT target label updates accurately after each correct fruit collected."
+          ]
+        },
+        {
+          "candidate_id": "researcher",
+          "name": "Gravity Sling Probe Flight, Catch Zone, Autolaunch and Loss",
+          "player_experience": "Players manipulate the ship horizontally to influence an attracted probe's curved trajectory which autonomously flies upfield to intercept ordered fruit waves, then returns to the dynamic annular catch zone around the ship. Catching the probe near the center slings it faster outward, encouraging skillful positioning. Losing the probe outside the arena reduces probe reserve, and hull damage occurs only on direct fruit-ship collisions with brief invulnerability. Visual tether and catch zone ring animations provide immersive feedback. The game ends if hull or probes are exhausted, while preserving smooth one-finger horizontal input, mobile layout, pause/restart functionality, and clear HUD updates.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// Define ship gravity field parameters: radius, strength\n// Track probe state: position, velocity, activeProbeId, probeReserve, hull, invulnTimer\n// On each game step:\n//   Compute gravity vector from ship center to probe, update probe velocity with bounded accel\n//   Update probe position with fixed step integration\n//   Detect collision: probe-fruit (destroy fruit if next in order), fruit-ship (apply hull damage, destroy probe)\n//   Detect if probe returns inside annular catch zone:\n//     If caught, compute slingshot velocity proportional to catch distance from center\n//     Relaunch probe upward using modified launch velocity\n//   Detect if probe escapes arena bounds:\n//     Reduce probeReserve, destroy probe, auto-deploy new probe if available\n//   Manage hull damage cooldown to prevent immediate repeated hits\n//   Update HUD with hull, probes, score\n// Add visual tether line from ship to probe with slight oscillation\n// Draw visible catch zone ring around ship\n// Hook into existing step and draw loops to update and render this subsystem\n// Manage probe loss and hull exhaustion to finish game and trigger replay/reset mechanisms"
+            }
+          ],
+          "tests": [
+            "Test probe launches automatically with initial velocity and gravity influence from ship position",
+            "Test probe intercepting correct next fruit removes that fruit and increments score",
+            "Test probe returning within catch zone triggers relaunch with velocity scaling by catch radius position",
+            "Test losing the probe beyond arena boundary reduces probeReserve and deploys replacement probe if available",
+            "Test direct fruit-ship collision reduces hull by one, triggers brief invulnerability and destroys current probe",
+            "Test game ends when hull or probeReserve reaches zero and HUD displays clear end state with replay option"
+          ]
+        },
+        {
+          "candidate_id": "engineer",
+          "name": "Ship Hull Collision & Damage Subsystem",
+          "player_experience": "Players experience a clear risk of direct fruit collision causing hull damage and probe destruction with brief damage immunity. The ship position remains controllable on the horizontal axis only, retaining one-finger mobile accessibility. Visual feedback on hull hits and probe loss adds tension and encourages skillful lateral movement to avoid damage, deepening engagement while progressing through waves of fruit increasing in challenge but allowing survivable play.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "setupCollisionDetection",
+              "pseudo_code": "function setupCollisionDetection() { initialize hull count, invulnerability timer, collision cooldown; }"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Inside step(dt): for each fruit approaching ship at ship y-level, detect bounding box overlap with ship hull area; if collision and not in invulnerability: decrement hull, set invulnerability timer, mark active probe as destroyed, spawn replacement if available; if hull reaches zero, trigger game over; handle invulnerability timer countdown."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "ui",
+              "pseudo_code": "Add hull count display update; show brief visual cue (e.g., flash or color change) on hull damage during invulnerability period."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "reset",
+              "pseudo_code": "Initialize hull count and clear invulnerability timer and collision flags."
+            }
+          ],
+          "tests": [
+            "Verify hull count starts at maximum and decrements exactly once when a fruit collides directly with ship hull.",
+            "Confirm invulnerability timer prevents multiple rapid damage events from a cluster of collisions.",
+            "Check active probe is destroyed immediately upon ship-hull collision and replacement probes deploy automatically if available.",
+            "Validate that the game ends cleanly when hull count reaches zero with appropriate UI feedback and replay option.",
+            "Test that ship horizontal movement remains constrained and input responsiveness unaffected by collision logic.",
+            "Ensure deterministic step updates with fixed timestep do not allow fruit tunneling or missed collisions during fast approach phases."
+          ]
+        }
+      ],
+      "critique": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Collision of step() function modifications with physics and collision logic from other proposals may cause inconsistent fruit progression or visual glitches.",
+            "mitigation": "Collaborate with researcher and engineer to modularize step() updates, invoke core physics and collision routines centrally, and ensure rendering and state updates are decoupled and sequenced predictably."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Complex probe state management and boundary conditions may lead to probe loss without proper relaunch or scoring inconsistencies, especially combined with hull damage triggers.",
+            "mitigation": "Implement comprehensive state machine tests covering all probe lifecycle events, integrate probe loss and catch logic tightly with hull system, and add rigorous boundary condition unit tests to ensure consistent transitions."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Collision detection using bounding boxes at fixed timestep may cause missed fast fruit-ship collisions or invulnerability windows overlapping probe relaunch timing, risking unfair damage or game interruptions.",
+            "mitigation": "Refine collision detection with swept volumes or predictive checks to prevent tunneling, tightly coordinate invulnerability timers with probe state updates, and thoroughly profile ship horizontal control responsiveness under collision scenarios."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "researcher",
+          "engineer"
+        ],
+        "rationale": "All three proposals are designed to operate on separate but interlinked aspects: designer focuses on visual representation and wave management, researcher on probe physics and interception mechanics, and engineer on ship collision and damage systems. Their code changes touch complementary areas with some overlap primarily in the main game step and UI but do not conflict on core requirements or fundamental mechanics. Together, they form a cohesive gravity sling gameplay experience while preserving mobile accessibility and control simplicity."
+      },
+      "selection": {
+        "selected_ids": [
+          "designer",
+          "researcher",
+          "engineer"
+        ],
+        "features": [
+          {
+            "candidate_id": "designer",
+            "name": "Fruit Wave Progression and 2.5D Perspective Rendering",
+            "player_experience": "Players see fruit spawning at a small scale at a distant horizon on a converging depth grid. Fruit advance toward the ship, visibly enlarging as they approach, with approach speed slowing near the player to allow timed interception. Each fruit wave enforces an ordered sequence which is clearly indicated by numbered or color-coded fruit overlays and a textual NEXT target label above the ship HUD. Waves progress after the correct target fruit is hit; wrong-order collisions prompt feedback but no progress. The perspective and wave system give intuitive spatial context and pacing to the gravity sling gameplay on mobile devices.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "renderFruitWaveAndPerspective",
+                "pseudo_code": "function renderFruitWaveAndPerspective(ctx, wave, playerX) {\n  // Draw converging runway grid lines from bottom (ship) to horizon\n  // Calculate each fruit's screen position by interpolating depth\n  // Scale fruit sprite based on depth (small far, larger near)\n  // Draw fruit with numeric or colored label according to required order\n  // Highlight the current 'NEXT' target fruit with distinct glow or outline\n  // Draw a textual 'NEXT' label near bottom center HUD to show next target's index/color\n} // call this function within game loop's draw() after setting canvas transform to create tilted 2.5D effect"
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "step",
+                "pseudo_code": "update fruit positions along depth axis with slowing velocity near ship; progress wave state when correct target fruit is hit; reject wrong order hits with feedback (e.g. flash or sound); advance to next wave when all targets cleared"
+              },
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "initializeWaves",
+                "pseudo_code": "initialize array of wave objects, each with ordered targets and spawning depth positions; stagger fruit entry times to create spaced waves"
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "ui",
+                "pseudo_code": "display wave count, score, HULL and PROBES; prominently show 'NEXT: #fruitIndex' or colored target label at bottom center"
+              },
+              {
+                "file": "index.html",
+                "operation": "modify",
+                "symbol": "header and status text",
+                "pseudo_code": "update instructions to mention ordered fruit waves and NEXT target; keep controls and buttons unchanged to preserve core contract"
+              }
+            ],
+            "tests": [
+              "Verify fruit spawn with smaller scale and increase size smoothly approaching ship along convergent lanes.",
+              "Check that fruits approach slower near ship position compared to far distance, allowing player interception.",
+              "Verify correct 'NEXT' fruit is visually distinct and numbered or colored distinctly in wave.",
+              "Confirm hitting fruit out of order triggers no progress but visible feedback.",
+              "Check wave completion advances to next wave and score increments accordingly.",
+              "Validate the NEXT target label updates accurately after each correct fruit collected."
+            ]
+          },
+          {
+            "candidate_id": "researcher",
+            "name": "Gravity Sling Probe Flight, Catch Zone, Autolaunch and Loss",
+            "player_experience": "Players manipulate the ship horizontally to influence an attracted probe's curved trajectory which autonomously flies upfield to intercept ordered fruit waves, then returns to the dynamic annular catch zone around the ship. Catching the probe near the center slings it faster outward, encouraging skillful positioning. Losing the probe outside the arena reduces probe reserve, and hull damage occurs only on direct fruit-ship collisions with brief invulnerability. Visual tether and catch zone ring animations provide immersive feedback. The game ends if hull or probes are exhausted, while preserving smooth one-finger horizontal input, mobile layout, pause/restart functionality, and clear HUD updates.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "gravitySlingSubsystem",
+                "pseudo_code": "// Define ship gravity field parameters: radius, strength\n// Track probe state: position, velocity, activeProbeId, probeReserve, hull, invulnTimer\n// On each game step:\n//   Compute gravity vector from ship center to probe, update probe velocity with bounded accel\n//   Update probe position with fixed step integration\n//   Detect collision: probe-fruit (destroy fruit if next in order), fruit-ship (apply hull damage, destroy probe)\n//   Detect if probe returns inside annular catch zone:\n//     If caught, compute slingshot velocity proportional to catch distance from center\n//     Relaunch probe upward using modified launch velocity\n//   Detect if probe escapes arena bounds:\n//     Reduce probeReserve, destroy probe, auto-deploy new probe if available\n//   Manage hull damage cooldown to prevent immediate repeated hits\n//   Update HUD with hull, probes, score\n// Add visual tether line from ship to probe with slight oscillation\n// Draw visible catch zone ring around ship\n// Hook into existing step and draw loops to update and render this subsystem\n// Manage probe loss and hull exhaustion to finish game and trigger replay/reset mechanisms"
+              }
+            ],
+            "tests": [
+              "Test probe launches automatically with initial velocity and gravity influence from ship position",
+              "Test probe intercepting correct next fruit removes that fruit and increments score",
+              "Test probe returning within catch zone triggers relaunch with velocity scaling by catch radius position",
+              "Test losing the probe beyond arena boundary reduces probeReserve and deploys replacement probe if available",
+              "Test direct fruit-ship collision reduces hull by one, triggers brief invulnerability and destroys current probe",
+              "Test game ends when hull or probeReserve reaches zero and HUD displays clear end state with replay option"
+            ]
+          },
+          {
+            "candidate_id": "engineer",
+            "name": "Ship Hull Collision & Damage Subsystem",
+            "player_experience": "Players experience a clear risk of direct fruit collision causing hull damage and probe destruction with brief damage immunity. The ship position remains controllable on the horizontal axis only, retaining one-finger mobile accessibility. Visual feedback on hull hits and probe loss adds tension and encourages skillful lateral movement to avoid damage, deepening engagement while progressing through waves of fruit increasing in challenge but allowing survivable play.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "setupCollisionDetection",
+                "pseudo_code": "function setupCollisionDetection() { initialize hull count, invulnerability timer, collision cooldown; }"
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "step",
+                "pseudo_code": "Inside step(dt): for each fruit approaching ship at ship y-level, detect bounding box overlap with ship hull area; if collision and not in invulnerability: decrement hull, set invulnerability timer, mark active probe as destroyed, spawn replacement if available; if hull reaches zero, trigger game over; handle invulnerability timer countdown."
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "ui",
+                "pseudo_code": "Add hull count display update; show brief visual cue (e.g., flash or color change) on hull damage during invulnerability period."
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "reset",
+                "pseudo_code": "Initialize hull count and clear invulnerability timer and collision flags."
+              }
+            ],
+            "tests": [
+              "Verify hull count starts at maximum and decrements exactly once when a fruit collides directly with ship hull.",
+              "Confirm invulnerability timer prevents multiple rapid damage events from a cluster of collisions.",
+              "Check active probe is destroyed immediately upon ship-hull collision and replacement probes deploy automatically if available.",
+              "Validate that the game ends cleanly when hull count reaches zero with appropriate UI feedback and replay option.",
+              "Test that ship horizontal movement remains constrained and input responsiveness unaffected by collision logic.",
+              "Ensure deterministic step updates with fixed timestep do not allow fruit tunneling or missed collisions during fast approach phases."
+            ]
+          }
+        ],
+        "decision_reason": "Selecting all three subsystems because each covers a necessary, distinct gameplay aspect that collectively realize the complete requested game concept without substituting or omitting any mandatory mechanic. Their combined integration creates a coherent and fully featured gameplay experience as required.",
+        "interface_contracts": [
+          "game.step(dt): central fixed timestep update responsible for invoking designer wave and fruit updates, researcher probe physics updates, and engineer collision/hull damage checks in deterministic order",
+          "game.draw(ctx): rendering sequence calling designer.renderFruitWaveAndPerspective(ctx), researcher.renderProbeAndTether(ctx), and engineer.renderHullDamageEffects(ctx)",
+          "game.state: shared mutable game state object with ship position (x,y), probe state (position, velocity, active status, reserve count), fruit wave progression (ordered targets, current index), hull count, invulnerability timer, and score",
+          "probe.catchZoneRadius: defined annular radius values accessed by researcher and referenced by engineer for collision boundaries",
+          "game.hud.update(counters): interface invoked by all subsystems to consistently render wave, NEXT target indication, score, hull, probes, and damage feedback",
+          "event.queue: shared local event queue used by subsystems to dispatch and respond to gameplay events like fruitHit, probeLost, hullDamaged, waveCleared"
+        ],
+        "integration_steps": [
+          "Modularize game.step to sequence subsystem updates: first designer updates fruit positions and wave state, then researcher updates probe physics and checks probe-fruit collisions, finally engineer performs fruit-ship collision detection and hull damage processing",
+          "Integrate designer.renderFruitWaveAndPerspective within main draw loop after canvas transform setup for 2.5D perspective rendering",
+          "Add researcher rendering of active probe, tether line animations, and catch zone ring after fruit rendering",
+          "Incorporate engineer's hull damage visual cues overlay in HUD rendering stage",
+          "Synchronize probe loss and relaunch logic between researcher physics and engineer collision/hull damage states to ensure automatic probe replacement upon loss or hull damage",
+          "Implement event queue processing at end of each step to handle state transitions triggered by fruit hits, probe catches, hull damage, and wave completions",
+          "Ensure UI updates reflect latest counts of hull, probes, score, current wave, and NEXT target label by aggregating data from all subsystems",
+          "Conduct coordinated fixed timestep integration tests covering edge cases such as fast fruit approach, probe catch timing, damage invulnerability cooldown, and wave progression"
+        ],
+        "verification": [
+          "Validate fruit wave rendering matches designer specs: converging lanes, depth scaling, NEXT target highlighting, and ordered wave enforcement",
+          "Confirm probe autonomously launches, follows ship-induced curved gravity trajectory, intercepts correct fruit, and relaunches properly upon catch with speed variation based on catch position",
+          "Test hull damage occurs exactly once per fruit-ship collision with correct invulnerability duration, active probe is destroyed and replaced if probes remain",
+          "Verify probe loss beyond arena bounds reduces probe reserve counter and spawns a new probe if available without interrupting gameplay",
+          "Check wave progression and scoring respond only to correct ordered fruit hits; wrong-order hits provide player feedback but no progression",
+          "Ensure all HUD elements (score, wave, HULL, PROBES, NEXT label) update accurately and remain legible at mobile portrait resolutions",
+          "Playtest for smooth, responsive one-finger horizontal ship input with no vertical controls",
+          "Confirm game ends cleanly on hull or probe exhaustion with replay option visible, physics remain stable with no teleporting or permanent stalls"
+        ]
+      }
+    }
+  },
+  "qa": {
+    "claim": "The Peach Bounce 0.1 Gravity Sling update fully implements the requested new gameplay replacing the old mechanics and meets the detailed design, control, physics, UI, and wave progression requirements.",
+    "rationale": "The integrated source code and index.html show a new self-contained mobile HTML5 game at the existing stable URL with the page title 'Peach Bounce 0.1 \u2014 Gravity Sling'. The old gameplay and assets are removed. Controls restrict input to horizontal left/right sliding and keyboard left/right/A/D only. The visual 2D tilted perspective with converging runway and enlarging fruit is implemented (renderFruitWaveAndPerspective). Fruit waves approach with progressively slowing depth velocity. The probe physics subsystem autonomously launches, moves with ship-induced gravity, intercepts fruits in order, returns to a catch zone with automatic relaunch whose speed depends on catch centrality, and loses probes when escape occurs. Hull damage triggers on direct fruit-ship collision with immunity and destroys the active probe with replacements auto-deployed. The HUD displays score, wave, hull, probes, and next target indicator. Replay, pause, and restart function correctly. Independent simultaneous Chromium browser tests with mobile emulation confirm playable input, visible actor movement, advancing game time, proper canvas updates, paused freeze/resume, restart reset, no resource failures, and distinct run identity, all passing. The coder report documents passing static checks, successful integration of all three agreed candidate subsystems (designer, researcher, engineer), and extensive logical tests of all major gameplay mechanics. The described physics and gameplay behaviors align precisely with the original detailed player design brief and acceptance criteria.",
+    "objections": "Automated tests were performed in desktop Chromium emulated mobile contexts, but no physical device or independent live user playtesting is provided. The chromium test harness failed during earlier sandbox runs but later independent desktop emulations passed, leaving minor uncertainty on actual device performance or rendering fidelity on physical phones. The intervention lacks independent QA approval or production deployment proof, which remain pending publication criteria managed by the separate publisher. There is no evidence of explicit manual human subjective fun testing or qualitative feedback, which is outside preview approval scope. No silent concept swaps occurred; all three subsystem proposals are consistent and fully integrated as Required. Known risks in collision timing, state transitions, and probe lifecycle are identified and mitigated in the code and test evidence.",
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The updated Peach Bounce 0.1 Gravity Sling game at the existing URL satisfies all requested gameplay features, controls, physics, UI, wave mechanics, and loss/win conditions per the detailed player brief. Independent Chromium browser tests confirm the game runs as intended in mobile viewports with correct actor movement and interactions. The combined subsystems' integration respects the agreed creative decision without substitution. All mandatory gameplay mechanics are present and functional in a lightweight, self-contained mobile-friendly build. Remaining physical-device testing, subjective user experience, and publisher deployment verification are separate later steps and must be marked as pending, not blocking the current preview approval.",
+      "criteria_results": {
+        "existing_URL_and_page_title": true,
+        "old_gameplay_replaced": true,
+        "controls_limit_to_horizontal_slider_and_keys_only": true,
+        "2D_tilted_perspective_with_depth_scaling_and_enlarging_fruit": true,
+        "probe_physics_with_gravity_sling_autolaunch_catch_and_loss": true,
+        "hull_damage_and_probe_loss_with_immunity_and_auto_replacement": true,
+        "fruit_waves_ordered_with_visual_NEXT_target_and_slowing_approach": true,
+        "HUD_displaying_SCORE_WAVE_HULL_PROBES_and_NEXT": true,
+        "pause_play_restart_buttons_function": true,
+        "no_extra_controls_during_play": true,
+        "independent_subsystems_integrated_fully": true,
+        "independent_browser_tests_pass_mobile_emulation": true,
+        "no_external_dependencies_or_assets": true
+      },
+      "remaining_limitations": [
+        "No physical device testing or real phone validation yet performed",
+        "No independent human subjective playtest or fun feedback available",
+        "No publisher live-file deployment and hash verification completed",
+        "Automated sandbox Chromium test failed earlier and was blocked",
+        "Reduced motion preference tested but performance on real devices unverified"
+      ]
+    },
+    "required_evidence": [
+      "Independent publisher verification of live deployment with exact byte hash",
+      "Physical-device browser testing on representative mobile phones",
+      "Subjective human playtesting and enjoyment feedback prior to public release",
+      "Automated QA running on final published build to confirm no regressions",
+      "Visual capture or video proof of all major gameplay sequences on actual devices"
+    ]
+  },
+  "acceptance": {
+    "run_id": "42318389183-1",
+    "request_id": "peach-gravity-sling-01",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.1083333333333318,
+        "player_displacement": 45.93442322777918,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0749999999999986,
+        "player_displacement": 51.64285387311665,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Gravity Sling implementation report\n\nImplemented **Peach Bounce 0.1 \u2014 Gravity Sling** at the existing `docs/games/studio-original-001/` path. Only index.html, game.css, game.js and this report were edited. The binding redesign replaces the old tray, tiles, bouncing peach, timer and win logic. No deployment or publishing changes were made.\n\n## Agreed release and source integration\n\nThe supplied plan records independent Designer, Researcher and Engineer proposals, Critic compatibility and Producer selection of all three candidate IDs: **designer**, **researcher**, **engineer**. All three are integrated; no alternative concept was substituted. No new council deliberation or private footage access is claimed.\n\n- **designer:** `initializeWaves`, `updateFruit`, `project`, `hitFruit`, and `renderFruitWaveAndPerspective` implement three spaced, ordered three-fruit waves. Converging grid lines and depth projection enlarge approaching fruit. Actual depth velocity is `0.014 + depth * (0.085 + wave * 0.006)` for positive depth, so approach slows continuously. Number overlays, golden NEXT outline, textual NEXT, and wrong-order white flashes explain order. Only correct hits clear targets and earn 100 points; completed waves earn 150, with a two-second break. All three waves cleared wins with 1350 points. Missed or ship-colliding fruit return at distance with their order unchanged, ensuring targets never expire or become permanently unreachable.\n- **researcher:** `gravitySlingSubsystem`, `deploy`, `loseProbe`, and `renderProbeAndTether` implement persistent position/velocity, bounded acceleration, 430-unit speed cap, ship-relative attraction, damping, automatic launch, physical return, catch and relaunch, visible annulus/tether and finite stock. A returning probe crossing the upper catch band within 62 horizontal units launches at 315\u2013380 units/second depending on centrality. It retains its position on catch. After six seconds, extra downward attraction prevents long orbital stalls. Fully escaped probes consume stock; replacements launch after 0.65 seconds. Five probes include the active probe. Probe exhaustion loses.\n- **engineer:** `setupCollisionDetection`, `shipCollisions`, and `renderHullDamageEffects` implement three hull points, direct fruit overlap, 1.6-second immunity, damage border/ship feedback, destruction of the active probe, stock consumption and replacement. A hull hit recycles that fruit without advancing sequence. Hull exhaustion loses. Fixed y=440 and horizontal-only pointer/keyboard handling preserve one-finger control. No manual firing or vertical controls exist.\n\n## Interface contracts and overlap resolution\n\nA private `game` object owns `state`, `step`, `draw`, and `hud.update`. `step` runs at 1/120 second: input/timers, fruit advancement, probe integration/interception, hull collisions, then queued event feedback and unified HUD update. Rendering runs perspective/fruit, probe/tether/ship, then hull feedback. `state.probe.catchZoneRadius` holds inner/outer radii; `event.queue` receives fruitHit, wrongOrder, waveCleared, probeCaught, probeLost and hullDamaged events. Gameplay transitions execute synchronously to prevent duplicate damage or replacement; the queue serializes feedback after transitions. This is an intentional refinement of the proposed event-transition wording.\n\nProbe-fruit checks use swept segment distances. Hull checks run at 120 Hz while fruit motion near the ship is below a fraction of a pixel per step. Fruit/ship and probe loss both use one `loseProbe` function with an active-state guard, avoiding double consumption. Game-over guards prevent deployment after a loss. Draw uses direct perspective projection rather than a canvas tilt transform, preserving readable fruit labels and collision/render alignment.\n\nHost IDs canvas/play/pause/restart and build-version remain. Build text is initially LOCAL BUILD and never modified by JS. Local CSS/JS only; no assets, libraries, fetches or services. Snapshot is a frozen API returning fresh objects copied from actual state, including diagnostic probe velocity, fruit depths, hull, stock and catch speed. Pointer release/cancellation, focus loss, visibility pause, keyboard release, pause/resume and reset are handled. Touch locking applies only to canvas. Reduced motion disables decorative tether motion; no shake or particle effects are used. Replay is available through Play again and Restart.\n\n## Commands and actual evidence\n\n- `node --check docs/games/studio-original-001/game.js` \u2014 PASS.\n- `git diff --check` \u2014 PASS.\n- `node game_factory/mobile_acceptance.cjs` \u2014 BLOCKED before page load: Chrome exited with SIGTRAP after `crashpad/util/linux/socket.cc:45 setsockopt: Operation not permitted`. No browser/game assertion ran. Tests were not modified or weakened.\n- `node /tmp/gravity-check.cjs` \u2014 PASS. Temporary Node VM harness loads the real source with DOM stubs and a private in-memory instrumentation suffix; it does not add production mutation hooks or modify repository tests. Verified:\n  - Actual automatic flight and physical catch within five seconds without probe loss.\n  - Pause freezes time; resume advances; restart resets time/resources/score.\n  - Central versus 58-unit edge catch produces launch speeds 380 versus 319.199.\n  - Moving ship center changes probe lateral acceleration.\n  - Wrong-order contact retains fruit and score; ordered hits advance all waves and end in victory.\n  - Depth projection grows radius and y; measured approach depth rates are 0.105 at depth 1 versus 0.0322 at depth 0.2.\n  - Direct hull contact decrements once, destroys probe, immunity blocks clustered damage, replacement deploys.\n  - Five forced physical boundary escapes exhaust stock with automatic replacement between losses; three separated direct contacts exhaust hull.\n  - A simulated horizontal-only positioning policy (no firing or state-forced hits) clears all waves in 41.267 seconds, scoring 1350 with 3 hull, 5 probes and 10 catches. Every flight step checks finite coordinates. Initial faster fruit tuning failed this policy with hull exhaustion; slowing approach produced the reported final passing run.\n  - Returned snapshot mutations do not change live player state; API is frozen.\n\n## Remaining verification limits\n\nThe temporary deterministic harness verifies simulation logic, not real touch rendering or physical-device performance. Independent 360x780 and 390x844 browser/touch tests, visual captures, reduced-motion visual inspection and performance profiling remain unverified because Chrome could not launch in this sandbox. No physical-phone test, independent QA approval, production hash verification or deployment is claimed. The release must still pass the runner's independent browser/physics acceptance and publication gates before production delivery.\n"
+}
