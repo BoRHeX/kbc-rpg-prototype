@@ -89,6 +89,29 @@ class AgentAPITests(unittest.TestCase):
             ask_agent(ledger, agent, "run", "Inspect", [])
         self.assertEqual(len(calls), 1)
 
+    def test_structured_schema_requires_typed_format(self):
+        ledger, agent, calls = self.setup_sequence([self.reply(
+            '{"claim":"validated","rationale":"test","objections":[],"proposed_action":{"name":"gravity"},"required_evidence":[]}')])
+        schema = {"type": "object", "properties": {
+            "claim": {"type": "string"},
+            "rationale": {"type": "string"},
+            "objections": {"type": "array", "items": {"type": "string"}},
+            "proposed_action": {"type": "object", "properties": {
+                "name": {"type": "string"}}, "required": ["name"],
+                "additionalProperties": False},
+            "required_evidence": {"type": "array", "items": {"type": "string"}}},
+            "required": ["claim","rationale","objections","proposed_action","required_evidence"],
+            "additionalProperties": False}
+        result = ask_agent(ledger, agent, "test", "Design gravity sling", [],
+                           response_schema=schema, format_name="gravity_feature")
+        self.assertEqual(result["proposed_action"]["name"], "gravity")
+        fmt = calls[0]["text"]["format"]
+        self.assertEqual(fmt["type"], "json_schema")
+        self.assertEqual(fmt["name"], "gravity_feature")
+        self.assertIs(fmt["strict"], True)
+        self.assertEqual(fmt["schema"], schema)
+        self.assertFalse(calls[0]["store"])
+
     def test_json_mode_appears_in_input_and_decision_is_recorded(self):
         with tempfile.TemporaryDirectory() as directory:
             ledger = CouncilMemory(Path(directory) / "agents.db")
