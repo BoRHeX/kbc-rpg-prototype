@@ -9,6 +9,63 @@ from __future__ import annotations
 import json
 import re
 
+def _object(fields):
+    return {"type": "object", "properties": fields,
+            "required": list(fields), "additionalProperties": False}
+
+
+def _array(item):
+    return {"type": "array", "items": item}
+
+
+_STRING = {"type": "string"}
+_ROLE = {"type": "string", "enum": ["designer", "researcher", "engineer"]}
+
+
+def _agent_decision(proposed_action):
+    return _object({
+        "claim": _STRING,
+        "rationale": _STRING,
+        "objections": _array(_STRING),
+        "proposed_action": proposed_action,
+        "required_evidence": _array(_STRING),
+    })
+
+
+# Shape-constrained generation is the protocol. JSON-only output let the model
+# invent field names, invalid operations and out-of-scope file paths, causing
+# entire runs to fail even after several correction prompts.
+FEATURE_SCHEMA = _agent_decision(_object({
+    "feature": _object({
+        "name": _STRING,
+        "player_experience": _STRING,
+        "code_changes": _array(_object({
+            "file": {"type": "string", "enum": [
+                "index.html", "game.js", "game.css", "game-config.json"]},
+            "operation": {"type": "string", "enum": [
+                "insert", "modify", "replace", "remove"]},
+            "symbol": _STRING,
+            "pseudo_code": _STRING,
+        })),
+        "tests": _array(_STRING),
+    })
+}))
+CRITIC_SCHEMA = _agent_decision(_object({
+    "assessments": _array(_object({
+        "candidate_id": _ROLE, "risk": _STRING, "mitigation": _STRING,
+    })),
+    "compatible_ids": _array(_ROLE),
+    "rationale": _STRING,
+}))
+PRODUCER_SCHEMA = _agent_decision(_object({
+    "selected_ids": _array(_ROLE),
+    "decision_reason": _STRING,
+    "interface_contracts": _array(_STRING),
+    "integration_steps": _array(_STRING),
+    "verification": _array(_STRING),
+}))
+
+
 ROLES = ("designer", "researcher", "engineer")
 ALLOWED_FILES = {"game.js", "game.css", "index.html", "game-config.json"}
 ALLOWED_OPS = {"insert", "modify", "replace", "remove"}
@@ -179,7 +236,9 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         identity = memory.register(role, model)
         answer = ask_agent(memory, identity, job["run_id"],
                            task, refs, model=model,
-                           max_output_tokens=2500 if redesign else 1700)
+                           max_output_tokens=2500 if redesign else 1700,
+                           response_schema=FEATURE_SCHEMA,
+                           format_name="game_feature_proposal")
         # A valid JSON response is not necessarily valid structured code.
         # Let the same agent correct ONE format error instead of aborting the
         # entire paid run or inventing missing content on its behalf.
@@ -211,7 +270,9 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             )
             repaired = ask_agent(
                 memory, identity, job["run_id"], correction, refs,
-                model=model, max_output_tokens=2000)
+                model=model, max_output_tokens=2500,
+                response_schema=FEATURE_SCHEMA,
+                format_name="game_feature_proposal")
             answer = merge_feature_answer(answer, repaired)
             proposal = parse_feature(role, answer)
         plan[role] = answer
@@ -229,7 +290,8 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         "integrated together, plus rationale. Do not invent new features. "
         "Do not claim any game code or browser test has run.\nPROPOSALS:\n"
         + json.dumps(proposals, ensure_ascii=False),
-        refs, model=model, max_output_tokens=1500)
+        refs, model=model, max_output_tokens=2200,
+        response_schema=CRITIC_SCHEMA, format_name="game_critic_assessment")
     plan["critic"] = critic
     critique = critic.get("proposed_action")
     if not isinstance(critique, dict):
@@ -274,7 +336,8 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         "Do not repeat player speech or any private data.\nEVIDENCE:\n"
         + json.dumps({"request": job["request"], "proposals": proposals,
                       "critic": critique}, ensure_ascii=False),
-        refs, model=model, max_output_tokens=1900)
+        refs, model=model, max_output_tokens=2500,
+        response_schema=PRODUCER_SCHEMA, format_name="game_producer_decision")
     plan["producer"] = producer
     result = producer.get("proposed_action")
     if not isinstance(result, dict):
