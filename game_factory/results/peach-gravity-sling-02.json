@@ -1,0 +1,664 @@
+{
+  "request": {
+    "id": "peach-gravity-sling-02",
+    "game": "studio-original-001",
+    "mode": "update",
+    "title": "Peach Bounce 0.2 \u2014 Gravity Sling physics and visual evolution",
+    "prompt": "Update the EXISTING, successfully shipped Peach Bounce 0.1 \u2014 Gravity Sling at the SAME stable game URL to version 0.2. The user has played 0.1 on a real phone and wants better PHYSICS and VISUALS, not a new minigame, not more enemy types, and not another wholesale redesign. The gameplay, pause/restart, score, ordered fruit waves, probes, hull, ship, core colors and one-axis input already work. Preserve them. The user-provided screenshot shows a navy perspective runway/grid, simple flat colored circular fruits, thin probe tether, cyan triangular ship, visible catch ring, 'NEXT' order, and SCORE/WAVES/HULL/PROBES HUD. Use this as a reference to improve, NOT a command to duplicate the current look.\n\nPHYSICS TARGET \u2014 0.1 currently integrates a capped attraction toward the moving ship, lateral damping, an age-based return bias and a conditional catch/relaunch velocity reset. It is functional but more like a magnet-powered bounce than a convincing orbital sling. Improve its continuous deterministic 2D motion: moving the ship sideways should visibly alter the probe's lateral curvature and return path; attractor force should depend meaningfully on relative distance, carry momentum through turns, and support a skillful swing around/near the ship without runaway instability. Keep fixed time-step integration (1/120 or comparably stable), bounded accelerations/speeds and a finite, predictable return/catch cycle. Automatic deployment and launch remain, and a genuine return into the visible catch zone triggers a new outward flight. Central catches must still deliver MORE launch speed than grazing catches, with a measurable game-state value. Avoid fake pre-scripted arcs, sudden arbitrary flips, freezing near the center, or unavoidable early probe losses. Test normal actual-input gameplay winnability, not only forced state changes.\n\nVISUAL TARGET \u2014 Improve feedback and a sense of depth using ONLY Canvas/HTML/CSS code: make fruit look recognizable as individual fruit rather than identical colored disks (illustrative shapes, highlights/leaf/stem, distinct color silhouettes); preserve numbered targets and high-contrast NEXT target emphasis. Keep the tilted-perspective plane with stronger far/near scale cues, atmosphere and restrained parallax without changing collision coordinates. Upgrade the ship silhouette and gravity/catch ring, with actual velocity/trajectory-driven probe trails, subtle field cues, catch-quality pulse and clear hit/wrong-order feedback. Effects must be tied to real physics/state, not independent decorative animations pretending to show physics. Limit overdraw and allocations; respect reduced motion. The observed layout has a lot of header text\u2014use the existing space well on 360x780 and 390x844 while keeping legible controls and score.\n\nDESIGN COUNCIL EXPERIMENT \u2014 Designer proposes a visual readability/depth improvement, Researcher a physical sling trajectory/catch improvement, Engineer a numeric/interaction/performance improvement. Critic identifies shared interfaces/conflicts; Producer agrees two or three compatible code-level modifications spanning BOTH real physics and visual feedback; the coder integrates them into ONE polished 0.2 build. No manual firing or extra gameplay controls. No external images, libraries, accounts, assets, ads or services. Do not rewrite to a different game. Preserve read-only BORHEZ_GAME.snapshot and add real diagnostic details only when grounded in real state. Document measurable before/after physics behavior and visual evidence, and accept only with actual QA/browser tests.",
+    "acceptance": [
+      "Keep the stable Peach Bounce URL and 0.1 core loop, with HULL/PROBES/WAVES/SCORE, three ordered fruit waves, NEXT indicator, meaningful scoring, success/failure, pause, restart, read-only snapshot and one-axis ship sliding intact.",
+      "The visible game title accurately says version 0.2 using id=game-version, and the stamped run/build identifier changes; do not alter Cataclysm or other games.",
+      "Physics changes are substantive: continuous stateful probe position and velocity, distance-sensitive gravity/turning, momentum-rich lateral arcs influenced by ship horizontal movement, bounded fixed-step motion, no fabricated trajectory animation.",
+      "Auto-launch/return/catch/relaunch and finite probe losses still function. The same numerical input conditions demonstrate a central catch launches faster than an edge catch, and actual ship steering affects probe curvature/interception.",
+      "Fruit/ship collisions damage hull once within immunity; escaped probes consume finite stock and redeploy automatically if available. Wrong-order fruit collisions never advance progress and the correct order completes waves.",
+      "Game-specific executed checks cover probe trajectories, catch speeds, trajectory influence from different ship x positions, finite coordinates, pause/time freeze, depleted hull/probe loss and at least one full realistic input-only winning session.",
+      "Fruits are recognizable and visually distinct at near and far depth, with clear NEXT target marking, readable numbers and depth-related scale. Their drawn collision positions correspond to actual gameplay collisions.",
+      "The 2.5D runway/horizon has improved depth atmosphere and readable distant/near layers; the probe trail, gravity/catch zone, sling pulse and damage feedback reflect actual position, speed, state and hit events.",
+      "Ship, HUD and help text are cleaner and remain legible with accessible contrast; no extra gameplay inputs, mobile scrolling during drag, oversized headers or obstructive visual overlays.",
+      "Respect reduced motion and performance budgets with local Canvas 2D/JS/CSS only, no third-party runtime assets or services, and no major regression in mobile frame smoothness.",
+      "The three agents propose independent code-level changes, Critic reviews collisions/integration, Producer selects compatible physics AND visual improvements, and coder report documents which ideas were actually implemented.",
+      "Javascript checks and independent 360x780 and 390x844 mobile Chromium touch/visual acceptance pass; QA inspects actual source and evidence, and only accepted exact game files are published and live-verified."
+    ],
+    "release_version": "0.2",
+    "focus": "physics_visual"
+  },
+  "target": "docs/games/studio-original-001",
+  "run_id": "42325742245-1",
+  "base_manifest": {
+    "BUILD_INFO.json": "b62c721e07ccdf1239170a2990cc9b16a92e7c8f50ee44df912d361ee53a2742",
+    "game.css": "a8b41734830d51a8de34fa3d504dcee6ad6b6cb862f011e8b238a86b82032b33",
+    "game.js": "755bc307f8b9c20c70ae4847dd68fbdef767c9d0a572f3994ba9199e85f7ed83",
+    "index.html": "21a5a625fc75821f7837dce76589595291dc2d743f366661bd66c1acfb8457fb"
+  },
+  "request_digest": "8473339869ea5245c8cb38d7a726aa4522b5178bffc8475c57ca063e710332e1",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "36e5d90745a77ec929651f20bb96fb8e9bff324d248c0fa472fc74e822dd5f0e",
+    "game.css": "0cfb0d17b446bd61f2cd1cff9f6c86b1839242732c4eb359434b347c6ad6eb06",
+    "game.js": "c0d055c8769cf857cbcd8f9f5eb8ab2375672238ea21171eb33251f8b67e20b2",
+    "index.html": "c118db6551998a867cca437668b196eca890ed62ec6ed2c94035fc692dbb99fb"
+  },
+  "play_path": "games/studio-original-001/",
+  "plan": {
+    "designer": {
+      "claim": "Introduce a physics-driven, velocity-weighted probe trail and dynamic gravity field visualization that responds continuously to probe velocity and ship position to improve real-time motion feedback and depth perception without altering core gameplay or controls.",
+      "rationale": "Currently, the probe's trajectory feels like a magnet-powered bounce, with limited visual cues about momentum and gravitational influence. By adding a continuous probe motion trail weighted by instantaneous velocity and a dynamic gravity field aura that subtly changes shape and opacity with ship movement and probe position, players gain intuitive, immediate visual feedback about the probe's momentum, sling trajectory, and gravitational pull. This refinement preserves the existing one-axis control and fixed physics timestep while enhancing legibility of probe dynamics, allowing better player skill in anticipating probe paths and catch timing. The trail and gravity field effects are perfectly anchored to real physics state variables and contain no independent animation gimmicks, ensuring accessibility and reasonable rendering cost on mobile.",
+      "objections": [
+        "Additional canvas drawing for dynamic trails may impacts performance on very low-end devices despite limiting steps and opacity.",
+        "Visual complexity increase could reduce UI clarity for some players preferring minimalism or with reduced motion preferences.",
+        "Ensuring the probe trail aligns perfectly with physics state requires careful management to avoid visual desynchronization or artifacting.",
+        "Excessively emphasizing probe velocity visually might distract players if not balanced properly."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Velocity-Weighted Probe Trail and Dynamic Gravity Field",
+          "player_experience": "Players see a smooth, fading tail behind the probe that varies in length and brightness proportional to probe speed, and a softly pulsing, horizontally stretched gravity field ellipse around the ship that shrinks and distorts subtly with ship lateral movement and probe proximity. These effects enhance perception of probe momentum and gravitational influence, aiding skillful timing and flight path anticipation while preserving gameplay simplicity and controls.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "Add an array to store recent probe positions updated each frame, pruning old positions for trail length limit; draw multiple Semi-transparent circles with decreasing radius and opacity along trail positions, weighted by instantaneous probe speed to reflect velocity intensity."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "Draw a gravity field ellipse around the ship that horizontally scales and varies opacity dynamically in proportion to the horizontal distance between the ship and probe, simulating gravity distortion as the probe swings; color set to subtle cyan with alpha modulation for performance and clarity."
+            }
+          ],
+          "tests": [
+            "Verify probe trail appears behind the probe only when active and moves fluidly following exact physics positions without lag or offset.",
+            "Check that the gravity field ellipse around the ship changes horizontal scale and opacity responsively as the ship moves and the probe swings left or right.",
+            "Confirm no changes to existing probe physics behavior: launch speeds, catch condition, probe loss or fruit interactions remain unchanged.",
+            "Observe frame rate remains above 50fps on typical mid-range mobile devices during probe flight with trail enabled.",
+            "Test that reduced motion preference disables the probe trail and gravity field animations gracefully without affecting gameplay or HUD.",
+            "Run a complete session with probe catching at various lateral offsets and verify visually distinguishable differences in trail length and gravity field distortion corresponding to probe speed and position."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Visual capture or video showing the probe trail dynamically changing with probe velocity and position during gameplay.",
+        "Browser test logs demonstrating stable frame rates with the visual effect under mobile device emulation.",
+        "Automated smoke test verifying no change in probe physics numeric parameters and catch velocities compared to baseline 0.1 build.",
+        "Accessibility check confirming reduction respecting reduced motion preference disables added visual effects cleanly.",
+        "User-submitted feedback or observational logs indicating clearer perception of probe momentum and trajectory variations post refinement."
+      ]
+    },
+    "researcher": {
+      "claim": "Refine probe physics by implementing continuous inverse-square-law attraction relative to distance and lateral momentum retention to enable skillful sling curvature; simultaneously enhance fruit visuals to represent distinct fruit types with illustrative highlights and dynamic probe trails reflecting velocity for improved visual feedback tied directly to physics state.",
+      "rationale": "The existing probe attraction uses capped linear forces and age-based boosts, limiting realistic orbital curvature and skillful lateral control. Switching to an inverse-square-law force increases attraction smoothly as probe nears the ship, promoting realistic sling arcs sensitive to ship lateral movement. Retaining lateral momentum better preserves turning physics without abrupt velocity resets. Visually, fruits currently appear as colored circles, making ordered targets less distinct and less immersive. Adding distinct fruit shape outlines and small leaf/stem highlights increases fruit recognizability while preserving simple 2D shapes and performance requirements. The probe's velocity-dependent trailing effect provides real-time motion feedback enhancing player perception of speed and trajectory changes, reinforcing physics improvements visually without adding control complexity or altering layout.",
+      "objections": [
+        "Inverse-square attraction might increase computational cost or cause instability if not delicately clamped, requiring careful tuning to avoid runaway acceleration or probe loss.",
+        "Visual fruit detail increases draw complexity, potentially impacting performance on low-end devices despite limited canvas effects; must maintain existing scale and collision coordinates.",
+        "Probe trails could clutter visuals or reduce contrast with fruits and background if not subtle and performance-optimized.",
+        "Changes risk altering existing balance of catch speed and probe loss rates, requiring thorough testing to ensure winnability remains unchanged."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Physics and Visual Feedback Refinement for Gravity Sling",
+          "player_experience": "Players will perceive more natural, skill-dependent probe slings influenced continuously by ship position, enabling finer control of arcs and catch timing. Fruits become more visually identifiable by distinct shapes and subtle highlights. The probe trail dynamically indicates speed and trajectory changes, clarifying motion and catch quality without new controls.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "Replace capped linear attraction with force inversely proportional to distance squared, clamped minimum distance to avoid singularities, apply accelerations preserving lateral momentum; update velocity accordingly."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "Instead of uniform colored circles for fruits, draw simple fruit shapes: e.g., ellipse with slight pointed top, small leaf/stem highlight above fruit center; maintain numbered target text and highlight for next target."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderProbeTrail",
+              "pseudo_code": "Add a function to draw a fading velocity-dependent trailing line behind probe, using stored previous positions or a velocity vector multiplier; subtle cyan gradient, low alpha, respecting reduced motion preference."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "draw",
+              "pseudo_code": "Invoke renderProbeTrail before rendering probe and tether for layered visual clarity."
+            }
+          ],
+          "tests": [
+            "Verify probe velocity and position over time with ship moving laterally produce curved orbital slings showing velocity-dependent arcs.",
+            "Test catch/relaunch speed increases proportionally with closer catch positioning despite inverse-square force model.",
+            "Observe visible fruit shapes retain distinctness and order readability at near and far depth scales.",
+            "Confirm probe trail appears only during probe flight, with length and opacity modulated by probe speed and reduced motion settings.",
+            "Validate no regressions in probe loss rates or hull damage frequency during normal gameplay sessions.",
+            "Test pause/resume and restart functionality do not disrupt probe trail or fruit rendering state."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Physics logs comparing probe trajectories with old and new inverse-square attraction under fixed lateral ship movement demonstrating richer curvature and stable bounded velocity.",
+        "Screenshots or video captures illustrating updated fruit shapes with leaf highlights distinctly visible compared to previous uniform disks at multiple depths.",
+        "Visual confirmation that the probe trail animates according to probe velocity and disappears on pause or probe loss, matching physics state.",
+        "Performance metrics showing no frame rate degradation or increased CPU load on typical mobile portrait devices.",
+        "Gameplay session logs confirming catch speeds and probe lifecycle behave consistently with previous version criteria.",
+        "Accessibility validation ensuring reduced motion preference disables the probe trail effect as intended."
+      ]
+    },
+    "engineer": {
+      "claim": "Enhance gravity sling physics by implementing a distance-proportional gravitational acceleration creating momentum-rich lateral arcs influenced by ship movement, and improve visual feedback by adding dynamic velocity-aligned probe trails, distinct fruit illustrations with highlights and stems, and responsive catch-quality pulse animations tied to real physics state, preserving core controls and layout.",
+      "rationale": "Current gravity sling physics uses capped attraction and linear acceleration largely independent of distance, limiting natural orbital sling trajectories and lateral momentum carry-through. Introducing distance-based gravitational force proportional to inverse square of distance (with bounds) and applying ship movement influence continuously will create skillful swinging arcs. Visually, fruits appear as simple disks now; adding distinguishable shapes with highlights and stems will improve recognition and depth. Velocity-aligned probe trails and catch pulse effects reflect real-time physics states rather than decorative animations, enhancing player feedback and motion readability while maintaining performance budgets and reduced motion respect.",
+      "objections": [
+        "Increasing physics complexity may affect fixed-step numerical stability and performance on mobile devices; careful tuning is required to avoid chaotic or unstable probe behavior.",
+        "Adding visual details like highlights and stems increases draw complexity and could impact frame rates or responsiveness on lower-end devices.",
+        "New visual effects must not obscure existing important HUD info or interfere with accessibility or control legibility."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Physics-Visual Refinement 0.2",
+          "player_experience": "Players experience more natural, momentum-rich probe trajectories where ship x-movement tangibly influences probe flight curvature and return path, allowing skillful sling effects. Fruits are visually distinct with illustrative shapes and subtle highlights making order recognition easier. Real-time velocity-based probe trails and catch-quality pulsing rings provide meaningful feedback enhancing game clarity and immersion without changing core controls or UI layout.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// Compute ship-probe vector dx, dy and distance d\\n// Calculate gravitational acceleration magnitude proportional to inverse square of d, clamped to min and max values\\n// Update p.vx, p.vy by adding scaled dx/d and dy/d times acceleration, considering ship.x velocity influence on lateral acceleration\\n// Clamp probe velocity to max speed\\n// Update probe x,y with new velocities\\n// Maintain fixed-step update for stability"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "// For each fruit, draw circular base\\n// Draw an additional ellipse for leaf/stem highlight offset top-left of fruit center\\n// Use distinct color silhouettes and subtle shading to distinguish fruit types\\n// Apply far-near scaling and layering as before"
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "// After current probe rendering\\n// Compute probe speed and angle of velocity vector\\n// Draw a translucent trailing arc behind probe along inverse velocity vector\\n// Use canvas linear gradient or radial fade for smooth trail tapered at tail\\n// Trail length and opacity proportional to speed, capped to limit"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// On probe catch event\\n// Compute catch quality based on horizontal offset from ship center\\n// Trigger catch pulse radius and opacity animation, linked to quality\\n// Animate gravity/catch ring stroke width and color intensity proportional to catch quality dynamically during catch phase"
+            },
+            {
+              "file": "game.css",
+              "operation": "modify",
+              "symbol": "canvas and HUD elements",
+              "pseudo_code": "// Ensure new probe trails and fruit highlights do not interfere with existing HUD or controls\\n// Maintain high contrast for HUD text; keep controls reachable\\n// Refine subtle shadow or glow for fruit highlights for better depth without clutter"
+            },
+            {
+              "file": "index.html",
+              "operation": "modify",
+              "symbol": "game-version",
+              "pseudo_code": "// Update text content from '0.1' to '0.2' to reflect new refinement version."
+            }
+          ],
+          "tests": [
+            "Verify probe flight at different ship positions produces visibly distinct curved trajectories with momentum carry-through and stable fixed-step integration.",
+            "Confirm central catches produce stronger pulsing catch ring effects than edge catches consistently tied to real catch quality metric.",
+            "Render fruit visually distinct with illustrative elliptical highlights and stem shapes for all three fruit types; NEXT fruit is emphasized with contrasting stroke.",
+            "Check probe trails appear aligned behind probe velocity vector, have appropriate taper and fade, and respect reduced motion preferences.",
+            "Measure that maximum probe velocity caps remain unchanged, preventing runaway speeds or instability.",
+            "Run full normal play with keyboard and touch inputs covering multiple waves to validate winnability and HUD correctness with new visuals."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Automated browser-based tests recording probe trajectories and catch velocity for different ship x inputs, confirming stable and momentum-rich lateral arcs",
+        "Visual snapshots or screen captures demonstrating distinct fruit shapes with highlights and stems, probe trails aligned to velocity, and catch pulse animations matching catch qualities",
+        "Performance profiling on typical mobile resolutions (360x780, 390x844) showing no frame drops or excessive CPU usage due to refinements",
+        "Accessibility check ensuring HUD text and controls remain legible and fully functional with new visual feedback",
+        "Regression tests of pause/resume/restart maintaining previous game state with new physics and visuals intact"
+      ]
+    },
+    "critic": {
+      "claim": "The three proposals each refine both physical simulation of the probe's gravity sling and the visual feedback mechanisms, but they introduce overlapping and potentially conflicting changes in physics calculations, probe trail rendering, and fruit visualization.",
+      "rationale": "All proposals modify the gravity sling physics subsystem to create a more natural, momentum-influenced probe flight, which inherently risks conflicts if integrated without harmonization. The 'designer' emphasizes visual probe trails and a dynamic gravity field ellipse, the 'researcher' refines physics with inverse-square force implementation and new fruit shapes plus a trail, and the 'engineer' integrates momentum-rich physics with pulsing catch rings and visually distinct fruits, plus trails and UI-version updates. The proposals overlap in physics (gravitySlingSubsystem) and visual elements (probe trail and fruit rendering), risking duplicated or conflicting code and inconsistent visual styles or animations. Testing scope overlaps but is uneven across proposals, lacking explicit integration or interoperability tests, and no mobile accessibility conflicts or performance regressions are fully confirmed from evidence. The existing 0.1 controls remain invariant, but probe trail animations and gravity field visuals must respect reduced motion preferences uniformly to avoid interface conflicts.",
+      "objections": [
+        "Potential inconsistent implementations of gravity physics\u2014linear capped attraction, inverse-square, or momentum-rich inverse square\u2014may conflict and produce unpredictable probe trajectories if combined.",
+        "Probe trail rendering methods differ in layering order, visual style (semi-transparent circles vs gradients vs arcs), and parameters (opacity scaling, length) risking visual clutter or performance degradation, especially on mobile.",
+        "Fruit rendering style changes are proposed differently: simple shapes with highlights vs elliptical shadows and strokes, risking UX inconsistency if merged.",
+        "Catch quality feedback animations (pulsing rings) only in engineer proposal could conflict or duplicate with gravity field ellipse opacity changes from designer, complicating user feedback signals.",
+        "Tests do not cross-validate joint behavior of physics and visuals under realistic combined conditions, nor do they explicitly cover reduced motion preference handling consistently.",
+        "No mention of accessibility or mobile UI control conflicts or regressions in touch or keyboard input handling, which is critical for mobile compatibility."
+      ],
+      "proposed_action": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Visual probe trails and dynamic gravity ellipse may overlap or confuse users if not reconciled with engineer and researcher trail styles; increased rendering complexity risks mobile performance drops.",
+            "mitigation": "Iterate on unified trail rendering API with performance budgets; provide configurable reduced motion settings; standardize color and opacity schemes across visual feedback elements."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Physics change to inverse-square force may conflict with engineer's momentum-preserving calculation, risking probe trajectory instability or inconsistent behavior.",
+            "mitigation": "Coordinate physics equation implementation to adopt a single stable model; perform cross-subsystem simulations to validate unified physics behavior; add regression tests comparing trajectories."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Multiple overlapping visual effects (catch pulse rings, fruit shape highlights, probe trails) may congest UI and conflict with existing HUD; versioning must be carefully managed to avoid build confusion.",
+            "mitigation": "Enforce modular visual layers with prioritization; integrate visual testing with usability studies; update game version consistently; validate input responsiveness remains unchanged."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "engineer"
+        ],
+        "rationale": "The designer and engineer proposals complement each other in visual feedback enhancements and add compatible physics refinements emphasizing momentum and catch quality effects. Their visual styles and animations are similar enough to enable consolidation. The researcher physics overhaul proposes a different physics model that risks conflicts with engineer's detailed momentum-preserving updates and a different approach to trails and fruit rendering, making integration riskier. Prioritizing safe integration of designer and engineer changes offers an incremental and coherent refinement path with manageable risks."
+      },
+      "required_evidence": [
+        "Full diff and code architecture comparison of gravitySlingSubsystem implementations across all proposals.",
+        "Performance profiling data on target mobile devices for combined code paths including probe trails and gravity ellipse or pulse animations.",
+        "Automated and manual tests verifying probe trajectories and catch qualities under combined physics models and visual feedbacks.",
+        "Accessibility and reduced motion settings impact assessment on all new animations and visual effects.",
+        "User testing feedback on clarity of probe trajectory and catch quality cues with updated fruit visuals and HUD overlays."
+      ]
+    },
+    "producer": {
+      "claim": "Select 'designer' and 'engineer' proposals for integrated 0.2 update, combining complementary visual feedback and physics refinements with stable, momentum-rich sling mechanics and enhanced fruit distinctiveness.",
+      "rationale": "The 'designer' and 'engineer' proposals offer compatible physics improvements emphasizing velocity-based probe motion and momentum carry-through, combined with complementary visual enhancements including velocity-weighted probe trails, dynamic gravity field, fruit shapes and catch pulse feedback. Their code changes overlap little and use similar visual styles enabling unified implementation, while preserving all 0.1 core gameplay elements and controls as required. The 'researcher' proposes a different inverse-square physics model and fruit rendering approach incompatible with 'engineer' momentum calculations, raising integration complexity and instability risk. Critic corroborates this, recommending 'designer' and 'engineer' as a safer, coherent refinement path.",
+      "objections": [
+        "Researcher's inverse-square physics model might yield more realistic gravity sling behavior but conflicts with engineer's momentum-based physics, risking instability and code conflicts.",
+        "Multiple visual effects from both 'designer' and 'engineer' may increase rendering complexity and risk performance on mobile devices.",
+        "Integration of two distinct probe trail implementations requires careful unification to avoid redundant or conflicting visuals and maintain reduced motion compliance."
+      ],
+      "proposed_action": {
+        "selected_ids": [
+          "designer",
+          "engineer"
+        ],
+        "decision_reason": "The combined physics improvements yield observable, skill-rewarding probe dynamics preserving stable, bounded trajectories with momentum influence linked to ship movement, satisfying the physics target. The visual proposals jointly enhance fruit recognizability, probe trails, gravity and catch ring visual feedback tied directly to gameplay state. This satisfies the visual target while maintaining performance and the existing UI layout. Their compatible code changes minimize conflict risk and allow modular integration, ensuring stable delivery of 0.2 update per acceptance criteria.",
+        "interface_contracts": [
+          "gravitySlingSubsystem updates velocity and position using ship and probe states",
+          "renderProbeAndTether draws probe, tether, and probe trail using recent positions and velocity",
+          "renderFruitWaveAndPerspective renders fruits with shapes, highlights, and NEXT indicator",
+          "catch quality metric exposing horizontal offset and triggering ring pulse animations",
+          "HUD system uses game-version for version display and mobile-compatible layout",
+          "game loop fixed timestep integration at 1/120s passing updated probe physics state"
+        ],
+        "integration_steps": [
+          "Merge designer's probe trail history array with engineer's velocity vector trail rendering into a unified trail rendering function inside renderProbeAndTether",
+          "Integrate designer's dynamic gravity field ellipse drawing with engineer's catch pulse ring animations in renderProbeAndTether for layered visual effects",
+          "Adopt engineer's gravity sling momentum-based physics calculations in gravitySlingSubsystem, adding designer's subtle lateral gravity scaling influenced by ship-probe horizontal distance",
+          "Replace fruit rendering code in renderFruitWaveAndPerspective with engineer's elliptical fruit shapes and highlights, preserving numbered target text and NEXT emphasis",
+          "Update index.html game-version element to '0.2' to reflect merged version",
+          "Ensure reduced motion preferences disable all probe trails and gravity/catch ring animations gracefully",
+          "Maintain stable fixed-step game loop and input handling unmodified",
+          "Run combined visual features within existing HUD canvas and CSS constraints for performance and mobile layout"
+        ],
+        "verification": [
+          "Playtest on mobile devices verifying continuous curved probe trajectories varying with ship movement confirming momentum preservation and bounded speeds",
+          "Verify central catch imparts higher launch speed and triggers enhanced catch pulse ring animation with radius and opacity scaling",
+          "Confirm probe trail appears behind probe aligned to velocity vector with length and opacity proportional to speed and disabled under reduced motion",
+          "Validate fruits appear visually distinct with elliptical shapes, stem/leaf highlights and NEXT target emphasis consistently at near and far depths",
+          "Check HUD elements including score, waves, hull, probes indicators remain legible and stable with no overlay clutter",
+          "Conduct full normal input play session verifying preservation of 0.1 winning conditions and no regressions in probe losses or hull damage",
+          "Measure mobile frame rates sustaining above 50fps during probe flight with trail enabled",
+          "Test pause/resume/restart functionality maintains consistent physics and visual state including trailing and gravity/catch ring animations"
+        ]
+      },
+      "required_evidence": [
+        "Browser-based QA playtest video demonstrating skillful probe slings with lateral arcs varying by ship position using combined physics model",
+        "Performance metrics on representative mobile devices showing frame rates with new visuals enabled and respecting reduced motion",
+        "Code inspection showing merged probe trail rendering unifying designer and engineer approaches without duplication",
+        "Automated regression tests confirming stable catch speeds, probe loss rates, and wave completion under new physics",
+        "Screenshots or frame captures displaying distinct fruit shapes, gravity field ellipse, probe trail, and catch ring pulse effects tied to actual state changes"
+      ]
+    },
+    "update_decision": {
+      "schema_version": 1,
+      "proposals": [
+        {
+          "candidate_id": "designer",
+          "name": "Velocity-Weighted Probe Trail and Dynamic Gravity Field",
+          "player_experience": "Players see a smooth, fading tail behind the probe that varies in length and brightness proportional to probe speed, and a softly pulsing, horizontally stretched gravity field ellipse around the ship that shrinks and distorts subtly with ship lateral movement and probe proximity. These effects enhance perception of probe momentum and gravitational influence, aiding skillful timing and flight path anticipation while preserving gameplay simplicity and controls.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "Add an array to store recent probe positions updated each frame, pruning old positions for trail length limit; draw multiple Semi-transparent circles with decreasing radius and opacity along trail positions, weighted by instantaneous probe speed to reflect velocity intensity."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "Draw a gravity field ellipse around the ship that horizontally scales and varies opacity dynamically in proportion to the horizontal distance between the ship and probe, simulating gravity distortion as the probe swings; color set to subtle cyan with alpha modulation for performance and clarity."
+            }
+          ],
+          "tests": [
+            "Verify probe trail appears behind the probe only when active and moves fluidly following exact physics positions without lag or offset.",
+            "Check that the gravity field ellipse around the ship changes horizontal scale and opacity responsively as the ship moves and the probe swings left or right.",
+            "Confirm no changes to existing probe physics behavior: launch speeds, catch condition, probe loss or fruit interactions remain unchanged.",
+            "Observe frame rate remains above 50fps on typical mid-range mobile devices during probe flight with trail enabled.",
+            "Test that reduced motion preference disables the probe trail and gravity field animations gracefully without affecting gameplay or HUD.",
+            "Run a complete session with probe catching at various lateral offsets and verify visually distinguishable differences in trail length and gravity field distortion corresponding to probe speed and position."
+          ]
+        },
+        {
+          "candidate_id": "researcher",
+          "name": "Physics and Visual Feedback Refinement for Gravity Sling",
+          "player_experience": "Players will perceive more natural, skill-dependent probe slings influenced continuously by ship position, enabling finer control of arcs and catch timing. Fruits become more visually identifiable by distinct shapes and subtle highlights. The probe trail dynamically indicates speed and trajectory changes, clarifying motion and catch quality without new controls.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "Replace capped linear attraction with force inversely proportional to distance squared, clamped minimum distance to avoid singularities, apply accelerations preserving lateral momentum; update velocity accordingly."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "Instead of uniform colored circles for fruits, draw simple fruit shapes: e.g., ellipse with slight pointed top, small leaf/stem highlight above fruit center; maintain numbered target text and highlight for next target."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderProbeTrail",
+              "pseudo_code": "Add a function to draw a fading velocity-dependent trailing line behind probe, using stored previous positions or a velocity vector multiplier; subtle cyan gradient, low alpha, respecting reduced motion preference."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "draw",
+              "pseudo_code": "Invoke renderProbeTrail before rendering probe and tether for layered visual clarity."
+            }
+          ],
+          "tests": [
+            "Verify probe velocity and position over time with ship moving laterally produce curved orbital slings showing velocity-dependent arcs.",
+            "Test catch/relaunch speed increases proportionally with closer catch positioning despite inverse-square force model.",
+            "Observe visible fruit shapes retain distinctness and order readability at near and far depth scales.",
+            "Confirm probe trail appears only during probe flight, with length and opacity modulated by probe speed and reduced motion settings.",
+            "Validate no regressions in probe loss rates or hull damage frequency during normal gameplay sessions.",
+            "Test pause/resume and restart functionality do not disrupt probe trail or fruit rendering state."
+          ]
+        },
+        {
+          "candidate_id": "engineer",
+          "name": "Physics-Visual Refinement 0.2",
+          "player_experience": "Players experience more natural, momentum-rich probe trajectories where ship x-movement tangibly influences probe flight curvature and return path, allowing skillful sling effects. Fruits are visually distinct with illustrative shapes and subtle highlights making order recognition easier. Real-time velocity-based probe trails and catch-quality pulsing rings provide meaningful feedback enhancing game clarity and immersion without changing core controls or UI layout.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// Compute ship-probe vector dx, dy and distance d\\n// Calculate gravitational acceleration magnitude proportional to inverse square of d, clamped to min and max values\\n// Update p.vx, p.vy by adding scaled dx/d and dy/d times acceleration, considering ship.x velocity influence on lateral acceleration\\n// Clamp probe velocity to max speed\\n// Update probe x,y with new velocities\\n// Maintain fixed-step update for stability"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "renderFruitWaveAndPerspective",
+              "pseudo_code": "// For each fruit, draw circular base\\n// Draw an additional ellipse for leaf/stem highlight offset top-left of fruit center\\n// Use distinct color silhouettes and subtle shading to distinguish fruit types\\n// Apply far-near scaling and layering as before"
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "renderProbeAndTether",
+              "pseudo_code": "// After current probe rendering\\n// Compute probe speed and angle of velocity vector\\n// Draw a translucent trailing arc behind probe along inverse velocity vector\\n// Use canvas linear gradient or radial fade for smooth trail tapered at tail\\n// Trail length and opacity proportional to speed, capped to limit"
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "gravitySlingSubsystem",
+              "pseudo_code": "// On probe catch event\\n// Compute catch quality based on horizontal offset from ship center\\n// Trigger catch pulse radius and opacity animation, linked to quality\\n// Animate gravity/catch ring stroke width and color intensity proportional to catch quality dynamically during catch phase"
+            },
+            {
+              "file": "game.css",
+              "operation": "modify",
+              "symbol": "canvas and HUD elements",
+              "pseudo_code": "// Ensure new probe trails and fruit highlights do not interfere with existing HUD or controls\\n// Maintain high contrast for HUD text; keep controls reachable\\n// Refine subtle shadow or glow for fruit highlights for better depth without clutter"
+            },
+            {
+              "file": "index.html",
+              "operation": "modify",
+              "symbol": "game-version",
+              "pseudo_code": "// Update text content from '0.1' to '0.2' to reflect new refinement version."
+            }
+          ],
+          "tests": [
+            "Verify probe flight at different ship positions produces visibly distinct curved trajectories with momentum carry-through and stable fixed-step integration.",
+            "Confirm central catches produce stronger pulsing catch ring effects than edge catches consistently tied to real catch quality metric.",
+            "Render fruit visually distinct with illustrative elliptical highlights and stem shapes for all three fruit types; NEXT fruit is emphasized with contrasting stroke.",
+            "Check probe trails appear aligned behind probe velocity vector, have appropriate taper and fade, and respect reduced motion preferences.",
+            "Measure that maximum probe velocity caps remain unchanged, preventing runaway speeds or instability.",
+            "Run full normal play with keyboard and touch inputs covering multiple waves to validate winnability and HUD correctness with new visuals."
+          ]
+        }
+      ],
+      "critique": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Visual probe trails and dynamic gravity ellipse may overlap or confuse users if not reconciled with engineer and researcher trail styles; increased rendering complexity risks mobile performance drops.",
+            "mitigation": "Iterate on unified trail rendering API with performance budgets; provide configurable reduced motion settings; standardize color and opacity schemes across visual feedback elements."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Physics change to inverse-square force may conflict with engineer's momentum-preserving calculation, risking probe trajectory instability or inconsistent behavior.",
+            "mitigation": "Coordinate physics equation implementation to adopt a single stable model; perform cross-subsystem simulations to validate unified physics behavior; add regression tests comparing trajectories."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Multiple overlapping visual effects (catch pulse rings, fruit shape highlights, probe trails) may congest UI and conflict with existing HUD; versioning must be carefully managed to avoid build confusion.",
+            "mitigation": "Enforce modular visual layers with prioritization; integrate visual testing with usability studies; update game version consistently; validate input responsiveness remains unchanged."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "engineer"
+        ],
+        "rationale": "The designer and engineer proposals complement each other in visual feedback enhancements and add compatible physics refinements emphasizing momentum and catch quality effects. Their visual styles and animations are similar enough to enable consolidation. The researcher physics overhaul proposes a different physics model that risks conflicts with engineer's detailed momentum-preserving updates and a different approach to trails and fruit rendering, making integration riskier. Prioritizing safe integration of designer and engineer changes offers an incremental and coherent refinement path with manageable risks."
+      },
+      "selection": {
+        "selected_ids": [
+          "designer",
+          "engineer"
+        ],
+        "features": [
+          {
+            "candidate_id": "designer",
+            "name": "Velocity-Weighted Probe Trail and Dynamic Gravity Field",
+            "player_experience": "Players see a smooth, fading tail behind the probe that varies in length and brightness proportional to probe speed, and a softly pulsing, horizontally stretched gravity field ellipse around the ship that shrinks and distorts subtly with ship lateral movement and probe proximity. These effects enhance perception of probe momentum and gravitational influence, aiding skillful timing and flight path anticipation while preserving gameplay simplicity and controls.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "renderProbeAndTether",
+                "pseudo_code": "Add an array to store recent probe positions updated each frame, pruning old positions for trail length limit; draw multiple Semi-transparent circles with decreasing radius and opacity along trail positions, weighted by instantaneous probe speed to reflect velocity intensity."
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "renderProbeAndTether",
+                "pseudo_code": "Draw a gravity field ellipse around the ship that horizontally scales and varies opacity dynamically in proportion to the horizontal distance between the ship and probe, simulating gravity distortion as the probe swings; color set to subtle cyan with alpha modulation for performance and clarity."
+              }
+            ],
+            "tests": [
+              "Verify probe trail appears behind the probe only when active and moves fluidly following exact physics positions without lag or offset.",
+              "Check that the gravity field ellipse around the ship changes horizontal scale and opacity responsively as the ship moves and the probe swings left or right.",
+              "Confirm no changes to existing probe physics behavior: launch speeds, catch condition, probe loss or fruit interactions remain unchanged.",
+              "Observe frame rate remains above 50fps on typical mid-range mobile devices during probe flight with trail enabled.",
+              "Test that reduced motion preference disables the probe trail and gravity field animations gracefully without affecting gameplay or HUD.",
+              "Run a complete session with probe catching at various lateral offsets and verify visually distinguishable differences in trail length and gravity field distortion corresponding to probe speed and position."
+            ]
+          },
+          {
+            "candidate_id": "engineer",
+            "name": "Physics-Visual Refinement 0.2",
+            "player_experience": "Players experience more natural, momentum-rich probe trajectories where ship x-movement tangibly influences probe flight curvature and return path, allowing skillful sling effects. Fruits are visually distinct with illustrative shapes and subtle highlights making order recognition easier. Real-time velocity-based probe trails and catch-quality pulsing rings provide meaningful feedback enhancing game clarity and immersion without changing core controls or UI layout.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "gravitySlingSubsystem",
+                "pseudo_code": "// Compute ship-probe vector dx, dy and distance d\\n// Calculate gravitational acceleration magnitude proportional to inverse square of d, clamped to min and max values\\n// Update p.vx, p.vy by adding scaled dx/d and dy/d times acceleration, considering ship.x velocity influence on lateral acceleration\\n// Clamp probe velocity to max speed\\n// Update probe x,y with new velocities\\n// Maintain fixed-step update for stability"
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "renderFruitWaveAndPerspective",
+                "pseudo_code": "// For each fruit, draw circular base\\n// Draw an additional ellipse for leaf/stem highlight offset top-left of fruit center\\n// Use distinct color silhouettes and subtle shading to distinguish fruit types\\n// Apply far-near scaling and layering as before"
+              },
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "renderProbeAndTether",
+                "pseudo_code": "// After current probe rendering\\n// Compute probe speed and angle of velocity vector\\n// Draw a translucent trailing arc behind probe along inverse velocity vector\\n// Use canvas linear gradient or radial fade for smooth trail tapered at tail\\n// Trail length and opacity proportional to speed, capped to limit"
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "gravitySlingSubsystem",
+                "pseudo_code": "// On probe catch event\\n// Compute catch quality based on horizontal offset from ship center\\n// Trigger catch pulse radius and opacity animation, linked to quality\\n// Animate gravity/catch ring stroke width and color intensity proportional to catch quality dynamically during catch phase"
+              },
+              {
+                "file": "game.css",
+                "operation": "modify",
+                "symbol": "canvas and HUD elements",
+                "pseudo_code": "// Ensure new probe trails and fruit highlights do not interfere with existing HUD or controls\\n// Maintain high contrast for HUD text; keep controls reachable\\n// Refine subtle shadow or glow for fruit highlights for better depth without clutter"
+              },
+              {
+                "file": "index.html",
+                "operation": "modify",
+                "symbol": "game-version",
+                "pseudo_code": "// Update text content from '0.1' to '0.2' to reflect new refinement version."
+              }
+            ],
+            "tests": [
+              "Verify probe flight at different ship positions produces visibly distinct curved trajectories with momentum carry-through and stable fixed-step integration.",
+              "Confirm central catches produce stronger pulsing catch ring effects than edge catches consistently tied to real catch quality metric.",
+              "Render fruit visually distinct with illustrative elliptical highlights and stem shapes for all three fruit types; NEXT fruit is emphasized with contrasting stroke.",
+              "Check probe trails appear aligned behind probe velocity vector, have appropriate taper and fade, and respect reduced motion preferences.",
+              "Measure that maximum probe velocity caps remain unchanged, preventing runaway speeds or instability.",
+              "Run full normal play with keyboard and touch inputs covering multiple waves to validate winnability and HUD correctness with new visuals."
+            ]
+          }
+        ],
+        "decision_reason": "The combined physics improvements yield observable, skill-rewarding probe dynamics preserving stable, bounded trajectories with momentum influence linked to ship movement, satisfying the physics target. The visual proposals jointly enhance fruit recognizability, probe trails, gravity and catch ring visual feedback tied directly to gameplay state. This satisfies the visual target while maintaining performance and the existing UI layout. Their compatible code changes minimize conflict risk and allow modular integration, ensuring stable delivery of 0.2 update per acceptance criteria.",
+        "interface_contracts": [
+          "gravitySlingSubsystem updates velocity and position using ship and probe states",
+          "renderProbeAndTether draws probe, tether, and probe trail using recent positions and velocity",
+          "renderFruitWaveAndPerspective renders fruits with shapes, highlights, and NEXT indicator",
+          "catch quality metric exposing horizontal offset and triggering ring pulse animations",
+          "HUD system uses game-version for version display and mobile-compatible layout",
+          "game loop fixed timestep integration at 1/120s passing updated probe physics state"
+        ],
+        "integration_steps": [
+          "Merge designer's probe trail history array with engineer's velocity vector trail rendering into a unified trail rendering function inside renderProbeAndTether",
+          "Integrate designer's dynamic gravity field ellipse drawing with engineer's catch pulse ring animations in renderProbeAndTether for layered visual effects",
+          "Adopt engineer's gravity sling momentum-based physics calculations in gravitySlingSubsystem, adding designer's subtle lateral gravity scaling influenced by ship-probe horizontal distance",
+          "Replace fruit rendering code in renderFruitWaveAndPerspective with engineer's elliptical fruit shapes and highlights, preserving numbered target text and NEXT emphasis",
+          "Update index.html game-version element to '0.2' to reflect merged version",
+          "Ensure reduced motion preferences disable all probe trails and gravity/catch ring animations gracefully",
+          "Maintain stable fixed-step game loop and input handling unmodified",
+          "Run combined visual features within existing HUD canvas and CSS constraints for performance and mobile layout"
+        ],
+        "verification": [
+          "Playtest on mobile devices verifying continuous curved probe trajectories varying with ship movement confirming momentum preservation and bounded speeds",
+          "Verify central catch imparts higher launch speed and triggers enhanced catch pulse ring animation with radius and opacity scaling",
+          "Confirm probe trail appears behind probe aligned to velocity vector with length and opacity proportional to speed and disabled under reduced motion",
+          "Validate fruits appear visually distinct with elliptical shapes, stem/leaf highlights and NEXT target emphasis consistently at near and far depths",
+          "Check HUD elements including score, waves, hull, probes indicators remain legible and stable with no overlay clutter",
+          "Conduct full normal input play session verifying preservation of 0.1 winning conditions and no regressions in probe losses or hull damage",
+          "Measure mobile frame rates sustaining above 50fps during probe flight with trail enabled",
+          "Test pause/resume/restart functionality maintains consistent physics and visual state including trailing and gravity/catch ring animations"
+        ]
+      }
+    }
+  },
+  "qa": {
+    "claim": "The Peach Bounce 0.2 update implements physics and visual refinements to the original 0.1 game at the same URL, enhancing the Gravity Sling core mechanics and associated visual feedback as requested.",
+    "rationale": "The coder report details integration of both the designer's and engineer's selected proposals, including softened inverse-square gravity physics with momentum preservation, dynamic velocity-weighted probe trails, gravity field ellipses, catch pulse rings, and visually distinct fruit shapes with highlights. The updated index.html reflects version 0.2 and uses build ID 42325742245-1. Source-level logic shows bounded fixed-step physics integration, velocity-dependent motions, catch quality metrics directly influencing launch speeds, and gameplay features preserved (ordered fruit clearing, hull/probe mechanics, pause/restart). Input-only simulated policy runs demonstrate actual curve variation by ship movement, successful full winning sessions without injected code, and finite coordinate values throughout. Browser automated tests on two Chromium desktop viewports with mobile emulation confirm game startup, input handling, time advancement, actor movement, UI changes including visible build/version, pause/resume functionality and no failed network resources, passing all checks; player displacements indicate probe movement responsive to ship control. Visual rendering code shows layered fruit drawing with distinct fruit shapes, NEXT indicators, horizon atmosphere, probe trails aligned to velocity, and gravity/catch rings modulated by real physics state. Reduced motion preferences are respected disabling trails and animations gracefully. However, the actual browser screenshot or recorded video rendering confirming visual fidelity and smoothness is not supplied. Physical device tests and independent QA approvals remain pending but are beyond preview approval scope. Performance budgets and UI layout constraints are respected as stated, with no added controls or new minigames. The researcher proposal was excluded to avoid physics conflicts, consistent with approved plan and coder report.",
+    "objections": [
+      "Automated acceptance tests do not include image or video capture to conclusively verify visual quality and animation smoothness, so visual target confirmation relies on source code inspection rather than observed rendering.",
+      "Physical device testing and independent QA signoff are not completed within this evidence, leaving final performance and user experience on real mobile devices unverified.",
+      "The environment restricted HTTP socket creation and real Chromium mobile runtime acceptance; thus, true mobile browser frame rates and interactions remain uncertain.",
+      "No external user feedback or live deployment verification is yet available to confirm post-publication stability and gameplay engagement.",
+      "The researcher candidate's physics overhaul is deliberately excluded, but this was explicitly allowed per council decision to integrate designer and engineer proposals only."
+    ],
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "The implemented update preserves the original 0.1 gameplay core loop and tracks all requested physics and visual improvements per the prompt, supported by executed automated browser tests demonstrating input-responsive probe trajectories, gameplay state changes, and UI version updates. The code-level integration of multiple independent proposals meeting physics and visual acceptance criteria is documented. The test results confirm stable fixed-step physics, catch quality effects, differentiated fruit rendering, and valid HUD and control behavior at multiple simulated mobile viewport sizes. No prohibited features or regressions are observed. Remaining limitations do not preclude preview approval as they pertain to later QA, physical device testing, and publication verification steps.",
+      "criteria_results": {
+        "core_loop_preserved": true,
+        "url_and_version_correct": true,
+        "physics_improvements_effective": true,
+        "visual_improvements_present": true,
+        "automatic_launch_and_catch_function": true,
+        "correct_order_and_score_behavior": true,
+        "gameplay_winnability_proven": true,
+        "pause_resume_restart_valid": true,
+        "reduced_motion_respected": true,
+        "tests_passed_on_mobile_emulation": true,
+        "no_external_assets_or_controls": true,
+        "compatible_proposals_integrated": true
+      },
+      "remaining_limitations": [
+        "Lack of independent QA verification or physical device playtests in evidence",
+        "No provided screenshots, videos, or recorded visual acceptance captures",
+        "Mobile frame rate and rendering smoothness mostly unverified beyond desktop emulation",
+        "External user engagement and live deployment testing deferred to publisher",
+        "Network operation restrictions limit full automated acceptance tooling effectiveness"
+      ]
+    },
+    "required_evidence": [
+      "Recorded test video or screenshots demonstrating the improved fruit shapes, probe trails, gravity field visuals, and catch pulse effects during active gameplay on mobile emulation viewports",
+      "Independent QA report confirming visual clarity, HUD readability, and gameplay integrity matches requirements",
+      "Physical device test results confirming performance and rendering smoothness without regressions",
+      "Publisher verification of exact live build deployment and URL stability post-publication"
+    ]
+  },
+  "acceptance": {
+    "run_id": "42325742245-1",
+    "request_id": "peach-gravity-sling-02",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.1249999999999984,
+        "player_displacement": 45.93442322777918,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0749999999999986,
+        "player_displacement": 51.64285387311665,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Peach Bounce 0.2 \u2014 Gravity Sling\n\nImplemented the supplied collaborative selection **designer + engineer** together at the existing `docs/games/studio-original-001/` URL. Read `job.json`, `plan.json`, and `feedback.md` (empty feedback array). Inspected the shipped 0.1 source before editing. Only the three permitted release files and this report were intentionally edited; acceptance tooling generated its own failure evidence. No dependencies, other games, metadata, or test files were changed.\n\n## Integrated features and contracts\n\n- **designer:** `renderProbeAndTether` draws one unified tapered trail from a fixed 32-position typed-array ring buffer sampled by the actual 1/120-second physics steps. Speed controls visible sample count, width and opacity. There is no synthetic trajectory or second overlapping trail. History clears on deployment, loss, catch and restart. A cyan field ellipse responds to actual ship velocity, horizontal separation and probe proximity.\n- **engineer:** `gravitySlingSubsystem` uses softened inverse-square attraction `clamp(12000000 / (distance\u00b2 + 40000), 85, 300)`, directed toward the ship, with a bounded lateral ship-motion contribution and modest lateral field scaling. Lateral momentum carries through flight rather than being heavily damped. A constant 70-unit return acceleration replaces the age-triggered return boost, ensuring the probe eventually returns without a timed velocity flip. The original 430 speed cap, fixed step, fruit collision response, catch crossing and automatic deployment remain. Catch relaunch retains 45% of incoming lateral momentum, bounded to \u00b168; vertical launch remains `315 + 65 * quality`.\n- **catch contract:** `lastCatchOffset` and `lastCatchQuality` are actual crossing measurements. A simulation-timed pulse uses this quality for its strength, radius and width. The visible catch-mouth line exactly marks the original \u00b162 horizontal crossing at ship y\u221220. Existing inner/outer rings remain.\n- **fruit/perspective contract:** `renderFruitWaveAndPerspective` draws peach lobes, pear shoulders and a plum oval, with highlights, stems and scaled leaves. Existing numbered labels, NEXT outline, depth-scaled centers/radii, collision calculations and far-to-near ordering remain. Horizon atmosphere and restrained ship-position-driven star parallax add depth. Wrong-order flashes now also say ORDER!; hull damage retains its border and ship-color feedback.\n- **ship/HUD contract:** ship gains an inset cockpit silhouette; compact title/version styling gives the runway more room. SCORE/WAVES/HULL/PROBES, order/help/status and the same three controls remain. `game-version` displays 0.2; local asset query identifiers and visible build identifier use run `42325742245-1`. JS never overwrites the build label.\n- **diagnostics/input/timing contract:** frozen `BORHEZ_GAME` still returns fresh copied state. Added only actual quality, offset, pulse, measured ship velocity, sample count and reduced-motion details. Pointer ownership/cancel/release, one-axis drag, A/D/arrows, simulation loop and pause/restart control handling are retained. Pause freezes time and pulse/history; restart clears them. Reduced motion omits trail storage/rendering, dynamic field, pulse and parallax; the static catch guide remains.\n\nThe engineer physics requirement takes precedence over designer's proposed physics-neutral check. The proposals' illustrative circle/arc trail methods were reconciled into one sampled polyline, avoiding duplicate effects. Gravity-field responsiveness replaces a decorative free-running pulse. This is an arcade softened field with a finite return bias, not a physical orbital model. No unrelated content or new controls were added.\n\n## Executed checks and measurements\n\nCommands actually run:\n\n- `node --check docs/games/studio-original-001/game.js` \u2014 PASS, including the final source.\n- `git diff --check` \u2014 PASS.\n- `node /tmp/sling-test.cjs` \u2014 PASS. Temporary Node VM harness executes the real game source with Canvas/DOM stubs and real registered pointer handlers. It compares the saved original source `/tmp/gravity-01.js`, runs 12 input-only steering policies, and exercises explicit isolated internal-state fixtures. No test hook was written to release code.\n- `node /tmp/sling-reduced.cjs` \u2014 PASS. Repeats input-only policies with reduced motion enabled and targeted fixtures in both preferences.\n- `python -m http.server 8765 --directory docs` \u2014 BLOCKED: socket creation raises `PermissionError: [Errno 1] Operation not permitted`.\n- `node game_factory/mobile_acceptance.cjs` \u2014 BLOCKED before page load: Chromium exits with SIGTRAP after `setsockopt: Operation not permitted`. The runner's generated `acceptance.json` records that failure. This is not a browser acceptance pass.\n\nMeasured source-level gameplay evidence:\n\n| Check | Result |\n| --- | --- |\n| Same initial ship x=90, measured at ~2.975 seconds | 0.1 probe x=66.729, vx=\u22120.588; 0.2 probe exited x=\u221235.424 at age 2.825, vx=\u221262.105. Removing heavy damping creates materially greater lateral carry and makes abrupt edge steering riskier. |\n| Mirrored ship x=270 | Mirrored x/vx results; confirms actual steering affects curvature. |\n| Center ship x=180 at same observation time | 0.1 probe y=211.881, vy=\u2212265.306; 0.2 y=379.120, vy=\u2212338.213; both had one actual catch. |\n| Same returning-probe fixture: y=419, vy=200, vx=0; offsets 0 and 50 | Actual catch launches 380 and 327.60148. Quality comes from integrated crossing offset, including its small within-step movement. Both motion preferences give identical results. |\n| Input-only full winning session | 1,350 points, all three ordered waves, 36 catches, win at 119.100 simulated seconds, peak observed speed 380.901 < 430. Repeats with reduced motion. |\n| Winning pointer policy | Each 60Hz frame, observe copied snapshot, send real pointer move to `probe.x + 27*sin(time*0.65)` (clamped by the original input handler). One pointer-down starts ownership; no state injection, scoring calls or synthetic trajectory in winning runs. |\n| Other input-only policies | Include real hull-loss sessions; all checked coordinates stay finite. Observed policy peaks remain below 430. One stationary probe-following policy remains running after 300 seconds with only 100 points: the game still requires lateral steering. |\n| Explicit source fixtures | Wrong #2 before #1 leaves score=0/next=1; correct #1\u2013#3 produces 450 and wave 2. Five escaped probes exhaust stock and end the run; a single escape redeploys after the delay. Three separated ship hits deplete hull; repeated hit during immunity causes no extra damage. |\n| Pause/resume/restart and snapshot isolation | Full copied snapshot unchanged across 80 paused frames; resume advances time. Restart resets score/time/pulse/history. Mutating copied player/probe/fruit data does not change game state. Reduced-motion trail sample count remains zero. |\n\nFixture tests deliberately inject test conditions into a temporary instrumented in-memory copy to cover rare depletion/catch cases; they are distinct from the input-only winning evidence. The final post-test rendering edits add the catch-mouth line and preserve depth sorting with a reused reference array; they do not alter simulation.\n\n## Remaining acceptance limitations\n\nNo browser screenshot, actual touch rendering inspection, mobile frame-rate measurement, physical-phone playtest, external user feedback, independent QA approval, publication or live verification is claimed. The required 360\u00d7780 and 390\u00d7844 Chromium acceptance and visual inspection remain pending because this environment prohibits browser/server socket operations. Canvas/DOM-stub checks establish gameplay behavior, not visual quality or browser performance. The independent runner must complete those checks before acceptance/publication. The supplied council proposals were integrated; no new council agents were run or claimed.\n"
+}
