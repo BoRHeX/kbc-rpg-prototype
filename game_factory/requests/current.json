@@ -19,5 +19,10 @@
     "Wave completion advances progression with readable score/wave/HULL/PROBES status, clear win/lose or survival end condition, replay, and increasing but fair challenge.",
     "The gameplay council records independent code-symbol proposals, Critic compatibility and Producer agreed integration; integrated source implements the full player specification rather than merely two selected optional subfeatures.",
     "Independent 360x780 and 390x844 mobile touch/browser tests, JS syntax, pause/freeze, restart/reset, visual change and game-specific physics/loss/wave checks must pass before hash-verified production delivery."
-  ]
+  ],
+  "retry_note": {
+    "attempt": 2,
+    "previous_run": 42315325311,
+    "reason": "Fix model-parser contract: long player_experience is allowed, description aliases are accepted, complementary correction fields merge; regression suite 42316345466 passed"
+  }
 }
