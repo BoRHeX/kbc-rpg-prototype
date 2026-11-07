@@ -137,6 +137,34 @@ class MobileJobTests(unittest.TestCase):
             self.assertIn('id="game-version">0.1</span>', content)
             self.assertIn('PLAYTEST 123456-1', content)
 
+    def test_stamped_version_is_injected_when_missing(self):
+        import game_factory.mobile_jobs as mobile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            target = root / "docs/games/studio-original-001"
+            target.mkdir(parents=True)
+            (target / "index.html").write_text(
+                '<html><head><title>Peach Bounce 0.1 — Gravity Sling</title></head>'
+                '<body><h1>Peach Bounce 0.1 <span>— Gravity Sling</span></h1>'
+                '<small id="build-version">LOCAL BUILD</small>'
+                '<script src="./game.js"></script></body></html>')
+            work = root / "artifacts/mobile"
+            work.mkdir(parents=True)
+            (work / "job.json").write_text(json.dumps({
+                "request": {"id": "peach-gravity-sling-01", "game": "studio-original-001",
+                            "mode": "update", "release_version": "0.1"},
+                "target": "docs/games/studio-original-001", "run_id": "123-1"}))
+            with patch.object(mobile, "ROOT", root), patch.object(mobile, "WORK", work):
+                mobile.stamp_command()
+                first = (target / "index.html").read_text()
+                mobile.stamp_command()
+                second = (target / "index.html").read_text()
+            self.assertEqual(first, second)
+            self.assertIn('<span id="game-version">0.1</span>', second)
+            self.assertEqual(second.count('id="game-version"'), 1)
+            self.assertIn('PLAYTEST 123-1', second)
+
     def test_symlink_is_not_a_publishable_asset(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
