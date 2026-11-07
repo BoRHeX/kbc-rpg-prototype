@@ -86,10 +86,19 @@ def parse_feature(role, response):
             "symbol": require_text(operation.get("symbol"), role + ".symbol", 180),
             "pseudo_code": require_text(operation.get("pseudo_code"), role + ".pseudo_code", 1100),
         })
+    description = next((
+        candidate for candidate in (
+            feature.get("player_experience"), feature.get("experience"),
+            feature.get("description"), feature.get("player_impact"),
+            response.get("rationale"), response.get("claim"))
+        if isinstance(candidate, str) and candidate.strip()
+        or isinstance(candidate, list) and any(
+            isinstance(v, str) and v.strip() for v in candidate)
+    ), None)
     return {
         "candidate_id": role,
         "name": require_text(feature.get("name"), role + ".name", 100),
-        "player_experience": require_text(feature.get("player_experience"), role + ".player_experience"),
+        "player_experience": require_text(description, role + ".player_experience"),
         "code_changes": clean_ops,
         "tests": [require_text(t, role + ".test", 250) for t in tests],
     }
@@ -169,7 +178,8 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
         }, ensure_ascii=False)
         identity = memory.register(role, model)
         answer = ask_agent(memory, identity, job["run_id"],
-                           task, refs, model=model, max_output_tokens=1700)
+                           task, refs, model=model,
+                           max_output_tokens=2500 if redesign else 1700)
         # A valid JSON response is not necessarily valid structured code.
         # Let the same agent correct ONE format error instead of aborting the
         # entire paid run or inventing missing content on its behalf.
