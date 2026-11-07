@@ -14,8 +14,13 @@ def _object(fields):
             "required": list(fields), "additionalProperties": False}
 
 
-def _array(item):
-    return {"type": "array", "items": item}
+def _array(item, min_items=None, max_items=None):
+    result = {"type": "array", "items": item}
+    if min_items is not None:
+        result["minItems"] = min_items
+    if max_items is not None:
+        result["maxItems"] = max_items
+    return result
 
 
 _STRING = {"type": "string"}
@@ -46,23 +51,23 @@ FEATURE_SCHEMA = _agent_decision(_object({
                 "insert", "modify", "replace", "remove"]},
             "symbol": _STRING,
             "pseudo_code": _STRING,
-        })),
-        "tests": _array(_STRING),
+        }), 1, 8),
+        "tests": _array(_STRING, 1, 6),
     })
 }))
 CRITIC_SCHEMA = _agent_decision(_object({
     "assessments": _array(_object({
         "candidate_id": _ROLE, "risk": _STRING, "mitigation": _STRING,
-    })),
-    "compatible_ids": _array(_ROLE),
+    }), 3, 3),
+    "compatible_ids": _array(_ROLE, 2, 3),
     "rationale": _STRING,
 }))
 PRODUCER_SCHEMA = _agent_decision(_object({
-    "selected_ids": _array(_ROLE),
+    "selected_ids": _array(_ROLE, 2, 3),
     "decision_reason": _STRING,
-    "interface_contracts": _array(_STRING),
-    "integration_steps": _array(_STRING),
-    "verification": _array(_STRING),
+    "interface_contracts": _array(_STRING, 2, 6),
+    "integration_steps": _array(_STRING, 2, 8),
+    "verification": _array(_STRING, 2, 8),
 }))
 
 
