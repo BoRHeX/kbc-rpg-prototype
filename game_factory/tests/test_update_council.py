@@ -123,6 +123,26 @@ class UpdateCouncilTests(unittest.TestCase):
                          {"selected_ids","decision_reason","interface_contracts",
                           "integration_steps","verification"})
 
+    def test_empty_tests_are_unverified_qa_tasks_not_job_killers(self):
+        proposal = answer(feature("Gravity-based catch"))
+        proposal["proposed_action"]["feature"]["tests"] = []
+        result = parse_feature("researcher", proposal)
+        self.assertEqual(len(result["tests"]), 1)
+        self.assertIn("PRODUCER/QA TEST NEEDED", result["tests"][0])
+        self.assertIn("Gravity-based catch", result["player_experience"])
+
+    def test_schemas_enforce_array_sizes(self):
+        from game_factory.update_council import FEATURE_SCHEMA, CRITIC_SCHEMA, PRODUCER_SCHEMA
+        feature_fields = FEATURE_SCHEMA["properties"]["proposed_action"]["properties"]["feature"]["properties"]
+        self.assertEqual(feature_fields["code_changes"]["minItems"], 1)
+        self.assertEqual(feature_fields["code_changes"]["maxItems"], 8)
+        self.assertEqual(feature_fields["tests"]["minItems"], 1)
+        self.assertEqual(feature_fields["tests"]["maxItems"], 6)
+        critic = CRITIC_SCHEMA["properties"]["proposed_action"]["properties"]
+        self.assertEqual(critic["compatible_ids"]["minItems"], 2)
+        prod = PRODUCER_SCHEMA["properties"]["proposed_action"]["properties"]
+        self.assertEqual(prod["integration_steps"]["minItems"], 2)
+
     def test_long_redesign_description_does_not_cancel_council(self):
         response = answer(feature("Depth fruit perspective"))
         response["proposed_action"]["feature"]["player_experience"] = (
