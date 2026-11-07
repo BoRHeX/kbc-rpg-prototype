@@ -60,6 +60,42 @@ class UpdateCouncilTests(unittest.TestCase):
         self.assertEqual(selected["selected_ids"], ["designer", "engineer"])
         self.assertEqual(len(selected["features"]), 2)
 
+    def test_physics_visual_update_preserves_existing_game(self):
+        observed = {}
+        critic = answer({"assessments": [
+            {"candidate_id": r, "risk": "Timing", "mitigation": "Use shared fixed dt"}
+            for r in ("designer", "researcher", "engineer")],
+            "compatible_ids": ["designer", "researcher", "engineer"],
+            "rationale": "Compatible real flight telemetry for the visuals"})
+        producer = answer({
+            "selected_ids": ["designer", "researcher"],
+            "decision_reason": "Visual clarity and physics work together.",
+            "interface_contracts": ["Trail samples probe position", "Use real catch speed"],
+            "integration_steps": ["Render depth feedback", "Improve gravity physics"],
+            "verification": ["Compare catch speeds", "Screenshot mobile viewports"]})
+        def ask(memory, role, run_id, task, refs, **kwargs):
+            observed[role] = task
+            if role == "critic":
+                return critic
+            if role == "producer":
+                return producer
+            return answer(feature({
+                "designer": "Depth and flight visuals",
+                "researcher": "Physically curved probe trajectory",
+                "engineer": "Numerical stability"}[role]))
+        job = {"run_id": "515-1", "target": "docs/games/studio-original-001",
+               "request": {"game": "studio-original-001", "mode": "update",
+                           "focus": "physics_visual", "release_version": "0.2"}}
+        result = negotiate_update(Memory(), "test", job,
+                                  {"job": job["request"]}, ask)
+        self.assertEqual(result["update_decision"]["selection"]["selected_ids"],
+                         ["designer", "researcher"])
+        self.assertIn("recognizable fruit", observed["designer"])
+        self.assertIn("probe physics", observed["researcher"])
+        self.assertIn("preserve the 0.1 game loop", observed["producer"])
+        self.assertIn("NOT new content", observed["critic"])
+        self.assertNotIn("CONTENT feature", observed["designer"])
+
     def test_one_correction_reuses_same_designer_and_preserves_autonomy(self):
         answers = {
             "designer": answer(feature("New route")),
