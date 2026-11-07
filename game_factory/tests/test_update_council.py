@@ -1,7 +1,7 @@
 """Unit contracts for collaborative code-language planning."""
 import unittest
 
-from game_factory.update_council import negotiate_update, parse_feature
+from game_factory.update_council import negotiate_update, parse_feature, merge_feature_answer
 
 
 def answer(action):
@@ -104,6 +104,45 @@ class UpdateCouncilTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "1–8 code changes"):
             negotiate_update(Memory(), "model", job, {}, ask)
         self.assertEqual(calls, ["designer", "designer"])
+
+    def test_long_redesign_description_does_not_cancel_council(self):
+        response = answer(feature("Depth fruit perspective"))
+        response["proposed_action"]["feature"]["player_experience"] = (
+            "The pilot maneuvers through depth-perspective fruit waves; "
+            + "each numbered target changes the path and catch strategy. " * 65
+        )
+        self.assertGreater(len(response["proposed_action"]["feature"]["player_experience"]), 850)
+        result = parse_feature("designer", response)
+        self.assertIn("depth-perspective", result["player_experience"])
+        self.assertGreater(len(result["player_experience"]), 850)
+
+    def test_missing_description_uses_existing_agent_rationale(self):
+        response = answer(feature("Gravity lens"))
+        response["proposed_action"]["feature"].pop("player_experience")
+        response["rationale"] = (
+            "A returning probe accelerates after a central ship-field catch."
+        )
+        result = parse_feature("researcher", response)
+        self.assertIn("probe accelerates", result["player_experience"])
+
+    def test_correction_preserves_original_code_when_repair_has_only_description(self):
+        first = answer(feature("Perspective progression"))
+        first["proposed_action"]["feature"].pop("player_experience")
+        first["claim"] = ""
+        first["rationale"] = ""
+        corrected = answer(feature("Perspective progression"))
+        corrected["proposed_action"]["feature"].pop("code_changes")
+        merged = merge_feature_answer(first, corrected)
+        result = parse_feature("designer", merged)
+        self.assertEqual(len(result["code_changes"]), 1)
+        self.assertIn("progression", result["player_experience"])
+
+    def test_different_name_does_not_merge_unrelated_concepts(self):
+        first = answer(feature("Gravity probe"))
+        other = answer(feature("Unrelated orbit"))
+        other["proposed_action"]["feature"]["code_changes"] = []
+        with self.assertRaisesRegex(ValueError, "1–8 code changes"):
+            parse_feature("designer", merge_feature_answer(first, other))
 
     def test_scope_rejects_path_escape(self):
         with self.assertRaisesRegex(ValueError, "outside game file scope"):
