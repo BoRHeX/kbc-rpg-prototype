@@ -21,8 +21,11 @@
     "Independent 360x780 and 390x844 mobile touch/browser tests, JS syntax, pause/freeze, restart/reset, visual change and game-specific physics/loss/wave checks must pass before hash-verified production delivery."
   ],
   "retry_note": {
-    "attempt": 4,
-    "previous_run": 42316813160,
-    "reason": "Strict council schema now constrains all array sizes and normalizes empty planning tests as explicit unverified QA tasks; factory and mobile-browser regression run 42317081421 succeeded"
-  }
+    "attempt": 5,
+    "previous_run": 42317178651,
+    "reason": "Resume unshipped game source recovered from failed Codex logs; auto stamp version; QA in clean runner; isolated Codex repair if independent gate fails",
+    "regression_run": 42318311785
+  },
+  "resume_candidate_run": 42317178651,
+  "resume_candidate_branch": "recovery/peach-gravity-sling-01"
 }
