@@ -1,0 +1,200 @@
+name: Cataclysm 0.9 — autonomous Studio free choice
+on:
+  push:
+    branches: ['experiment/cataclysm-09-graphics']
+    paths: ['.github/workflows/cataclysm-09-free-choice.yml']
+concurrency:
+  group: cataclysm-09-free-choice-one-shot
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: read
+  actions: read
+jobs:
+  revamp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/cataclysm-09
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare browser tools, immutable 0.9 baseline and local servers
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+          node --check game_factory/world_physics_qa.cjs
+          node --check game_factory/audio_lab_qa.cjs
+          mkdir -p "$RUNNER_TEMP/graphics-baseline/preview" artifacts/graphics-09
+          cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/graphics-baseline/preview/"
+          nohup python -m http.server 8766 --directory "$RUNNER_TEMP/graphics-baseline" >/tmp/graphics-baseline-server.log 2>&1 &
+          nohup python -m http.server 8765 --directory docs >/tmp/graphics-candidate-server.log 2>&1 &
+          python - <<'PY'
+          import urllib.request,time
+          for port in [8765,8766]:
+            for attempt in range(20):
+              try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/preview/',timeout=3) as r:
+                  assert r.status==200
+                break
+              except Exception:
+                if attempt==19:raise
+                time.sleep(.5)
+          print('Both isolated test servers ready')
+          PY
+      - name: Independent BoRHeZ studio chooses and implements its own Cataclysm 0.9 update
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm-09-free-choice-001.md
+      - name: Check independently chosen update, version, world, sound and council decision memo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess
+          allowed={'docs/preview/game.js','docs/preview/game.css','docs/preview/index.html',
+                   'docs/preview/game-config.json','game_factory/decisions/cataclysm-09-free-choice-001.md'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          bad=(changed|untracked)-allowed
+          if bad:raise SystemExit('Studio attempted unauthorized file edits '+repr(sorted(bad)))
+          if not any(f.startswith('docs/preview/') for f in changed):
+              raise SystemExit('Studio did not implement a real playable game update')
+          memo=pathlib.Path('game_factory/decisions/cataclysm-09-free-choice-001.md')
+          if not memo.is_file() or len(memo.read_text())<350:
+              raise SystemExit('Studio council did not submit its decision record')
+          js=pathlib.Path('docs/preview/game.js').read_text()
+          html=pathlib.Path('docs/preview/index.html').read_text()
+          if len(js)>400000:raise SystemExit('Source too large')
+          if "const BUILD = '0.9'" not in js or '<title>Cataclysm 0.9 · BoRHeZ Games</title>' not in html or 'id="game-version">0.9</b>' not in html:
+              raise SystemExit('Plain Cataclysm 0.9 identity changed')
+          if any(x in html for x in ['GRAPHICS LAB','EFFECTS PASS','EXPERIMENTAL']):
+              raise SystemExit('Studio left deprecated Graphics Lab branding')
+          for contract in ['const WORLD_SIZE','function wrapCoord(','function wrappedDelta(','function isTerrainClear(','function moveWithCollision(','function resolveActorCollisions(',
+                           "const AUDIO_PASS_ID = 'graphics-lab-audio-01'"]:
+              if contract not in js:raise SystemExit('Required world or audio contract lost: '+contract)
+          print('Autonomous studio scope and baseline requirements pass',sorted(changed|untracked))
+          PY
+          node --check docs/preview/game.js
+          git diff --check
+      - name: Independently verify actual Web Audio music, boss drop and mute
+        id: audio
+        continue-on-error: true
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
+        run: |
+          set -o pipefail
+          node game_factory/audio_lab_qa.cjs 2>&1 | tee artifacts/graphics-09/audio-gate.log
+      - name: Preserve rejected audio candidate without modifying the live lab
+        if: steps.audio.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-free-choice-rejected-source
+          path: |
+            docs/preview/game.js
+            docs/preview/game.css
+            docs/preview/index.html
+            artifacts/graphics-09/audio-qa.json
+            artifacts/graphics-09/audio-gate.log
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve rejected studio candidate on a separate recovery branch
+        if: steps.audio.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ isolated audio recovery'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html
+          git commit -m 'Unverified autonomous Cataclysm candidate; not live'
+          git push origin "HEAD:refs/heads/recovery/cataclysm-creative-${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Refuse publish if sound fails independent browser checks
+        if: steps.audio.outcome == 'failure'
+        run: exit 1
+      - name: Regression-test all eight toroidal collision cases in Chrome
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/world_physics_qa.cjs
+      - name: Compare old vs new across three mobile viewport layouts
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/graphics_experiment_qa.cjs
+      - name: Sign trusted independent QA receipt and commit ONLY primary development branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib
+          source=pathlib.Path('docs/preview')
+          baseline=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'graphics-baseline/preview/game.js'
+          browser=json.loads(pathlib.Path('artifacts/graphics-09/qa.json').read_text())
+          physics=json.loads(pathlib.Path('artifacts/graphics-09/physics-qa.json').read_text())
+          audio=json.loads(pathlib.Path('artifacts/graphics-09/audio-qa.json').read_text())
+          if not browser.get('passed') or len(browser.get('platforms',[]))<3:
+              raise SystemExit('All mobile browser layout tests must pass')
+          if not physics.get('passed') or len(physics.get('tests',[]))<8:
+              raise SystemExit('All toroidal/actor/terrain tests must pass')
+          if not audio.get('passed') or len(audio.get('checks',[]))<8:
+              raise SystemExit('All soundtrack, bass and boss transition checks must pass')
+          hashes={n:hashlib.sha256((source/n).read_bytes()).hexdigest()
+                  for n in ['index.html','game.js','game.css','game-config.json']}
+          memo=pathlib.Path('game_factory/decisions/cataclysm-09-free-choice-001.md')
+          report={'status':'passed','version':'0.9','branch':'development/cataclysm-09',
+                  'source_sha256':hashes,
+                  'baseline_sha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
+                  'browser_qa':browser,'physics_qa':physics,'audio_qa':audio,
+                  'studio_decision':memo.as_posix(),
+                  'production_preview_unchanged':True,
+                  'release_approval':'automated gate only; player evaluation still needed',
+                  'test_evidence':'cataclysm-free-choice-001-artifacts'}
+          pathlib.Path('game_factory/cataclysm_09_dev_report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('Trusted Cataclysm development QA report passed')
+          PY
+          git config user.name 'BoRHeZ autonomous game studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json
+          git add game_factory/decisions/cataclysm-09-free-choice-001.md game_factory/cataclysm_09_dev_report.json
+          git diff --cached --check
+          git commit -m 'Cataclysm 0.9: Studio-autonomous creative pass 001 (QA passed)'
+          git fetch origin development/cataclysm-09
+          git rebase origin/development/cataclysm-09
+          git push origin HEAD:development/cataclysm-09
+      - name: Dispatch release to primary Cataclysm URL, preserving archived game
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PUBLISH_SHA="$(git rev-parse HEAD)"
+          python - <<'PY' > "$RUNNER_TEMP/cataclysm-dev-dispatch.json"
+          import json,os
+          print(json.dumps({'event_type':'borhez-cataclysm-09-development',
+             'client_payload':{'branch':'development/cataclysm-09','sha':os.environ['PUBLISH_SHA']}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/cataclysm-dev-dispatch.json"
+          echo "### Autonomous Cataclysm 0.9 studio update QA accepted" >> "$GITHUB_STEP_SUMMARY"
+          echo "One-off studio decision: game_factory/decisions/cataclysm-09-free-choice-001.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "Separate publisher dispatch sent; archived original not modified." >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve before/after browser screenshots and independent QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-free-choice-001-artifacts
+          path: artifacts/graphics-09
+          if-no-files-found: ignore
+          retention-days: 30
