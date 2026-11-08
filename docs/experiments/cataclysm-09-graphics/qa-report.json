@@ -2,7 +2,7 @@
   "status": "passed",
   "version": "0.9",
   "branch": "experiment/cataclysm-09-graphics",
-  "sha_source_baseline": "e240494e2eaf6b8d30852c5b0407545fd71376b05dfc24d45514f2e92cf8a5d1",
+  "sha_source_baseline": "6c5bc8e420dc00ba1d999000c3a39d6d556e0ff500f8f0ac0e3a07d6cbea876c",
   "browser_qa": {
     "baseline": "http://127.0.0.1:8766/preview/",
     "candidate": "http://127.0.0.1:8765/preview/",
@@ -20,12 +20,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999995,
+          "time": 1.2666,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2538999999999876,
+          "time": 1.2665999999999995,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -42,12 +42,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2666999999999995,
+          "time": 1.2520999999999984,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.251199999999976,
+          "time": 1.2665999999999997,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -64,12 +64,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999997,
+          "time": 1.2499999999999998,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2515999999999996,
+          "time": 1.2665999999999997,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -160,7 +160,78 @@
     "physical_device": "not tested",
     "source_instrumentation": "test only"
   },
+  "audio_qa": {
+    "title": "Cataclysm original survival/boss soundtrack test",
+    "passed": true,
+    "platform": "Chromium Web Audio",
+    "hardware": "not tested",
+    "checks": [
+      {
+        "name": "no audio playback before first user gesture",
+        "ok": true,
+        "contexts": 0,
+        "sources": 0
+      },
+      {
+        "name": "trusted audio-test bridge loaded from game.js",
+        "ok": true,
+        "bridge": true
+      },
+      {
+        "name": "survival score schedules layered real Web Audio",
+        "ok": true,
+        "mode": "survival",
+        "beat": 21,
+        "osc": 47,
+        "buffers": 23,
+        "filters": 46,
+        "shapers": 18,
+        "compressors": 1,
+        "sourcesStarted": 47,
+        "audioContexts": 1
+      },
+      {
+        "name": "boss triggers dubstep mode immediately with real audio sources",
+        "ok": true,
+        "mode": "boss",
+        "beat": 28,
+        "osc": 61,
+        "buffers": 33,
+        "filters": 59,
+        "shapers": 21,
+        "compressors": 1,
+        "sourcesStarted": 61,
+        "audioContexts": 1
+      },
+      {
+        "name": "boss defeat restores normal hard rock rhythm",
+        "ok": true,
+        "mode": "survival",
+        "beat": 28
+      },
+      {
+        "name": "pausing silences score",
+        "ok": true,
+        "mode": "silent",
+        "active": false
+      },
+      {
+        "name": "mute silences background AND suppresses new sound voices",
+        "ok": true,
+        "mode": "silent",
+        "enabled": false,
+        "sources": 73,
+        "expected": 73
+      },
+      {
+        "name": "unmute recovers existing soundtrack without new AudioContext",
+        "ok": true,
+        "mode": "survival",
+        "contexts": 1
+      }
+    ]
+  },
   "production_untouched": true,
   "visual_approval": "pending user review",
-  "screenshots": "GitHub Actions artifact cataclysm-09-world-physics-comparison"
+  "screenshots": "GitHub Actions artifact cataclysm-09-audio-comparison"
 }
