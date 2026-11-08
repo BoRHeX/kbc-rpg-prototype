@@ -1,37 +1,13 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#070e1b">
-<title>Cataclysm 0.8 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42506076971-1"></head>
-<body>
-<header class="top">
-  <a href="../games/" class="back">← All games</a>
-  <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42506076971-1">AI PLAYTEST BUILD 42506076971-1</div>
-</header>
-<main class="shell">
-  <section class="intro">
-    <h1>Cataclysm <span id="game-version">0.8</span></h1>
-    <p>One cat. One city. An inconvenient number of zombies.</p>
-  </section>
-    <div class="hud">
-      <div class="hud-block"><small>TIME</small><b id="time">00:00</b></div>
-      <div class="hud-block"><small>FISH</small><b id="fish">0</b></div>
-      <div class="hud-block"><small>KILLS</small><b id="kills">0</b></div>
-      <div class="hud-block"><small>HP / MAX</small><b id="health">3 / 3</b></div>
-    </div>
-    <p class="personal-best">Personal best · this device: <b id="best">0</b></p>
-    <p id="runtime-status" hidden role="alert" style="color:#ff8d9d;font-size:13px"></p>
-    <noscript>JavaScript is required to start the game. Enable it and reload.</noscript>
-    <div id="arena" class="arena">
-      <canvas id="canvas" width="720" height="1000" aria-label="Survive the night as a cat. Drag to move."></canvas>
-      <div id="start-overlay" class="overlay">
-        <div class="emblem">🐈‍⬛</div>
-        <div class="overline">BO RHEZ ARCADE · EPISODE 001</div>
-        <h2 id="overlay-title">MIDNIGHT SURVIVAL</h2>
-        <p id="overlay-copy">Drag to move your cat. Dodge zombies, collect fish, and fire automatically at nearby threats. Survive as long as you can.</p>
-        <button id="play" type="button" class="primary" disabled>LOADING GAME…</button>
-      </div>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f1b"><title>Cataclysm 0.8 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42510862094-1"></head><body><main id="arena" class="arena">
+<canvas id="canvas" aria-label="Cataclysm. Drag to move; arrows or WASD also work."></canvas>
+<header class="identity"><a href="../games/" class="back">← Games</a><span>CATACLYSM <b id="game-version">0.8</b></span><small id="build-version" data-run="AI PLAYTEST BUILD 42510862094-1">AI PLAYTEST BUILD 42510862094-1</small></header>
+<div class="hud">
+<div class="hud-block"><small>TIME</small><b id="time">00:00</b></div><div class="hud-block"><small>FISH</small><b id="fish">0</b></div><div class="hud-block"><small>KILLS</small><b id="kills">0</b></div><div class="hud-block"><small>HP</small><b id="health">3 / 3</b></div><div class="hud-block"><small>SCORE</small><b id="score">0</b></div><div class="hud-block"><small>XP / LEVEL</small><b id="xp-level">0 / 10 · L1</b></div>
+</div><div id="night-status">NIGHT 1</div><div id="boss-status" hidden><span>ALLEY KING</span><progress id="boss-health" max="1" value="1" aria-label="Alley King health"></progress></div>
+<p id="support-status" role="status"></p><p id="buff-status" role="status"></p>
+<nav class="actions" aria-label="Game controls"><button id="pause" aria-label="Pause game" hidden>Ⅱ</button><button id="mute" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart">↻ Restart</button><button id="squad-tactic" aria-label="Squad tactics toggle">Tactic: ATK</button><button id="runic-relic-activate" hidden>Activate relic</button></nav>
+<div id="start-overlay" class="overlay"><div class="overline">BoRHeZ GAMES · SURVIVAL</div><h1 id="overlay-title">MIDNIGHT SURVIVAL</h1><p id="overlay-copy">Drag to dodge. Auto-fire defeats enemies; collect fish to choose upgrades. Survive the Alley King every five minutes.</p><button id="play" class="primary" disabled>LOADING…</button><small>Best <b id="best">0</b> · <span class="rotate-hint">Landscape recommended · </span>WASD / arrows supported</small><small id="build-stats"></small></div>
       <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
         <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
         <p id="upgrade-copy">Time and combat are frozen. Equip one upgrade to continue.</p>
@@ -53,18 +29,7 @@
         <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · diminishing speed growth</small></button>
         <button type="button" class="upgrade" data-upgrade="recover">Patch up<small>Restore one heart · heal one heart and gain 0.25 maximum HP</small></button>
       </section>
-      <button id="pause" class="pause" aria-label="Pause game" hidden>Ⅱ</button>
-      <div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div>
-      <div class="notice" id="notice" hidden></div>
-    </div>
-    <button id="runic-relic-activate" type="button" hidden>Activate relic</button>
-    <p id="support-status" role="status" aria-live="polite"></p>
-    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Upgrades keep growing: damage +0.25, diminishing movement growth, 15% shorter firing cooldown, repeatable spread, ricochet, magnet and familiar training. At high rates and ranks, extra attacks combine into stronger hits to keep the arena responsive. Patch up heals one heart and adds 0.25 maximum HP. Every third level grants +1 maximum heart. Each level offers three weighted random investments, including rare specials. XP upgrades multiply earned XP without changing fish score.</p><p>Threats unlock by survival time, never player level: Weavers 2:00, Dashers 4:00, Orbiters 7:00, Stalkers 11:00, Ghosts 16:00, toxic gas 20:00. The Alley King arrives every five minutes. Familiar enemies grow between introductions. Gold fish remain until collected. Crates: R doubles damage, M attracts fish, hearts heal. Each finished run raises starting threat on this device.</p><p>Recruit permanent shooter, healer and tank followers at any level. Train roles or invest in squad damage, firing, strength, spread and ricochet. One visible follower per role represents uncapped squad strength. Healers regenerate health; tanks guard nearby. Three nearby enemies trigger Feral Instinct for six seconds (+30% speed, +25% damage). Escape the crowd to rearm.</p><p>Survival Instinct: after ten damage-free seconds, build twenty vulnerable seconds to earn eight seconds of +15% speed and +20% fire rate. Damage resets it. Escape shield protects for 2.5s near walls: move at least 80px and clear enemies by 180px within two seconds after the shield ends for four seconds of Overdrive (+45% speed, +60% damage). These boosts multiply with Feral Instinct and rage.</p><p>Blue runes appear from 0:35 and every 45s. Walk over one, then tap its button below the arena for a six-second shield or 260px slow field. Each rune is consumed; activation recovers for ten seconds. All timers freeze in menus and pause. Ghosts seal auto-fire briefly; familiars keep firing. Gas warns for one second before expanding. Near walls follow the mint arrow inward to rearm the escape shield.</p></div></details>
-    <div class="below">
-      <div class="help"><b>CONTROLS</b><p><span class="desktop">WASD / arrow keys</span><span class="mobile">Drag anywhere on the arena</span> to move. Your cat fires automatically. Collect fish to upgrade. </p></div>
-      <div class="actions"><button id="mute" class="secondary" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart" class="secondary">↻ Restart</button></div>
-    </div>
-</main>
+<div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div><div id="notice" class="notice" hidden></div><p id="runtime-status" role="alert" hidden></p><noscript>JavaScript is required to play.</noscript></main>
 <script>
 (function () {
   var expected = '0.8';
@@ -106,5 +71,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42506076971-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42510862094-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>
