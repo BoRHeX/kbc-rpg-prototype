@@ -55,6 +55,10 @@ jobs:
               physics=report.get('physics_qa',{})
               if not physics.get('passed') or len(physics.get('tests',[]))<8:
                   raise SystemExit('World physics graphics build lacks successful independent torus/collision QA')
+          if "const AUDIO_PASS_ID = 'graphics-lab-audio-01'" in physics_source:
+              sound=report.get('audio_qa',{})
+              if not sound.get('passed') or len(sound.get('checks',[]))<7:
+                  raise SystemExit('Graphics Lab audio build lacks independent soundtrack and mute/boss-transition QA')
           output=pathlib.Path('docs/experiments/cataclysm-09-graphics')
           output.mkdir(parents=True,exist_ok=True)
           allowed={'index.html','game.js','game.css','game-config.json'}
