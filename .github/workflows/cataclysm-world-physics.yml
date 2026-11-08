@@ -31,6 +31,7 @@ jobs:
           set -euo pipefail
           npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
           google-chrome --version
+          node --check game_factory/world_physics_qa.cjs
           mkdir -p "$RUNNER_TEMP/graphics-baseline/preview" artifacts/graphics-09
           cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/graphics-baseline/preview/"
           nohup python -m http.server 8766 --directory "$RUNNER_TEMP/graphics-baseline" >/tmp/graphics-baseline-server.log 2>&1 &
@@ -79,16 +80,54 @@ jobs:
           PY
           node --check docs/preview/game.js
           git diff --check
-      - name: Compare prior Graphics Lab to looping world graphics at three viewports
+      - name: Independently test periodic wrapping, solid terrain, actors and projectiles
+        id: physics
+        continue-on-error: true
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
+        run: |
+          set -o pipefail
+          node game_factory/world_physics_qa.cjs 2>&1 | tee artifacts/graphics-09/physics-gate.log
+      - name: Let coding agent repair only verified physics-test defects
+        if: steps.physics.outcome == 'failure'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt: |
+            Independent QA on the Cataclysm Graphics Lab toroidal map FAILED.
+            You are the REPAIR coder. Read:
+            - game_factory/requests/cataclysm-09-graphics-world-physics.md
+            - artifacts/graphics-09/physics-gate.log
+            - artifacts/graphics-09/physics-qa.json (if present)
+            - docs/preview/game.js, docs/preview/index.html and game_factory/world_physics_qa.cjs
+            Diagnose the actual failure; fix the gameplay implementation preserving the candidate, NOT by
+            bypassing the test or rewriting its assertions. The trusted runner executes Chrome and HTTP
+            outside the Codex sandbox; your sandbox cannot access them, DO NOT discard code due to this.
+            The independent gate will rerun after this repair. You may modify ONLY
+            docs/preview/game.js, docs/preview/game.css, docs/preview/index.html.
+            Do not touch tests, game rules beyond collisions/wrap, workflows, public dashboard or
+            other games; keep BUILD 0.9 and the visual effects from graphics pass 2.
+            Leave a substantive fixed candidate in the working tree.
+      - name: Rerun the independently executed physics gate after one repair
+        if: steps.physics.outcome == 'failure'
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check docs/preview/game.js
+          git diff --check
+          node game_factory/world_physics_qa.cjs
+      - name: Compare preserved Graphics Lab to looping world at three viewports
         env:
           BORHEZ_BROWSER_CHANNEL: chrome
           GRAPHICS_OUTPUT: artifacts/graphics-09
         run: node game_factory/graphics_experiment_qa.cjs
-      - name: Independently verify seam wrapping, terrain, projectiles and actor physics in Chromium
-        env:
-          BORHEZ_BROWSER_CHANNEL: chrome
-          GRAPHICS_OUTPUT: artifacts/graphics-09
-        run: node game_factory/world_physics_qa.cjs
       - name: Save trusted QA result and commit ONLY the experiment branch
         shell: bash
         run: |
@@ -115,7 +154,7 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/preview/game.js docs/preview/game.css docs/preview/index.html game_factory/graphics_experiment_report.json
           git diff --cached --check
-          git commit -m 'Graphics Lab toroidal map and solid actor collisions (QA passed)'
+          git commit -m 'Graphics Lab: looping map and solid actor/world collisions (validated)'
           git fetch origin experiment/cataclysm-09-graphics
           git rebase origin/experiment/cataclysm-09-graphics
           git push origin HEAD:experiment/cataclysm-09-graphics
