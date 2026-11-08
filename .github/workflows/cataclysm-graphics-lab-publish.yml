@@ -49,6 +49,12 @@ jobs:
               raise SystemExit('No accepted graphics experiment QA report')
           if report.get('sha_source_baseline') is None or not report.get('browser_qa',{}).get('passed'):
               raise SystemExit('Graphics report lacks baseline + browser QA')
+          # A toroidal-world build must have independently executed collision tests.
+          physics_source=read('docs/preview/game.js').decode('utf-8')
+          if 'const WORLD_SIZE = 2400' in physics_source or 'function resolveActorCollisions(' in physics_source:
+              physics=report.get('physics_qa',{})
+              if not physics.get('passed') or len(physics.get('tests',[]))<8:
+                  raise SystemExit('World physics graphics build lacks successful independent torus/collision QA')
           output=pathlib.Path('docs/experiments/cataclysm-09-graphics')
           output.mkdir(parents=True,exist_ok=True)
           allowed={'index.html','game.js','game.css','game-config.json'}
