@@ -1,11 +1,11 @@
 {
-  "mode": "process_newest",
-  "requested_for": "Cataclysm 0.6 gameplay review for next iteration 0.7",
+  "mode": "process_explicit",
+  "requested_for": "Cataclysm 0.7 full gameplay review → Cataclysm 0.8",
   "game_hint": "cataclysm",
-  "expected_filename": "cataclysm__review-04.mp4",
-  "expected_drive_file_id": "1jJQeOwrK0PdVauUSP6cXfdzJi5LRnW1d",
+  "expected_filename": "cataclysm__review-05.mp4",
+  "expected_drive_file_id": "1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH",
   "source": "user_requested_on_demand",
-  "request_key": "cataclysm-review-04-20261106",
+  "request_key": "cataclysm-08-drive-review-05-20261108",
   "attempt": 1,
-  "reason": "Process the newly uploaded Cataclysm gameplay recording through the existing independent review and Mobile Game Studio update cycle. No preselected development changes."
+  "reason": "Consume the complete private Drive gameplay transcript and sampled visual frames. All Council roles plan compatible progression/content systems for Cataclysm 0.8 based on creator commentary and roadmap. Do not ingest YouTube comments or automatically act on community suggestions."
 }
