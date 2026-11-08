@@ -1,0 +1,134 @@
+name: Publish isolated Cataclysm graphics lab
+on:
+  repository_dispatch:
+    types: [borhez-cataclysm-graphics-lab]
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import ONLY QA-passed visual experiment into separate public preview
+        env:
+          GRAPHICS_SOURCE_BRANCH: ${{ github.event.client_payload.branch }}
+          GRAPHICS_SOURCE_SHA: ${{ github.event.client_payload.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib,re,subprocess
+          branch=os.environ['GRAPHICS_SOURCE_BRANCH']
+          sha=os.environ['GRAPHICS_SOURCE_SHA']
+          expected_branch='experiment/cataclysm-09-graphics'
+          if branch!=expected_branch or not re.fullmatch(r'[0-9a-f]{40}',sha):
+              raise SystemExit('Unexpected graphics branch or commit; abort')
+          subprocess.run(['git','fetch','--no-tags','origin','refs/heads/'+branch],check=True)
+          actual=subprocess.check_output(['git','rev-parse','FETCH_HEAD'],text=True).strip()
+          if actual!=sha:
+              raise SystemExit('Experiment branch changed during publication; abort')
+          def read(name):
+              return subprocess.check_output(['git','show',sha+':'+name])
+          report=json.loads(read('game_factory/graphics_experiment_report.json'))
+          if report.get('status')!='passed' or report.get('version')!='0.9':
+              raise SystemExit('No accepted graphics experiment QA report')
+          if report.get('sha_source_baseline') is None or not report.get('browser_qa',{}).get('passed'):
+              raise SystemExit('Graphics report lacks baseline + browser QA')
+          output=pathlib.Path('docs/experiments/cataclysm-09-graphics')
+          output.mkdir(parents=True,exist_ok=True)
+          allowed={'index.html','game.js','game.css','game-config.json'}
+          for name in allowed:
+              value=read('docs/preview/'+name)
+              if len(value)>400000:raise SystemExit('Too-large experiment file: '+name)
+              if name=='index.html':
+                  content=value.decode('utf-8')
+                  if '<title>Cataclysm 0.9' not in content:
+                      raise SystemExit('Experimental index changed release version')
+                  content=content.replace('href="../games/"','href="../../games/"')
+                  content=content.replace('<title>Cataclysm 0.9 · BoRHeZ Games</title>',
+                                          '<title>Cataclysm 0.9 · Graphics Lab (experimental)</title>')
+                  value=content.encode('utf-8')
+              if name=='game.js' and "const BUILD = '0.9'" not in value.decode('utf-8'):
+                  raise SystemExit('Experimental JavaScript changed game version')
+              (output/name).write_bytes(value)
+          (output/'qa-report.json').write_text(json.dumps(report,indent=2)+'\n')
+          # Production preview and dashboard must remain untouched.
+          subprocess.run(['git','add','docs/experiments/cataclysm-09-graphics'],check=True)
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not n.startswith('docs/experiments/cataclysm-09-graphics/') for n in changed):
+              raise SystemExit('Attempt to change production files')
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          if changed:
+              subprocess.run(['git','config','user.name','BoRHeZ graphics lab publisher'],check=True)
+              subprocess.run(['git','config','user.email','github-actions[bot]@users.noreply.github.com'],check=True)
+              subprocess.run(['git','commit','-m','Publish verified Cataclysm 0.9 graphics lab at separate URL'],check=True)
+              subprocess.run(['git','push','origin','HEAD:main'],check=True)
+          print('SAFE LAB PATH',output,'files',changed)
+          PY
+      - name: Upload COMPLETE latest public site (preserves live game and dashboard)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-graphics-lab-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy isolated graphics preview
+        id: deploy
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+        with:
+          artifact_name: cataclysm-graphics-lab-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Delay before retry when Pages contention occurs
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry same site artifact
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-graphics-lab-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Confirm experimental preview AND original production site
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib,os,pathlib,time,urllib.request
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          paths=['experiments/cataclysm-09-graphics/index.html',
+                 'experiments/cataclysm-09-graphics/game.js',
+                 'preview/index.html','preview/game.js','games/index.html']
+          for p in paths:
+              desired=hashlib.sha256((pathlib.Path('docs')/p).read_bytes()).hexdigest()
+              for attempt in range(15):
+                  try:
+                      request=urllib.request.Request(base+p+'?v='+os.environ['GITHUB_RUN_ID']+'&try='+str(attempt),
+                                                     headers={'Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(request,timeout=15) as r:
+                          observed=hashlib.sha256(r.read()).hexdigest()
+                      if observed==desired:
+                          print('VERIFIED:',p)
+                          break
+                      raise RuntimeError('Published bytes differ for '+p)
+                  except Exception as e:
+                      if attempt==14:raise SystemExit('Live verification failed '+p+': '+str(e))
+                      time.sleep(4)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('### Cataclysm 0.9 graphics lab is live\n\n')
+              f.write('Preview: '+base+'experiments/cataclysm-09-graphics/\n\n')
+              f.write('Original live game preserved: '+base+'preview/\n')
+          PY
