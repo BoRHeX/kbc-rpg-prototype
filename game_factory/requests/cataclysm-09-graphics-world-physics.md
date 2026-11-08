@@ -19,7 +19,7 @@ These identifiers MUST exist in `docs/preview/game.js` and be used by the simula
 - `isTerrainClear(x,y,r)`: boolean, returns true iff given character-sized circle does not collide with solid terrain; handles seam.
 - `moveWithCollision(actor, dx, dy)`: modifies actor canonical coordinates while sliding against terrain and refusing to tunnel.
 - `resolveActorCollisions()`: applies pair separation using the periodic metric for player/enemies/companions, preventing overlaps with terrain, called by game tick every simulation frame.
-- Make map collision geometry accessible via `city` array (existing buildings) or a dedicated `solidTerrain` array. No need to expose mutable public debug API.
+- The existing `city` array must represent the actually solid buildings used in visible rendering and terrain collision; optional other solidTerrain is allowed, but `city` entries must be real collidable rectangles. No need to expose mutable public debug API.
 - Maintain `window.CATACLYSM_DIAGNOSTICS.snapshot()`, adding READ-ONLY `world:{size,wrap:true,solids:[{x,y,w,h}],topology:'torus'}` if possible for independent QA. Do not add release-only debug controls.
 
 ## Tests expected
