@@ -1,0 +1,148 @@
+name: Cataclysm 0.9 isolated graphics experiment
+on:
+  push:
+    branches: ['experiment/cataclysm-09-graphics']
+    paths: ['.github/workflows/cataclysm-graphics-experiment.yml']
+concurrency:
+  group: cataclysm-09-graphics-lab-once
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: read
+  actions: read
+jobs:
+  revamp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/cataclysm-09-graphics
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare browser tools, immutable 0.9 baseline and local servers
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+          mkdir -p "$RUNNER_TEMP/graphics-baseline/preview" artifacts/graphics-09
+          cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/graphics-baseline/preview/"
+          nohup python -m http.server 8766 --directory "$RUNNER_TEMP/graphics-baseline" >/tmp/graphics-baseline-server.log 2>&1 &
+          nohup python -m http.server 8765 --directory docs >/tmp/graphics-candidate-server.log 2>&1 &
+          python - <<'PY'
+          import urllib.request,time
+          for port in [8765,8766]:
+            for attempt in range(20):
+              try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/preview/',timeout=3) as r:
+                  assert r.status==200
+                break
+              except Exception:
+                if attempt==19:raise
+                time.sleep(.5)
+          print('Both isolated test servers ready')
+          PY
+      - name: AI graphics director and coder overhaul visual renderer
+        id: coder
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm-09-graphics-experiment.md
+      - name: Verify strict edit scope, freeze gameplay algorithms and check syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess,re,hashlib
+          expected={'docs/preview/game.js','docs/preview/game.css','docs/preview/index.html'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          if (changed|untracked)-expected:
+            raise SystemExit('Visual experiment agent tried unauthorized edits: '+str(sorted((changed|untracked)-expected)))
+          if 'docs/preview/game.js' not in changed:
+            raise SystemExit('Graphics experiment made no Canvas renderer changes')
+          base=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'graphics-baseline/preview/game.js'
+          old=base.read_text();new=pathlib.Path('docs/preview/game.js').read_text()
+          assert "const BUILD = '0.9'" in new and "const BUILD = '0.9'" in old
+          assert len(new)<400000
+          def code_segment(text,name):
+            m=re.search(r'^  function '+name+r'\(',text,re.M)
+            if not m:raise SystemExit('Missing protected game function: '+name)
+            n=re.search(r'^  function [a-zA-Z_][\w]*\(',text[m.end():],re.M)
+            return text[m.start():m.end()+n.start()] if n else text[m.start():]
+          for name in ['tick','spawnEnemy','updateDirector','chooseUpgrade','updateCityEncounter','summonCompanion','companionSpecialAbilityActivate']:
+            if code_segment(old,name)!=code_segment(new,name):
+              raise SystemExit('Visual edit changed protected gameplay logic: '+name)
+          index=pathlib.Path('docs/preview/index.html').read_text()
+          if '<title>Cataclysm 0.9' not in index or 'id="game-version">0.9</b>' not in index:
+            raise SystemExit('Experiment version changed')
+          print('Scope and immutable gameplay checks PASS:',sorted(changed))
+          PY
+          node --check docs/preview/game.js
+          git diff --check
+      - name: Capture original and new graphics at three viewports; prove gameplay works
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/graphics_experiment_qa.cjs
+      - name: Save trusted QA result and commit ONLY the experiment branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib
+          baseline=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'graphics-baseline/preview/game.js'
+          test=json.loads(pathlib.Path('artifacts/graphics-09/qa.json').read_text())
+          if not test.get('passed') or len(test.get('platforms',[]))!=3:
+            raise SystemExit('Browser gate did not pass all scenarios')
+          report={'status':'passed','version':'0.9','branch':'experiment/cataclysm-09-graphics',
+                  'sha_source_baseline':hashlib.sha256(baseline.read_bytes()).hexdigest(),
+                  'browser_qa':test,
+                  'production_untouched':True,
+                  'visual_approval':'pending user review',
+                  'screenshots':'GitHub Actions artifact cataclysm-09-graphics-comparison'}
+          pathlib.Path('game_factory/graphics_experiment_report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('Trusted QA report recorded')
+          PY
+          git config user.name 'BoRHeZ graphics experiment'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html game_factory/graphics_experiment_report.json
+          git diff --cached --check
+          git commit -m 'Isolated Cataclysm 0.9 graphics revamp: QA-passed renderer'
+          git fetch origin experiment/cataclysm-09-graphics
+          git rebase origin/experiment/cataclysm-09-graphics
+          git push origin HEAD:experiment/cataclysm-09-graphics
+      - name: Request standalone preview publication (no live game replacement)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PREVIEW_SHA="$(git rev-parse HEAD)"
+          python - <<'PY' > "$RUNNER_TEMP/graphics-preview-request.json"
+          import json,os
+          print(json.dumps({'event_type':'borhez-cataclysm-graphics-lab',
+              'client_payload':{'branch':'experiment/cataclysm-09-graphics',
+                                'sha':os.environ['PREVIEW_SHA']}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/graphics-preview-request.json"
+          echo "### Graphics experiment source accepted" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: experiment/cataclysm-09-graphics" >> "$GITHUB_STEP_SUMMARY"
+          echo "QA browser comparison screenshots: run artifact cataclysm-09-graphics-comparison" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publishing the isolated preview is a separate verified job; production was not changed." >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve before/after browser screenshots and independent QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-09-graphics-comparison
+          path: artifacts/graphics-09
+          if-no-files-found: ignore
+          retention-days: 30
