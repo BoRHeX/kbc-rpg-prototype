@@ -51,11 +51,14 @@ def game_title(game: str, root: Path = ROOT) -> str:
 def next_cataclysm_version(root: Path = ROOT) -> str:
     """Derive the next numbered release from the actually published game."""
     html_source = (game_target("cataclysm", root) / "index.html").read_text(encoding="utf-8")
-    match = re.search(r'<span\\b[^>]*\\bid=["\\\']game-version["\\\'][^>]*>\\s*(\\d+)\\.(\\d+)\\s*</span>',
-                      html_source, re.I)
-    if not match:
+    marker = re.search(r'<span[^>]*id="game-version"[^>]*>([^<]*)</span>', html_source, re.I)
+    if not marker:
         raise ValueError("Published Cataclysm game-version element not found")
-    major, minor = int(match[1]), int(match[2])
+    value = marker[1].strip()
+    parts = value.split(".")
+    if len(parts) != 2 or not all(part.isascii() and part.isdigit() for part in parts):
+        raise ValueError("Invalid published Cataclysm version: " + value)
+    major, minor = map(int, parts)
     return f"{major+1}.0" if minor >= 9 else f"{major}.{minor+1}"
 
 
