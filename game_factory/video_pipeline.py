@@ -31,7 +31,7 @@ def drive_api(path, token, params=None, stream=False):
     return r
 
 def newest_video(token):
-    query = "'" + FOLDER + "' in parents and mimeType contains 'video/' and trashed = false"
+    query = "'" + FOLDER + "' in parents and mimeType contains 'video/' and name contains 'cataclysm__' and trashed = false"
     data = drive_api("files", token, {"q":query, "fields":"files(id,name,modifiedTime),nextPageToken",
                                     "orderBy":"modifiedTime desc","pageSize":10}).json()
     return data["files"][0] if data["files"] else None
@@ -186,7 +186,8 @@ def main():
     (OUT/"visual_review.md").write_text(frames)
     report=create_report(transcript,frames,seconds,metadata["name"])
     (OUT/"development_report.md").write_text(report)
-    highlight(video,report,seconds)
+    # The Studio needs transcripts and sampled visual frames, not a YouTube highlight.
+    # Keep the source recording in private Drive; generate no derived public video.
     video.unlink()
     # This public repository must not receive private commentary or a raw transcript.
     print("Gameplay QA complete; handing ephemeral transcript/report to Studio bridge.")
