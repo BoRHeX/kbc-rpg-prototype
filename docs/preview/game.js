@@ -6,7 +6,7 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = '42521306027-1-squad-runes';
+  const PATCH_ID = '42523008693-1-living-horde';
   const UNLOCKS = {shambler:0,weaver:120,dasher:240,orbiter:420,stalker:660,ghost:960,gas:1200};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   let W = 1280, H = 720;
@@ -171,6 +171,7 @@
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
       hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
+    game.director={budget:12,aliveThreat:0,nearby:0,kills:0,dps:0,pendingKills:0,pendingDamage:0,blocked:false,recovery:0,mutationCooldown:0,spawnDelay:1.65,spawns:0,suppressed:0,mutations:0,criticalShots:0,frameMs:16.7,framePressure:false};
     game.offerState=game.offerSeed;
     clearInput(); noticeTTL=0;noticeQueue=[];$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
@@ -266,19 +267,75 @@
     if(pointer){vx+=pointer.vx;vy+=pointer.vy;}
     const mag=Math.hypot(vx,vy); return mag>0?{x:vx/Math.max(1,mag),y:vy/Math.max(1,mag)}:{x:0,y:0};
   }
-  function spawnEnemy() {
-    if(game.mode!=='running'||game.enemies.length>=cfg.maxEnemies)return;
-    const p=game.player,position=safeSpawn(rnd(560,730));
-    game.spawnCount++;
+  const threatWeights={shambler:1,weaver:1.4,dasher:2,orbiter:2.2,stalker:2.6,ghost:3,boss:12};
+  const liveCap=()=>Math.min(72,Math.max(1,Math.floor(cfg.maxEnemies)));
+  const enemyThreat=e=>(threatWeights[e.variant]||1)*(e.weight===2?1.5:1)+(e.mutation?1:0);
+  const ThreatDirector=Object.freeze({getThreatBudget:()=>game?game.director.budget:12});
+  function updateDirector(dt){
+    const g=game,d=g.director,p=g.player,a=1-Math.exp(-dt/12);
+    d.kills+=(d.pendingKills/Math.max(dt,.001)-d.kills)*a;
+    d.dps+=(d.pendingDamage/Math.max(dt,.001)-d.dps)*a;
+    d.pendingKills=0;d.pendingDamage=0;
+    d.aliveThreat=0;d.nearby=0;
+    for(const e of g.enemies){d.aliveThreat+=enemyThreat(e);if(dist(e.x,e.y,p.x,p.y)<200)d.nearby++;}
+    d.recovery=Math.max(0,d.recovery-dt);d.mutationCooldown=Math.max(0,d.mutationCooldown-dt);
+    const effectiveness=clamp(d.kills*.9+d.dps*.025+Math.max(0,p.level-1)*.08,0,5);
+    const target=clamp(12+Math.min(16,g.t/45)+effectiveness*2,12,38);
+    // Slow upward response; health loss and nearby crowding open a recovery window.
+    d.budget+=(target-d.budget)*(1-Math.exp(-dt/20));
+    if(d.aliveThreat>=d.budget||d.nearby>=9||g.enemies.length>=liveCap())d.blocked=true;
+    else if(d.aliveThreat<d.budget*.72&&d.nearby<5)d.blocked=false;
+    d.spawnDelay=clamp(cfg.spawnInterval/(1+Math.min(1.5,g.t/240)+effectiveness*.16)*(d.recovery>0?1.8:1),.55,2.8);
+  }
+  function applyMutation(type,duration){
+    if(!['burst','shield','weave'].includes(type))return;
+    this.mutation=type;this.mutationTime=clamp(duration,1,10);this.mutationAge=0;
+    this.mutationX=0;this.mutationY=0;
+  }
+  function updateEnemyBehavior(e,dt,vx,vy,pace){
+    if(!e.mutation)return {vx,vy,pace};
+    e.mutationTime=Math.max(0,e.mutationTime-dt);e.mutationAge+=dt;
+    if(!e.mutationTime){e.mutation=null;return {vx,vy,pace};}
+    if(e.mutation==='burst'){
+      // One second stationary warning, then a committed, dodgeable 0.6s rush.
+      if(e.mutationAge<1){e.mutationX=vx;e.mutationY=vy;pace=.15;}
+      else if(e.mutationAge<1.6){vx=e.mutationX;vy=e.mutationY;pace=1.8;}
+      else pace=.8;
+    }else if(e.mutation==='weave'){
+      const angle=Math.sin(e.mutationAge*3)*.65,c=Math.cos(angle),s=Math.sin(angle);
+      const x=vx*c-vy*s;vy=vx*s+vy*c;vx=x;pace*=.9;
+    }
+    return {vx,vy,pace};
+  }
+  function spawnEnemy(type,mutationFlags){
+    const d=game.director;
+    if(game.mode!=='running'||game.enemies.length>=liveCap()||d.blocked||d.recovery>0||d.framePressure)return null;
     const unlocked=availableThreats(game.t).filter(k=>k!=='gas');
-    let variant=unlocked[game.spawnCount%unlocked.length];
-    const scale=difficulty();
+    const variant=unlocked.includes(type)?type:unlocked[(game.spawnCount+1)%unlocked.length];
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
-    game.enemies.push({...position,
-      variant,dash:0,r:variant==='weaver'?15:extra===2?25:18, hp:(cfg.enemyHp+(extra-1)*3)*scale, max:(cfg.enemyHp+(extra-1)*3)*scale,
-      damage:1+Math.floor((scale-1)/1.5),
-      speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
-      phase:rnd(0,TWO),weight:extra,hurt:0});
+    const cost=(threatWeights[variant]||1)*(extra===2?1.5:1);
+    if(d.aliveThreat+cost>d.budget){d.blocked=true;d.suppressed++;return null;}
+    const scale=difficulty(),hp=(cfg.enemyHp+(extra-1)*3)*scale;
+    const e={...safeSpawn(rnd(560,730)),variant,dash:0,r:variant==='weaver'?15:extra===2?25:18,
+      hp,max:hp,damage:1+Math.floor((scale-1)/1.5),speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
+      phase:rnd(0,TWO),weight:extra,hurt:0,mutation:null,mutationTime:0,applyMutation};
+    if(game.t>=360&&d.mutationCooldown===0&&d.aliveThreat+cost+1<=d.budget&&
+      game.enemies.filter(n=>n.mutation).length<2&&rand()<.18){
+      const requested=mutationFlags&&mutationFlags.type;
+      e.applyMutation(['burst','shield','weave'].includes(requested)?requested:['burst','shield','weave'][Math.floor(rand()*3)],8);
+      d.mutationCooldown=6;d.mutations++;
+    }
+    game.enemies.push(e);game.spawnCount++;d.spawns++;d.aliveThreat+=enemyThreat(e);
+    return e;
+  }
+  const SpawnManager=Object.freeze({spawnEnemy});
+  const Shot={calculateDamage(){return this.damage*(this.critical?1.75:1);},isCriticalHit(){return !!this.critical;}};
+  function prepareShot(shot){
+    const p=game.player;
+    shot.critical=rand()<clamp(.06+(p.level-1)*.004+Math.max(0,p.damage-1)*.012,.06,.22);
+    shot.calculateDamage=Shot.calculateDamage;shot.isCriticalHit=Shot.isCriticalHit;
+    if(shot.critical)game.director.criticalShots++;
+    return shot;
   }
   function shotAtEnemy() {
     if(game.player.autoFireDisabled||!game.enemies.length)return;
@@ -291,9 +348,9 @@
     const spread=Math.min(4,p.multishot);
     for(let i=-spread;i<=spread&&game.shots.length<160;i++){
       const a=p.aim+i*.18;
-      game.shots.push({x:p.x+dx*18,y:p.y+dy*18,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
+      game.shots.push(prepareShot({x:p.x+dx*18,y:p.y+dy*18,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
         life:Math.min(2,.85+p.ricochet*.25),r:6,damage:p.damage*game.effectiveBuffs.damage*((1+2*p.multishot)/(1+2*spread))*(1+Math.max(0,p.ricochet-8)*.12)*Math.max(1,MIN_SHOT_INTERVAL*game.effectiveBuffs.fire/p.shotInterval),bounces:Math.min(8,p.ricochet),hit:[],
-        kind:p.multishot>0?'spread':'normal',trail:[],flash:0});
+        kind:p.multishot>0?'spread':'normal',trail:[],flash:0}));
     }
     sound(420+rnd(0,140),.05,'square',.018);
   }
@@ -394,7 +451,7 @@
     g.effectiveBuffs=b;
     p.hp=Math.min(p.maxHp,p.hp+b.healing*dt);
   }
-  function damageTaken(){game.lastDamage=game.t;game.survivalTimer=0;game.buffs.survivalInstinct=0;game.player.survivalTimer=0;game.player.survivalInstinctBuff=0;}
+  function damageTaken(){game.director.recovery=5;game.lastDamage=game.t;game.survivalTimer=0;game.buffs.survivalInstinct=0;game.player.survivalTimer=0;game.player.survivalInstinctBuff=0;}
   function activateRunicRelic(){
     if(!game||game.mode!=='running')return;
     const r=game.runicRelic;
@@ -478,7 +535,17 @@
     game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind});
   }
   function spawnBoss(night) {
-    if(game.enemies.length>=cfg.maxEnemies){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
+    if(game.enemies.length>=liveCap()){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
+    // The scheduled boss occupies the same budget, replacing distant ordinary threats.
+    // No kill credit or drops for enemies withdrawn by the director.
+    const budget=ThreatDirector.getThreatBudget();
+    let threat=game.enemies.reduce((n,e)=>n+enemyThreat(e),0);
+    const distant=game.enemies.filter(e=>e.variant!=='boss').sort((a,b)=>
+      dist(b.x,b.y,game.player.x,game.player.y)-dist(a.x,a.y,game.player.x,game.player.y));
+    for(const e of distant){if(threat+12<=budget)break;threat-=enemyThreat(e);game.enemies.splice(game.enemies.indexOf(e),1);}
+    // A surviving previous King occupies the reserved boss slot until defeated.
+    if(threat+12>budget)return;
+    game.director.recovery=Math.max(game.director.recovery,4);
     game.bossEncounters++;
     const hp=(65+night*4)*game.runScale*Math.pow(1.55,game.bossEncounters-1);
     game.enemies.push({...safeSpawn(650,60),
@@ -508,9 +575,10 @@
       const angle=rnd(0,TWO);dropPower(p.x+Math.cos(angle)*170,p.y+Math.sin(angle)*170,
         ['rage','magnet','heal'][g.powerCount++%3]);g.nextPower+=24;
     }
+    updateDirector(dt);
     g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
     if(g.spawn<=0){
-      spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
+      spawnEnemy();g.spawn=g.director.spawnDelay;
     }
     if(g.buffs.survivalInstinct===0){
       g.survivalTimer+=dt;
@@ -551,6 +619,7 @@
         else if(cycle<3.2){pace=2.5;vx=enemy.dashX??vx;vy=enemy.dashY??vy;}
         else pace=.8;
       }
+      ({vx,vy,pace}=updateEnemyBehavior(enemy,dt,vx,vy,pace));
       // Extra speed is countered dynamically, including enemies already alive.
       // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
       const adaptation=Math.min(120,Math.max(0,p.speed-cfg.speed)*.25);
@@ -571,7 +640,10 @@
       if(s.life<=0){g.shots.splice(i,1);continue;}
       const idx=g.enemies.findIndex(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r);
       if(idx>=0){
-        const e=g.enemies[idx];e.hp-=s.damage;e.hurt=.12;burst(s.x,s.y,'#a5f8ff',4);
+        const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
+        const hitDamage=raw*(e.mutation==='shield'&&e.mutationAge>=1?.5:1);
+        g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
+        burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);
         s.hit.push(e);
         if(s.bounces>0){
           s.bounces--;s.kind='bounce';s.flash=.16;burst(s.x,s.y,'#ffd568',9);
@@ -580,7 +652,7 @@
           else {s.vx*=-1;s.vy*=-1;}
         }else g.shots.splice(i,1);
         if(e.hp<=0){
-          g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
+          g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
           if(e.variant==='boss'){
             addFish(e.x,e.y,12);
             ['rage','magnet','heal'].forEach((kind,i)=>dropPower(e.x+(i-1)*55,e.y+35,kind));
@@ -671,6 +743,11 @@
     for(let i=1;i<points.length;i++)ctx.lineTo(x+points[i][0],y+points[i][1]);
     ctx.closePath();ctx.fillStyle=color;ctx.fill();
   }
+  const Renderer=Object.freeze({drawCriticalHitEffect(shot){
+    if(!shot.critical)return;
+    outline(shot.x,shot.y,10,'#fff09a',2);
+    ctx.fillStyle='#fff6c9';ctx.fillRect(shot.x-2,shot.y-15,4,5);
+  }});
   function renderWorld(){
     const g=game, p=g.player;
     const cameraX=clamp(p.x-W/2,0,2400-W),cameraY=clamp(p.y-H/2,0,2400-H);
@@ -741,6 +818,7 @@
         ctx.lineTo(s.x,s.y);ctx.strokeStyle=color;ctx.lineWidth=4;ctx.stroke();
       }
       circle(s.x,s.y,s.kind==='normal'?5:7,color);
+      Renderer.drawCriticalHitEffect(s);
       if(s.flash>0)outline(s.x,s.y,15,'#fff1a6',3);
     }
     for(const e of [...g.enemies.filter(e=>e.variant!=='ghost'),...g.enemies.filter(e=>e.variant==='ghost')]){
@@ -749,6 +827,12 @@
       const color=e.variant==='ghost'?'#c7adff':e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
       if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
       if(e.variant==='ghost')outline(0,0,e.r+9,'#c7adff',3);
+      if(e.mutation){
+        const color=e.mutation==='burst'?'#ffb45f':e.mutation==='shield'?'#84dbff':'#eea4ff';
+        outline(0,0,e.r+12,color,e.mutationAge<1?4:2);
+        ctx.fillStyle=color;ctx.font='bold 15px system-ui';ctx.textAlign='center';
+        ctx.fillText(e.mutation==='burst'?(e.mutationAge<1?'RUSH!':'»'):e.mutation==='shield'?'◇':'≈',0,-e.r-18);ctx.textAlign='left';
+      }
       circle(0,0,e.r,e.hurt?'#d2fff0':color);
       if(e.variant==='orbiter')outline(0,0,e.r+7,color,3);
       if(e.variant==='stalker')polygon(0,-e.r,[[0,-12],[-8,0],[8,0]],color);
@@ -811,6 +895,12 @@
     ctx.textAlign='left';
   }
   function frame(now) {
+    if(game&&game.mode==='running'){
+      const d=game.director,sample=clamp(now-last,0,100);
+      d.frameMs+=(sample-d.frameMs)*.03;
+      if(d.frameMs>38)d.framePressure=true;
+      else if(d.frameMs<28)d.framePressure=false;
+    }
     const dt=Math.min(.05,Math.max(0,(now-last)/1000||0));last=now;
     if(game&&game.mode==='running')tick(dt);
     music();
@@ -942,7 +1032,7 @@
   renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
-    snapshot: () => ({viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+    snapshot: () => ({director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
       survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
       runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
@@ -967,8 +1057,8 @@
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage})):[],
-      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
+      shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage,critical:!!s.critical,hitDamage:s.calculateDamage?s.calculateDamage():s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,
         autoFireDisabled:game.player.autoFireDisabled,silence:game.player.silence,phaseCooldown:game.player.phaseCooldown,petPicks:game.player.petPicks,
