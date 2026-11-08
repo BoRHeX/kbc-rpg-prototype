@@ -9,7 +9,7 @@ Workflow: `.github/workflows/gameplay-video-review.yml`. Processor: `game_factor
 4. Inspect sampled frames with a vision model (sampling is not full-motion video analysis).
 5. Write a timestamped QA report and game-specific development backlog.
 6. Cut and concatenate a short gameplay highlight MP4.
-7. Pass the on-runner transcript, visual review and QA report to `video_bridge.py`; only the condensed gameplay-only work order enters the **public** game repository when actionable.
+7. Pass the on-runner transcript, visual review and QA report to `video_bridge.py`. For **Cataclysm**, the public work order is only a routing request: it references the original private Drive file by its verified ID, and the downstream Mobile Studio **re-downloads/retranscribes the full recording privately**. The Council receives the entire available transcript and sampled visual observations and uses the living 1.0 roadmap; it can select multiple compatible subsystems in one release. Non-Cataclysm reviews still use the compact work order.
 8. Do **not** publish raw voice, transcript, screenshots or edited highlight as public GitHub issues/Actions artifacts. These remain ephemeral on the GitHub runner; the original private video is retained in Google Drive.
 9. Skip queued, delivered and non-actionable video IDs using durable metadata. No automatic YouTube publishing.
 
@@ -33,10 +33,18 @@ The source folder is currently `1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K`. The initial 
 ## Automatic handoff to Mobile Minigame Studio
 
 The video workflow generates a local QA report, transcript and highlight,
-then calls `game_factory/video_bridge.py`. A separate small GPT-4.1-mini
-JSON-mode call proposes one conservative **update** from the report, transcript
-and sampled visual observations. The existing studio request schema is validated
-using `game_factory.mobile_jobs.validate_request`.
+then calls `game_factory/video_bridge.py`. A small JSON-mode call decides
+whether the review contains actionable gameplay feedback. The existing studio
+request schema is validated using `game_factory.mobile_jobs.validate_request`.
+For Cataclysm, the bridge deliberately does NOT collapse the recording into a
+few implementation bullets. It attaches the original private Drive evidence ID
+to the job and directs the Council to read the complete 24-minute (or other
+duration up to 40-minute protected limit) recording during its private playback
+stage. Five planning-role calls inspect the transcript, images, current source
+and `game_factory/CATACLYSM_1_0_ROADMAP.md`; the Producer chooses compatible
+subsystem additions for one substantial, browser-tested release. The raw
+transcript is never committed to this public repository. Videos longer than
+40 minutes require deliberate review of processing limits.
 
 **Filename is the game identity.** Rename the Drive recording to
 `<existing-game-id>__<anything>.mp4`, for example
@@ -90,3 +98,15 @@ transcription/vision APIs for processing. The raw media and transcripts are not
 uploaded as public GitHub artifacts or issues. The resulting concise game work
 order, if any, is stored in a public repository. The user's private audio and
 unedited recording are never attached to that work order.
+
+
+## Cataclysm 0.7 → 1.0 full-review route (November 2026)
+
+1. Preserve 0.7 from the immutable Git branch `release/cataclysm-v0.7-frozen`.
+2. Place the **complete review video** inside the authorized private Google Drive folder, with an exact existing game prefix, e.g. `cataclysm__review-0.7.mp4`. A YouTube upload alone does not enter this Drive-based pipeline.
+3. Launch `Review gameplay and send feedback to Game Studio` from GitHub Actions, optionally setting the exact Drive file ID; otherwise it takes the newest video in that folder. No automatic unbounded retry is configured.
+4. The initial triage determines whether a gameplay update is warranted, then dispatches one job with the private video ID. The Studio securely rereads all available spoken commentary, not a 5-point digest, and combines it with current 0.7 source, existing viewer suggestions, code-level Council proposals and the living roadmap.
+5. The Producer integrates as many **compatible, testable** subsystems as one bounded job can safely deliver. Unsafe or unfinished evidence-backed candidates remain in the roadmap rather than being silently omitted.
+6. Check the job result, browser QA and exact live deployment. The frozen 0.7 branch does not move with later updates.
+
+**Privacy and expense:** the public request contains the Drive file ID and gameplay-only routing instructions, not the raw transcript. Anyone viewing the public repository can see that identifier, but Drive file access still depends on its private permissions. The downstream stage transcribes the recording again; this intentionally incurs an extra paid transcription to keep the full-context private source available to the Council without copying private speech into public GitHub artifacts. A user-authorized cost ceiling and per-job bounds should be set before increasing concurrency.

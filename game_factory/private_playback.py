@@ -84,7 +84,7 @@ def make_gameplay_evidence(file_id):
             mp3.unlink(missing_ok=True)
         transcript = "\n".join(
             "[%ds] %s" % (p["start_seconds"], p["text"]) for p in chunks
-        )[:34000]
+        )
         # Frame bursts are ordered triplets (rather than a sparse slideshow).
         # They provide motion context without exposing a private GIF publicly.
         items = [{"type": "text", "text": (

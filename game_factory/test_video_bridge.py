@@ -69,6 +69,19 @@ class VideoBridgeTests(unittest.TestCase):
         self.assertEqual(len(job["acceptance"]), 2)
         self.assertEqual(set(job), {"id", "mode", "game", "title", "prompt", "acceptance"})
 
+    def test_cataclysm_review_hands_original_private_video_to_council(self):
+        file_id = "1GbMVr_GNoDA4mlpqX_zQBYWjUpO56Pam"
+        proposal = {"actionable": True,
+                    "prompt": "A preliminary note, not the full recording.",
+                    "acceptance": ["Must be a playable game."]}
+        job = build_request(file_id, "cataclysm", "Cataclysm", proposal)
+        self.assertEqual(job["evidence_drive_file_id"], file_id)
+        self.assertIn("COMPLETE transcript", job["prompt"])
+        self.assertIn("CATACLYSM_1_0_ROADMAP.md", job["prompt"])
+        self.assertNotIn("A preliminary note", job["prompt"])
+        self.assertEqual(job["game"], "cataclysm")
+        self.assertGreaterEqual(len(job["acceptance"]), 3)
+
     def test_invalid_model_payload_is_rejected(self):
         cases = [
             {},

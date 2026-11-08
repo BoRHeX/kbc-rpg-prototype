@@ -69,6 +69,32 @@ def build_request(file_id: str, game: str, title: str, proposal: dict) -> dict |
                   "Preserve unrelated working behavior, controls and the stable URL.\n" + body.strip(),
         "acceptance": criteria,
     }
+    if game == "cataclysm":
+        # Preserve a private, verified pointer to the ORIGINAL review video.
+        # The receiving studio replays/transcribes the full recording privately.
+        # Raw speech never appears in the public request or repository.
+        request["evidence_drive_file_id"] = file_id
+        request["prompt"] = (
+            "CATACLYSM FULL REVIEW / ROADMAP HANDOFF — not a five-item summary. "
+            "The private video attached by evidence_drive_file_id is the primary "
+            "source of player feedback. Read its COMPLETE transcript and visual "
+            "observations through the authenticated private playback stage. "
+            "Also read game_factory/CATACLYSM_1_0_ROADMAP.md and the existing "
+            "game code; build a comprehensive issue/idea ledger, reconcile "
+            "existing implemented systems, identify feature dependencies and "
+            "propose an ambitious but coherent multi-subsystem release. "
+            "Preserve working mobile controls and prior progress. Implement "
+            "multiple compatible gameplay systems when executable tests "
+            "support them; defer other evidence-backed ideas to the roadmap. "
+            "Do not use the earlier short triage note as a substitute for the "
+            "recording. Preserve private user speech outside public artifacts."
+        )
+        request["acceptance"] = [
+            "Private original recording is consumed, including its complete available transcript.",
+            "Council uses evidence and current code to select compatible meaningful gameplay systems.",
+            "Playable changes pass the independent mobile controls and progression tests.",
+            "Unimplemented ideas and uncertainties remain tracked for subsequent releases.",
+        ]
     return validate_request(request)
 
 
@@ -86,7 +112,7 @@ def propose_update(game: str, transcript: list, visual: str, report: str) -> dic
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": (
-                "You translate real gameplay-review evidence into one conservative game UPDATE. "
+                "You decide whether the recording contains actionable gameplay evidence. "
                 "Return ONLY a JSON object with keys: actionable (boolean), prompt (string), "
                 "acceptance (array of 1-8 specific, testable strings), reason (string). "
                 "Use actionable=false if there is no concrete, evidence-grounded request, "
@@ -99,7 +125,7 @@ def propose_update(game: str, transcript: list, visual: str, report: str) -> dic
                 "Output only game mechanics, controls, bugs and testable game behavior. "
                 "Never quote the speaker verbatim or include names, locations, emails, "
                 "private details, or commentary unrelated to the game. "
-                "The summarized job instruction will be committed to a public repo. "
+                "Your initial short triage is NOT the complete work order: the studio will privately reread the original full video and build a roadmap. The routing request is public. "
                 "You do NOT choose a game ID, job ID, or repository path."
             )},
             {"role": "user", "content": json.dumps(source, ensure_ascii=False)}
