@@ -559,11 +559,20 @@ def publish_bundle(root, bundle):
     if receipt["target"] != target or receipt["request_digest"] != digest(request):
         raise ValueError("Candidate target or request was altered")
     tests = receipt.get("acceptance", {})
+    platforms = tests.get("platforms", [])
+    required_viewports = {(390, 844), (360, 780)}
+    if request["id"] == "cataclysm-08-landscape-ui-001":
+        required_viewports |= {(640, 320), (667, 375), (780, 360),
+                               (844, 390), (915, 412), (1280, 720)}
+    passed_viewports = {
+        tuple(p.get("viewport", [])) for p in platforms
+        if isinstance(p, dict) and p.get("passed") is True
+    }
     if (receipt.get("state") != "accepted" or
             receipt.get("qa", {}).get("proposed_action", {}).get("approve_preview") is not True or
             tests.get("run_id") != receipt["run_id"] or tests.get("request_id") != request["id"] or
-            len(tests.get("platforms", [])) != 2 or
-            any(p.get("passed") is not True for p in tests["platforms"])):
+            not required_viewports <= passed_viewports or
+            any(p.get("passed") is not True for p in platforms)):
         raise ValueError("Candidate lacks independent acceptance and QA approval")
     if manifest(bundle / "game") != receipt["files"]:
         raise ValueError("Candidate bytes differ from accepted manifest")
