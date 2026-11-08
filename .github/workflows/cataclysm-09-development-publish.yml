@@ -1,0 +1,137 @@
+name: Publish primary Cataclysm 0.9 development build
+on:
+  repository_dispatch:
+    types: [borhez-cataclysm-09-development]
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify independent QA and publish ONLY primary Cataclysm directory
+        shell: bash
+        env:
+          DEV_BRANCH: ${{ github.event.client_payload.branch }}
+          DEV_SHA: ${{ github.event.client_payload.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib,re,subprocess
+          branch=os.environ['DEV_BRANCH']
+          sha=os.environ['DEV_SHA']
+          if branch!='development/cataclysm-09' or not re.fullmatch(r'[a-f0-9]{40}',sha):
+              raise SystemExit('Unauthorized branch or SHA')
+          subprocess.run(['git','fetch','--no-tags','origin','refs/heads/'+branch],check=True)
+          current=subprocess.check_output(['git','rev-parse','FETCH_HEAD'],text=True).strip()
+          if current!=sha:raise SystemExit('Branch changed during publication')
+          def read(name):
+              return subprocess.check_output(['git','show',sha+':'+name])
+          qa=json.loads(read('game_factory/cataclysm_09_dev_report.json'))
+          if qa.get('status')!='passed' or qa.get('version')!='0.9' or qa.get('branch')!=branch:
+              raise SystemExit('No valid independent Cataclysm 0.9 development QA report')
+          if not qa.get('physics_qa',{}).get('passed') or len(qa.get('physics_qa',{}).get('tests',[]))<8:
+              raise SystemExit('Topology/terrain/actor collision tests not passed')
+          if not qa.get('audio_qa',{}).get('passed') or len(qa.get('audio_qa',{}).get('checks',[]))<8:
+              raise SystemExit('Soundtrack/transition/mute tests not passed')
+          if not qa.get('browser_qa',{}).get('passed') or len(qa.get('browser_qa',{}).get('platforms',[]))<3:
+              raise SystemExit('Mobile viewport and play tests not passed')
+          hashes=qa.get('source_sha256',{})
+          for n in ['index.html','game.js','game.css','game-config.json']:
+              data=read('docs/preview/'+n)
+              if hashes.get(n)!=hashlib.sha256(data).hexdigest():
+                  raise SystemExit('QA source hash mismatch: '+n)
+          js=read('docs/preview/game.js').decode('utf-8')
+          html=read('docs/preview/index.html').decode('utf-8')
+          if "const BUILD = '0.9'" not in js or "const AUDIO_PASS_ID = 'graphics-lab-audio-01'" not in js:
+              raise SystemExit('Cataclysm version or audio engine downgraded')
+          if 'const WORLD_SIZE = 2400' not in js or 'function resolveActorCollisions(' not in js:
+              raise SystemExit('Toroidal world or physical collisions missing')
+          if '<title>Cataclysm 0.9 · BoRHeZ Games</title>' not in html:
+              raise SystemExit('Primary identity is not plain Cataclysm 0.9')
+          if 'id="game-version">0.9</b>' not in html or 'href="../games/"' not in html:
+              raise SystemExit('Required player UI version/navigation changed')
+          if any(x in html for x in ['GRAPHICS LAB','EFFECTS PASS','EXPERIMENTAL']):
+              raise SystemExit('Unwanted experimental branding in primary game')
+          out=pathlib.Path('docs/cataclysm')
+          out.mkdir(parents=True,exist_ok=True)
+          for name in ['index.html','game.js','game.css','game-config.json']:
+              data=read('docs/preview/'+name)
+              if len(data)>400000:raise SystemExit('Unexpectedly large game source: '+name)
+              (out/name).write_bytes(data)
+          (out/'qa-report.json').write_text(json.dumps(qa,indent=2)+'\n')
+          subprocess.run(['git','add','docs/cataclysm'],check=True)
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not p.startswith('docs/cataclysm/') for p in changed):
+              raise SystemExit('Attempt to change production or dashboard')
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          if changed:
+              subprocess.run(['git','config','user.name','BoRHeZ Cataclysm publisher'],check=True)
+              subprocess.run(['git','config','user.email','github-actions[bot]@users.noreply.github.com'],check=True)
+              subprocess.run(['git','commit','-m','Publish independently verified Cataclysm 0.9 development build'],check=True)
+              subprocess.run(['git','push','origin','HEAD:main'],check=True)
+          print('CATACLYSM DEVELOPMENT PUBLISHED, original remains untouched:',sha)
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-dev-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy full site preserving other games and archived release
+        id: deploy
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+        with:
+          artifact_name: cataclysm-dev-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Delay before Pages retry if contested
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry same Pages artifact
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-dev-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Verify live Cataclysm, original 0.9 and Games dashboard
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib,os,pathlib,time,urllib.request
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          paths=['cataclysm/index.html','cataclysm/game.js','cataclysm/game.css',
+                 'preview/index.html','preview/game.js','games/index.html']
+          for p in paths:
+              expected=hashlib.sha256((pathlib.Path('docs')/p).read_bytes()).hexdigest()
+              for i in range(15):
+                  try:
+                      req=urllib.request.Request(base+p+'?verify='+os.environ['GITHUB_RUN_ID']+'&attempt='+str(i),headers={'Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(req,timeout=15) as response:
+                          actual=hashlib.sha256(response.read()).hexdigest()
+                      if expected!=actual:raise RuntimeError('Live bytes differ for '+p)
+                      print('VERIFIED '+p)
+                      break
+                  except Exception as e:
+                      if i==14:raise SystemExit('Pages verification failed '+p+': '+str(e))
+                      time.sleep(4)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## Cataclysm 0.9 primary dev branch delivered\n\n')
+              f.write('Primary build: '+base+'cataclysm/\n\n')
+              f.write('Original archived build remains: '+base+'preview/\n')
+          PY
