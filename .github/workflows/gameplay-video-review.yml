@@ -6,6 +6,8 @@ on:
         description: "Optional Drive file ID; leave blank to review newest video"
         required: false
         default: ""
+  schedule:
+    - cron: '20 6,18 * * *'
   push:
     branches: [main]
     paths: [game_factory/requests/video_review_trigger.json]
@@ -33,14 +35,30 @@ jobs:
           python -m pip install --disable-pip-version-check openai requests
       - name: Verify Studio bridge import before processing media
         run: python -m game_factory.video_bridge
-      - name: Download, transcribe, analyse, edit and report
+      - name: Select explicit review or newest new Cataclysm Drive recording
+        env:
+          WORKFLOW_DRIVE_FILE_ID: ${{ inputs.drive_file_id || '' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, re
+          file_id = os.getenv("WORKFLOW_DRIVE_FILE_ID", "").strip()
+          if not file_id and os.getenv("GITHUB_EVENT_NAME") == "push":
+              trigger = json.load(open("game_factory/requests/video_review_trigger.json"))
+              file_id = str(trigger.get("expected_drive_file_id", "")).strip()
+          if file_id and not re.fullmatch(r"[A-Za-z0-9_-]{20,100}", file_id):
+              raise SystemExit("Invalid configured Drive file ID")
+          with open(os.environ["GITHUB_ENV"], "a") as stream:
+              stream.write("DRIVE_FILE_ID=" + file_id + "\n")
+          print("Drive review:", "explicit file selected" if file_id else "newest Cataclysm recording")
+          PY
+      - name: Download, transcribe, inspect sampled frames and report
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_DRIVE_FOLDER_ID: "1ARwayk85TIK4MibwwXTsdAm4EKjQAh0K"
-          DRIVE_FILE_ID: ${{ inputs.drive_file_id || '' }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: python game_factory/video_pipeline.py
@@ -56,4 +74,5 @@ jobs:
         run: |
           echo "### Gameplay review" >> "$GITHUB_STEP_SUMMARY"
           echo "Private recording, transcript and media are not uploaded as GitHub artifacts." >> "$GITHUB_STEP_SUMMARY"
-          echo "Only a summarized gameplay-only work order may be committed publicly." >> "$GITHUB_STEP_SUMMARY"
+          echo "Only a private Drive reference and gameplay-only routing request may be committed publicly." >> "$GITHUB_STEP_SUMMARY"
+          echo "YouTube comments and channel data are not used as automatic instructions." >> "$GITHUB_STEP_SUMMARY"

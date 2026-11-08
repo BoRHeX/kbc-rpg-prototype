@@ -48,6 +48,20 @@ def game_title(game: str, root: Path = ROOT) -> str:
     return title[:100] or game
 
 
+def next_cataclysm_version(root: Path = ROOT) -> str:
+    """Derive the next numbered release from the actually published game."""
+    html_source = (game_target("cataclysm", root) / "index.html").read_text(encoding="utf-8")
+    marker = re.search(r'<span[^>]*id="game-version"[^>]*>([^<]*)</span>', html_source, re.I)
+    if not marker:
+        raise ValueError("Published Cataclysm game-version element not found")
+    value = marker[1].strip()
+    parts = value.split(".")
+    if len(parts) != 2 or not all(part.isascii() and part.isdigit() for part in parts):
+        raise ValueError("Invalid published Cataclysm version: " + value)
+    major, minor = map(int, parts)
+    return f"{major+1}.0" if minor >= 9 else f"{major}.{minor+1}"
+
+
 def build_request(file_id: str, game: str, title: str, proposal: dict) -> dict | None:
     """Validate the proposal using the studio's own schema, not model assurances."""
     from game_factory.mobile_jobs import validate_request
@@ -74,6 +88,7 @@ def build_request(file_id: str, game: str, title: str, proposal: dict) -> dict |
         # The receiving studio replays/transcribes the full recording privately.
         # Raw speech never appears in the public request or repository.
         request["evidence_drive_file_id"] = file_id
+        request["release_version"] = next_cataclysm_version()
         request["prompt"] = (
             "CATACLYSM FULL REVIEW / ROADMAP HANDOFF — not a five-item summary. "
             "The private video attached by evidence_drive_file_id is the primary "
@@ -223,7 +238,13 @@ def main() -> None:
     transcript = json.loads((OUT / "transcript.json").read_text(encoding="utf-8"))
     visual = (OUT / "visual_review.md").read_text(encoding="utf-8")
     report = (OUT / "development_report.md").read_text(encoding="utf-8")
-    proposal = propose_update(game, transcript, visual, report)
+    if game == "cataclysm":
+        # The user explicitly authorized these correctly named gameplay reviews.
+        # Do not let a one-call summary censor or shrink the full Studio brief.
+        proposal = {"actionable": True, "prompt": "Review entire private recording",
+                    "acceptance": ["Council assesses the original full gameplay commentary"]}
+    else:
+        proposal = propose_update(game, transcript, visual, report)
     request = build_request(metadata["id"], game, game_title(game), proposal)
     if request is None:
         print("Review contains no actionable update; no paid studio run requested.")
