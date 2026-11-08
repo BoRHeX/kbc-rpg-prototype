@@ -32,7 +32,7 @@ const browser=Promise.resolve().then(()=>chromium.launch({headless:true,channel:
  const ctx=await b.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true});
  const page=await ctx.newPage();const errs=[];
  page.on('pageerror',e=>errs.push(e.message));
- await page.route(/\\/preview\\/game\\.js(?:\\?.*)?$/,route=>route.fulfill({status:200,contentType:'text/javascript',body:injected}));
+ await page.route('**/game.js*',route=>route.fulfill({status:200,contentType:'text/javascript',body:injected}));
  const run=async(name,fn)=>{
    const result=await page.evaluate(fn);
    assert(result&&result.ok,name+': '+JSON.stringify(result));
