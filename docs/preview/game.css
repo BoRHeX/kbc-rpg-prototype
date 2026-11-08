@@ -7,3 +7,8 @@
 .companion-abilities button{pointer-events:auto;min-width:44px;min-height:44px;flex:1;max-width:140px;font-size:11px;background:linear-gradient(to right,#21534b var(--ready,100%),#193244 var(--ready,100%))}
 #support-status{bottom:60px}#buff-status{bottom:78px}.notice{bottom:98px}
 @media(orientation:portrait){.actions{grid-template-columns:repeat(3,1fr)}.companion-abilities{right:8px;left:8px;bottom:110px}#support-status{bottom:160px}#buff-status{bottom:178px}.notice{bottom:198px}.overlay{bottom:200px}}
+
+/* Encounter notices share one slot below the boss strip; never intercept a drag. */
+#city-notice{position:absolute;pointer-events:none;z-index:3;top:130px;left:12px;right:140px;margin:0;padding:4px 6px;border-left:3px solid #ffbd78;background:#101c30dd;color:#ffe1b6;font-size:11px;line-height:1.3}
+@media(orientation:portrait){#city-notice{top:182px;right:12px}}
+@media(max-height:360px){.overlay p{font-size:11px;line-height:1.3}#city-notice{font-size:10px;top:130px}}

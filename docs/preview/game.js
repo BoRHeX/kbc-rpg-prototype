@@ -6,7 +6,7 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = '42523008693-1-living-horde';
+  const PATCH_ID = '42523503568-1-city-encounters';
   const UNLOCKS = {shambler:0,weaver:120,dasher:240,orbiter:420,stalker:660,ghost:960,gas:1200};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   let W = 1280, H = 720;
@@ -172,6 +172,9 @@
       hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     game.director={budget:12,aliveThreat:0,nearby:0,kills:0,dps:0,pendingKills:0,pendingDamage:0,blocked:false,recovery:0,mutationCooldown:0,spawnDelay:1.65,spawns:0,suppressed:0,mutations:0,criticalShots:0,frameMs:16.7,framePressure:false};
+    game.cityEvents={active:null,nextCrane:90,nextCity:120,cityIndex:0,serial:0,
+      counts:{crane:0,street:0,elite:0},completed:{crane:0,street:0,elite:0},recoveryUntil:0,
+      relayUnlocked:false,relay:null,playerHits:0,enemyHits:0,avoids:0,maxDebris:0};
     game.offerState=game.offerSeed;
     clearInput(); noticeTTL=0;noticeQueue=[];$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
@@ -269,14 +272,14 @@
   }
   const threatWeights={shambler:1,weaver:1.4,dasher:2,orbiter:2.2,stalker:2.6,ghost:3,boss:12};
   const liveCap=()=>Math.min(72,Math.max(1,Math.floor(cfg.maxEnemies)));
-  const enemyThreat=e=>(threatWeights[e.variant]||1)*(e.weight===2?1.5:1)+(e.mutation?1:0);
+  const enemyThreat=e=>e.elite?6:(threatWeights[e.variant]||1)*(e.weight===2?1.5:1)+(e.mutation?1:0);
   const ThreatDirector=Object.freeze({getThreatBudget:()=>game?game.director.budget:12});
   function updateDirector(dt){
     const g=game,d=g.director,p=g.player,a=1-Math.exp(-dt/12);
     d.kills+=(d.pendingKills/Math.max(dt,.001)-d.kills)*a;
     d.dps+=(d.pendingDamage/Math.max(dt,.001)-d.dps)*a;
     d.pendingKills=0;d.pendingDamage=0;
-    d.aliveThreat=0;d.nearby=0;
+    d.aliveThreat=cityThreat();d.eventThreat=d.aliveThreat;d.nearby=0;
     for(const e of g.enemies){d.aliveThreat+=enemyThreat(e);if(dist(e.x,e.y,p.x,p.y)<200)d.nearby++;}
     d.recovery=Math.max(0,d.recovery-dt);d.mutationCooldown=Math.max(0,d.mutationCooldown-dt);
     const effectiveness=clamp(d.kills*.9+d.dps*.025+Math.max(0,p.level-1)*.08,0,5);
@@ -293,6 +296,13 @@
     this.mutationX=0;this.mutationY=0;
   }
   function updateEnemyBehavior(e,dt,vx,vy,pace){
+    if(e.elite){
+      e.huntAge+=dt;const cycle=e.huntAge%5;
+      if(cycle<1.5){e.huntX=vx;e.huntY=vy;pace=0;}
+      else if(cycle<2.2){vx=e.huntX;vy=e.huntY;pace=2.4;}
+      else pace=.45;
+      return {vx,vy,pace};
+    }
     if(!e.mutation)return {vx,vy,pace};
     e.mutationTime=Math.max(0,e.mutationTime-dt);e.mutationAge+=dt;
     if(!e.mutationTime){e.mutation=null;return {vx,vy,pace};}
@@ -309,7 +319,7 @@
   }
   function spawnEnemy(type,mutationFlags){
     const d=game.director;
-    if(game.mode!=='running'||game.enemies.length>=liveCap()||d.blocked||d.recovery>0||d.framePressure)return null;
+    if(citySpawnBlocked()||game.mode!=='running'||game.enemies.length>=liveCap()||d.blocked||d.recovery>0||d.framePressure)return null;
     const unlocked=availableThreats(game.t).filter(k=>k!=='gas');
     const variant=unlocked.includes(type)?type:unlocked[(game.spawnCount+1)%unlocked.length];
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
@@ -377,8 +387,9 @@
       for(const e of g.enemies){const d=dist(pet.x,pet.y,e.x,e.y);if(e.hp>0&&d<best){best=d;nearest=e;}}
       const a=nearest?Math.atan2(nearest.y-p.y,nearest.x-p.x):0;
       const formation=g.squadTactic==='defensive'?.45:g.squadTactic==='aggressive'?1.35:1;
-      const tx=clamp(p.x+formation*(pet.type==='tank'?Math.cos(a)*65:pet.type==='healer'?-48:48),25,2375);
-      const ty=clamp(p.y+formation*(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35),25,2375);
+      let tx=clamp(p.x+formation*(pet.type==='tank'?Math.cos(a)*65:pet.type==='healer'?-48:48),25,2375);
+      let ty=clamp(p.y+formation*(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35),25,2375);
+      const safe=citySafeTarget(tx,ty,pet);tx=safe.x;ty=safe.y;
       const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+90)*dt);
       pet.x+=(tx-pet.x)/d*step;pet.y+=(ty-pet.y)/d*step;
       pet.shotTimer-=dt;
@@ -399,7 +410,7 @@
     if(!pet||!pet.specialAbilityReady||pet.specialCooldown>0)return;
     if(type==='shooter'&&g.shots.length>144)return;
     pet.specialCooldown=type==='healer'?24:18;
-    pet.specialAbilityReady=false;pet.flash=.4;
+    pet.specialAbilityReady=false;pet.flash=.4;placeRelay(pet.x,pet.y);
     if(type==='shooter'){
       for(let i=0;i<16;i++){
         const a=i*TWO/16;
@@ -456,7 +467,7 @@
     if(!game||game.mode!=='running')return;
     const r=game.runicRelic;
     if(!r.held||r.cooldown>0||r.active)return;
-    r.active=r.held;r.held=null;r.duration=6;r.cooldown=10;
+    placeRelay(game.player.x,game.player.y);r.active=r.held;r.held=null;r.duration=6;r.cooldown=10;
     notify('RUNIC '+r.active.toUpperCase()+' · 6s',3,'relic');sound(640,.3,'triangle');updateHud();
   }
   $('runic-relic-activate').onclick=activateRunicRelic;
@@ -532,7 +543,9 @@
     }
   }
   function dropPower(x,y,kind) {
-    game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind});
+    // Bound unattended supply drops during long runs; tactical caches use their own cap.
+    if(game.powerups.length>=36){const i=game.powerups.findIndex(p=>p.kind!=='relay');if(i>=0)game.powerups.splice(i,1);}
+    game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind,expires:game.t+90});
   }
   function spawnBoss(night) {
     if(game.enemies.length>=liveCap()){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
@@ -560,6 +573,169 @@
     }
     game.fishItems.push({x,y,r:12,value,phase:rnd(0,TWO),attracted:false});
   }
+  // Shared encounter manager: one event at a time, no solid geometry, bounded costs.
+  function cityThreat(){
+    const e=game.cityEvents.active;
+    return e?(e.kind==='elite'?(e.eliteSpawned?0:6):5):0;
+  }
+  function citySpawnBlocked(){
+    const m=game.cityEvents;
+    return game.t<m.recoveryUntil||m.active?.kind==='elite'||
+      (!m.active&&(game.player.level>=3||game.t>=180)&&game.player.hp>=1.5&&
+        game.t%300<270&&!game.enemies.some(e=>e.variant==='boss')&&game.t>=Math.min(m.nextCrane,m.nextCity)-4);
+  }
+  function relayProtects(x,y){
+    const r=game.cityEvents.relay;
+    return !!(r&&dist(x,y,r.x,r.y)<r.r);
+  }
+  function placeRelay(x,y){
+    if(game.cityEvents.relayUnlocked){game.cityEvents.relay={x,y,r:95,life:4};burst(x,y,'#87ffdc',12);}
+  }
+  function cityZones(){
+    const e=game.cityEvents.active;
+    return !e?[]:e.kind==='street'?e.zones:e.kind==='crane'?e.debris.filter(d=>d.age<1.6):[];
+  }
+  function citySafeTarget(x,y,pet){
+    // Repel both a formation destination and a follower already in a warning circle.
+    // The circles are damage zones, never collision walls; escape always remains possible.
+    let moved=false;
+    for(const z of cityZones()){
+      const inside=dist(pet.x,pet.y,z.x,z.y)<z.r+25;
+      if(inside||dist(x,y,z.x,z.y)<z.r+25){
+        const a=Math.atan2((inside?pet.y:y)-z.y,(inside?pet.x:x)-z.x);
+        x=clamp(z.x+Math.cos(a)*(z.r+50),25,2375);
+        y=clamp(z.y+Math.sin(a)*(z.r+50),25,2375);moved=true;
+      }
+    }
+    if(moved)game.cityEvents.avoids++;
+    return {x,y};
+  }
+  function cityDamage(x,y,r,amount){
+    const g=game,p=g.player,m=g.cityEvents;
+    if(dist(p.x,p.y,x,y)<r+p.r&&!p.inv&&!relayProtects(p.x,p.y)&&g.runicRelic.active!=='shield'){
+      damageTaken();p.hp=Math.max(0,p.hp-amount*(1-g.effectiveBuffs.mitigation));p.inv=1.3;
+      m.playerHits++;burst(p.x,p.y,'#ff936a',9);sound(190,.12,'triangle');
+      if(p.hp<=0){updateHud();end();}
+    }
+    for(const enemy of [...g.enemies])if(enemy.hp>0&&dist(enemy.x,enemy.y,x,y)<r+enemy.r){
+      const damage=amount*4;g.director.pendingDamage+=Math.min(enemy.hp,damage);
+      enemy.hp-=damage;enemy.hurt=.15;m.enemyHits++;
+      if(enemy.hp<=0)defeatEnemy(enemy);
+    }
+  }
+  function defeatEnemy(e){
+    const g=game,i=g.enemies.indexOf(e);if(i<0)return;
+    g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
+    if(e.variant==='boss'){
+      addFish(e.x,e.y,12);['rage','magnet','heal'].forEach((kind,i)=>dropPower(e.x+(i-1)*55,e.y+35,kind));
+      notify('ALLEY KING DEFEATED · +20 KILLS',3);
+    }else if(rand()<cfg.fishDropChance)addFish(e.x,e.y);
+    g.enemies.splice(i,1);sound(620,.06,'triangle',.02);
+  }
+  function spawnCityEncounter(kind){
+    const g=game,m=g.cityEvents,p=g.player,cost=kind==='elite'?6:5;
+    if(m.active||g.t<m.recoveryUntil||p.hp<1.5||g.director.recovery>0||g.director.framePressure)return false;
+    // Bosses keep priority. Defer during the boss approach and while a King lives.
+    if(g.t%300>270||g.enemies.some(e=>e.variant==='boss'))return false;
+    // Reserve budget by withdrawing distant ordinary threats, as the existing boss does.
+    let threat=g.enemies.reduce((v,e)=>v+enemyThreat(e),0);
+    const distant=g.enemies.filter(e=>dist(e.x,e.y,p.x,p.y)>300).sort((a,b)=>dist(b.x,b.y,p.x,p.y)-dist(a.x,a.y,p.x,p.y));
+    for(const e of distant){if(threat+cost<=g.director.budget)break;threat-=enemyThreat(e);g.enemies.splice(g.enemies.indexOf(e),1);}
+    if(threat+cost>g.director.budget||g.enemies.length>=liveCap())return false;
+    const x=clamp(p.x+80,150,2250),y=clamp(p.y,150,2250);
+    m.active={kind,id:++m.serial,age:0,x,y,duration:kind==='elite'?21:11,warning:3,
+      zones:kind==='street'?[-1,1].map(side=>({x:clamp(x+side*100,75,2325),y:y+side*55,r:52})):[],
+      debris:[],nextDrop:3,pulses:0,eliteSpawned:false};
+    m.counts[kind]++;g.director.recovery=Math.max(g.director.recovery,3);
+    // Fixed schedule anchor prevents countdown drift; crane cadence 45–75 seconds.
+    if(kind==='crane')m.nextCrane=g.t+rnd(45,75);
+    else {m.nextCity=g.t+120;m.cityIndex++;}
+    return true;
+  }
+  function finishCityEncounter(success){
+    const g=game,m=g.cityEvents,e=m.active;if(!e)return;
+    // A timed-out elite escapes without kill credit or reward.
+    g.enemies=g.enemies.filter(n=>n.encounterId!==e.id);
+    if(success){
+      m.completed[e.kind]++;
+      // One unclaimed tactical cache at a time; expires rather than accumulating.
+      g.powerups=g.powerups.filter(p=>p.kind!=='relay');
+      g.powerups.push({x:clamp(g.player.x+65,35,2365),y:g.player.y,kind:'relay',expires:g.t+45});
+      notify('CITY CLEAR · Collect ◇ rally relay',2,'city-clear');
+    }else notify('HUNT ENDED · Elite withdrew',2,'city-end');
+    m.active=null;m.recoveryUntil=g.t+6;g.director.recovery=Math.max(g.director.recovery,6);
+  }
+  function spawnCraneDebris(){
+    const e=game.cityEvents.active;
+    if(!e||e.kind!=='crane'||e.debris.length>=6)return;
+    // Predictable alternating offsets; every landing has 1.6 seconds of warning.
+    const i=e.pulses++,offsets=[[-80,-35],[0,40],[80,-35],[0,-65]];
+    const o=offsets[i%offsets.length];
+    e.debris.push({x:e.x+o[0],y:e.y+o[1],r:38,age:0,hit:false});
+    game.cityEvents.maxDebris=Math.max(game.cityEvents.maxDebris,e.debris.length);
+  }
+  function updateCityEncounter(dt){
+    const g=game,m=g.cityEvents;
+    if(m.relay){m.relay.life-=dt;if(m.relay.life<=0)m.relay=null;}
+    if(!m.active){
+      if(g.t>=90&&(g.player.level>=3||g.t>=180)&&g.t>=m.recoveryUntil){
+        const kind=m.nextCrane<=m.nextCity?'crane':m.cityIndex%2?'elite':'street';
+        if(g.t>=Math.min(m.nextCrane,m.nextCity))spawnCityEncounter(kind);
+      }
+      return;
+    }
+    const e=m.active;e.age+=dt;
+    if(e.kind==='elite'&&e.age>=e.warning&&!e.eliteSpawned){
+      const hp=18+Math.min(20,g.player.level);
+      g.enemies.push({x:e.x,y:e.y,r:26,variant:'shambler',elite:true,encounterId:e.id,
+        hp,max:hp,damage:.8,speed:105,weight:3,phase:0,hurt:0,huntAge:0,huntX:1,huntY:0});
+      e.eliteSpawned=true;
+    }
+    if(e.kind==='elite'&&e.eliteSpawned&&!g.enemies.some(n=>n.encounterId===e.id)){finishCityEncounter(true);return;}
+    if(e.kind==='crane'){
+      if(e.age>=e.nextDrop&&e.age<9){spawnCraneDebris();e.nextDrop+=.9;}
+      for(const d of e.debris){
+        d.age+=dt;
+        if(d.age>=1.6&&!d.hit){d.hit=true;cityDamage(d.x,d.y,d.r,.65);if(g.mode!=='running')return;}
+      }
+      e.debris=e.debris.filter(d=>d.age<2.1);
+    }else if(e.kind==='street'&&e.age>=e.warning){
+      // Telegraphs become two separated electric pools; the middle street stays open.
+      const pulse=Math.floor((e.age-e.warning)/1.5)+1;
+      if(pulse>e.pulses){e.pulses=pulse;for(const z of e.zones){cityDamage(z.x,z.y,z.r,.45);if(g.mode!=='running')return;}}
+    }
+    if(e.age>=e.duration)finishCityEncounter(e.kind!=='elite');
+  }
+  function updateCityNotice(){
+    const m=game.cityEvents,e=m.active,node=$('city-notice');node.hidden=!e;
+    if(!e)return;
+    const label={crane:'CRANE · Dodge orange targets',street:'LIVE STREET · Use the open gap',elite:'ELITE HUNT · Sidestep, then strike'}[e.kind];
+    const text=(e.age<e.warning?'WARNING · ':'')+label+' · '+Math.ceil((e.age<e.warning?e.warning:e.duration)-e.age)+'s';
+    // Update the live region once per displayed second, not every animation frame.
+    if(node.textContent!==text)node.textContent=text;
+  }
+  function renderCityEncounter(){
+    const m=game.cityEvents,e=m.active;
+    if(m.relay){circle(m.relay.x,m.relay.y,m.relay.r,'#87ffdc22');outline(m.relay.x,m.relay.y,m.relay.r,'#87ffdc',3);}
+    if(!e)return;
+    ctx.save();ctx.textAlign='center';ctx.font='bold 15px system-ui';
+    if(e.kind==='elite'&&e.age<3){outline(e.x,e.y,48,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.fillText('HUNT IN '+Math.ceil(3-e.age),e.x,e.y-55);}
+    if(e.kind==='street')for(const z of e.zones){
+      circle(z.x,z.y,z.r,e.age<3?'#dca5ff18':'#dca5ff55');outline(z.x,z.y,z.r,'#dca5ff',3);
+      ctx.fillStyle='#f1d2ff';ctx.fillText(e.age<3?'⚡ IN '+Math.ceil(3-e.age):'⚡ LIVE',z.x,z.y+5);
+    }
+    if(e.kind==='crane'){
+      if(e.age<3){outline(e.x,e.y,140,'#ffbd78',3);ctx.fillStyle='#ffbd78';ctx.fillText('CRANE · MOVE OUT',e.x,e.y-100);}
+      for(const d of e.debris){
+        circle(d.x,d.y,d.r,d.hit?'#ff884466':'#ffbd7822');outline(d.x,d.y,d.r,'#ffbd78',3);
+        ctx.fillStyle='#ffba75';ctx.fillText(d.hit?'IMPACT':'×',d.x,d.y+6);
+        const height=reducedMotion?0:Math.max(0,1-d.age/1.6)*130;
+        if(!d.hit){ctx.fillStyle='#c77745';ctx.fillRect(d.x-12,d.y-height-12,24,24);}
+      }
+    }
+    ctx.restore();
+  }
+
   function tick(dt) {
     if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
@@ -575,6 +751,7 @@
       const angle=rnd(0,TWO);dropPower(p.x+Math.cos(angle)*170,p.y+Math.sin(angle)*170,
         ['rage','magnet','heal'][g.powerCount++%3]);g.nextPower+=24;
     }
+    updateCityEncounter(dt);if(g.mode!=='running')return;
     updateDirector(dt);
     g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
     if(g.spawn<=0){
@@ -623,7 +800,7 @@
       // Extra speed is countered dynamically, including enemies already alive.
       // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
       const adaptation=Math.min(120,Math.max(0,p.speed-cfg.speed)*.25);
-      const slow=g.runicRelic.active==='slow'&&dist(enemy.x,enemy.y,p.x,p.y)<260?.45:1;
+      const slow=(g.runicRelic.active==='slow'&&dist(enemy.x,enemy.y,p.x,p.y)<260)||relayProtects(enemy.x,enemy.y)?.45:1;
       const chase=slow*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
       enemy.x=clamp(enemy.x+vx*chase*pace*dt,20,2380);
       enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
@@ -641,7 +818,7 @@
       const idx=g.enemies.findIndex(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r);
       if(idx>=0){
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
-        const hitDamage=raw*(e.mutation==='shield'&&e.mutationAge>=1?.5:1);
+        const hitDamage=raw*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);
         s.hit.push(e);
@@ -652,13 +829,7 @@
           else {s.vx*=-1;s.vy*=-1;}
         }else g.shots.splice(i,1);
         if(e.hp<=0){
-          g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
-          if(e.variant==='boss'){
-            addFish(e.x,e.y,12);
-            ['rage','magnet','heal'].forEach((kind,i)=>dropPower(e.x+(i-1)*55,e.y+35,kind));
-            notify('ALLEY KING DEFEATED · +20 KILLS',3);
-          }else if(rand()<cfg.fishDropChance)addFish(e.x,e.y);
-          g.enemies.splice(idx,1);sound(620,.06,'triangle',.02);
+          defeatEnemy(e);
         }
       }
     }
@@ -680,11 +851,13 @@
     }
     for(let i=g.powerups.length-1;i>=0;i--){
       const item=g.powerups[i];
+      if(item.expires&&g.t>item.expires){g.powerups.splice(i,1);continue;}
       if(dist(item.x,item.y,p.x,p.y)<p.r+23){
-        if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
+        if(item.kind==='relay'){g.cityEvents.relayUnlocked=true;for(const pet of g.companionSquad)pet.specialCooldown=Math.max(0,pet.specialCooldown-4);}
+        else if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
         else g.buffs[item.kind]=12;
         g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);sound(1100,.2);
-        notify(item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 12s',2);
+        notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 12s',2);
       }
     }
     // A merged fish cache can earn several levels; resolve one choice at a time.
@@ -699,6 +872,7 @@
   }
   function updateHud(){
     if(!game)return;
+    updateCityNotice();
     $('time').textContent=String(Math.floor(game.t/60)).padStart(2,'0')+':'+
       String(Math.floor(game.t%60)).padStart(2,'0');
     $('score').textContent=Math.floor(game.t*2+game.kills*7+game.fish*9);
@@ -727,7 +901,7 @@
     $('night-status').textContent='NIGHT '+game.nightCycle.waveCount;
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label','Alley King '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
-    $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':''].filter(Boolean).join(' · ');
+    $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
     tactic.disabled=game.mode!=='running'||game.squadTacticCooldown>0;
     tactic.textContent=game.squadTacticDuration>0?game.squadTactic.toUpperCase()+' '+Math.ceil(game.squadTacticDuration)+'s':game.squadTacticCooldown>0?'Tactic '+Math.ceil(game.squadTacticCooldown)+'s':'Tactic: '+names[game.nextTactic];
@@ -773,6 +947,7 @@
         }
     }
     for(const s of stars) circle(s.x,s.y,s.r,'#386378');
+    renderCityEncounter();
     for(const rune of g.runicRelic.items){outline(rune.x,rune.y,24,'#94cfff',3);ctx.fillStyle='#d6eaff';ctx.font='bold 26px system-ui';ctx.fillText(rune.type==='shield'?'◇':'❄',rune.x-12,rune.y+9);}
     for(const f of g.fishItems){
       circle(f.x,f.y,18,'#dfc26b33');ctx.save();ctx.translate(f.x,f.y+(reducedMotion?0:Math.sin(f.phase)*4));
@@ -790,7 +965,7 @@
       const color=item.kind==='rage'?'#ff94cd':item.kind==='magnet'?'#a6b7ff':'#86f1b7';
       circle(item.x,item.y,24,'#101c30');outline(item.x,item.y,24,color,3);
       ctx.fillStyle=color;ctx.font='bold 23px system-ui';ctx.textAlign='center';
-      ctx.fillText(item.kind==='rage'?'R':item.kind==='magnet'?'M':'♥',item.x,item.y+8);ctx.textAlign='left';
+      ctx.fillText(item.kind==='relay'?'◇':item.kind==='rage'?'R':item.kind==='magnet'?'M':'♥',item.x,item.y+8);ctx.textAlign='left';
     }
     for(const c of g.hazards.toxicGasClouds){
       const warning=c.age<1,r=warning?110:gasRadius(c);
@@ -824,6 +999,9 @@
     for(const e of [...g.enemies.filter(e=>e.variant!=='ghost'),...g.enemies.filter(e=>e.variant==='ghost')]){
       ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
+      if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(e.huntAge%5<1.5?'HUNT · SIDESTEP':'HUNT · STRIKE',0,-e.r-22);ctx.textAlign='left';
+        if(e.huntAge%5<1.5){ctx.strokeStyle='#f1c3ff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.huntX*210,e.huntY*210);ctx.stroke();}}
+
       const color=e.variant==='ghost'?'#c7adff':e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
       if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
       if(e.variant==='ghost')outline(0,0,e.r+9,'#c7adff',3);
@@ -1032,7 +1210,7 @@
   renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
-    snapshot: () => ({director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+    snapshot: () => ({cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
       survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
       runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
@@ -1057,7 +1235,7 @@
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
       shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage,critical:!!s.critical,hitDamage:s.calculateDamage?s.calculateDamage():s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,

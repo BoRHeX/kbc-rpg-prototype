@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f1b"><title>Cataclysm 0.9 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42523008693-1"></head><body><main id="arena" class="arena">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f1b"><title>Cataclysm 0.9 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42523503568-1"></head><body><main id="arena" class="arena">
 <canvas id="canvas" aria-label="Cataclysm. Drag to move; arrows or WASD also work."></canvas>
-<header class="identity"><a href="../games/" class="back">← Games</a><span>CATACLYSM <b id="game-version">0.9</b></span><small id="build-version" data-run="AI PLAYTEST BUILD 42523008693-1">AI PLAYTEST BUILD 42523008693-1</small></header>
+<header class="identity"><a href="../games/" class="back">← Games</a><span>CATACLYSM <b id="game-version">0.9</b></span><small id="build-version" data-run="AI PLAYTEST BUILD 42523503568-1">AI PLAYTEST BUILD 42523503568-1</small></header>
 <div class="hud">
 <div class="hud-block"><small>TIME</small><b id="time">00:00</b></div><div class="hud-block"><small>FISH</small><b id="fish">0</b></div><div class="hud-block"><small>KILLS</small><b id="kills">0</b></div><div class="hud-block"><small>HP</small><b id="health">3 / 3</b></div><div class="hud-block"><small>SCORE</small><b id="score">0</b></div><div class="hud-block"><small>XP / LEVEL</small><b id="xp-level">0 / 10 · L1</b></div>
 </div><div id="night-status">NIGHT 1</div><div id="boss-status" hidden><span>ALLEY KING</span><progress id="boss-health" max="1" value="1" aria-label="Alley King health"></progress></div>
 <p id="support-status" role="status"></p><p id="buff-status" role="status"></p>
 <nav class="actions" aria-label="Game controls"><button id="pause" aria-label="Pause game" hidden>Ⅱ</button><button id="mute" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart">↻ Restart</button><button id="squad-tactic" aria-label="Squad tactics toggle">Tactic: ATK</button><button id="runic-relic-activate" hidden>Activate relic</button></nav><div id="companionAbilityButtons" class="companion-abilities" role="group" aria-label="Companion special abilities"><button id="ability-shooter" hidden>Burst ready</button><button id="ability-healer" hidden>Heal ready</button><button id="ability-tank" hidden>Guard ready</button></div>
-<div id="start-overlay" class="overlay"><div class="overline">BoRHeZ GAMES · SURVIVAL</div><h1 id="overlay-title">MIDNIGHT SURVIVAL</h1><p id="overlay-copy">Drag to dodge. Auto-fire defeats enemies; collect fish to choose upgrades. Survive the Alley King every five minutes. Collect runes to shield or slow foes. Recruit allies to unlock Burst, Heal and Guard buttons. After six minutes: orange RUSH warns a committed dash — step sideways; blue ◇ halves damage briefly — kite it; pink ≈ weaves slowly. Gold-ring shots deal critical damage.</p><button id="play" class="primary" disabled>LOADING…</button><small>Best <b id="best">0</b> · <span class="rotate-hint">Landscape recommended · </span>WASD / arrows supported</small><small id="build-stats"></small></div>
+<div id="start-overlay" class="overlay"><div class="overline">BoRHeZ GAMES · SURVIVAL</div><h1 id="overlay-title">MIDNIGHT SURVIVAL</h1><p id="overlay-copy">Drag to dodge; auto-fire attacks. Fish upgrade; allies and runes add abilities. City: leave orange targets, use purple gaps, sidestep elites then strike. Collect ◇: abilities leave safe slowing fields. King every 5 min.</p><button id="play" class="primary" disabled>LOADING…</button><small>Best <b id="best">0</b> · <span class="rotate-hint">Landscape recommended · </span>WASD / arrows supported</small><small id="build-stats"></small></div>
       <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
         <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
         <p id="upgrade-copy">Time and combat are frozen. Equip one upgrade to continue.</p>
@@ -29,7 +29,7 @@
         <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · diminishing speed growth</small></button>
         <button type="button" class="upgrade" data-upgrade="recover">Patch up<small>Restore one heart · heal one heart and gain 0.25 maximum HP</small></button>
       </section>
-<div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div><div id="notice" class="notice" hidden></div><p id="runtime-status" role="alert" hidden></p><noscript>JavaScript is required to play.</noscript></main>
+<div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div><div id="city-notice" role="status" aria-live="polite" hidden></div><div id="notice" class="notice" role="status" hidden></div><p id="runtime-status" role="alert" hidden></p><noscript>JavaScript is required to play.</noscript></main>
 <script>
 (function () {
   var expected = '0.9';
@@ -71,5 +71,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42523008693-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42523503568-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>
