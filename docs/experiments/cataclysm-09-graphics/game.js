@@ -25,16 +25,138 @@
   let seeded = 424242, stars = [], city = [], noticeTTL = 0, noticeQueue = [];
   const rand = () => ((seeded = (Math.imul(1664525, seeded) + 1013904223) >>> 0) / 4294967296);
   const clamp = (v, lo, hi) => Math.min(hi,Math.max(lo,v));
-  const dist = (x,y,x2,y2) => Math.hypot(x-x2,y-y2);
+  const WORLD_SIZE = 2400;
+  function wrapCoord(value) { return ((value % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE; }
+  function wrappedDelta(from,to) { return wrapCoord(to-from+WORLD_SIZE/2)-WORLD_SIZE/2; }
+  function dist(x,y,x2,y2) { return Math.hypot(wrappedDelta(x,x2),wrappedDelta(y,y2)); }
   const rnd = (a,b)=>a+(b-a)*rand();
 
   function initMap() {
-    city = [];stars = [];
-    for (let y=0;y<2400;y+=270) for(let x=0;x<2400;x+=280) {
-      if(rand()>.20) city.push({x:x+42+rnd(-28,28),y:y+45+rnd(-22,22),
-        w:105+rnd(0,75),h:105+rnd(0,85),lit:rand()>.5});
+    city=[];stars=[];
+    // Broad plazas and continuous 300px seam approaches. No simulation RNG for art.
+    for(let row=0;row<4;row++)for(let col=0;col<4;col++){
+      if(row===2&&col===2)continue;
+      const x=330+col*470,y=330+row*470;
+      city.push({x,y,w:130+(col%2)*25,h:135+(row%2)*20,lit:(row+col)%2===0});
     }
-    for(let i=0;i<260;i++) stars.push({x:rand()*2400,y:rand()*2400,r:rnd(.7,2.1)});
+  }
+  // Translate each rectangle to its nearest periodic image before circle testing.
+  function terrainContact(x,y,r,c) {
+    const cx=x+wrappedDelta(x,c.x+c.w/2),cy=y+wrappedDelta(y,c.y+c.h/2);
+    const left=cx-c.w/2,top=cy-c.h/2;
+    const qx=clamp(x,left,left+c.w),qy=clamp(y,top,top+c.h);
+    const dx=x-qx,dy=y-qy,d=Math.hypot(dx,dy);
+    if(d>=r)return null;
+    if(d>1e-8)return {x:dx/d*(r-d+.001),y:dy/d*(r-d+.001)};
+    const sides=[{d:x-left,x:-1,y:0},{d:left+c.w-x,x:1,y:0},
+      {d:y-top,x:0,y:-1},{d:top+c.h-y,x:0,y:1}];
+    const side=sides.reduce((a,b)=>a.d<b.d?a:b);
+    return {x:side.x*(side.d+r+.001),y:side.y*(side.d+r+.001)};
+  }
+  function isTerrainClear(x,y,r) {
+    return city.every(c=>!terrainContact(wrapCoord(x),wrapCoord(y),r,c));
+  }
+  function nearestSafeSpace(x,y,r=24) {
+    x=wrapCoord(x);y=wrapCoord(y);
+    if(isTerrainClear(x,y,r))return {x,y};
+    for(let ring=12;ring<=WORLD_SIZE;ring+=12){
+      const count=Math.max(8,Math.ceil(TWO*ring/18));
+      for(let i=0;i<count;i++){
+        const a=i*TWO/count,nx=wrapCoord(x+Math.cos(a)*ring),ny=wrapCoord(y+Math.sin(a)*ring);
+        if(isTerrainClear(nx,ny,r))return {x:nx,y:ny};
+      }
+    }
+    return {x:1200,y:1200};
+  }
+  function settleTerrain(actor) {
+    for(let pass=0;pass<4;pass++){
+      let hit=false;
+      for(const c of city){const push=terrainContact(actor.x,actor.y,actor.r,c);
+        if(push){actor.x=wrapCoord(actor.x+push.x);actor.y=wrapCoord(actor.y+push.y);hit=true;}}
+      if(!hit)return;
+    }
+    if(!isTerrainClear(actor.x,actor.y,actor.r))Object.assign(actor,nearestSafeSpace(actor.x,actor.y,actor.r));
+  }
+  function moveWithCollision(actor,dx,dy) {
+    if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
+    actor.x=wrapCoord(actor.x);actor.y=wrapCoord(actor.y);
+    settleTerrain(actor);
+    const steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/Math.max(2,Math.min(6,actor.r/2))));
+    for(let i=0;i<steps;i++){
+      actor.x=wrapCoord(actor.x+dx/steps);actor.y=wrapCoord(actor.y+dy/steps);
+      settleTerrain(actor);
+    }
+  }
+  function blockingTerrain(x,y,dx,dy,r) {
+    let first=null,best=Infinity;
+    for(const c of city){
+      const left=x+wrappedDelta(x,c.x+c.w/2)-c.w/2-r;
+      const top=y+wrappedDelta(y,c.y+c.h/2)-c.h/2-r;
+      let enter=0,leave=1;
+      for(const [origin,delta,lo,hi] of [[x,dx,left,left+c.w+2*r],[y,dy,top,top+c.h+2*r]]){
+        if(Math.abs(delta)<1e-9){if(origin<lo||origin>hi){leave=-1;break;}}
+        else {const a=(lo-origin)/delta,b=(hi-origin)/delta;enter=Math.max(enter,Math.min(a,b));leave=Math.min(leave,Math.max(a,b));}
+      }
+      if(enter<=leave&&leave>0&&enter<best){best=enter;first={left,top,w:c.w+2*r,h:c.h+2*r};}
+    }
+    return first;
+  }
+  function navigationDelta(actor,tx,ty) {
+    const dx=wrappedDelta(actor.x,tx),dy=wrappedDelta(actor.y,ty);
+    const wall=blockingTerrain(actor.x,actor.y,dx,dy,actor.r+2);
+    if(!wall)return {x:dx,y:dy};
+    let choice=null,best=Infinity;
+    // Sparse blocks leave ample space for these visible, generously padded corners.
+    for(const x of [wall.left-8,wall.left+wall.w+8])for(const y of [wall.top-8,wall.top+wall.h+8]){
+      const vx=wrappedDelta(actor.x,x),vy=wrappedDelta(actor.y,y);
+      if(blockingTerrain(actor.x,actor.y,vx,vy,actor.r))continue;
+      const score=Math.hypot(vx,vy)+dist(x,y,tx,ty);
+      if(score<best){best=score;choice={x:vx,y:vy};}
+    }
+    return choice||{x:dx,y:dy};
+  }
+  function resolveActorCollisions() {
+    const actors=[game.player,...game.enemies.filter(e=>e.hp>0),...game.companionSquad];
+    // Periodic spatial bins bound work at the mob cap, including opposite seams.
+    const cells=24,cellSize=WORLD_SIZE/cells;
+    for(let pass=0;pass<12;pass++){
+      const bins=new Map();
+      for(let i=0;i<actors.length;i++){
+        const a=actors[i],key=Math.floor(a.x/cellSize)+cells*Math.floor(a.y/cellSize);
+        if(!bins.has(key))bins.set(key,[]);bins.get(key).push(i);
+      }
+      let overlap=false;
+      for(let i=0;i<actors.length;i++){
+        const a=actors[i],col=Math.floor(a.x/cellSize),row=Math.floor(a.y/cellSize);
+        for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
+          const list=bins.get((col+ox+cells)%cells+cells*((row+oy+cells)%cells));
+          if(!list)continue;
+          for(const j of list){if(j<=i)continue;const b=actors[j];
+            let dx=wrappedDelta(a.x,b.x),dy=wrappedDelta(a.y,b.y),r=a.r+b.r;
+            if(Math.abs(dx)>=r||Math.abs(dy)>=r)continue;
+            let d=Math.hypot(dx,dy);if(d>=r-.001)continue;
+            overlap=true;if(d<.00001){dx=1;dy=0;d=1;}
+            const nx=dx/d,ny=dy/d,amount=r-Math.hypot(wrappedDelta(a.x,b.x),wrappedDelta(a.y,b.y))+.002;
+            moveWithCollision(a,-nx*amount/2,-ny*amount/2);
+            moveWithCollision(b,nx*amount/2,ny*amount/2);
+            // Transfer the part blocked by a wall to the other actor.
+            const remaining=r-dist(a.x,a.y,b.x,b.y);
+            if(remaining>0){moveWithCollision(b,nx*remaining,ny*remaining);
+              const rest=r-dist(a.x,a.y,b.x,b.y);if(rest>0)moveWithCollision(a,-nx*rest,-ny*rest);}
+          }
+        }
+      }
+      if(!overlap)break;
+    }
+  }
+  function moveProjectile(s,dt) {
+    const steps=Math.max(1,Math.ceil(Math.hypot(s.vx,s.vy)*dt/3));
+    for(let i=0;i<steps;i++){
+      s.x=wrapCoord(s.x+s.vx*dt/steps);s.y=wrapCoord(s.y+s.vy*dt/steps);
+      if(!isTerrainClear(s.x,s.y,s.r))return false;
+      if(game.enemies.some(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r))break;
+    }
+    return true;
   }
   let personalBest = 0, completedRuns = 0;
   try { completedRuns = Math.max(0, Math.floor(Number(localStorage.getItem('cataclysm-runs')) || 0)); }
@@ -129,30 +251,19 @@
     }
   }
   function safeSpawn(radius=600, margin=30) {
-    const p=game.player;
-    // Near a wall, spawn only on the inward side; never clamp a ring onto the cat.
-    for(let i=0;i<32;i++){
-      const a=rnd(0,TWO),x=p.x+Math.cos(a)*radius,y=p.y+Math.sin(a)*radius;
-      if(x<margin||x>2400-margin||y<margin||y>2400-margin)continue;
-      if((p.x<300&&x<p.x+180)||(p.x>2100&&x>p.x-180)||
-         (p.y<300&&y<p.y+180)||(p.y>2100&&y>p.y-180))continue;
-      return {x,y};
-    }
-    const a=Math.atan2(1200-p.y,1200-p.x);
-    return {x:clamp(p.x+Math.cos(a)*radius,margin,2400-margin),
-      y:clamp(p.y+Math.sin(a)*radius,margin,2400-margin)};
+    const p=game.player,a=rnd(0,TWO);
+    return nearestSafeSpace(p.x+Math.cos(a)*radius,p.y+Math.sin(a)*radius,Math.max(30,margin));
   }
   function edgeAid(dt) {
+    // The torus has no edges. Retain the old rescue as a crowd emergency shield.
     const g=game,p=g.player;
-    g.escapeCooldown=Math.max(0,g.escapeCooldown-dt);g.escape=Math.max(0,g.escape-dt);
-    g.edgeWarning=Math.min(p.x,p.y,2400-p.x,2400-p.y)<220;
-    if(!g.edgeWarning)g.escapeArmed=true;
-    if(g.edgeWarning&&g.escapeArmed&&g.escapeCooldown===0&&g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<145)){
-      g.escapeOrigin={x:p.x,y:p.y};g.escapeOverdriveTimer=4.5;g.escapeArmed=false;g.escape=2.5;g.escapeCooldown=10.5;p.inv=Math.max(p.inv,2.5);
-      for(const e of g.enemies){const d=dist(e.x,e.y,p.x,p.y);
-        if(d<210){const a=Math.atan2(e.y-p.y,e.x-p.x);
-          e.x=clamp(p.x+Math.cos(a)*230,20,2380);e.y=clamp(p.y+Math.sin(a)*230,20,2380);}}
-      notify('ESCAPE SHIELD · Follow the arrow inward',2.5);sound(740,.18);
+    g.edgeWarning=false;g.escapeCooldown=Math.max(0,g.escapeCooldown-dt);g.escape=Math.max(0,g.escape-dt);
+    const crowded=g.enemies.filter(e=>dist(e.x,e.y,p.x,p.y)<145).length>=6;
+    if(!crowded)g.escapeArmed=true;
+    if(crowded&&g.escapeArmed&&g.escapeCooldown===0){
+      g.escapeOrigin={x:p.x,y:p.y};g.escapeOverdriveTimer=4.5;g.escapeArmed=false;
+      g.escape=2.5;g.escapeCooldown=10.5;p.inv=Math.max(p.inv,2.5);
+      notify('EMERGENCY SHIELD · Break through the crowd',2.5);sound(740,.18);
     }
   }
   function notify(message,duration=1.5,id=message) {
@@ -341,6 +452,7 @@
   const SpawnManager=Object.freeze({spawnEnemy});
   const Shot={calculateDamage(){return this.damage*(this.critical?1.75:1);},isCriticalHit(){return !!this.critical;}};
   function prepareShot(shot){
+    shot.x=wrapCoord(shot.x);shot.y=wrapCoord(shot.y);
     const p=game.player;
     shot.critical=rand()<clamp(.06+(p.level-1)*.004+Math.max(0,p.damage-1)*.012,.06,.22);
     shot.calculateDamage=Shot.calculateDamage;shot.isCriticalHit=Shot.isCriticalHit;
@@ -353,7 +465,7 @@
     let enemy=null,best=460;
     for(const e of game.enemies){const d=dist(e.x,e.y,p.x,p.y);if(d<best){best=d;enemy=e;}}
     if(!enemy)return;
-    const dx=(enemy.x-p.x)/best,dy=(enemy.y-p.y)/best;
+    const dx=(wrappedDelta(p.x,enemy.x))/best,dy=(wrappedDelta(p.y,enemy.y))/best;
     p.aim=Math.atan2(dy,dx);
     const spread=Math.min(4,p.multishot);
     for(let i=-spread;i<=spread&&game.shots.length<160;i++){
@@ -362,7 +474,7 @@
         life:Math.min(2,.85+p.ricochet*.25),r:6,damage:p.damage*game.effectiveBuffs.damage*((1+2*p.multishot)/(1+2*spread))*(1+Math.max(0,p.ricochet-8)*.12)*Math.max(1,MIN_SHOT_INTERVAL*game.effectiveBuffs.fire/p.shotInterval),bounces:Math.min(8,p.ricochet),hit:[],
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0}));
     }
-    sound(420+rnd(0,140),.05,'square',.018);
+    sound(420+cosmeticRand()*140,.05,'square',.018);
   }
   // Content updates use simulation seconds, so pause and upgrades freeze every timer.
   // One visible representative per role; count investments multiply squad effectiveness.
@@ -371,7 +483,7 @@
     const p=game.player;
     let ally=game.companionSquad.find(c=>c.type===type);
     if(ally)ally.rank++;
-    else {ally={type,rank:1,x:p.x+45,y:p.y,r:13,shotTimer:0,flash:0,specialAbilityReady:true,specialCooldown:0,specialDuration:0};game.companionSquad.push(ally);}
+    else {ally={type,rank:1,...nearestSafeSpace(p.x+45,p.y,18),r:18,shotTimer:0,flash:0,specialAbilityReady:true,specialCooldown:0,specialDuration:0};game.companionSquad.push(ally);}
     game.companionRanks[type]=ally.rank;
   }
   function updateCompanions(dt) {
@@ -385,17 +497,17 @@
       pet.flash=Math.max(0,pet.flash-dt);
       let nearest=null,best=g.squadTactic==='aggressive'?650:460;
       for(const e of g.enemies){const d=dist(pet.x,pet.y,e.x,e.y);if(e.hp>0&&d<best){best=d;nearest=e;}}
-      const a=nearest?Math.atan2(nearest.y-p.y,nearest.x-p.x):0;
+      const a=nearest?Math.atan2(wrappedDelta(p.y,nearest.y),wrappedDelta(p.x,nearest.x)):0;
       const formation=g.squadTactic==='defensive'?.45:g.squadTactic==='aggressive'?1.35:1;
-      let tx=clamp(p.x+formation*(pet.type==='tank'?Math.cos(a)*65:pet.type==='healer'?-48:48),25,2375);
-      let ty=clamp(p.y+formation*(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35),25,2375);
+      let tx=wrapCoord(p.x+formation*(pet.type==='tank'?Math.cos(a)*65:pet.type==='healer'?-48:48));
+      let ty=wrapCoord(p.y+formation*(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35));
       const safe=citySafeTarget(tx,ty,pet);tx=safe.x;ty=safe.y;
-      const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+90)*dt);
-      pet.x+=(tx-pet.x)/d*step;pet.y+=(ty-pet.y)/d*step;
+      const route=navigationDelta(pet,tx,ty),d=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(d,(p.speed+90)*dt);
+      moveWithCollision(pet,route.x/d*step,route.y/d*step);
       pet.shotTimer-=dt;
       if(pet.shotTimer>0||!nearest)continue;
       const interval=(pet.type==='shooter'?.8:1.4)/(q.rate*(1+pet.rank*.1)*(g.squadTactic==='aggressive'?1.3:1));
-      const spread=Math.min(3,q.spread),angle=Math.atan2(nearest.y-pet.y,nearest.x-pet.x);
+      const spread=Math.min(3,q.spread),angle=Math.atan2(wrappedDelta(pet.y,nearest.y),wrappedDelta(pet.x,nearest.x));
       // Reserve projectile room for both cat and squad. Excess rate/spread/count becomes damage.
       if(g.shots.length>140)continue;
       for(let i=-spread;i<=spread;i++)g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(angle+i*.18)*600,vy:Math.sin(angle+i*.18)*600,
@@ -432,7 +544,7 @@
   function updateSupport(dt){
     const g=game,p=g.player,f=g.feralInstinct;
     let nearby=0;
-    for(const e of g.enemies)if(e.hp>0&&(e.x-p.x)**2+(e.y-p.y)**2<=10000)nearby++;
+    for(const e of g.enemies)if(e.hp>0&&(wrappedDelta(p.x,e.x))**2+(wrappedDelta(p.y,e.y))**2<=10000)nearby++;
     if(f.active){
       f.timer=Math.max(0,f.timer-dt);
       if(f.timer===0){f.active=false;notify('FERAL INSTINCT · Ended. Escape the crowd to rearm',2);}
@@ -476,7 +588,7 @@
     const g=game,p=g.player,r=g.runicRelic;
     if(g.t<r.nextSpawn||r.items.length>=3)return;
     const a=rnd(0,TWO);
-    r.items.push({x:clamp(p.x+Math.cos(a)*160,40,2360),y:clamp(p.y+Math.sin(a)*160,40,2360),type:rand()<.5?'shield':'slow'});
+    r.items.push({...nearestSafeSpace(p.x+Math.cos(a)*160,p.y+Math.sin(a)*160,24),type:rand()<.5?'shield':'slow'});
     r.nextSpawn=g.t+45;
     notify('RUNIC RELIC appeared nearby · ◇ shield / ❄ slow',2,'relic-spawn');sound(340,.3,'triangle',.025);
   }
@@ -535,17 +647,19 @@
         if(p.hp<=0){updateHud();end();}}
     }
   }
+  let cosmeticState=0x9e3779b9;
+  function cosmeticRand() { cosmeticState=(Math.imul(cosmeticState,1664525)+1013904223)>>>0;return cosmeticState/4294967296; }
   function burst(x,y,col,n=10) {
     if(reducedMotion||game.particles.length>=500)return;
-    for(let i=0;i<n;i++){const a=rnd(0,TWO),s=rnd(50,205);
+    for(let i=0;i<n;i++){const a=cosmeticRand()*TWO,s=50+cosmeticRand()*155;
       game.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
-        life:rnd(.18,.55),ttl:.55,col,r:rnd(2,5)});
+        life:.18+cosmeticRand()*.37,ttl:.55,col,r:2+cosmeticRand()*3});
     }
   }
   function dropPower(x,y,kind) {
     // Bound unattended supply drops during long runs; tactical caches use their own cap.
     if(game.powerups.length>=36){const i=game.powerups.findIndex(p=>p.kind!=='relay');if(i>=0)game.powerups.splice(i,1);}
-    game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind,expires:game.t+90});
+    game.powerups.push({...nearestSafeSpace(x,y,24),kind,expires:game.t+90});
   }
   function spawnBoss(night) {
     if(game.enemies.length>=liveCap()){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
@@ -571,7 +685,7 @@
       const f=game.fishItems.reduce((a,b)=>dist(a.x,a.y,x,y)<dist(b.x,b.y,x,y)?a:b);
       f.value+=value;return;
     }
-    game.fishItems.push({x,y,r:12,value,phase:rnd(0,TWO),attracted:false});
+    game.fishItems.push({...nearestSafeSpace(x,y,12),r:12,value,phase:inkHash(x,y)*TWO,attracted:false});
   }
   // Shared encounter manager: one event at a time, no solid geometry, bounded costs.
   function cityThreat(){
@@ -602,13 +716,13 @@
     for(const z of cityZones()){
       const inside=dist(pet.x,pet.y,z.x,z.y)<z.r+25;
       if(inside||dist(x,y,z.x,z.y)<z.r+25){
-        const a=Math.atan2((inside?pet.y:y)-z.y,(inside?pet.x:x)-z.x);
-        x=clamp(z.x+Math.cos(a)*(z.r+50),25,2375);
-        y=clamp(z.y+Math.sin(a)*(z.r+50),25,2375);moved=true;
+        const a=Math.atan2(wrappedDelta(z.y,inside?pet.y:y),wrappedDelta(z.x,inside?pet.x:x));
+        x=wrapCoord(z.x+Math.cos(a)*(z.r+50));
+        y=wrapCoord(z.y+Math.sin(a)*(z.r+50));moved=true;
       }
     }
     if(moved)game.cityEvents.avoids++;
-    return {x,y};
+    return nearestSafeSpace(x,y,pet.r);
   }
   function cityDamage(x,y,r,amount){
     const g=game,p=g.player,m=g.cityEvents;
@@ -642,9 +756,9 @@
     const distant=g.enemies.filter(e=>dist(e.x,e.y,p.x,p.y)>300).sort((a,b)=>dist(b.x,b.y,p.x,p.y)-dist(a.x,a.y,p.x,p.y));
     for(const e of distant){if(threat+cost<=g.director.budget)break;threat-=enemyThreat(e);g.enemies.splice(g.enemies.indexOf(e),1);}
     if(threat+cost>g.director.budget||g.enemies.length>=liveCap())return false;
-    const x=clamp(p.x+80,150,2250),y=clamp(p.y,150,2250);
+    const {x,y}=nearestSafeSpace(p.x+80,p.y,60);
     m.active={kind,id:++m.serial,age:0,x,y,duration:kind==='elite'?21:11,warning:3,
-      zones:kind==='street'?[-1,1].map(side=>({x:clamp(x+side*100,75,2325),y:y+side*55,r:52})):[],
+      zones:kind==='street'?[-1,1].map(side=>({...nearestSafeSpace(x+side*100,y+side*55,52),r:52})):[],
       debris:[],nextDrop:3,pulses:0,eliteSpawned:false};
     m.counts[kind]++;g.director.recovery=Math.max(g.director.recovery,3);
     // Fixed schedule anchor prevents countdown drift; crane cadence 45–75 seconds.
@@ -660,7 +774,7 @@
       m.completed[e.kind]++;
       // One unclaimed tactical cache at a time; expires rather than accumulating.
       g.powerups=g.powerups.filter(p=>p.kind!=='relay');
-      g.powerups.push({x:clamp(g.player.x+65,35,2365),y:g.player.y,kind:'relay',expires:g.t+45});
+      g.powerups.push({...nearestSafeSpace(g.player.x+65,g.player.y,24),kind:'relay',expires:g.t+45});
       notify('CITY CLEAR · Collect ◇ rally relay',2,'city-clear');
     }else notify('HUNT ENDED · Elite withdrew',2,'city-end');
     m.active=null;m.recoveryUntil=g.t+6;g.director.recovery=Math.max(g.director.recovery,6);
@@ -671,7 +785,7 @@
     // Predictable alternating offsets; every landing has 1.6 seconds of warning.
     const i=e.pulses++,offsets=[[-80,-35],[0,40],[80,-35],[0,-65]];
     const o=offsets[i%offsets.length];
-    e.debris.push({x:e.x+o[0],y:e.y+o[1],r:38,age:0,hit:false});
+    e.debris.push({...nearestSafeSpace(e.x+o[0],e.y+o[1],38),r:38,age:0,hit:false});
     game.cityEvents.maxDebris=Math.max(game.cityEvents.maxDebris,e.debris.length);
   }
   function updateCityEncounter(dt){
@@ -767,13 +881,13 @@
     updateSupport(dt);
     updateGas(dt);if(g.mode!=='running')return;
     updateGhosts(dt);updateCompanions(dt);
-    const input=moveInput();p.x=clamp(p.x+input.x*(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed*dt,25,2375);
-    p.y=clamp(p.y+input.y*(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed*dt,25,2375);
+    const input=moveInput(),speed=(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed;
+    moveWithCollision(p,input.x*speed*dt,input.y*speed*dt);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval/g.effectiveBuffs.fire);}
     for(const enemy of g.enemies){
       const guard=g.companionSquad.find(c=>c.type==='tank'&&c.specialDuration>0&&dist(c.x,c.y,enemy.x,enemy.y)<260);
       const target=guard||p;
-      const dx=target.x-enemy.x,dy=target.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
+      const dx=wrappedDelta(enemy.x,target.x),dy=wrappedDelta(enemy.y,target.y), d=Math.max(1,Math.hypot(dx,dy));
       let vx=dx/d,vy=dy/d,pace=1;
       if(enemy.variant==='orbiter'){
         // Circle at close range, then periodically cut inward.
@@ -784,7 +898,7 @@
         const side=Math.sin(enemy.phase*.35)>0?1:-1;
         const tx=p.x+input.x*160-dy/d*side*110,ty=p.y+input.y*160+dx/d*side*110;
         const length=Math.max(1,dist(enemy.x,enemy.y,tx,ty));
-        vx=(tx-enemy.x)/length;vy=(ty-enemy.y)/length;pace=1.15;
+        vx=(wrappedDelta(enemy.x,tx))/length;vy=(wrappedDelta(enemy.y,ty))/length;pace=1.15;
         if(d<100){vx=dx/d;vy=dy/d;}
       }else if(enemy.variant==='weaver'){
         const weave=Math.sin(enemy.phase*1.8)*.85;
@@ -796,24 +910,30 @@
         else if(cycle<3.2){pace=2.5;vx=enemy.dashX??vx;vy=enemy.dashY??vy;}
         else pace=.8;
       }
+      const committed=(enemy.variant==='boss'||enemy.variant==='dasher')&&enemy.phase%(enemy.variant==='boss'?7:9)>=2&&enemy.phase%(enemy.variant==='boss'?7:9)<3.2;
+      if(!committed&&!enemy.elite&&!(enemy.mutation==='burst'&&enemy.mutationAge<1.6)){
+        const route=navigationDelta(enemy,enemy.x+vx*Math.min(d,350),enemy.y+vy*Math.min(d,350));
+        const length=Math.max(1,Math.hypot(route.x,route.y));vx=route.x/length;vy=route.y/length;
+      }
       ({vx,vy,pace}=updateEnemyBehavior(enemy,dt,vx,vy,pace));
       // Extra speed is countered dynamically, including enemies already alive.
       // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
       const adaptation=Math.min(120,Math.max(0,p.speed-cfg.speed)*.25);
       const slow=(g.runicRelic.active==='slow'&&dist(enemy.x,enemy.y,p.x,p.y)<260)||relayProtects(enemy.x,enemy.y)?.45:1;
       const chase=slow*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
-      enemy.x=clamp(enemy.x+vx*chase*pace*dt,20,2380);
-      enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
+      moveWithCollision(enemy,vx*chase*pace*dt,vy*chase*pace*dt);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
-      if(g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r-3&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
+      if(g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r+.5&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
         damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
         sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
+    resolveActorCollisions();
     for(let i=g.shots.length-1;i>=0;i--){
       const s=g.shots[i];
       s.trail.push({x:s.x,y:s.y});if(s.trail.length>(reducedMotion?1:6))s.trail.shift();
-      s.flash=Math.max(0,s.flash-dt);s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
+      s.flash=Math.max(0,s.flash-dt);s.life-=dt;
+      if(!moveProjectile(s,dt)){g.shots.splice(i,1);continue;}
       if(s.life<=0){g.shots.splice(i,1);continue;}
       const idx=g.enemies.findIndex(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r);
       if(idx>=0){
@@ -825,7 +945,7 @@
         if(s.bounces>0){
           s.bounces--;s.kind='bounce';s.flash=.16;burst(s.x,s.y,'#ffd568',9);
           const next=g.enemies.filter(n=>!s.hit.includes(n)).sort((a,b)=>dist(a.x,a.y,s.x,s.y)-dist(b.x,b.y,s.x,s.y))[0];
-          if(next){const a=Math.atan2(next.y-s.y,next.x-s.x);s.vx=Math.cos(a)*600;s.vy=Math.sin(a)*600;s.life=Math.max(.5,s.life);}
+          if(next){const a=Math.atan2(wrappedDelta(s.y,next.y),wrappedDelta(s.x,next.x));s.vx=Math.cos(a)*600;s.vy=Math.sin(a)*600;s.life=Math.max(.5,s.life);}
           else {s.vx*=-1;s.vy*=-1;}
         }else g.shots.splice(i,1);
         if(e.hp<=0){
@@ -837,8 +957,8 @@
       const f=g.fishItems[i];f.phase+=dt*4;
       const d=dist(f.x,f.y,p.x,p.y);
       if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet||g.buffs.magnet>0)f.attracted=true;
-      if(f.attracted){const step=Math.min(d,(p.speed+240)*dt);
-        f.x+=(p.x-f.x)/Math.max(d,1)*step;f.y+=(p.y-f.y)/Math.max(d,1)*step;}
+      if(f.attracted){const route=navigationDelta(f,p.x,p.y),length=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(length,(p.speed+240)*dt);
+        moveWithCollision(f,route.x/length*step,route.y/length*step);}
       if(d<28){
         g.fish+=f.value;g.xp+=f.value*p.xpGain;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
         g.pickupEffects.push({x:f.x,y:f.y,life:.9,value:f.value});
@@ -864,7 +984,7 @@
     if(g.xp>=7+p.level*3){g.xp-=7+p.level*3;p.level++;offerUpgrade();return;}
     for(let i=g.pickupEffects.length-1;i>=0;i--){g.pickupEffects[i].life-=dt;if(g.pickupEffects[i].life<=0)g.pickupEffects.splice(i,1);}
     for(let i=g.particles.length-1;i>=0;i--){
-      const s=g.particles[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.vx*=.96;s.vy*=.96;s.life-=dt;
+      const s=g.particles[i];s.x=wrapCoord(s.x+s.vx*dt);s.y=wrapCoord(s.y+s.vy*dt);s.vx*=.96;s.vy*=.96;s.life-=dt;
       if(s.life<=0)g.particles.splice(i,1);
     }
     if(noticeTTL>0){noticeTTL-=dt;if(noticeTTL<=0){$('notice').hidden=true;if(noticeQueue.length){const n=noticeQueue.shift();notify(n.message,n.duration,n.id);}}}
@@ -925,21 +1045,18 @@
   // Illustration only: coordinate hashes never advance the simulation RNG.
   const inkHash = (x,y) => ((Math.imul(x|0,374761393)^Math.imul(y|0,668265263))>>>0)/4294967296;
   function streetScene(cx,cy){
-    ctx.fillStyle='#17262b';ctx.fillRect(cx,cy,W,H);
-    const left=Math.max(0,Math.floor(cx/280)),top=Math.max(0,Math.floor(cy/270));
-    for(let row=top;row<=Math.min(8,Math.ceil((cy+H)/270));row++)for(let col=left;col<=Math.min(8,Math.ceil((cx+W)/280));col++){
-      const x=col*280,y=row*270,h=inkHash(col,row);
-      ctx.fillStyle='#26383a';ctx.fillRect(x+10,y+10,216,204);
-      ctx.strokeStyle='#4b5c57';ctx.lineWidth=2;ctx.strokeRect(x+10,y+10,216,204);
-      ctx.fillStyle='#101d23';ctx.fillRect(x+20,y+22,196,184);
-      // Broken curb and lane paint; broad streets remain visually navigable.
-      ctx.fillStyle='#9d9562';ctx.fillRect(x+248,y+22,2,34);ctx.fillRect(x+55,y+240,36,2);
-      ctx.fillStyle='#a1ada080';for(let i=0;i<5;i++)ctx.fillRect(x+230+i*8,y+222,5,15);
-      ctx.fillStyle='#3b5050';ctx.fillRect(x+228,y+190,8,15);ctx.fillStyle='#8c9f86';ctx.fillRect(x+229,y+191,6,3);
-      ctx.strokeStyle='#09191e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+246,y+110);ctx.lineTo(x+260,y+124);ctx.lineTo(x+255,y+140);ctx.lineTo(x+271,y+154);ctx.stroke();
-      for(let i=0;i<6;i++){const n=inkHash(col*17+i,row*11);ctx.fillStyle=i%2?'#465451':'#263b3d';ctx.fillRect(x+232+n*38,y+62+i*21,3+n*5,2);}
-      if(h>.45){ctx.fillStyle='#29434a';ctx.beginPath();ctx.ellipse(x+248,y+175,15,5,-.5,0,TWO);ctx.fill();}
-    }
+    const left=Math.max(0,cx),top=Math.max(0,cy),right=Math.min(WORLD_SIZE,cx+W),bottom=Math.min(WORLD_SIZE,cy+H);
+    if(right<=left||bottom<=top)return;
+    ctx.fillStyle='#17262b';ctx.fillRect(left,top,right-left,bottom-top);
+    // Flat paving, road paint and tiny rubble are explicitly decorative.
+    for(let row=Math.max(0,Math.floor(top/300));row<Math.min(8,Math.ceil(bottom/300));row++)
+      for(let col=Math.max(0,Math.floor(left/300));col<Math.min(8,Math.ceil(right/300));col++){
+        const x=col*300,y=row*300;
+        ctx.strokeStyle='#203339';ctx.lineWidth=1;ctx.strokeRect(x,y,300,300);
+        ctx.fillStyle='#9d956255';ctx.fillRect(x+145,y+20,3,48);ctx.fillRect(x+20,y+145,48,3);
+        for(let i=0;i<4;i++){const n=inkHash(col*17+i,row*11);
+          ctx.fillStyle='#334648';ctx.fillRect(x+20+n*260,y+28+i*63,3,2);}
+      }
     for(const c of city){
       if(c.x+c.w<cx-35||c.x>cx+W+35||c.y+c.h<cy-35||c.y>cy+H+35)continue;
       const n=inkHash(c.x,c.y);
@@ -1097,12 +1214,30 @@
     ctx.restore();
   }
   function renderWorld(){
-    const g=game, p=g.player;
-    const cameraX=clamp(p.x-W/2,0,2400-W),cameraY=clamp(p.y-H/2,0,2400-H);
+    const source=game,p=source.player;
+    const viewX=p.x-W/2,viewY=p.y-H/2;
+    const shakeX=reducedMotion?0:Math.sin(source.t*71)*source.shake*5;
+    const shakeY=reducedMotion?0:Math.cos(source.t*83)*source.shake*5;
     ctx.fillStyle='#0e1d2b';ctx.fillRect(0,0,W,H);
-    ctx.save();
-    ctx.translate(-cameraX+(reducedMotion?0:Math.sin(g.t*71)*g.shake*5),-cameraY+(reducedMotion?0:Math.cos(g.t*83)*g.shake*5));
-    streetScene(cameraX,cameraY);
+    const tiles=[];
+    for(let ty=Math.floor((viewY-320)/WORLD_SIZE);ty<=Math.floor((viewY+H+320)/WORLD_SIZE);ty++)
+      for(let tx=Math.floor((viewX-320)/WORLD_SIZE);tx<=Math.floor((viewX+W+320)/WORLD_SIZE);tx++)
+        tiles.push({x:tx*WORLD_SIZE,y:ty*WORLD_SIZE});
+    for(const tile of tiles){
+      ctx.save();ctx.translate(tile.x-viewX+shakeX,tile.y-viewY+shakeY);
+      streetScene(viewX-tile.x,viewY-tile.y);ctx.restore();
+    }
+    for(const tile of tiles){
+      const cameraX=viewX-tile.x,cameraY=viewY-tile.y;
+      const visible=(a,pad=80)=>a.x+pad>=cameraX&&a.x-pad<=cameraX+W&&a.y+pad>=cameraY&&a.y-pad<=cameraY+H;
+      const g={...source,
+        fishItems:source.fishItems.filter(a=>visible(a)),pickupEffects:source.pickupEffects.filter(a=>visible(a)),
+        powerups:source.powerups.filter(a=>visible(a)),companionSquad:source.companionSquad.filter(a=>visible(a,280)),
+        shots:source.shots.filter(a=>visible(a,80)),enemies:source.enemies.filter(a=>visible(a,280)),
+        particles:source.particles.filter(a=>visible(a,20)),
+        runicRelic:{...source.runicRelic,items:source.runicRelic.items.filter(a=>visible(a))},
+        hazards:{toxicGasClouds:source.hazards.toxicGasClouds.filter(a=>visible(a,120))}};
+      ctx.save();ctx.translate(-cameraX+shakeX,-cameraY+shakeY);
     renderCityEncounter();
     for(const rune of g.runicRelic.items){outline(rune.x,rune.y,24,'#94cfff',3);ctx.fillStyle='#d6eaff';ctx.font='bold 26px system-ui';ctx.fillText(rune.type==='shield'?'◇':'❄',rune.x-12,rune.y+9);}
     for(const f of g.fishItems){
@@ -1128,15 +1263,15 @@
     for(const pet of g.companionSquad){
       drawCompanionEffect(pet);
       ctx.save();ctx.translate(pet.x,pet.y);
-      catSprite(pet.type,18,g.t, false,Math.atan2(p.y-pet.y,p.x-pet.x));
+      catSprite(pet.type,18,g.t, false,Math.atan2(wrappedDelta(pet.y,p.y),wrappedDelta(pet.x,p.x)));
       if(pet.flash>0)outline(0,0,19,'#ffe7ab',3);
       ctx.fillStyle='#ffddaa';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(pet.type[0].toUpperCase()+' R'+pet.rank,0,30);ctx.textAlign='left';ctx.restore();
     }
     for(const s of g.shots){
       const color=s.kind==='pet'?'#ffce86':s.kind==='bounce'?'#ffd568':s.kind==='spread'?'#ff94cd':'#71e5ff';
       if(s.trail.length){
-        ctx.beginPath();ctx.moveTo(s.trail[0].x,s.trail[0].y);
-        for(const point of s.trail)ctx.lineTo(point.x,point.y);
+        ctx.beginPath();ctx.moveTo(s.x+wrappedDelta(s.x,s.trail[0].x),s.y+wrappedDelta(s.y,s.trail[0].y));
+        for(const point of s.trail)ctx.lineTo(s.x+wrappedDelta(s.x,point.x),s.y+wrappedDelta(s.y,point.y));
         ctx.lineTo(s.x,s.y);ctx.strokeStyle=color;ctx.lineWidth=3;ctx.stroke();
         ctx.strokeStyle='#fff6d5';ctx.lineWidth=1;ctx.stroke();
       }
@@ -1179,6 +1314,7 @@
       if(e.hp<e.max){ctx.fillStyle='#fa7e85';ctx.fillRect(-e.r,-e.r-14,e.r*2*(e.hp/e.max),4);}
       ctx.restore();
     }
+    if(visible(p,300)){
     ctx.save();ctx.translate(p.x,p.y);
     if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
     if(g.buffs.survivalInstinct>0)outline(0,0,48+(reducedMotion?0:Math.sin(g.t*4)*2),'#ffe79c',3);
@@ -1188,15 +1324,16 @@
     if(g.escape>0)outline(0,0,36,'#7cf2d0',4);
     if(p.inv>0)outline(0,0,32,'#fff2cc',3);
     let aim=0,nearest=Infinity;
-    for(const e of g.enemies){const d=(e.x-p.x)**2+(e.y-p.y)**2;if(d<nearest){nearest=d;aim=Math.atan2(e.y-p.y,e.x-p.x);}}
+    for(const e of source.enemies){const d=(wrappedDelta(p.x,e.x))**2+(wrappedDelta(p.y,e.y))**2;if(d<nearest){nearest=d;aim=Math.atan2(wrappedDelta(p.y,e.y),wrappedDelta(p.x,e.x));}}
     drawRage(g,aim);
     catSprite('hero',27,g.t,false,aim);
     drawRage(g,aim,true);
-    const fresh=g.shots.find(s=>s.kind==='normal'&&Math.hypot(s.x-p.x,s.y-p.y)<65);
+    const fresh=g.shots.find(s=>s.kind==='normal'&&dist(s.x,s.y,p.x,p.y)<65);
     if(fresh){ctx.save();ctx.translate(16,16);ctx.rotate(aim);
       polygon(26,0,[[0,-4],[8,-12],[12,-5],[24,0],[12,5],[8,12],[0,4]],'#ff9e45aa');
       polygon(26,0,[[0,-3],[12,-5],[18,0],[12,5],[0,3]],'#fff4c3');ctx.restore();}
     ctx.restore();
+    }
     for(const e of g.particles){
       if(e.x<cameraX-10||e.x>cameraX+W+10||e.y<cameraY-10||e.y>cameraY+H+10)continue;
       ctx.globalAlpha=clamp(e.life/e.ttl,0,1);
@@ -1206,18 +1343,13 @@
       }else circle(e.x,e.y,e.r,e.col);
     }
     ctx.globalAlpha=1;
-    if(g.edgeWarning){
-      const angle=Math.atan2(1200-p.y,1200-p.x);
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(angle);
-      polygon(65,0,[[20,0],[-4,-13],[-4,-5],[-27,-5],[-27,5],[-4,5],[-4,13]],'#7cf2d0');ctx.restore();
-    }
     ctx.restore();
+    }
     const grad=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,650);
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-    if(g.edgeWarning){ctx.fillStyle='#7cf2d0';ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(g.escape>0?'SHIELD ACTIVE · MOVE INWARD':(g.escapeArmed?'EDGE · Follow the mint arrow':'SHIELD SPENT · Return inward to rearm'),W/2,H-55);ctx.textAlign='left';}
     ctx.fillStyle='#162d41';ctx.fillRect(20,H-21,160,8);
-    ctx.fillStyle='#77f3c1';ctx.fillRect(20,H-21,160*(g.xp/(7+p.level*3)),8);
+    ctx.fillStyle='#77f3c1';ctx.fillRect(20,H-21,160*(source.xp/(7+p.level*3)),8);
   }
   function staticScreen() {
     ctx.save();ctx.translate(-650,-650);streetScene(650,650);ctx.restore();
@@ -1362,7 +1494,7 @@
   renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
-    snapshot: () => ({cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+    snapshot: () => ({world:{size:WORLD_SIZE,wrap:true,topology:'torus',solids:city.map(({x,y,w,h})=>({x,y,w,h}))},cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
       survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
       runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
@@ -1387,10 +1519,10 @@
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
+      enemies:game?game.enemies.map(e=>({x:e.x,y:e.y,r:e.r,hp:e.hp,variant:e.variant,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
       shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage,critical:!!s.critical,hitDamage:s.calculateDamage?s.calculateDamage():s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
-      player: game ? {x: game.player.x, y: game.player.y,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,
+      player: game ? {x: game.player.x, y: game.player.y,r:game.player.r,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,
         autoFireDisabled:game.player.autoFireDisabled,silence:game.player.silence,phaseCooldown:game.player.phaseCooldown,petPicks:game.player.petPicks,
         xpGain:game.player.xpGain,level:game.player.level,damage:game.player.damage,speed:game.player.speed,
         shotInterval:game.player.shotInterval,multishot:game.player.multishot,ricochet:game.player.ricochet,magnet:game.player.magnet} : null})
