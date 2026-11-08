@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "version": "0.9",
+  "branch": "experiment/cataclysm-09-graphics",
+  "sha_source_baseline": "16811c1eb91431c54dadd0e84a78cf67e5ee68a177e308fba19728c9ebb8ebba",
+  "browser_qa": {
+    "baseline": "http://127.0.0.1:8766/preview/",
+    "candidate": "http://127.0.0.1:8765/preview/",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "name": "landscape",
+        "viewport": [
+          844,
+          390
+        ],
+        "screenshots": [
+          "before-landscape.png",
+          "after-landscape.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2665999999999997,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2666999999999993,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      },
+      {
+        "name": "small-landscape",
+        "viewport": [
+          640,
+          320
+        ],
+        "screenshots": [
+          "before-small-landscape.png",
+          "after-small-landscape.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2665999999999997,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2666999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      },
+      {
+        "name": "portrait",
+        "viewport": [
+          390,
+          844
+        ],
+        "screenshots": [
+          "before-portrait.png",
+          "after-portrait.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2511999999999883,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2530999999999994,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      }
+    ],
+    "visual_approval": "human review required",
+    "passed": true
+  },
+  "production_untouched": true,
+  "visual_approval": "pending user review",
+  "screenshots": "GitHub Actions artifact cataclysm-09-graphics-comparison"
+}
