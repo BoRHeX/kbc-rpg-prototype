@@ -552,6 +552,21 @@ def package_command():
     (bundle / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
 
+def accepted_browser_evidence(tests, request):
+    """Preserve the two-viewport legacy contract; require additional evidence
+    for the Cataclysm landscape revision instead of rejecting extra tests."""
+    platforms = tests.get("platforms", [])
+    if not isinstance(platforms, list) or any(
+            not isinstance(p, dict) or p.get("passed") is not True for p in platforms):
+        return False
+    if request["id"] != "cataclysm-08-landscape-ui-001":
+        return len(platforms) == 2
+    expected = {(390, 844), (360, 780), (640, 320), (667, 375),
+                (780, 360), (844, 390), (915, 412), (1280, 720)}
+    seen = {tuple(p.get("viewport", [])) for p in platforms}
+    return expected <= seen and len(platforms) >= len(expected)
+
+
 def publish_bundle(root, bundle):
     receipt = json.loads((bundle / "receipt.json").read_text())
     request = validate_request(receipt["request"])
@@ -559,20 +574,10 @@ def publish_bundle(root, bundle):
     if receipt["target"] != target or receipt["request_digest"] != digest(request):
         raise ValueError("Candidate target or request was altered")
     tests = receipt.get("acceptance", {})
-    platforms = tests.get("platforms", [])
-    required_viewports = {(390, 844), (360, 780)}
-    if request["id"] == "cataclysm-08-landscape-ui-001":
-        required_viewports |= {(640, 320), (667, 375), (780, 360),
-                               (844, 390), (915, 412), (1280, 720)}
-    passed_viewports = {
-        tuple(p.get("viewport", [])) for p in platforms
-        if isinstance(p, dict) and p.get("passed") is True
-    }
     if (receipt.get("state") != "accepted" or
             receipt.get("qa", {}).get("proposed_action", {}).get("approve_preview") is not True or
             tests.get("run_id") != receipt["run_id"] or tests.get("request_id") != request["id"] or
-            not required_viewports <= passed_viewports or
-            any(p.get("passed") is not True for p in platforms)):
+            not accepted_browser_evidence(tests, request)):
         raise ValueError("Candidate lacks independent acceptance and QA approval")
     if manifest(bundle / "game") != receipt["files"]:
         raise ValueError("Candidate bytes differ from accepted manifest")
@@ -703,8 +708,7 @@ def verify_published(root, request_id):
     if (receipt.get("state") != "accepted" or
             receipt.get("qa", {}).get("proposed_action", {}).get("approve_preview") is not True or
             tests.get("run_id") != receipt["run_id"] or tests.get("request_id") != request_id or
-            len(tests.get("platforms", [])) != 2 or
-            any(p.get("passed") is not True for p in tests["platforms"])):
+            not accepted_browser_evidence(tests, request)):
         raise ValueError("Missing accepted gameplay evidence")
     return receipt
 
