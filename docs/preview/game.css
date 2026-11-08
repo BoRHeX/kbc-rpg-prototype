@@ -24,3 +24,12 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 @media(max-height:420px) and (orientation:landscape){.overlay{padding:10px}.overlay h1{font-size:26px;margin:3px 0}.overlay p{font-size:11px;line-height:1.35;margin:4px 0 8px}.overlay small{margin-top:5px}.overline{font-size:9px}.upgrade{padding:8px;font-size:12px}.upgrade small{font-size:10px;margin-top:6px}#upgrade-overlay{gap:6px}#upgrade-overlay h2{font-size:17px}.hud-block b{font-size:12px}}
 @media(max-width:680px) and (orientation:landscape){.identity{gap:9px}.identity small{font-size:8px;max-width:220px;text-align:right}.hud{right:126px;gap:3px}.hud-block{padding:4px}.hud-block small{font-size:7px;letter-spacing:0}.hud-block b{font-size:10px}.actions{width:110px}.overlay{right:126px}.overlay h1{font-size:23px}.overlay p{max-width:360px;font-size:10px}.overlay small{font-size:9px}.primary{min-height:44px;padding:8px 18px}#upgrade-overlay h2{font-size:15px}.upgrade{font-size:11px;padding:6px}.upgrade small{font-size:9px}}
 @media(orientation:portrait){.overlay{padding:16px}.overlay h1{font-size:31px}.overlay p{font-size:12px}.identity{letter-spacing:.5px}.identity small{max-width:130px}.upgrade{padding:10px}#upgrade-overlay{gap:7px;overflow-y:auto}.hud-block b{font-size:13px}#city-notice{max-width:none}}
+
+/* Encore uses the existing fish card, with no extra touch target or HUD row. */
+.hud-block:has(#encore-meter){position:relative;padding-bottom:6px}
+#encore-label{letter-spacing:0;white-space:nowrap;font-size:8px}
+#encore-meter{position:absolute;left:4px;bottom:1px;width:calc(100% - 8px);height:3px;margin:0;accent-color:#ffcf80}
+#encore-meter::-webkit-progress-bar{background:#31484b}
+#encore-meter::-webkit-progress-value{background:#ffcf80}
+#encore-meter::-moz-progress-bar{background:#ffcf80}
+@media(max-width:680px) and (orientation:landscape){#encore-label{font-size:6px}}

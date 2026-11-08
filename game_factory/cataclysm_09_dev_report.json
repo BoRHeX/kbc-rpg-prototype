@@ -1,0 +1,244 @@
+{
+  "status": "passed",
+  "version": "0.9",
+  "branch": "development/cataclysm-09",
+  "source_sha256": {
+    "index.html": "a199ed1bd5d9893491a3463e0bd08819f6fd74866e052e73370a054e669ff4b6",
+    "game.js": "4e5ef4c03c0adff2300b9d5d4f2e040b2f2fac38db469739b6d385174c6c7af9",
+    "game.css": "022abd401f09b66c0360c61bd935da52cfcfe45e809b0b318fd7ed67e0111106",
+    "game-config.json": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc"
+  },
+  "baseline_sha256": "42aadaba2a5dc99a20444ddb95b94949516db0a0d1ad4bc41a3b491b766ac206",
+  "browser_qa": {
+    "baseline": "http://127.0.0.1:8766/preview/",
+    "candidate": "http://127.0.0.1:8765/preview/",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "name": "landscape",
+        "viewport": [
+          844,
+          390
+        ],
+        "screenshots": [
+          "before-landscape.png",
+          "after-landscape.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2665999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2666999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      },
+      {
+        "name": "small-landscape",
+        "viewport": [
+          640,
+          320
+        ],
+        "screenshots": [
+          "before-small-landscape.png",
+          "after-small-landscape.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2666999999999993,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2665999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      },
+      {
+        "name": "portrait",
+        "viewport": [
+          390,
+          844
+        ],
+        "screenshots": [
+          "before-portrait.png",
+          "after-portrait.png"
+        ],
+        "errors": [],
+        "before": {
+          "time": 1.2665999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        },
+        "after": {
+          "time": 1.2666999999999995,
+          "moved": 165.3,
+          "build": "0.9"
+        }
+      }
+    ],
+    "visual_approval": "human review required",
+    "passed": true
+  },
+  "physics_qa": {
+    "title": "Cataclysm Graphics Lab toroidal physics",
+    "passed": true,
+    "tests": [
+      {
+        "name": "toroidal math and shortest path",
+        "ok": true,
+        "size": 2400,
+        "p": 2395,
+        "r": 5,
+        "d": 30
+      },
+      {
+        "name": "terrain is mostly open and map geometry is present",
+        "ok": true,
+        "solids": 15,
+        "freeFraction": 0.893
+      },
+      {
+        "name": "east and west seam traversal is real movement",
+        "ok": true,
+        "y": 120,
+        "east": 25.000000000001364,
+        "west": 2373.999999999998
+      },
+      {
+        "name": "buildings block sprint and permit sliding",
+        "ok": true,
+        "building": {
+          "x": 330,
+          "y": 330,
+          "w": 130,
+          "h": 135
+        },
+        "stoppedX": 308.9989999999998,
+        "slide": true
+      },
+      {
+        "name": "player enemies companions separate including across seam",
+        "ok": true,
+        "pairs": [
+          {
+            "gap": 22.11
+          },
+          {
+            "gap": 0
+          },
+          {
+            "gap": 0
+          }
+        ],
+        "terrain": true
+      },
+      {
+        "name": "enemy and follower chase across seam",
+        "ok": true,
+        "beforeE": 120,
+        "afterE": 93.39999999999873,
+        "beforeP": 128.16005617976296,
+        "afterP": 49.17264793196132
+      },
+      {
+        "name": "solid terrain also blocks fast projectiles",
+        "ok": true,
+        "remains": 0
+      },
+      {
+        "name": "buried powerups/fish are relocated to reachable space",
+        "ok": true,
+        "power": [
+          491,
+          397.5
+        ],
+        "fish": [
+          479,
+          397.5
+        ]
+      }
+    ],
+    "physical_device": "not tested",
+    "source_instrumentation": "test only"
+  },
+  "audio_qa": {
+    "title": "Cataclysm original survival/boss soundtrack test",
+    "passed": true,
+    "platform": "Chromium Web Audio",
+    "hardware": "not tested",
+    "checks": [
+      {
+        "name": "no audio playback before first user gesture",
+        "ok": true,
+        "contexts": 0,
+        "sources": 0
+      },
+      {
+        "name": "trusted audio-test bridge loaded from game.js",
+        "ok": true,
+        "bridge": true
+      },
+      {
+        "name": "survival score schedules layered real Web Audio",
+        "ok": true,
+        "mode": "survival",
+        "beat": 21,
+        "osc": 47,
+        "buffers": 23,
+        "filters": 46,
+        "shapers": 18,
+        "compressors": 1,
+        "sourcesStarted": 47,
+        "audioContexts": 1
+      },
+      {
+        "name": "boss triggers dubstep mode immediately with real audio sources",
+        "ok": true,
+        "mode": "boss",
+        "beat": 28,
+        "osc": 61,
+        "buffers": 33,
+        "filters": 59,
+        "shapers": 21,
+        "compressors": 1,
+        "sourcesStarted": 61,
+        "audioContexts": 1
+      },
+      {
+        "name": "boss defeat restores normal hard rock rhythm",
+        "ok": true,
+        "mode": "survival",
+        "beat": 28
+      },
+      {
+        "name": "pausing silences score",
+        "ok": true,
+        "mode": "silent",
+        "active": false
+      },
+      {
+        "name": "mute silences background AND suppresses new sound voices",
+        "ok": true,
+        "mode": "silent",
+        "enabled": false,
+        "sources": 73,
+        "expected": 73
+      },
+      {
+        "name": "unmute recovers existing soundtrack without new AudioContext",
+        "ok": true,
+        "mode": "survival",
+        "contexts": 1
+      }
+    ]
+  },
+  "studio_decision": "game_factory/decisions/cataclysm-09-free-choice-001.md",
+  "production_preview_unchanged": true,
+  "release_approval": "automated gate only; player evaluation still needed",
+  "test_evidence": "cataclysm-free-choice-001-artifacts"
+}
