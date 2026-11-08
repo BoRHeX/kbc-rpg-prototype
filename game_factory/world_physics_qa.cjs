@@ -80,10 +80,10 @@ const browser=Promise.resolve().then(()=>chromium.launch({headless:true,channel:
      q.moveWithCollision(p,b.w+50,0);
      const stopped=q.isTerrainClear(p.x,p.y,p.r);
      const x=p.x,y=p.y;
-     const didn'tCross=q.wrappedDelta(b.x,x)<=0;
+     const didNotCross=q.wrappedDelta(b.x,x)<=0;
      q.moveWithCollision(p,20,65);
      const slide=q.dist(x,y,p.x,p.y)>4&&q.isTerrainClear(p.x,p.y,p.r);
-     return {ok:stopped&&didn'tCross&&slide,building:{x:b.x,y:b.y,w:b.w,h:b.h},stoppedX:x,slide};
+     return {ok:stopped&&didNotCross&&slide,building:{x:b.x,y:b.y,w:b.w,h:b.h},stoppedX:x,slide};
    });
    await run('player enemies companions separate including across seam',()=>{
      const q=window.__WORLD_QA,g=q.getGame(),p=g.player,s=q.getSize();
