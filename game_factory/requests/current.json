@@ -18,5 +18,7 @@
     "390x844 portrait fallback offers usable game or rotate hint with accessible options and does not silently hide controls or demand unsupported orientation lock.",
     "Existing 0.8 enemy pacing, XP multiplier, permanent companions, squad enhancements, rare specials, rune actions, Feral/Survival mechanics and HUD logic remain functional.",
     "Independent browser geometry/touch regression tests and playable source acceptance must pass; publish and verify exact live bytes at /preview/ only on success, preserving prior version for rollback."
-  ]
+  ],
+  "resume_candidate_run": 42508131871,
+  "resume_candidate_branch": "recovery/cataclysm-08-landscape-artifact"
 }
