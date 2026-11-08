@@ -7,6 +7,7 @@ No prior private agent ledger or raw recording is retrieved.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -58,24 +59,50 @@ def restore_candidate():
         plan = json.loads(plan_path.read_text())
         if "update_decision" not in plan:
             raise RuntimeError("Candidate lacks an agreed update council decision")
-        # Fetch a specifically named recovery ref. No ref is checked out and no
-        # executable code is run here; only four authorized game files are read.
-        subprocess.run(
-            ["git", "fetch", "--no-tags", "--depth=1", "origin", branch],
-            cwd=root, check=True, timeout=90)
-        target = root / job["target"]
-        for name in sorted(mobile.GAME_FILES):
-            ref = "FETCH_HEAD:" + job["target"] + "/" + name
-            attempt = subprocess.run(["git", "show", ref], cwd=root,
-                                     stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                     timeout=30)
-            if attempt.returncode != 0:
-                if name == "game-config.json":
-                    continue
-                raise RuntimeError("Missing recovered source file: " + name)
-            if len(attempt.stdout) > 400000 or not attempt.stdout:
-                raise RuntimeError("Recovered game source has invalid size")
-            (target / name).write_bytes(attempt.stdout)
+        # Failed jobs retain an immutable, hashed candidate inside their own
+        # diagnostics when the first gate failed. Restore that exact candidate
+        # before falling back to a manually saved recovery branch. This avoids
+        # another model coding run and never executes artifact contents here.
+        staged = directory / "repair-input" / "source"
+        if staged.is_dir():
+            info = json.loads((directory / "repair-input" / "manifest.json").read_text())
+            hashes = info.get("source_hashes")
+            if (info.get("target") != job["target"] or
+                    not isinstance(hashes, dict) or
+                    not {"index.html", "game.js", "game.css"} <= set(hashes) or
+                    set(hashes) - (mobile.GAME_FILES | mobile.BUILD_FILES)):
+                raise RuntimeError("Invalid recovered candidate manifest")
+            target = root / job["target"]
+            for name in sorted(mobile.GAME_FILES):
+                source = staged / name
+                if not source.is_file():
+                    if name == "game-config.json":
+                        continue
+                    raise RuntimeError("Missing recovered game file: " + name)
+                data = source.read_bytes()
+                if (source.is_symlink() or not data or len(data) > 400000 or
+                        hashlib.sha256(data).hexdigest() != hashes.get(name)):
+                    raise RuntimeError("Recovered candidate checksum mismatch: " + name)
+                (target / name).write_bytes(data)
+            print("Restored hash-verified candidate from failed-run diagnostic artifact")
+        else:
+            # Older failures may have only a manually preserved recovery branch.
+            subprocess.run(
+                ["git", "fetch", "--no-tags", "--depth=1", "origin", branch],
+                cwd=root, check=True, timeout=90)
+            target = root / job["target"]
+            for name in sorted(mobile.GAME_FILES):
+                ref = "FETCH_HEAD:" + job["target"] + "/" + name
+                attempt = subprocess.run(["git", "show", ref], cwd=root,
+                                         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                         timeout=30)
+                if attempt.returncode != 0:
+                    if name == "game-config.json":
+                        continue
+                    raise RuntimeError("Missing recovered source file: " + name)
+                if len(attempt.stdout) > 400000 or not attempt.stdout:
+                    raise RuntimeError("Recovered game source has invalid size")
+                (target / name).write_bytes(attempt.stdout)
         shutil.copy2(plan_path, work / "plan.json")
         shutil.copy2(report_path, work / "CODER_REPORT.md")
         shutil.copy2(coder_path, work / "CODER_PROMPT.md")
