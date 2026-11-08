@@ -48,6 +48,17 @@ def game_title(game: str, root: Path = ROOT) -> str:
     return title[:100] or game
 
 
+def next_cataclysm_version(root: Path = ROOT) -> str:
+    """Derive the next numbered release from the actually published game."""
+    html_source = (game_target("cataclysm", root) / "index.html").read_text(encoding="utf-8")
+    match = re.search(r'<span\\b[^>]*\\bid=["\\\']game-version["\\\'][^>]*>\\s*(\\d+)\\.(\\d+)\\s*</span>',
+                      html_source, re.I)
+    if not match:
+        raise ValueError("Published Cataclysm game-version element not found")
+    major, minor = int(match[1]), int(match[2])
+    return f"{major+1}.0" if minor >= 9 else f"{major}.{minor+1}"
+
+
 def build_request(file_id: str, game: str, title: str, proposal: dict) -> dict | None:
     """Validate the proposal using the studio's own schema, not model assurances."""
     from game_factory.mobile_jobs import validate_request
@@ -74,6 +85,7 @@ def build_request(file_id: str, game: str, title: str, proposal: dict) -> dict |
         # The receiving studio replays/transcribes the full recording privately.
         # Raw speech never appears in the public request or repository.
         request["evidence_drive_file_id"] = file_id
+        request["release_version"] = next_cataclysm_version()
         request["prompt"] = (
             "CATACLYSM FULL REVIEW / ROADMAP HANDOFF — not a five-item summary. "
             "The private video attached by evidence_drive_file_id is the primary "
