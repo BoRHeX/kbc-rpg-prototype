@@ -1,11 +1,11 @@
 {
   "mode": "process_explicit",
-  "requested_for": "Cataclysm 0.7 full gameplay review → Cataclysm 0.8",
+  "requested_for": "Cataclysm 0.8 gameplay review #06 → Cataclysm 0.9",
   "game_hint": "cataclysm",
-  "expected_filename": "cataclysm__review-05.mp4",
-  "expected_drive_file_id": "1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH",
+  "expected_filename": "cataclysm__review-06.mp4",
+  "expected_drive_file_id": "1a5XiVTUobim76NqGiy6Mxx24nMFdytNN",
   "source": "user_requested_on_demand",
-  "request_key": "cataclysm-08-drive-review-05-20261108",
+  "request_key": "cataclysm-09-drive-review-06-20261108",
   "attempt": 1,
-  "reason": "Consume the complete private Drive gameplay transcript and sampled visual frames. All Council roles plan compatible progression/content systems for Cataclysm 0.8 based on creator commentary and roadmap. Do not ingest YouTube comments or automatically act on community suggestions."
+  "reason": "Process the complete private Cataclysm review #06 recording and sampled visuals. Treat it as the new primary creator playtest evidence for version 0.9, against the actually deployed 0.8 landscape build and the living 1.0 roadmap. Five Council roles should identify every actionable gameplay observation and implement a coherent, ambitious but bounded multi-system 0.9 update, retaining permanent companions, rogue-lite upgrades, one-screen landscape mobile UI, game identity and stable preview URL. Do not replay prior recordings or take YouTube comments as directives; preserve private transcript/audio, release only on verified code+QA+delivery."
 }
