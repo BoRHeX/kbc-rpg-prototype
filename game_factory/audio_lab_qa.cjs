@@ -42,6 +42,8 @@ const report={title:'Cataclysm original survival/boss soundtrack test',passed:fa
  });
  const page=await context.newPage(), errors=[];
  page.on('pageerror',e=>errors.push(String(e.message)));
+ let scriptIntercepts=0;
+ await page.route('**/game.js*',route=>{scriptIntercepts++;return route.fulfill({status:200,contentType:'text/javascript',body:injected});});
  const check=async(name,fn)=>{
    const data=await page.evaluate(fn);
    if(!data||!data.ok)throw Error(name+' failed: '+JSON.stringify(data));
@@ -56,8 +58,16 @@ const report={title:'Cataclysm original survival/boss soundtrack test',passed:fa
      const n=window.__audioTrace;
      return {ok:n.audioContexts===0&&n.sourcesStarted===0,contexts:n.audioContexts,sources:n.sourcesStarted};
    });
+   await check('trusted audio-test bridge loaded from game.js',()=>{
+     return {ok:!!window.__SOUND_QA&&typeof window.__SOUND_QA.getGame==='function',bridge:!!window.__SOUND_QA};
+   });
    await page.locator('#play').click();
-   await page.waitForFunction(()=>window.__SOUND_QA?.getGame()?.mode==='running',null,{timeout:10000});
+   try {
+     await page.waitForFunction(()=>window.__SOUND_QA?.getGame()?.mode==='running',null,{timeout:5000});
+   }catch(e){
+     const evidence=await page.evaluate(()=>({mode:window.__SOUND_QA?.getGame()?.mode,music:window.CATACLYSM_DIAGNOSTICS?.snapshot()?.music,context:window.__SOUND_QA?.getAudio()?.state,errors:window.__SOUND_QA_ERRORS||[],hidden:document.hidden}));
+     throw Error('Game did not start '+JSON.stringify(evidence)+' scripts='+scriptIntercepts+' pageErrors='+errors.join('; '));
+   }
    try{
      await page.waitForFunction(()=>window.CATACLYSM_DIAGNOSTICS?.snapshot()?.music?.mode==='survival',null,{timeout:10000});
    }catch(e){
