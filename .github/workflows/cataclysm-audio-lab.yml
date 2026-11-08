@@ -91,36 +91,32 @@ jobs:
         run: |
           set -o pipefail
           node game_factory/audio_lab_qa.cjs 2>&1 | tee artifacts/graphics-09/audio-gate.log
-      - name: Let sound coder repair only evidence-backed soundtrack defects
+      - name: Preserve rejected audio candidate without modifying the live lab
         if: steps.audio.outcome == 'failure'
-        uses: openai/codex-action@v1
+        uses: actions/upload-artifact@v4
         with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          permission-profile: ':workspace'
-          allow-bots: true
-          prompt: |
-            The independent trusted runner's Web Audio QA FAILED for the Cataclysm
-            Graphics Lab isolated audio revamp. Inspect the actual error:
-            - artifacts/graphics-09/audio-gate.log
-            - artifacts/graphics-09/audio-qa.json (if generated)
-            - game_factory/audio_lab_qa.cjs (read-only)
-            - game_factory/requests/cataclysm-09-graphics-audio-pass.md
-            - docs/preview/game.js and relevant HTML/CSS
-            Repair the candidate, do not remove musical features or fake the check.
-            Your sandbox cannot run Chrome or local HTTP; the external trusted runner
-            will rerun this gate. Edit ONLY docs/preview/game.js, game.css, index.html.
-            Do NOT change QA scripts, other games, release version, toroidal physics,
-            dashboard or any workflow, and do not revert the candidate solely because
-            sandbox browser/audio is unavailable.
-      - name: Repeat Web Audio gate after one repair
+          name: cataclysm-audio-rejected-source
+          path: |
+            docs/preview/game.js
+            docs/preview/game.css
+            docs/preview/index.html
+            artifacts/graphics-09/audio-qa.json
+            artifacts/graphics-09/audio-gate.log
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save rejected candidate on a separate recovery branch for evidence-based repair
         if: steps.audio.outcome == 'failure'
-        env:
-          BORHEZ_BROWSER_CHANNEL: chrome
-          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
         run: |
-          node --check docs/preview/game.js
-          git diff --check
-          node game_factory/audio_lab_qa.cjs
+          set -euo pipefail
+          git config user.name 'BoRHeZ isolated audio recovery'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html
+          git commit -m 'UNVERIFIED isolated audio candidate; not live'
+          git push origin "HEAD:refs/heads/recovery/cataclysm-audio-${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Refuse publish if sound fails independent browser checks
+        if: steps.audio.outcome == 'failure'
+        run: exit 1
       - name: Regression-test all eight toroidal collision cases in Chrome
         env:
           BORHEZ_BROWSER_CHANNEL: chrome
