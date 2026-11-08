@@ -2,12 +2,12 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070e1b">
-<title>Cataclysm 0.8 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42500992714-1"></head>
+<title>Cataclysm 0.8 · BoRHeZ Games</title><link rel="stylesheet" href="./game.css?build=42506076971-1"></head>
 <body>
 <header class="top">
   <a href="../games/" class="back">← All games</a>
   <div class="logo">BoRHeZ <b>GAMES</b> <span class="separator">/</span> <em>CATACLYSM</em></div>
-  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42500992714-1">AI PLAYTEST BUILD 42500992714-1</div>
+  <div class="version" id="build-version" data-run="AI PLAYTEST BUILD 42506076971-1">AI PLAYTEST BUILD 42506076971-1</div>
 </header>
 <main class="shell">
   <section class="intro">
@@ -36,16 +36,18 @@
         <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
         <p id="upgrade-copy">Time and combat are frozen. Equip one upgrade to continue.</p>
 
-        <button type="button" class="upgrade special" data-special data-unlock="3" data-upgrade="beacon-fire" hidden>Special · Fire beacon<small>Two charges, deploy one now · +35% firing in 150px for 15s · level 3+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-unlock="6" data-upgrade="beacon-heal" hidden>Special · Healing beacon<small>Two charges, deploy one now · regenerate 0.12 HP/s nearby · level 6+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-unlock="9" data-upgrade="beacon-magnet" hidden>Special · Magnet beacon<small>Two charges, deploy one now · +100px pickup range nearby · level 9+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-unlock="3" data-upgrade="companion-shooter" hidden>Special · Shooter familiar<small>Summon / train · independent ranged fire, repeat training improves rank · level 3+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-unlock="6" data-upgrade="companion-healer" hidden>Special · Healer familiar<small>Summon / train · healing aura and supporting fire, repeat training improves rank · level 6+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-unlock="9" data-upgrade="companion-tank" hidden>Special · Tank familiar<small>Summon / train · intercept position and damage reduction, repeat training improves rank · level 9+ milestones</small></button>
-        <button type="button" class="upgrade special" data-special data-upgrade="pet-companion" hidden>Special · Pet companion<small>Summon a cat for 35s · half damage, fires through ghost silence · repeat summons supported</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-shooter" hidden>Special · Shooter familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-healer" hidden>Special · Healer familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-tank" hidden>Special · Tank familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
         <button type="button" class="upgrade special" data-special data-upgrade="multi-shot" hidden>Special · Multi-shot<small>Add two spread shots · more ranks aggregate damage after nine projectiles</small></button>
         <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · more ranks improve bounce damage after eight bounces</small></button>
         <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · repeatable range growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="xp-gain" hidden>xp-gain</button>
+        <button type="button" class="upgrade" data-upgrade="squad-damage" hidden>squad-damage</button>
+        <button type="button" class="upgrade" data-upgrade="squad-rate" hidden>squad-rate</button>
+        <button type="button" class="upgrade" data-upgrade="squad-count" hidden>squad-count</button>
+        <button type="button" class="upgrade" data-upgrade="squad-spread" hidden>squad-spread</button>
+        <button type="button" class="upgrade" data-upgrade="squad-bounce" hidden>squad-bounce</button>
         <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×0.85 · fast volleys aggregate extra damage</small></button>
         <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder · repeatable damage growth</small></button>
         <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · diminishing speed growth</small></button>
@@ -57,13 +59,7 @@
     </div>
     <button id="runic-relic-activate" type="button" hidden>Activate relic</button>
     <p id="support-status" role="status" aria-live="polite"></p>
-    <details id="support-controls" hidden><summary>Support · beacon deployment</summary><div>
-      <label for="beacon-type">Beacon aura</label>
-      <select id="beacon-type"><option value="fire" data-level="3">Fire · Lv3</option><option value="heal" data-level="6">Heal · Lv6</option><option value="magnet" data-level="9">Magnet · Lv9</option></select>
-      <button id="deploy-beacon" type="button" class="secondary" disabled>Deploy beacon · 0</button>
-      <p>Choose support in milestone upgrades to gain charges or summon a familiar. Two beacons and one familiar at once. Support timers freeze during menus and pause.</p>
-    </div></details>
-    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Upgrades keep growing: damage +0.25, diminishing movement growth, 15% shorter firing cooldown, repeatable spread, ricochet, magnet and familiar training. At high rates and ranks, extra attacks combine into stronger hits to keep the arena responsive. Patch up heals one heart and adds 0.25 maximum HP. Every third level grants +1 maximum heart and unlocks special choices. Three choices appear each level; choices rotate over time.</p><p>Threats unlock by survival time, never player level: Weavers 2:00, Dashers 4:00, Orbiters 7:00, Stalkers 11:00, Ghosts 16:00, toxic gas 20:00. The Alley King arrives every five minutes. Familiar enemies grow between introductions. Gold fish remain until collected. Crates: R doubles damage, M attracts fish, hearts heal. Each finished run raises starting threat on this device.</p><p>Support unlocks at levels 3/6/9: fire/heal/magnet beacons and shooter/healer/tank familiars. Repeat training improves familiar attacks and duration. Two beacons and one familiar can be active; charges remain banked. Three nearby enemies trigger Feral Instinct for six seconds (+30% speed, +25% damage). Escape the crowd to rearm.</p><p>Survival Instinct: after ten damage-free seconds, build twenty vulnerable seconds to earn eight seconds of +15% speed and +20% fire rate. Damage resets it. Escape shield protects for 2.5s near walls: move at least 80px and clear enemies by 180px within two seconds after the shield ends for four seconds of Overdrive (+45% speed, +60% damage). These boosts multiply with Feral Instinct and rage.</p><p>Blue runes appear from 0:35 and every 45s. Walk over one, then tap its button below the arena for a six-second shield or 260px slow field. Each rune is consumed; activation recovers for ten seconds. All timers freeze in menus and pause. Ghosts seal auto-fire briefly; familiars keep firing. Gas warns for one second before expanding. Near walls follow the mint arrow inward to rearm the escape shield.</p></div></details>
+    <details class="score-guide"><summary>Run score <b id="score">0</b> · Build &amp; field guide</summary><div><p id="build-stats">Start a run to see your build.</p><p>Score = 2 × seconds + 7 × kills + 9 × fish. Fish grant XP; gold fish remain until collected. Enter their glow to attract them permanently.</p><p>Upgrades keep growing: damage +0.25, diminishing movement growth, 15% shorter firing cooldown, repeatable spread, ricochet, magnet and familiar training. At high rates and ranks, extra attacks combine into stronger hits to keep the arena responsive. Patch up heals one heart and adds 0.25 maximum HP. Every third level grants +1 maximum heart. Each level offers three weighted random investments, including rare specials. XP upgrades multiply earned XP without changing fish score.</p><p>Threats unlock by survival time, never player level: Weavers 2:00, Dashers 4:00, Orbiters 7:00, Stalkers 11:00, Ghosts 16:00, toxic gas 20:00. The Alley King arrives every five minutes. Familiar enemies grow between introductions. Gold fish remain until collected. Crates: R doubles damage, M attracts fish, hearts heal. Each finished run raises starting threat on this device.</p><p>Recruit permanent shooter, healer and tank followers at any level. Train roles or invest in squad damage, firing, strength, spread and ricochet. One visible follower per role represents uncapped squad strength. Healers regenerate health; tanks guard nearby. Three nearby enemies trigger Feral Instinct for six seconds (+30% speed, +25% damage). Escape the crowd to rearm.</p><p>Survival Instinct: after ten damage-free seconds, build twenty vulnerable seconds to earn eight seconds of +15% speed and +20% fire rate. Damage resets it. Escape shield protects for 2.5s near walls: move at least 80px and clear enemies by 180px within two seconds after the shield ends for four seconds of Overdrive (+45% speed, +60% damage). These boosts multiply with Feral Instinct and rage.</p><p>Blue runes appear from 0:35 and every 45s. Walk over one, then tap its button below the arena for a six-second shield or 260px slow field. Each rune is consumed; activation recovers for ten seconds. All timers freeze in menus and pause. Ghosts seal auto-fire briefly; familiars keep firing. Gas warns for one second before expanding. Near walls follow the mint arrow inward to rearm the escape shield.</p></div></details>
     <div class="below">
       <div class="help"><b>CONTROLS</b><p><span class="desktop">WASD / arrow keys</span><span class="mobile">Drag anywhere on the arena</span> to move. Your cat fires automatically. Collect fish to upgrade. </p></div>
       <div class="actions"><button id="mute" class="secondary" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><button id="restart" class="secondary">↻ Restart</button></div>
@@ -110,5 +106,5 @@
   });
 })();
 </script>
-<script src="./game.js?build=42500992714-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+<script src="./game.js?build=42506076971-1" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
 </body></html>

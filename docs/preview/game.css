@@ -35,9 +35,6 @@ a:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 
 #support-status{min-height:1.3em;color:#ffce86;text-align:center;font-size:12px;margin:6px auto;max-width:690px}
-#support-controls{border:1px solid var(--line);border-radius:10px;margin:8px auto;max-width:690px;background:var(--panel);font-size:12px}
-#support-controls summary{padding:12px;min-height:44px;cursor:pointer}#support-controls>div{padding:0 12px 12px;line-height:1.5}
-#beacon-type{min-height:44px;max-width:100%;background:#173c3c;color:#fff;border:1px solid #6be7bd;border-radius:8px;margin:4px}
 #upgrade-overlay .upgrade{touch-action:pan-y}
 
 /* A viewport dialog avoids the arena's clipping and touch gesture boundary. */
