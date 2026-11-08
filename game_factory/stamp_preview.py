@@ -17,7 +17,7 @@ def stamp(directory: Path, run_id: str, source_sha: str = "") -> None:
         return tag[:-1] + ' data-run="' + label + '">' + label + match[2]
 
     content, count = re.subn(
-        r'(<div\b[^>]*\bid="build-version"[^>]*>)[^<]*(</div>)', header, content)
+        r'(<(?:div|small)\b[^>]*\bid="build-version"[^>]*>)[^<]*(</(?:div|small)>)', header, content)
     if count != 1:
         raise ValueError("Expected exactly one build-version element")
     # The boot handshake used to overwrite the publisher's label with an old run ID.
