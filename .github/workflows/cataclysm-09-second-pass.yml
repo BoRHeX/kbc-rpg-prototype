@@ -1,0 +1,89 @@
+name: One-shot Cataclysm 0.9 second pass
+on:
+  workflow_run:
+    workflows: ["Mobile Minigame Studio"]
+    types: [completed]
+permissions:
+  contents: write
+jobs:
+  queue-second:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify first pass was independently accepted and delivered
+        id: verify
+        run: |
+          python - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+          from game_factory.mobile_jobs import validate_request
+          first = 'cataclysm-09-living-horde-001'
+          second = 'cataclysm-09-city-encounters-002'
+          event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+          source = event.get('workflow_run', {})
+          sha = source.get('head_sha', '')
+          if source.get('event') != 'push' or source.get('head_branch') != 'main' or not re.fullmatch(r'[0-9a-f]{40}', sha):
+              print('Not the first pass push workflow; no action')
+              raise SystemExit(0)
+          try:
+              source_request = json.loads(subprocess.check_output(['git', 'show', f'{sha}:game_factory/requests/current.json'], text=True))
+          except (subprocess.CalledProcessError, json.JSONDecodeError):
+              print('Could not read workflow source request; no action')
+              raise SystemExit(0)
+          if source_request.get('id') != first:
+              print('Workflow originated from a different request; no action')
+              raise SystemExit(0)
+          current = json.loads(Path('game_factory/requests/current.json').read_text())
+          if current.get('id') != first:
+              print('Current request already changed; refusing to overwrite it')
+              raise SystemExit(0)
+          receipt_file = Path('game_factory/results') / (first + '.json')
+          if not receipt_file.is_file():
+              raise SystemExit('First game job has no accepted result; do not queue second')
+          receipt = json.loads(receipt_file.read_text())
+          if receipt.get('request', {}).get('id') != first:
+              raise SystemExit('Result does not belong to first request')
+          target = Path('docs/preview/index.html').read_text()
+          script = Path('docs/preview/game.js').read_text()
+          if not re.search(r'id="game-version">0\.9</b>', target) or "const BUILD = '0.9'" not in script:
+              raise SystemExit('0.9 identity was not preserved; blocking second run')
+          request = validate_request(json.loads(Path('game_factory/requests/cataclysm-09-second-pass.json').read_text()))
+          if request.get('id') != second or request.get('release_version') != '0.9':
+              raise SystemExit('Unexpected staged second request')
+          if (Path('game_factory/results') / (second + '.json')).exists():
+              print('Second request already delivered; no action')
+              raise SystemExit(0)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('ready=true\n')
+          print('First pass delivered; second staged request authorized exactly once')
+          PY
+      - name: Queue second update and explicitly dispatch Studio
+        if: steps.verify.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp game_factory/requests/cataclysm-09-second-pass.json game_factory/requests/current.json
+          git config user.name 'BoRHeZ 0.9 one-shot sequencer'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add game_factory/requests/current.json
+          git diff --cached --check
+          git commit -m 'Queue Cataclysm 0.9 second pass after verified first release'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+          python - <<'PY' > "$RUNNER_TEMP/borhez-second-pass.json"
+          import json
+          print(json.dumps({'event_type':'borhez-video-review',
+                            'client_payload':{'job_id':'cataclysm-09-city-encounters-002',
+                                              'source':'one-shot-sequencer'}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/borhez-second-pass.json"
+          echo 'Second Cataclysm 0.9 pass dispatched after first live delivery' >> "$GITHUB_STEP_SUMMARY"
