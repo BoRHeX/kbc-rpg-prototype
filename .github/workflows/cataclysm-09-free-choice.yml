@@ -1,7 +1,7 @@
 name: Cataclysm 0.9 — autonomous Studio free choice
 on:
   push:
-    branches: ['experiment/cataclysm-09-graphics']
+    branches: ['development/cataclysm-09']
     paths: ['.github/workflows/cataclysm-09-free-choice.yml']
 concurrency:
   group: cataclysm-09-free-choice-one-shot
