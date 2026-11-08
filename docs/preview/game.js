@@ -5,7 +5,10 @@
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MIN_SHOT_INTERVAL = .24;
+  const MIN_SHOT_INTERVAL = .04;
+  const PATCH_ID = '42500992714-1-correction';
+  const UNLOCKS = {shambler:0,weaver:120,dasher:240,orbiter:420,stalker:660,ghost:960,gas:1200};
+  const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   const W = 720, H = 1000, TWO = Math.PI * 2;
   const cfg = {speed:235,enemySpeed:63,spawnInterval:1.65,shotInterval:.62,
     enemyHp:3,spawnRamping:.010,fishDropChance:.65,maxEnemies:95};
@@ -18,7 +21,7 @@
   }).catch(() => { /* defaults are a complete playable configuration */ });
   let game = null, last = 0, keys = {}, pointer = null, muted = false, audio = null;
   let musicBus = null, musicNext = 0, musicBeat = 0;
-  let seeded = 424242, stars = [], city = [], noticeTTL = 0;
+  let seeded = 424242, stars = [], city = [], noticeTTL = 0, noticeQueue = [];
   const rand = () => ((seeded = (Math.imul(1664525, seeded) + 1013904223) >>> 0) / 4294967296);
   const clamp = (v, lo, hi) => Math.min(hi,Math.max(lo,v));
   const dist = (x,y,x2,y2) => Math.hypot(x-x2,y-y2);
@@ -45,18 +48,12 @@
   }
   function upgradeAvailable(type) {
     const p=game.player;
-    if(type.startsWith('beacon-'))return p.level%3===0 && p.level>=({fire:3,heal:6,magnet:9}[type.slice(7)]||Infinity) && game.beacons.length<2 && game.beaconCharges<3;
-    if(type.startsWith('companion-'))return p.level%3===0 && p.level>=({shooter:3,healer:6,tank:9}[type.slice(10)]||Infinity) && game.companionRanks[type.slice(10)]<3;
-    const special = ['multi-shot','ricochet','fish-magnet','pet-companion'].includes(type);
-    if (special && (p.level%3!==0 || p.multishot+p.ricochet+p.magnet+p.petPicks>=4)) return false;
-    const tier=Math.min(2,1+Math.floor(p.level/9));
-    return type==='damage'?p.damage<3 : type==='speed'?p.speed<cfg.speed+108 :
-      type==='fire-rate'?p.shotInterval>MIN_SHOT_INTERVAL :
-      type==='multi-shot'?p.multishot<Math.min(2,tier) :
-      type==='ricochet'?p.ricochet<Math.min(2,tier) :
-      type==='pet-companion'?p.petPicks<Math.min(2,tier)&&!game.entities.petCompanion :
-      type==='fish-magnet'?p.magnet<Math.min(2,tier) : type==='recover';
+    if(type.startsWith('beacon-'))return p.level%3===0 && p.level>=({fire:3,heal:6,magnet:9}[type.slice(7)]||Infinity);
+    if(type.startsWith('companion-'))return p.level%3===0 && p.level>=({shooter:3,healer:6,tank:9}[type.slice(10)]||Infinity);
+    if(['multi-shot','ricochet','fish-magnet','pet-companion'].includes(type))return p.level%3===0;
+    return ['damage','speed','fire-rate','recover'].includes(type);
   }
+
   function readBest() {
     try {
       const stored = Number(localStorage.getItem('cataclysm-best'));
@@ -137,14 +134,16 @@
     g.edgeWarning=Math.min(p.x,p.y,2400-p.x,2400-p.y)<220;
     if(!g.edgeWarning)g.escapeArmed=true;
     if(g.edgeWarning&&g.escapeArmed&&g.escapeCooldown===0&&g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<145)){
-      g.escapeArmed=false;g.escape=2.5;g.escapeCooldown=10.5;p.inv=Math.max(p.inv,2.5);
+      g.escapeOrigin={x:p.x,y:p.y};g.escapeOverdriveTimer=4.5;g.escapeArmed=false;g.escape=2.5;g.escapeCooldown=10.5;p.inv=Math.max(p.inv,2.5);
       for(const e of g.enemies){const d=dist(e.x,e.y,p.x,p.y);
         if(d<210){const a=Math.atan2(e.y-p.y,e.x-p.x);
           e.x=clamp(p.x+Math.cos(a)*230,20,2380);e.y=clamp(p.y+Math.sin(a)*230,20,2380);}}
       notify('ESCAPE SHIELD · Follow the arrow inward',2.5);sound(740,.18);
     }
   }
-  function notify(message,duration=1.5) {
+  function notify(message,duration=1.5,id=message) {
+    if(noticeTTL>0){if(noticeQueue.length<4&&!noticeQueue.some(n=>n.id===id))noticeQueue.push({message,duration,id});return;}
+    if(game){game.lastNotice={id,message,time:game.t};}
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
   }
   function start() {
@@ -156,9 +155,9 @@
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
       beacons:[],beaconCharges:0,beaconType:'fire',activeCompanion:null,companionRanks:{shooter:0,healer:0,tank:0},
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
-      entities:{petCompanion:null},hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
+      entities:{petCompanion:null},hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
-    clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
+    clearInput(); noticeTTL=0;noticeQueue=[];$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
     musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();updateHud();
@@ -194,33 +193,35 @@
     game.pendingUpgrade=true;game.mode='upgrade';clearInput();
     const milestone=game.player.level%3===0;
     if(milestone){
-      game.player.maxHp=Math.min(6,game.player.maxHp+1);
+      game.player.maxHp=game.player.maxHp+1;
       game.player.hp=Math.min(game.player.maxHp,game.player.hp+1);
     }
     $('upgrade-title').textContent='LEVEL '+game.player.level+(milestone?' · SPECIAL':' · CHOOSE ONE');
-    $('upgrade-copy').textContent=milestone?'+1 heart, max HP cap 6. Specials: four total picks; tier 2 at level 9. Combat frozen.':'Combat paused. Choose one. Every third level: specials and +1 heart.';
-    document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone || (b.dataset.unlock && game.player.level<Number(b.dataset.unlock));});
+    $('upgrade-copy').textContent=milestone?'+1 maximum heart. Choose one upgrade. Combat frozen.':'Combat paused. Choose one. Every third level: specials and +1 heart.';
+    const buttons=[...document.querySelectorAll('[data-upgrade]')];
+    const pool=buttons.filter(b=>upgradeAvailable(b.dataset.upgrade)&&b.dataset.upgrade!=='recover');
+    // Rotate the real eligible pool; every upgrade remains reachable across levels.
+    const offset=(game.player.level*5)%pool.length;
+    const offered=[pool[offset],pool[(offset+1)%pool.length],buttons.find(b=>b.dataset.upgrade==='recover')];
+    game.offered=offered.map(b=>b.dataset.upgrade);
+    buttons.forEach(b=>{b.hidden=!offered.includes(b);b.disabled=false;b.title='';});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
-    updateHud();sound(1050,.2);
-    document.querySelectorAll('[data-upgrade]').forEach(b=>{
-      b.disabled=!upgradeAvailable(b.dataset.upgrade);
-      b.title=b.disabled?'Cap reached or special budget exhausted':'';
-    });
-    $('upgrade-overlay').querySelector('button:not([hidden]):not(:disabled)').focus({preventScroll:true});
+    updateHud();sound(1050,.2);offered[0].focus({preventScroll:true});
   }
+
   function chooseUpgrade(type) {
-    if(!game||game.mode!=='upgrade'||!game.pendingUpgrade||!upgradeAvailable(type))return;
+    if(!game||game.mode!=='upgrade'||!game.pendingUpgrade||!upgradeAvailable(type)||!game.offered.includes(type))return;
     const p=game.player;
-    if(type==='fire-rate')p.shotInterval=Math.max(MIN_SHOT_INTERVAL,p.shotInterval*.85);
-    else if(type==='damage')p.damage=Math.min(3,p.damage+.25);
-    else if(type==='recover')p.hp=Math.min(p.maxHp,p.hp+1);
-    else if(type==='speed')p.speed=Math.min(cfg.speed+108,p.speed+18);
+    if(type==='fire-rate')p.shotInterval*=.85;
+    else if(type==='damage')p.damage+=.25;
+    else if(type==='recover'){p.maxHp+=.25;p.hp=Math.min(p.maxHp,p.hp+1);}
+    else if(type==='speed')p.speed+=18/Math.sqrt(1+(p.speed-cfg.speed)/180);
     else if(type==='pet-companion'){p.petPicks++;summonCompanion('shooter');}
     else if(type.startsWith('companion-')){const role=type.slice(10);game.companionRanks[role]++;summonCompanion(role);}
-    else if(type.startsWith('beacon-')){game.beaconType=type.slice(7);game.beaconCharges=Math.min(3,game.beaconCharges+2);deployBeacon(true);}
-    else if(p.level%3===0&&type==='multi-shot')p.multishot=Math.min(2,p.multishot+1);
-    else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(2,p.ricochet+1);
-    else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(2,p.magnet+1);
+    else if(type.startsWith('beacon-')){game.beaconType=type.slice(7);game.beaconCharges=game.beaconCharges+2;deployBeacon(true);}
+    else if(p.level%3===0&&type==='multi-shot')p.multishot++;
+    else if(p.level%3===0&&type==='ricochet')p.ricochet++;
+    else if(p.level%3===0&&type==='fish-magnet')p.magnet++;
     else return;
     game.upgrades.push({level:p.level,type});game.pendingUpgrade=false;
     $('upgrade-overlay').hidden=true;$('pause').hidden=false;
@@ -243,10 +244,8 @@
     if(game.mode!=='running'||game.enemies.length>=cfg.maxEnemies)return;
     const p=game.player,position=safeSpawn(rnd(560,730));
     game.spawnCount++;
-    let variant=(p.level>=3||p.speed>cfg.speed) ? (game.spawnCount%4===1?'weaver':game.spawnCount%4===3?'dasher':'shambler'):'shambler';
-    if(game.wave>=5&&game.spawnCount%5===0)variant='stalker';
-    else if(game.wave>=3&&game.spawnCount%3===0)variant='orbiter';
-    if(game.wave>=6&&game.spawnCount%9===0)variant='ghost';
+    const unlocked=availableThreats(game.t).filter(k=>k!=='gas');
+    let variant=unlocked[game.spawnCount%unlocked.length];
     const scale=difficulty();
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
     game.enemies.push({...position,
@@ -263,10 +262,11 @@
     if(!enemy)return;
     const dx=(enemy.x-p.x)/best,dy=(enemy.y-p.y)/best;
     p.aim=Math.atan2(dy,dx);
-    for(let i=-p.multishot;i<=p.multishot;i++){
+    const spread=Math.min(4,p.multishot);
+    for(let i=-spread;i<=spread&&game.shots.length<160;i++){
       const a=p.aim+i*.18;
       game.shots.push({x:p.x+dx*18,y:p.y+dy*18,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
-        life:.85+p.ricochet*.25,r:6,damage:p.damage*game.effectiveBuffs.damage,bounces:p.ricochet,hit:[],
+        life:Math.min(2,.85+p.ricochet*.25),r:6,damage:p.damage*game.effectiveBuffs.damage*((1+2*p.multishot)/(1+2*spread))*(1+Math.max(0,p.ricochet-8)*.12)*Math.max(1,MIN_SHOT_INTERVAL*game.effectiveBuffs.fire/p.shotInterval),bounces:Math.min(8,p.ricochet),hit:[],
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0});
     }
     sound(420+rnd(0,140),.05,'square',.018);
@@ -293,7 +293,7 @@
     const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+90)*dt);
     pet.x+=(tx-pet.x)/d*step;pet.y+=(ty-pet.y)/d*step;
     pet.shotTimer-=dt;
-    if(pet.shotTimer>0||!nearest)return;
+    if(pet.shotTimer>0||!nearest||g.shots.length>=160)return;
     // Every role can fire through silence; shooter has the strongest independent weapon.
     const angle=Math.atan2(nearest.y-pet.y,nearest.x-pet.x);
     g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(angle)*600,vy:Math.sin(angle)*600,
@@ -322,7 +322,14 @@
       if(f.timer===0){f.active=false;notify('FERAL INSTINCT · Ended. Escape the crowd to rearm',2);}
     }else if(nearby<3)f.armed=true;
     else if(f.armed){f.active=true;f.armed=false;f.timer=f.duration;notify('FERAL INSTINCT ACTIVE · 6s',2);}
-    const b={speed:f.active?1.3:1,damage:Math.min(2.5,1+(g.buffs.rage>0?1:0)+(f.active?.25:0)),fire:1,magnet:0,healing:0,mitigation:0};
+    g.feralInstinctOverdrive=Math.max(0,g.feralInstinctOverdrive-dt);
+    g.escapeOverdriveTimer=Math.max(0,g.escapeOverdriveTimer-dt);
+    if(g.escapeOverdriveTimer>0&&g.escape===0&&g.escapeOrigin&&dist(p.x,p.y,g.escapeOrigin.x,g.escapeOrigin.y)>80&&!g.enemies.some(e=>dist(e.x,e.y,p.x,p.y)<180)){
+      g.escapeOverdriveTimer=0;g.feralInstinctOverdrive=4;
+      notify('FERAL INSTINCT OVERDRIVE! · 4s',4,'overdrive');sound(880,.22,'triangle');
+    }
+    const adrenaline=g.buffs.survivalInstinct>0,overdrive=g.feralInstinctOverdrive>0;
+    const b={speed:(f.active?1.3:1)*(adrenaline?1.15:1)*(overdrive?1.45:1),damage:(g.buffs.rage>0?2:1)*(f.active?1.25:1)*(overdrive?1.6:1),fire:1,magnet:0,healing:0,mitigation:0};
     for(const beacon of g.beacons)if((beacon.x-p.x)**2+(beacon.y-p.y)**2<=beacon.radius**2){
       if(beacon.type==='fire')b.fire+=.35;
       if(beacon.type==='heal')b.healing+=.12;
@@ -334,8 +341,28 @@
       if(ally.type==='tank')b.mitigation=.2+ally.rank*.04+Math.min(.08,p.level*.005);
     }
     b.fire=Math.min(1.7,b.fire);b.magnet=Math.min(180,b.magnet);b.healing=Math.min(.3,b.healing);b.mitigation=Math.min(.4,b.mitigation);
+    b.fire*=adrenaline?1.2:1;
     g.effectiveBuffs=b;
     p.hp=Math.min(p.maxHp,p.hp+b.healing*dt);
+  }
+  function damageTaken(){game.lastDamage=game.t;game.survivalTimer=0;game.buffs.survivalInstinct=0;}
+  function activateRunicRelic(){
+    if(!game||game.mode!=='running')return;
+    const r=game.runicRelic;
+    if(!r.held||r.cooldown>0)return;
+    r.active=r.held;r.held=null;r.duration=6;r.cooldown=10;
+    notify('RUNIC '+r.active.toUpperCase()+' · 6s',3,'relic');sound(640,.3,'triangle');updateHud();
+  }
+  $('runic-relic-activate').onclick=activateRunicRelic;
+  function updateRelics(dt){
+    const g=game,p=g.player,r=g.runicRelic;
+    r.duration=Math.max(0,r.duration-dt);r.cooldown=Math.max(0,r.cooldown-dt);
+    if(r.duration===0)r.active=null;
+    if(g.t>=r.nextSpawn){
+      if(r.items.length<3){const a=rnd(0,TWO);r.items.push({x:clamp(p.x+Math.cos(a)*160,40,2360),y:clamp(p.y+Math.sin(a)*160,40,2360),type:rand()<.5?'shield':'slow'});}
+      r.nextSpawn+=45;
+    }
+    if(!r.held){const i=r.items.findIndex(item=>dist(item.x,item.y,p.x,p.y)<45);if(i>=0){r.held=r.items.splice(i,1)[0].type;notify('RUNIC RELIC · Tap to activate',3,'relic-pickup');}}
   }
   function updateGhosts(dt) {
     const g=game,p=g.player;
@@ -363,7 +390,7 @@
   }
   function updateGas(dt) {
     const g=game,p=g.player,h=g.hazards;
-    if(g.wave<8)return;
+    if(g.t<UNLOCKS.gas)return;
     h.spawnTimer-=dt;
     if(h.spawnTimer<=0){
       const cloud=gasSpawn();
@@ -379,7 +406,7 @@
     // One exposure clock prevents overlapping clouds multiplying damage.
     h.exposure=exposed?(h.exposure||0)+dt:0;
     if(h.exposure>=1){h.exposure-=1;
-      if(p.inv===0){p.hp=Math.max(0,p.hp-(1-g.effectiveBuffs.mitigation));p.inv=.35;g.shake=.3;
+      if(p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){damageTaken();p.hp=Math.max(0,p.hp-(1-g.effectiveBuffs.mitigation));p.inv=.35;g.shake=.3;
         burst(p.x,p.y,'#b6ee75',10);notify('TOXIC GAS · Move out!');sound(170,.1);
         if(p.hp<=0){updateHud();end();}}
     }
@@ -414,8 +441,8 @@
     if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
     g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
-    g.wave=1+Math.floor(g.t/24);
-    const milestone=Math.floor(g.wave/10)*10;
+    g.wave=1+Math.floor(g.t/90);
+    const milestone=Math.floor(g.t/300)*10;
     if(milestone>g.bossMilestone){g.bossMilestone=milestone;spawnBoss(milestone);}
     for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
     if(g.t>=g.nextPower){
@@ -426,13 +453,18 @@
     if(g.spawn<=0){
       spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
     }
+    if(p.inv===0&&g.t-g.lastDamage>=10&&g.buffs.survivalInstinct===0){
+      g.survivalTimer+=dt;
+      if(g.survivalTimer>=20){g.survivalTimer=0;g.buffs.survivalInstinct=8;notify('ADRENALINE SURGE · +15% speed · +20% fire',8,'adrenaline');sound(1200,.18,'sine');}
+    }
+    updateRelics(dt);
     edgeAid(dt);
     updateSupport(dt);
     updateGas(dt);if(g.mode!=='running')return;
     updateGhosts(dt);updateCompanion(dt);
-    const input=moveInput();p.x=clamp(p.x+input.x*p.speed*g.effectiveBuffs.speed*dt,25,2375);
-    p.y=clamp(p.y+input.y*p.speed*g.effectiveBuffs.speed*dt,25,2375);
-    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL/1.7,p.shotInterval/g.effectiveBuffs.fire);}
+    const input=moveInput();p.x=clamp(p.x+input.x*(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed*dt,25,2375);
+    p.y=clamp(p.y+input.y*(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed*dt,25,2375);
+    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval/g.effectiveBuffs.fire);}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
       let vx=dx/d,vy=dy/d,pace=1;
@@ -459,14 +491,15 @@
       }
       // Extra speed is countered dynamically, including enemies already alive.
       // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
-      const adaptation=Math.max(0,p.speed-cfg.speed)*.85;
+      const adaptation=Math.min(120,Math.max(0,p.speed-cfg.speed)*.25);
       const beaconPressure=g.beacons.some(b=>dist(b.x,b.y,enemy.x,enemy.y)<b.radius+100)?1.08:1;
-      const chase=beaconPressure*(d>330?Math.max(enemy.speed+adaptation,p.speed*1.08):enemy.speed+adaptation);
+      const slow=g.runicRelic.active==='slow'&&dist(enemy.x,enemy.y,p.x,p.y)<260?.45:1;
+      const chase=slow*beaconPressure*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
       enemy.x=clamp(enemy.x+vx*chase*pace*dt,20,2380);
       enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
-      if(g.mode==='running'&&!g.pendingUpgrade&&d<p.r+enemy.r-3&&p.inv===0){
-        p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
+      if(g.mode==='running'&&!g.pendingUpgrade&&d<p.r+enemy.r-3&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
+        damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
         sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
@@ -528,7 +561,7 @@
       const s=g.particles[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.vx*=.96;s.vy*=.96;s.life-=dt;
       if(s.life<=0)g.particles.splice(i,1);
     }
-    if(noticeTTL>0){noticeTTL-=dt;if(noticeTTL<=0)$('notice').hidden=true;}
+    if(noticeTTL>0){noticeTTL-=dt;if(noticeTTL<=0){$('notice').hidden=true;if(noticeQueue.length){const n=noticeQueue.shift();notify(n.message,n.duration,n.id);}}}
     updateHud();
   }
   function updateHud(){
@@ -541,6 +574,10 @@
       ' · Bounces '+game.player.ricochet+' · Pickup '+Math.round(135+game.player.magnet*65+(game.player.speed-cfg.speed)*2/3)+'px';
     $('fish').textContent=game.fish;$('kills').textContent=game.kills;
     const p=game.player;
+    const relic=game.runicRelic,button=$('runic-relic-activate');
+    button.hidden=!relic.held&&!relic.active;
+    button.disabled=game.mode!=='running'||!relic.held||relic.cooldown>0;
+    button.textContent=relic.active?'Rune '+relic.active+' · '+Math.ceil(relic.duration)+'s':relic.held?'Activate '+relic.held+(relic.cooldown>0?' · '+Math.ceil(relic.cooldown)+'s':''):'';
     $('support-controls').hidden=p.level<3;
     $('deploy-beacon').disabled=game.mode!=='running'||game.beaconCharges===0||game.beacons.length>=2;
     $('deploy-beacon').textContent='Deploy beacon · '+game.beaconCharges;
@@ -587,6 +624,7 @@
         }
     }
     for(const s of stars) circle(s.x,s.y,s.r,'#386378');
+    for(const rune of g.runicRelic.items){outline(rune.x,rune.y,24,'#94cfff',3);ctx.fillStyle='#d6eaff';ctx.font='bold 26px system-ui';ctx.fillText(rune.type==='shield'?'◇':'❄',rune.x-12,rune.y+9);}
     for(const f of g.fishItems){
       circle(f.x,f.y,18,'#dfc26b33');ctx.save();ctx.translate(f.x,f.y+(reducedMotion?0:Math.sin(f.phase)*4));
       polygon(9,0,[[0,0],[11,-8],[11,8]],'#f6cb62');
@@ -661,6 +699,9 @@
     }
     ctx.save();ctx.translate(p.x,p.y);
     if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
+    if(g.buffs.survivalInstinct>0)outline(0,0,48+(reducedMotion?0:Math.sin(g.t*4)*2),'#ffe79c',3);
+    if(g.feralInstinctOverdrive>0)outline(0,0,53,'#ff7fad',4);
+    if(g.runicRelic.active)outline(0,0,g.runicRelic.active==='slow'?260:38,'#94cfff',3);
     if(g.feralInstinct.active)outline(0,0,43,'#ff995e',4);
     if(g.escape>0)outline(0,0,36,'#7cf2d0',4);
     circle(0,14,27,'#000a15aa');
@@ -824,7 +865,9 @@
   renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
-    snapshot: () => ({build: BUILD, mode: game ? game.mode : 'ready',
+    snapshot: () => ({build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+      survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
+      runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
       run:game?game.run:completedRuns+1,runScale:game?game.runScale:1,
       difficulty:game?difficulty():1,bossEncounters:game?game.bossEncounters:0,
