@@ -1,7 +1,7 @@
 /* CATACLYSM: fully original mobile-first Canvas arcade by BoRHeZ Games. */
 'use strict';
 (function () {
-  const BUILD = '0.7';
+  const BUILD = '0.8';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -45,6 +45,8 @@
   }
   function upgradeAvailable(type) {
     const p=game.player;
+    if(type.startsWith('beacon-'))return p.level%3===0 && p.level>=({fire:3,heal:6,magnet:9}[type.slice(7)]||Infinity) && game.beacons.length<2 && game.beaconCharges<3;
+    if(type.startsWith('companion-'))return p.level%3===0 && p.level>=({shooter:3,healer:6,tank:9}[type.slice(10)]||Infinity) && game.companionRanks[type.slice(10)]<3;
     const special = ['multi-shot','ricochet','fish-magnet','pet-companion'].includes(type);
     if (special && (p.level%3!==0 || p.multishot+p.ricochet+p.magnet+p.petPicks>=4)) return false;
     const tier=Math.min(2,1+Math.floor(p.level/9));
@@ -152,6 +154,8 @@
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
       autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
+      beacons:[],beaconCharges:0,beaconType:'fire',activeCompanion:null,companionRanks:{shooter:0,healer:0,tank:0},
+      feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
       entities:{petCompanion:null},hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     clearInput(); noticeTTL=0;$('notice').hidden=true;$('upgrade-overlay').hidden=true;
@@ -195,7 +199,7 @@
     }
     $('upgrade-title').textContent='LEVEL '+game.player.level+(milestone?' · SPECIAL':' · CHOOSE ONE');
     $('upgrade-copy').textContent=milestone?'+1 heart, max HP cap 6. Specials: four total picks; tier 2 at level 9. Combat frozen.':'Combat paused. Choose one. Every third level: specials and +1 heart.';
-    document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone;});
+    document.querySelectorAll('[data-special]').forEach(b=>{b.hidden=!milestone || (b.dataset.unlock && game.player.level<Number(b.dataset.unlock));});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
     updateHud();sound(1050,.2);
     document.querySelectorAll('[data-upgrade]').forEach(b=>{
@@ -211,7 +215,9 @@
     else if(type==='damage')p.damage=Math.min(3,p.damage+.25);
     else if(type==='recover')p.hp=Math.min(p.maxHp,p.hp+1);
     else if(type==='speed')p.speed=Math.min(cfg.speed+108,p.speed+18);
-    else if(type==='pet-companion'){p.petPicks++;summonPet();}
+    else if(type==='pet-companion'){p.petPicks++;summonCompanion('shooter');}
+    else if(type.startsWith('companion-')){const role=type.slice(10);game.companionRanks[role]++;summonCompanion(role);}
+    else if(type.startsWith('beacon-')){game.beaconType=type.slice(7);game.beaconCharges=Math.min(3,game.beaconCharges+2);deployBeacon(true);}
     else if(p.level%3===0&&type==='multi-shot')p.multishot=Math.min(2,p.multishot+1);
     else if(p.level%3===0&&type==='ricochet')p.ricochet=Math.min(2,p.ricochet+1);
     else if(p.level%3===0&&type==='fish-magnet')p.magnet=Math.min(2,p.magnet+1);
@@ -260,36 +266,76 @@
     for(let i=-p.multishot;i<=p.multishot;i++){
       const a=p.aim+i*.18;
       game.shots.push({x:p.x+dx*18,y:p.y+dy*18,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
-        life:.85+p.ricochet*.25,r:6,damage:p.damage*(game.buffs.rage>0?2:1),bounces:p.ricochet,hit:[],
+        life:.85+p.ricochet*.25,r:6,damage:p.damage*game.effectiveBuffs.damage,bounces:p.ricochet,hit:[],
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0});
     }
     sound(420+rnd(0,140),.05,'square',.018);
   }
   // Content updates use simulation seconds, so pause and upgrades freeze every timer.
-  function summonPet() {
-    const p=game.player;
-    game.entities.petCompanion={x:clamp(p.x+45,25,2375),y:p.y,r:13,life:35,
-      shotTimer:0,flash:0};
+  // All support lifetimes use simulation seconds. The legacy pet alias remains read-only in diagnostics.
+  function summonCompanion(type='shooter') {
+    const p=game.player,rank=game.companionRanks[type];
+    const life=35+Math.min(20,(p.level-1)*2)+rank*5;
+    game.activeCompanion={type,rank,x:clamp(p.x+45,25,2375),y:p.y,r:13,life,duration:life,shotTimer:0,flash:0};
+    game.entities.petCompanion=game.activeCompanion;
   }
-  function updatePet(dt) {
-    const g=game,p=g.player,pet=g.entities.petCompanion;
+  function updateCompanion(dt) {
+    const g=game,p=g.player,pet=g.activeCompanion;
     if(!pet)return;
     pet.life-=dt;pet.flash=Math.max(0,pet.flash-dt);
-    if(pet.life<=0){g.entities.petCompanion=null;notify('COMPANION · See you next time');return;}
-    const tx=clamp(p.x+48,25,2375),ty=clamp(p.y+35,25,2375);
-    const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+60)*dt);
+    if(pet.life<=0){g.activeCompanion=null;g.entities.petCompanion=null;notify('COMPANION · See you next time');return;}
+    // Tank moves toward the nearest threat; other familiars follow behind the cat.
+    let nearest=null,best=420;
+    for(const e of g.enemies){const d=dist(pet.x,pet.y,e.x,e.y);if(d<best){best=d;nearest=e;}}
+    const a=nearest?Math.atan2(nearest.y-p.y,nearest.x-p.x):0;
+    const tx=clamp(p.x+(pet.type==='tank'?Math.cos(a)*65:48),25,2375);
+    const ty=clamp(p.y+(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35),25,2375);
+    const d=Math.max(1,dist(pet.x,pet.y,tx,ty)),step=Math.min(d,(p.speed+90)*dt);
     pet.x+=(tx-pet.x)/d*step;pet.y+=(ty-pet.y)/d*step;
     pet.shotTimer-=dt;
-    if(pet.shotTimer>0)return;
-    let target=null,best=420;
-    for(const e of g.enemies){const distance=dist(pet.x,pet.y,e.x,e.y);if(distance<best){best=distance;target=e;}}
-    // Ghost silence only affects the player's weapon. The ally has its own cooldown.
-    if(target){const a=Math.atan2(target.y-pet.y,target.x-pet.x);
-      g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(a)*600,vy:Math.sin(a)*600,
-        life:.85,r:5,damage:p.damage*(g.buffs.rage>0?2:1)*.5,bounces:0,
-        hit:[],kind:'pet',trail:[],flash:0});
-      pet.flash=.15;pet.shotTimer=.8;
+    if(pet.shotTimer>0||!nearest)return;
+    // Every role can fire through silence; shooter has the strongest independent weapon.
+    const angle=Math.atan2(nearest.y-pet.y,nearest.x-pet.x);
+    g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(angle)*600,vy:Math.sin(angle)*600,
+      life:.85,r:5,damage:p.damage*g.effectiveBuffs.damage*(pet.type==='shooter'?.5:.25)*(1+Math.min(.5,p.level*.02)+pet.rank*.1),bounces:0,
+      hit:[],kind:'pet',trail:[],flash:0});
+    pet.flash=.15;pet.shotTimer=(pet.type==='shooter'?.8:1.4)/(1+pet.rank*.1);
+  }
+  class Beacon {
+    constructor(type,x,y){this.type=type;this.x=x;this.y=y;this.radius=150;this.duration=15;this.life=15;}
+    update(dt){this.life-=dt;return this.life>0;}
+  }
+  function deployBeacon(fromUpgrade=false){
+    if(!game || (!fromUpgrade&&game.mode!=='running') || game.beaconCharges<=0 || game.beacons.length>=2)return false;
+    game.beacons.push(new Beacon(game.beaconType,game.player.x,game.player.y));game.beaconCharges--;
+    notify('BEACON · '+game.beaconType.toUpperCase()+' · 15s');updateHud();return true;
+  }
+  $('deploy-beacon').onclick=()=>deployBeacon();
+  $('beacon-type').onchange=()=>{if(game)game.beaconType=$('beacon-type').value;};
+  function updateSupport(dt){
+    const g=game,p=g.player,f=g.feralInstinct;
+    g.beacons=g.beacons.filter(b=>b.update(dt));
+    let nearby=0;
+    for(const e of g.enemies)if(e.hp>0&&(e.x-p.x)**2+(e.y-p.y)**2<=10000)nearby++;
+    if(f.active){
+      f.timer=Math.max(0,f.timer-dt);
+      if(f.timer===0){f.active=false;notify('FERAL INSTINCT · Ended. Escape the crowd to rearm',2);}
+    }else if(nearby<3)f.armed=true;
+    else if(f.armed){f.active=true;f.armed=false;f.timer=f.duration;notify('FERAL INSTINCT ACTIVE · 6s',2);}
+    const b={speed:f.active?1.3:1,damage:Math.min(2.5,1+(g.buffs.rage>0?1:0)+(f.active?.25:0)),fire:1,magnet:0,healing:0,mitigation:0};
+    for(const beacon of g.beacons)if((beacon.x-p.x)**2+(beacon.y-p.y)**2<=beacon.radius**2){
+      if(beacon.type==='fire')b.fire+=.35;
+      if(beacon.type==='heal')b.healing+=.12;
+      if(beacon.type==='magnet')b.magnet+=100;
     }
+    const ally=g.activeCompanion;
+    if(ally&&ally.life>dt&&dist(ally.x,ally.y,p.x,p.y)<180){
+      if(ally.type==='healer')b.healing+=.10+ally.rank*.025+Math.min(.05,p.level*.003);
+      if(ally.type==='tank')b.mitigation=.2+ally.rank*.04+Math.min(.08,p.level*.005);
+    }
+    b.fire=Math.min(1.7,b.fire);b.magnet=Math.min(180,b.magnet);b.healing=Math.min(.3,b.healing);b.mitigation=Math.min(.4,b.mitigation);
+    g.effectiveBuffs=b;
+    p.hp=Math.min(p.maxHp,p.hp+b.healing*dt);
   }
   function updateGhosts(dt) {
     const g=game,p=g.player;
@@ -333,7 +379,7 @@
     // One exposure clock prevents overlapping clouds multiplying damage.
     h.exposure=exposed?(h.exposure||0)+dt:0;
     if(h.exposure>=1){h.exposure-=1;
-      if(p.inv===0){p.hp=Math.max(0,p.hp-1);p.inv=.35;g.shake=.3;
+      if(p.inv===0){p.hp=Math.max(0,p.hp-(1-g.effectiveBuffs.mitigation));p.inv=.35;g.shake=.3;
         burst(p.x,p.y,'#b6ee75',10);notify('TOXIC GAS · Move out!');sound(170,.1);
         if(p.hp<=0){updateHud();end();}}
     }
@@ -349,6 +395,7 @@
     game.powerups.push({x:clamp(x,35,2365),y:clamp(y,35,2365),kind});
   }
   function spawnBoss(night) {
+    if(game.enemies.length>=cfg.maxEnemies){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
     game.bossEncounters++;
     const hp=(65+night*4)*game.runScale*Math.pow(1.55,game.bossEncounters-1);
     game.enemies.push({...safeSpawn(650,60),
@@ -380,11 +427,12 @@
       spawnEnemy();g.spawn=Math.max(.24,cfg.spawnInterval/(1+g.t*cfg.spawnRamping));
     }
     edgeAid(dt);
+    updateSupport(dt);
     updateGas(dt);if(g.mode!=='running')return;
-    updateGhosts(dt);updatePet(dt);
-    const input=moveInput();p.x=clamp(p.x+input.x*p.speed*dt,25,2375);
-    p.y=clamp(p.y+input.y*p.speed*dt,25,2375);
-    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval);}
+    updateGhosts(dt);updateCompanion(dt);
+    const input=moveInput();p.x=clamp(p.x+input.x*p.speed*g.effectiveBuffs.speed*dt,25,2375);
+    p.y=clamp(p.y+input.y*p.speed*g.effectiveBuffs.speed*dt,25,2375);
+    p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL/1.7,p.shotInterval/g.effectiveBuffs.fire);}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
       let vx=dx/d,vy=dy/d,pace=1;
@@ -412,13 +460,14 @@
       // Extra speed is countered dynamically, including enemies already alive.
       // Far pursuers close the gap; nearby dashes remain telegraphed and dodgeable.
       const adaptation=Math.max(0,p.speed-cfg.speed)*.85;
-      const chase=d>330?Math.max(enemy.speed+adaptation,p.speed*1.08):enemy.speed+adaptation;
+      const beaconPressure=g.beacons.some(b=>dist(b.x,b.y,enemy.x,enemy.y)<b.radius+100)?1.08:1;
+      const chase=beaconPressure*(d>330?Math.max(enemy.speed+adaptation,p.speed*1.08):enemy.speed+adaptation);
       enemy.x=clamp(enemy.x+vx*chase*pace*dt,20,2380);
       enemy.y=clamp(enemy.y+vy*chase*pace*dt,20,2380);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(g.mode==='running'&&!g.pendingUpgrade&&d<p.r+enemy.r-3&&p.inv===0){
-        p.hp=Math.max(0,p.hp-enemy.damage);p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
-        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+enemy.damage);
+        p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
+        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
     for(let i=g.shots.length-1;i>=0;i--){
@@ -450,7 +499,7 @@
     for(let i=g.fishItems.length-1;i>=0;i--){
       const f=g.fishItems[i];f.phase+=dt*4;
       const d=dist(f.x,f.y,p.x,p.y);
-      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3||g.buffs.magnet>0)f.attracted=true;
+      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet||g.buffs.magnet>0)f.attracted=true;
       if(f.attracted){const step=Math.min(d,(p.speed+240)*dt);
         f.x+=(p.x-f.x)/Math.max(d,1)*step;f.y+=(p.y-f.y)/Math.max(d,1)*step;}
       if(d<28){
@@ -492,8 +541,18 @@
       ' · Bounces '+game.player.ricochet+' · Pickup '+Math.round(135+game.player.magnet*65+(game.player.speed-cfg.speed)*2/3)+'px';
     $('fish').textContent=game.fish;$('kills').textContent=game.kills;
     const p=game.player;
+    $('support-controls').hidden=p.level<3;
+    $('deploy-beacon').disabled=game.mode!=='running'||game.beaconCharges===0||game.beacons.length>=2;
+    $('deploy-beacon').textContent='Deploy beacon · '+game.beaconCharges;
+    for(const option of $('beacon-type').options)option.disabled=p.level<Number(option.dataset.level);
+    $('beacon-type').value=game.beaconType;
+    $('support-status').textContent=[game.feralInstinct.active?'FERAL INSTINCT ACTIVE '+Math.ceil(game.feralInstinct.timer)+'s':'',
+      game.activeCompanion?game.activeCompanion.type.toUpperCase()+' '+Math.ceil(game.activeCompanion.life)+'s':'',
+      game.beacons.length?'BEACONS '+game.beacons.length+'/2':'',
+      game.effectiveBuffs.fire>1?'FIRE +'+Math.round((game.effectiveBuffs.fire-1)*100)+'%':'',
+      game.effectiveBuffs.healing>0?'REGEN':'',game.effectiveBuffs.mitigation>0?'GUARD':'',game.effectiveBuffs.magnet>0?'MAGNET +'+game.effectiveBuffs.magnet:''].filter(Boolean).join(' · ');
     $('health').parentElement.classList.toggle('hurt',p.inv>0&&game.escape===0);
-    $('health').textContent=p.hp+' / '+p.maxHp;
+    $('health').textContent=(Math.ceil(p.hp*10)/10)+' / '+p.maxHp;
     $('health').setAttribute('aria-label',p.hp+' HP remaining out of '+p.maxHp+' maximum');
   }
   function circle(x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,TWO);ctx.fillStyle=c;ctx.fill();}
@@ -553,10 +612,18 @@
       if(!reducedMotion&&!warning)outline(c.x,c.y,r*.75+Math.sin(c.age*5)*3,'#95d66b66',2);
       if(warning){ctx.fillStyle='#d4ffac';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('GAS!',c.x,c.y);ctx.textAlign='left';}
     }
+    for(const b of g.beacons){
+      const color=b.type==='fire'?'#ffce86':b.type==='heal'?'#7cf2d0':'#b9a6ff';
+      ctx.save();ctx.globalAlpha=.12;circle(b.x,b.y,b.radius,color);ctx.restore();
+      outline(b.x,b.y,b.radius,color,2);circle(b.x,b.y,12,color);
+      ctx.fillStyle=color;ctx.font='bold 16px system-ui';ctx.textAlign='center';
+      ctx.fillText(b.type.toUpperCase()+' '+Math.ceil(b.life)+'s',b.x,b.y-22);ctx.textAlign='left';
+    }
     const pet=g.entities.petCompanion;
     if(pet){
       ctx.save();ctx.translate(pet.x,pet.y);
-      circle(0,8,15,'#000a15aa');circle(0,0,13,'#ffce86');
+      circle(0,8,15,'#000a15aa');circle(0,0,13,pet.type==='healer'?'#7cf2d0':pet.type==='tank'?'#a6b7ff':'#ffce86');
+      if(pet.type!=='shooter')outline(0,0,pet.type==='tank'?23:19,pet.type==='tank'?'#a6b7ff':'#7cf2d0',3);
       polygon(0,0,[[-11,-5],[-12,-21],[-2,-12]],'#ffce86');
       polygon(0,0,[[11,-5],[12,-21],[2,-12]],'#ffce86');
       circle(-5,0,2,'#173141');circle(5,0,2,'#173141');
@@ -594,6 +661,7 @@
     }
     ctx.save();ctx.translate(p.x,p.y);
     if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
+    if(g.feralInstinct.active)outline(0,0,43,'#ff995e',4);
     if(g.escape>0)outline(0,0,36,'#7cf2d0',4);
     circle(0,14,27,'#000a15aa');
     if(p.inv>0&&(reducedMotion||Math.floor(p.inv*12)%2===0))ctx.globalAlpha=.36;
@@ -761,7 +829,7 @@
       run:game?game.run:completedRuns+1,runScale:game?game.runScale:1,
       difficulty:game?difficulty():1,bossEncounters:game?game.bossEncounters:0,
       escapeArmed:!!(game&&game.escapeArmed),
-      upgradeAvailability:game?Object.fromEntries(['damage','speed','fire-rate','multi-shot','ricochet','fish-magnet','pet-companion','recover'].map(k=>[k,upgradeAvailable(k)])):{},
+      upgradeAvailability:game?Object.fromEntries(['damage','speed','fire-rate','multi-shot','ricochet','fish-magnet','pet-companion','recover','beacon-fire','beacon-heal','beacon-magnet','companion-shooter','companion-healer','companion-tank'].map(k=>[k,upgradeAvailable(k)])):{},
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
@@ -770,6 +838,10 @@
       fishItems:game?game.fishItems.map(f=>({...f})):[],
       powerups:game?game.powerups.map(f=>({...f})):[],buffs:game?{...game.buffs}:{},
       bossMilestone:game?game.bossMilestone:0,
+      beacons:game?game.beacons.map(b=>({...b})):[],beaconCharges:game?game.beaconCharges:0,
+      activeCompanion:game&&game.activeCompanion?{...game.activeCompanion}:null,
+      companionRanks:game?{...game.companionRanks}:{},feralInstinct:game?{...game.feralInstinct}:null,
+      effectiveBuffs:game?{...game.effectiveBuffs}:{},
       petCompanion:game&&game.entities.petCompanion?{...game.entities.petCompanion}:null,
       toxicGasClouds:game?game.hazards.toxicGasClouds.map(c=>({...c,radius:gasRadius(c)})):[],
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
