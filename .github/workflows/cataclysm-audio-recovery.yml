@@ -1,0 +1,189 @@
+name: Verify recovered hard rock DnB / dubstep soundtrack (graphics only)
+on:
+  push:
+    branches: ['experiment/cataclysm-09-graphics']
+    paths: ['.github/workflows/cataclysm-audio-recovery.yml']
+concurrency:
+  group: cataclysm-09-audio-recovery-once
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: read
+  actions: read
+jobs:
+  revamp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiment/cataclysm-09-graphics
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare browser tools, immutable 0.9 baseline and local servers
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+          node --check game_factory/world_physics_qa.cjs
+          node --check game_factory/audio_lab_qa.cjs
+          mkdir -p "$RUNNER_TEMP/graphics-baseline/preview" artifacts/graphics-09
+          cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/graphics-baseline/preview/"
+          nohup python -m http.server 8766 --directory "$RUNNER_TEMP/graphics-baseline" >/tmp/graphics-baseline-server.log 2>&1 &
+          nohup python -m http.server 8765 --directory docs >/tmp/graphics-candidate-server.log 2>&1 &
+          python - <<'PY'
+          import urllib.request,time
+          for port in [8765,8766]:
+            for attempt in range(20):
+              try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/preview/',timeout=3) as r:
+                  assert r.status==200
+                break
+              except Exception:
+                if attempt==19:raise
+                time.sleep(.5)
+          print('Both isolated test servers ready')
+          PY
+      - name: Restore rejected original sound mix from dedicated nonproduction recovery branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin refs/heads/recovery/cataclysm-audio-42531258203-1
+          git show FETCH_HEAD:docs/preview/game.js > docs/preview/game.js
+          node --check docs/preview/game.js
+          grep -Fq "const AUDIO_PASS_ID = 'graphics-lab-audio-01'" docs/preview/game.js
+          echo "Restored original unverified audio composition for corrected trusted QA"
+      - name: Verify scope, original 0.9 identity, audio marker and retained toroidal physics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess,re
+          allowed={'docs/preview/game.js','docs/preview/game.css','docs/preview/index.html'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          bad=(changed|untracked)-allowed
+          if bad:raise SystemExit('Agent attempted unauthorized file edits: '+repr(sorted(bad)))
+          if 'docs/preview/game.js' not in changed:raise SystemExit('No actual game physics update')
+          js=pathlib.Path('docs/preview/game.js').read_text()
+          html=pathlib.Path('docs/preview/index.html').read_text()
+          if len(js)>400000:raise SystemExit('Excessive JS source')
+          if "const BUILD = '0.9'" not in js or '<title>Cataclysm 0.9' not in html or 'id="game-version">0.9</b>' not in html:
+              raise SystemExit('Graphics Lab release identity changed; keep 0.9')
+          for contract in ['const WORLD_SIZE','function wrapCoord(','function wrappedDelta(','function isTerrainClear(','function moveWithCollision(','function resolveActorCollisions(',"const AUDIO_PASS_ID = 'graphics-lab-audio-01'"]:
+              if contract not in js:raise SystemExit('Missing existing physics or new audio contract: '+contract)
+          print('Scope, version, music-engine marker and world-physics source contracts PASS:',sorted(changed))
+          PY
+          node --check docs/preview/game.js
+          git diff --check
+      - name: Independently verify actual Web Audio music, boss drop and mute
+        id: audio
+        continue-on-error: true
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
+        run: |
+          set -o pipefail
+          node game_factory/audio_lab_qa.cjs 2>&1 | tee artifacts/graphics-09/audio-gate.log
+      - name: Preserve rejected audio candidate without modifying the live lab
+        if: steps.audio.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-audio-rejected-source
+          path: |
+            docs/preview/game.js
+            docs/preview/game.css
+            docs/preview/index.html
+            artifacts/graphics-09/audio-qa.json
+            artifacts/graphics-09/audio-gate.log
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save rejected candidate on a separate recovery branch for evidence-based repair
+        if: steps.audio.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ isolated audio recovery'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html
+          git commit -m 'UNVERIFIED isolated audio candidate; not live'
+          git push origin "HEAD:refs/heads/recovery/cataclysm-audio-${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Refuse publish if sound fails independent browser checks
+        if: steps.audio.outcome == 'failure'
+        run: exit 1
+      - name: Regression-test all eight toroidal collision cases in Chrome
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/world_physics_qa.cjs
+      - name: Compare old vs new across three mobile viewport layouts
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/graphics_experiment_qa.cjs
+      - name: Save trusted QA result and commit ONLY the experiment branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib
+          baseline=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'graphics-baseline/preview/game.js'
+          test=json.loads(pathlib.Path('artifacts/graphics-09/qa.json').read_text())
+          physics=json.loads(pathlib.Path('artifacts/graphics-09/physics-qa.json').read_text())
+          soundtrack=json.loads(pathlib.Path('artifacts/graphics-09/audio-qa.json').read_text())
+          if not test.get('passed') or len(test.get('platforms',[]))!=3:
+            raise SystemExit('Browser gate did not pass all scenarios')
+          if not physics.get('passed') or len(physics.get('tests',[]))<8:
+            raise SystemExit('Toroidal/physics independent QA failed')
+          if not soundtrack.get('passed') or len(soundtrack.get('checks',[]))<7:
+            raise SystemExit('Independent audio QA failed')
+          report={'status':'passed','version':'0.9','branch':'experiment/cataclysm-09-graphics',
+                  'sha_source_baseline':hashlib.sha256(baseline.read_bytes()).hexdigest(),
+                  'browser_qa':test,'physics_qa':physics,'audio_qa':soundtrack,
+                  'production_untouched':True,
+                  'visual_approval':'pending user review',
+                  'screenshots':'GitHub Actions artifact cataclysm-09-audio-comparison'}
+          pathlib.Path('game_factory/graphics_experiment_report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('Trusted QA report recorded')
+          PY
+          git config user.name 'BoRHeZ graphics experiment'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html game_factory/graphics_experiment_report.json
+          git diff --cached --check
+          git commit -m 'Graphics Lab: verified recovered original DnB/dubstep score and SFX'
+          git fetch origin experiment/cataclysm-09-graphics
+          git rebase origin/experiment/cataclysm-09-graphics
+          git push origin HEAD:experiment/cataclysm-09-graphics
+      - name: Request standalone preview publication (no live game replacement)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PREVIEW_SHA="$(git rev-parse HEAD)"
+          python - <<'PY' > "$RUNNER_TEMP/graphics-preview-request.json"
+          import json,os
+          print(json.dumps({'event_type':'borhez-cataclysm-graphics-lab',
+              'client_payload':{'branch':'experiment/cataclysm-09-graphics',
+                                'sha':os.environ['PREVIEW_SHA']}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/graphics-preview-request.json"
+          echo "### Graphics experiment source accepted" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: experiment/cataclysm-09-graphics" >> "$GITHUB_STEP_SUMMARY"
+          echo "Web Audio, physics and browser comparison QA saved in cataclysm-09-audio-comparison" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publishing the isolated preview is a separate verified job; production was not changed." >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve before/after browser screenshots and independent QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-09-audio-recovery-comparison
+          path: artifacts/graphics-09
+          if-no-files-found: ignore
+          retention-days: 30
