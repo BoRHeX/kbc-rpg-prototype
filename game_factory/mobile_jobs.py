@@ -449,7 +449,7 @@ def stamp_command():
         if version:
             page = directory / "index.html"
             content, count = re.subn(
-                r'(<span\b[^>]*\bid="game-version"[^>]*>)[^<]*(</span>)',
+                r'(<(?:span|b)\b[^>]*\bid="game-version"[^>]*>)[^<]*(</(?:span|b)>)',
                 lambda m: m[1] + version + m[2], page.read_text())
             if count != 1:
                 raise ValueError("Cataclysm version element missing or ambiguous")
@@ -468,7 +468,7 @@ def stamp_command():
     version = job["request"].get("release_version")
     if version:
         source, count = re.subn(
-            r'(<span\b[^>]*\bid="game-version"[^>]*>)[^<]*(</span>)',
+            r'(<(?:span|b)\b[^>]*\bid="game-version"[^>]*>)[^<]*(</(?:span|b)>)',
             lambda m: m[1] + version + m[2], source)
         if count == 0:
             # The publisher owns release identifiers; an otherwise valid
