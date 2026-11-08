@@ -7,6 +7,7 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
   const PATCH_ID = '42523503568-1-city-encounters';
+  const AUDIO_PASS_ID = 'graphics-lab-audio-01';
   const UNLOCKS = {shambler:0,weaver:120,dasher:240,orbiter:420,stalker:660,ghost:960,gas:1200};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   let W = 1280, H = 720;
@@ -211,43 +212,133 @@
     }
     renderBest();
   }
-  function sound(freq=480,len=.08,type='sine',volume=.035) {
-    if(muted) return;
+  // Original score: E natural minor, eight-bar pedal/chord phrase. All timing is audio time.
+  const audioVoices = new Set(), sfxLast = Object.create(null);
+  const scoreCounts = {drums:0,bass:0,lead:0,bossDrops:0};
+  let masterBus=null, fxBus=null, noiseBuffer=null, gritCurve=null, musicMode='silent', scoreStep=0;
+  function unlockAudio() {
+    if(muted)return;
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if(!AudioContext)return;
-      audio = audio || new AudioContext();
-      if(audio.state==='suspended') audio.resume();
-      const o = audio.createOscillator(), gain=audio.createGain();
-      o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);
-      o.frequency.exponentialRampToValueAtTime(Math.max(80,freq*.72),audio.currentTime+len);
-      gain.gain.setValueAtTime(volume,audio.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+len);
-      o.connect(gain);gain.connect(audio.destination);o.start();o.stop(audio.currentTime+len);
-      o.onended=()=>{o.disconnect();gain.disconnect();};
-    }catch(e){/* optional audio */ }
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC)return;
+      if(!audio)audio=new AC();
+      // Called directly by the trusted Play/restart/unmute gesture, before any async work.
+      if(audio.state==='suspended'){const resumed=audio.resume();if(resumed&&resumed.catch)resumed.catch(()=>{});}
+      if(!masterBus){
+        masterBus=audio.createGain();masterBus.gain.value=.7;
+        let output=audio.destination;
+        try {const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-20;limiter.knee.value=12;limiter.ratio.value=8;limiter.attack.value=.003;limiter.release.value=.16;limiter.connect(output);output=limiter;}catch(e){/* gain headroom remains safe */}
+        masterBus.connect(output);
+      }
+      if(!musicBus){musicBus=audio.createGain();musicBus.gain.value=0;musicBus.connect(masterBus);}
+      if(!fxBus){fxBus=audio.createGain();fxBus.gain.value=.65;fxBus.connect(masterBus);}
+      if(!noiseBuffer)try {
+        noiseBuffer=audio.createBuffer(1,audio.sampleRate,audio.sampleRate);
+        const data=noiseBuffer.getChannelData(0);let seed=19473;
+        for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=seed/2147483648-1;}
+      }catch(e){/* percussion falls back to pitched transients */}
+      if(!gritCurve)try {gritCurve=new Float32Array(512);for(let i=0;i<512;i++)gritCurve[i]=Math.tanh((i/255.5-1)*5)*.65;}catch(e){/* plain saw riff */}
+    }catch(e){/* audio unavailable: game remains playable */}
   }
-  // Two short synthesized voices; no assets, timers, or unbounded audio graph.
+  function stopVoices(group) {
+    for(const v of audioVoices)if(!group||v.group===group){
+      try {const t=audio.currentTime;v.env.gain.cancelScheduledValues(t);v.env.gain.setTargetAtTime(.0001,t,.004);v.source.stop(t+.02);}catch(e){v.clean();}
+    }
+  }
+  // At most 40 music and 12 effects sources; each voice owns and disconnects its nodes.
+  function voice(hz,t,len,level,type='sine',group='music',filterHz=0,sweep=0,distort=false) {
+    if(!audio||muted||document.hidden||audio.state!=='running'||!masterBus)return;
+    if(group==='fx'&&game&&(game.mode==='paused'||game.mode==='dead'))return;
+    if(audioVoices.size>=52||[...audioVoices].filter(v=>v.group===group).length>=(group==='music'?40:12))return;
+    let source, nodes=[],entry;
+    try {
+      const noisy=type==='noise'&&noiseBuffer;
+      source=noisy?audio.createBufferSource():audio.createOscillator();nodes.push(source);
+      if(noisy)source.buffer=noiseBuffer;
+      else {source.type=type==='noise'?'triangle':type;source.frequency.setValueAtTime(Math.max(25,hz),t);if(sweep&&!filterHz)source.frequency.exponentialRampToValueAtTime(Math.max(25,sweep),t+len);}
+      let tail=source;
+      if(distort&&gritCurve)try {const sh=audio.createWaveShaper();sh.curve=gritCurve;tail.connect(sh);nodes.push(sh);tail=sh;}catch(e){/* optional coloration */}
+      if(filterHz)try {
+        const f=audio.createBiquadFilter();f.type=noisy?'highpass':'lowpass';f.Q.value=noisy?.6:3;
+        f.frequency.setValueAtTime(filterHz,t);
+        if(sweep){for(let n=1;n<=4;n++)f.frequency.exponentialRampToValueAtTime(n%2?sweep:filterHz,t+len*n/4);}
+        tail.connect(f);nodes.push(f);tail=f;
+      }catch(e){/* keep oscillator/noise audible */}
+      const env=audio.createGain();nodes.push(env);env.gain.setValueAtTime(.0001,t);
+      env.gain.linearRampToValueAtTime(level,t+.004);env.gain.exponentialRampToValueAtTime(.0001,t+len);
+      tail.connect(env);env.connect(group==='music'?musicBus:fxBus);
+      entry={source,env,group,clean(){audioVoices.delete(entry);nodes.forEach(n=>{try{n.disconnect();}catch(e){}});}};
+      audioVoices.add(entry);source.onended=entry.clean;source.start(t);source.stop(t+len+.01);
+      return true;
+    }catch(e){if(entry)entry.clean();else nodes.forEach(n=>{try{n.disconnect();}catch(e){}});}
+  }
+  function drum(kind,t,accent=1) {
+    scoreCounts.drums++;
+    if(kind==='kick'){voice(145,t,.16,.16*accent,'sine','music',0,43);voice(1100,t,.018,.022*accent,'noise');}
+    else if(kind==='snare'){voice(185,t,.1,.065*accent,'triangle','music',0,100);voice(1000,t,.13,.09*accent,'noise','music',1200);}
+    else voice(6000,t,kind==='open'?.13:.035,.025*accent,'noise','music',6500);
+  }
+  function playSfx(kind) {
+    if(muted||!audio||audio.state!=='running'||!fxBus||document.hidden)return;
+    const t=audio.currentTime, limits={shot:.075,volley:.12,hit:.07,critical:.09,fish:.075};
+    if(t-(sfxLast[kind]??-100)<(limits[kind]||.18))return;sfxLast[kind]=t;
+    const tone=(hz,d,v=.06,type='sine',delay=0,end=0)=>voice(hz,t+delay,d,v,type,'fx',0,end);
+    const crunch=(d,v,hz)=>voice(hz,t,d,v,'noise','fx',hz);
+    if(kind==='shot'||kind==='volley'){crunch(.045,.065,1800);tone(kind==='shot'?220:330,.055,.035,'sawtooth',0,75);}
+    else if(kind==='hit'||kind==='critical'){crunch(.06,.055,800);tone(kind==='critical'?780:170,.07,.035,'triangle',0,90);}
+    else if(kind==='danger'){tone(240,.16,.05,'sawtooth',0,100);}
+    else if(kind==='guard'){crunch(.12,.06,700);tone(120,.23,.07,'triangle');}
+    else {const notes=kind==='level'?[659.25,783.99,987.77,1318.51]:kind==='heal'?[329.63,493.88,659.25]:kind==='power'?[440,659.25,880]:[987.77,1318.51];
+      notes.forEach((hz,i)=>tone(hz,kind==='level'?.22:.13,.035,'sine',i*.055));}
+  }
+  // Preserve legacy event contract without letting it create contexts outside gestures.
+  function sound(freq=480,len=.08,type='sine',volume=.035) {
+    if(!audio||muted||document.hidden)return;
+    const t=audio.currentTime;if(t-(sfxLast.legacy??-100)<.065)return;sfxLast.legacy=t;
+    voice(freq,t,Math.min(.4,len),Math.min(.045,volume),type,'fx',0,Math.max(80,freq*.72));
+  }
   function music() {
-    if(!audio)return;
-    if(!musicBus){musicBus=audio.createGain();musicBus.connect(audio.destination);}
-    const active=!muted&&game&&game.mode==='running';
-    musicBus.gain.setTargetAtTime(active?.45:0,audio.currentTime,.025);
-    if(!active){musicNext=audio.currentTime;return;}
-    if(musicNext<audio.currentTime)musicNext=audio.currentTime;
-    const boss=game.enemies.some(e=>e.variant==='boss');
-    while(musicNext<audio.currentTime+.12){
-      const notes=boss?[110,130.81,146.83,103.83]:[130.81,155.56,174.61,116.54];
-      const root=notes[Math.floor(musicBeat/8)%4];
-      [root,root*[2,3,2.5,3][musicBeat%4]].forEach((hz,i)=>{
-        const o=audio.createOscillator(),v=audio.createGain();
-        o.type=i?'sine':'triangle';o.frequency.value=hz;
-        v.gain.setValueAtTime(i?.018:.025,musicNext);
-        v.gain.exponentialRampToValueAtTime(.0001,musicNext+.28);
-        o.connect(v);v.connect(musicBus);o.start(musicNext);o.stop(musicNext+.3);
-        o.onended=()=>{o.disconnect();v.disconnect();};
-      });
-      musicBeat++;musicNext+=boss?.22:.32;
+    const active=!!(audio&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'&&audio.state==='running');
+    const next=active?(game.enemies.some(e=>e.variant==='boss')?'boss':'survival'):'silent';
+    if(!audio||!musicBus)return;
+    const now=audio.currentTime;
+    if(masterBus)masterBus.gain.setTargetAtTime(muted||document.hidden||game&&game.mode==='paused'?0:.7,now,.015);
+    if(next!==musicMode){
+      const previous=musicMode;stopVoices('music');musicMode=next;scoreStep=0;musicNext=now+.015;
+      musicBus.gain.cancelScheduledValues(now);musicBus.gain.setTargetAtTime(active?.62:0,now,.018);
+      if(next==='silent')stopVoices('fx');
+      if(next==='boss'){
+        scoreCounts.bossDrops++;drum('snare',now,.8);
+        voice(420,now,.22,.055,'sawtooth','music',2400,140);
+        voice(100,now+.16,.36,.12,'sine','music',0,30);musicNext=now+.28;
+      }else if(next==='survival'&&previous==='boss'){
+        drum('kick',now);[164.81,246.94,329.63].forEach(h=>voice(h,now,.35,.035,'triangle'));musicNext=now+.12;
+      }
+    }
+    if(!active){musicNext=now;return;}
+    if(musicNext<now-.15)musicNext=now;
+    const boss=next==='boss',stepLen=60/(boss?142:174)/4;
+    // E minor: E–C–G–D, each root lasts two bars; fixed original rhythmic motifs.
+    while(musicNext<now+.12){
+      const s=scoreStep%16,bar=Math.floor(scoreStep/16)%8,t=musicNext;
+      const root=[82.4069,65.4064,97.9989,73.4162][Math.floor(bar/2)];
+      if((boss?[0,7,10]:[0,6,10,14]).includes(s))drum('kick',t);
+      if((boss?[8]:[4,12]).includes(s))drum('snare',t);
+      if(s%2===0)drum(s===14?'open':'hat',t,s%4===0?1:.65);
+      if(!boss&&[3,11].includes(s))drum('hat',t,.4);
+      if(bar%4===3&&[13,15].includes(s))drum('snare',t,.38);
+      if((boss?[0,3,6,10,12]:[0,2,5,6,8,10,13]).includes(s)){
+        scoreCounts.bass++;
+        voice(root/2,t,stepLen*(boss?2.7:1.5),.075,'sine');
+        voice(root,t,stepLen*(boss?2.8:1.1),boss?.065:.045,'sawtooth','music',boss?230:1100,boss?2100:0,true);
+        if(!boss)voice(root*1.5,t,stepLen*1.05,.028,'sawtooth','music',1500,0,true);
+      }
+      if(!boss&&[3,7,11,14].includes(s)){
+        scoreCounts.lead++;
+        const semis=[7,10,12,14,12,7,5,2],hz=164.8138*Math.pow(2,semis[(bar*2+Math.floor(s/4))%8]/12);
+        voice(hz,t,stepLen*2,.025,'triangle','music',2400);voice(hz*1.005,t,stepLen*1.8,.01,'sawtooth','music',1800);
+      }else if(boss&&s===14&&bar%2===1){scoreCounts.lead++;[root*2,root*3].forEach(h=>voice(h,t,.12,.025,'square','music',1700));}
+      musicBeat++;scoreStep++;musicNext+=stepLen;
     }
   }
   function safeSpawn(radius=600, margin=30) {
@@ -272,6 +363,7 @@
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
   }
   function start() {
+    stopVoices();musicMode='silent';scoreStep=0;
     recordRun();
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
@@ -298,7 +390,7 @@
     $('overlay-copy').textContent='You survived '+Math.floor(game.t)+' seconds, defeated '+
       game.kills+' zombies, and rescued '+game.fish+' fish. Ready for another run?';
     $('play').textContent='↻ PLAY AGAIN'; $('start-overlay').hidden=false;
-    $('pause').hidden=true;$('stick').hidden=true;pointer=null;sound(150,.4,'triangle');
+    $('pause').hidden=true;$('stick').hidden=true;pointer=null;music();
   }
   function pause() {
     if(!game || game.mode==='dead'||game.mode==='upgrade')return;
@@ -342,7 +434,7 @@
     game.offered=offered.map(b=>b.dataset.upgrade);
     buttons.forEach(b=>{b.hidden=!offered.includes(b);b.disabled=false;b.textContent=upgradeText(b.dataset.upgrade);});
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
-    updateHud();sound(1050,.2);offered[0].focus({preventScroll:true});
+    updateHud();music();playSfx('level');offered[0].focus({preventScroll:true});
   }
 
   function chooseUpgrade(type) {
@@ -474,7 +566,7 @@
         life:Math.min(2,.85+p.ricochet*.25),r:6,damage:p.damage*game.effectiveBuffs.damage*((1+2*p.multishot)/(1+2*spread))*(1+Math.max(0,p.ricochet-8)*.12)*Math.max(1,MIN_SHOT_INTERVAL*game.effectiveBuffs.fire/p.shotInterval),bounces:Math.min(8,p.ricochet),hit:[],
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0}));
     }
-    sound(420+cosmeticRand()*140,.05,'square',.018);
+    playSfx('shot');
   }
   // Content updates use simulation seconds, so pause and upgrades freeze every timer.
   // One visible representative per role; count investments multiply squad effectiveness.
@@ -512,7 +604,7 @@
       if(g.shots.length>140)continue;
       for(let i=-spread;i<=spread;i++)g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(angle+i*.18)*600,vy:Math.sin(angle+i*.18)*600,
         life:Math.min(2,.85+q.bounce*.25),r:5,damage:p.damage*g.effectiveBuffs.damage*q.damage*(pet.type==='shooter'?1:.5)*(1+pet.rank*.1)*q.count*((1+q.spread*2)/(1+spread*2))*Math.max(1,MIN_SHOT_INTERVAL/interval)*(1+Math.max(0,q.bounce-8)*.12),bounces:Math.min(8,q.bounce),hit:[],kind:'pet',trail:[],flash:0});
-      pet.flash=.15;pet.shotTimer=Math.max(MIN_SHOT_INTERVAL,interval);
+      playSfx('volley');pet.flash=.15;pet.shotTimer=Math.max(MIN_SHOT_INTERVAL,interval);
     }
   }
   // A shared cooldown per role prevents duplicate recruits from spamming abilities.
@@ -537,7 +629,7 @@
     }else if(type==='tank')pet.specialDuration=6;
     burst(pet.x,pet.y,type==='tank'?'#94cfff':'#8affbd',12);
     notify(type.toUpperCase()+' · '+({shooter:'RADIAL BURST',healer:'HEALING PULSE',tank:'GUARD · 6s'})[type],2);
-    sound(type==='shooter'?820:type==='healer'?660:280,.2,'triangle');
+    playSfx(type==='shooter'?'volley':type==='healer'?'heal':'guard');
     updateSupport(0);updateHud();
   }
   for(const type of roleNames)$('ability-'+type).onclick=()=>companionSpecialAbilityActivate(type);
@@ -925,7 +1017,7 @@
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r+.5&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
         damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
-        sound(190,.21,'sawtooth');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
+        playSfx('danger');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
     resolveActorCollisions();
@@ -940,7 +1032,7 @@
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
         const hitDamage=raw*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
-        burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);
+        burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
         s.hit.push(e);
         if(s.bounces>0){
           s.bounces--;s.kind='bounce';s.flash=.16;burst(s.x,s.y,'#ffd568',9);
@@ -963,7 +1055,7 @@
         g.fish+=f.value;g.xp+=f.value*p.xpGain;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
         g.pickupEffects.push({x:f.x,y:f.y,life:.9,value:f.value});
         if(g.pickupEffects.length>24)g.pickupEffects.shift();
-        sound(880,.28,'sine',.035);
+        playSfx('fish');
         if(g.xp>=7+p.level*3){
           g.xp-=7+p.level*3;p.level++;offerUpgrade();return;
         }
@@ -976,7 +1068,7 @@
         if(item.kind==='relay'){g.cityEvents.relayUnlocked=true;for(const pet of g.companionSquad)pet.specialCooldown=Math.max(0,pet.specialCooldown-4);}
         else if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
         else g.buffs[item.kind]=12;
-        g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);sound(1100,.2);
+        g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);playSfx(item.kind==='heal'?'heal':'power');
         notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 12s',2);
       }
     }
@@ -1463,11 +1555,11 @@
     if(game&&game.mode==='running')keys[ev.key]=true;if(!ev.repeat&&(ev.key==='Escape'||ev.key===' '))pause();
   });
   window.addEventListener('keyup',ev=>{keys[ev.key]=false;});
-  window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&game&&game.mode==='running')pause();});
-  $('play').onclick=resumeOrStart;$('pause').onclick=pause;
-  $('restart').onclick=()=>{start();};$('mute').onclick=()=>{
-    muted=!muted;$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
+  window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();music();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&game&&game.mode==='running')pause();music();});
+  $('play').onclick=()=>{unlockAudio();resumeOrStart();music();};$('pause').onclick=()=>{unlockAudio();pause();music();};
+  $('restart').onclick=()=>{unlockAudio();start();music();};$('mute').onclick=()=>{
+    muted=!muted;if(muted)stopVoices();else unlockAudio();music();$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
     $('mute').setAttribute('aria-pressed',String(muted));
     $('mute').setAttribute('aria-label',muted?'Unmute sound':'Mute sound');
   };
@@ -1505,7 +1597,7 @@
       score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      music:{enabled:!muted,active:!!(audio&&musicBus&&!muted&&game&&game.mode==='running'),beat:musicBeat,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
+      music:{mode:musicMode,enabled:!muted,active:!!(audio&&audio.state==='running'&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'),beat:musicBeat,...scoreCounts,pass:AUDIO_PASS_ID,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
       pendingUpgrade:!!(game&&game.pendingUpgrade),
       fishItems:game?game.fishItems.map(f=>({...f})):[],
       powerups:game?game.powerups.map(f=>({...f})):[],buffs:game?{...game.buffs}:{},
