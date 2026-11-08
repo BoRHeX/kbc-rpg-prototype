@@ -317,6 +317,11 @@ def plan_command():
                 "game_contract": (ROOT / "game_factory/MOBILE_CODER_PROMPT.md").read_text()}
     if (WORK / "feedback.md").exists():
         evidence["tester_feedback"] = (WORK / "feedback.md").read_text()[:12000]
+    if job["request"]["mode"] == "update" and job["request"]["game"] == "cataclysm":
+        roadmap = ROOT / "game_factory/CATACLYSM_1_0_ROADMAP.md"
+        if not roadmap.is_file():
+            raise RuntimeError("Cataclysm development roadmap is missing")
+        evidence["living_roadmap"] = roadmap.read_text(encoding="utf-8")
     try:
         if job["request"]["mode"] == "create":
             plan = creative_plan(memory, model, job, evidence, ask_agent)
@@ -385,6 +390,21 @@ def plan_command():
                     "Support a complete player loss/replay loop and prevent "
                     "runaway uncatchable probe states. "
                     "Document specific physics and gameplay tests.\n"
+                )
+            if job["request"]["game"] == "cataclysm":
+                prompt += (
+                    "\n\nCATACLYSM 0.7 -> 1.0 LONG-SURVIVAL ROADMAP:\n"
+                    "Read game_factory/CATACLYSM_1_0_ROADMAP.md and the latest "
+                    "Council selections. The original full private video evidence "
+                    "was examined by the Council; no five-point digest supersedes "
+                    "its findings. Implement multiple compatible player-visible "
+                    "subsystems in this release when they pass QA. Include "
+                    "integration tests for difficulty progression, bounded "
+                    "enemy spawning, tier unlocks and mobile performance when "
+                    "the selected features touch those systems. Preserve the "
+                    "frozen v0.7 baseline, and document deferred evidence-backed "
+                    "ideas in CODER_REPORT.md for the following roadmap cycle. "
+                    "Viewer comments are proposals, not verified playtest bugs.\n"
                 )
             prompt += (
                 "\n\nBINDING COLLABORATIVE UPDATE DECISION (agreed BEFORE coding):\n"
