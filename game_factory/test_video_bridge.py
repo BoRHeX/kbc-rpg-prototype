@@ -84,11 +84,15 @@ class VideoBridgeTests(unittest.TestCase):
 
     def test_cataclysm_08_version_from_frozen_07_baseline(self):
         import game_factory.video_bridge as bridge
-        self.assertEqual(bridge.next_cataclysm_version(), "0.8")
-        request = bridge.build_request(
-            "1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH", "cataclysm", "Cataclysm",
-            {"actionable": True, "prompt": "Full gameplay review",
-             "acceptance": ["Full evidence to game council"]})
+        example = self.root / "docs" / "preview"
+        example.mkdir(parents=True, exist_ok=True)
+        (example / "index.html").write_text('<span id="game-version">0.7</span>')
+        self.assertEqual(bridge.next_cataclysm_version(self.root), "0.8")
+        with patch.object(bridge, "next_cataclysm_version", return_value="0.8"):
+            request = bridge.build_request(
+                "1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH", "cataclysm", "Cataclysm",
+                {"actionable": True, "prompt": "Full gameplay review",
+                 "acceptance": ["Full evidence to game council"]})
         self.assertEqual(request["release_version"], "0.8")
         self.assertEqual(request["evidence_drive_file_id"],
                          "1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH")
