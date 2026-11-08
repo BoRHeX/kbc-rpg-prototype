@@ -2,7 +2,7 @@
   "status": "passed",
   "version": "0.9",
   "branch": "experiment/cataclysm-09-graphics",
-  "sha_source_baseline": "16811c1eb91431c54dadd0e84a78cf67e5ee68a177e308fba19728c9ebb8ebba",
+  "sha_source_baseline": "b90ba8a6262f895f91956a1d7b28e0353e9615d1c19877ed94fc0a5e7c863d76",
   "browser_qa": {
     "baseline": "http://127.0.0.1:8766/preview/",
     "candidate": "http://127.0.0.1:8765/preview/",
@@ -20,12 +20,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999997,
-          "moved": 165.3,
+          "time": 1.2665999999999995,
+          "moved": 165.2,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2666999999999993,
+          "time": 1.2516999999999998,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -42,12 +42,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999997,
+          "time": 1.2524000000000055,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2666999999999995,
+          "time": 1.2519999999999996,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -64,12 +64,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2511999999999883,
+          "time": 1.2499999999999996,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2530999999999994,
+          "time": 1.2536999999999818,
           "moved": 165.3,
           "build": "0.9"
         }
