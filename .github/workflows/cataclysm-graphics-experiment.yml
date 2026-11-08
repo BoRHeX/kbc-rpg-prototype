@@ -1,10 +1,10 @@
-name: Cataclysm 0.9 isolated graphics experiment
+name: Cataclysm graphics lab — effects pass 2
 on:
   push:
     branches: ['experiment/cataclysm-09-graphics']
     paths: ['.github/workflows/cataclysm-graphics-experiment.yml']
 concurrency:
-  group: cataclysm-09-graphics-lab-once
+  group: cataclysm-09-graphics-lab-effects-pass2
   cancel-in-progress: false
 permissions:
   contents: write
@@ -48,14 +48,14 @@ jobs:
                 time.sleep(.5)
           print('Both isolated test servers ready')
           PY
-      - name: AI graphics director and coder overhaul visual renderer
+      - name: AI graphics director and coder refine rage, crane crates and pickups
         id: coder
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
           allow-bots: true
-          prompt-file: game_factory/requests/cataclysm-09-graphics-experiment.md
+          prompt-file: game_factory/requests/cataclysm-09-graphics-effects-pass2.md
       - name: Verify strict edit scope, freeze gameplay algorithms and check syntax
         shell: bash
         run: |
@@ -88,7 +88,7 @@ jobs:
           PY
           node --check docs/preview/game.js
           git diff --check
-      - name: Capture original and new graphics at three viewports; prove gameplay works
+      - name: Compare previous Graphics Lab and Effects Pass 2 at three viewports
         env:
           BORHEZ_BROWSER_CHANNEL: chrome
           GRAPHICS_OUTPUT: artifacts/graphics-09
@@ -116,7 +116,7 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/preview/game.js docs/preview/game.css docs/preview/index.html game_factory/graphics_experiment_report.json
           git diff --cached --check
-          git commit -m 'Isolated Cataclysm 0.9 graphics revamp: QA-passed renderer'
+          git commit -m 'Graphics Lab effects pass 2: rage, crane cargo and supply items (QA passed)'
           git fetch origin experiment/cataclysm-09-graphics
           git rebase origin/experiment/cataclysm-09-graphics
           git push origin HEAD:experiment/cataclysm-09-graphics
