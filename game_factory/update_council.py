@@ -217,7 +217,7 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             raise ValueError("Recovered council decisions are from an unexpected run")
         if set(recovered.get("roles", {})) != {*ROLES, "critic"}:
             raise ValueError("Recovered council does not include all four roles")
-    transcript = str(private.get("transcript", ""))[:28000]
+    transcript = str(private.get("transcript", ""))
     visual = str(private.get("visual_observations", ""))[:12000]
     shared = (
         "You are discussing the game in a CODE LANGUAGE: structured JSON with "
