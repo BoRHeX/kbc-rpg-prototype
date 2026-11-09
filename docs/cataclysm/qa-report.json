@@ -3,12 +3,11 @@
   "version": "0.9",
   "branch": "development/cataclysm-09",
   "source_sha256": {
-    "index.html": "a199ed1bd5d9893491a3463e0bd08819f6fd74866e052e73370a054e669ff4b6",
-    "game.js": "4e5ef4c03c0adff2300b9d5d4f2e040b2f2fac38db469739b6d385174c6c7af9",
-    "game.css": "022abd401f09b66c0360c61bd935da52cfcfe45e809b0b318fd7ed67e0111106",
+    "index.html": "f44e93be0da9414531c71be44c06c42275261642a920e8066b69841e4cba8742",
+    "game.js": "5e84a732348d9a72027fad6620cb3816f47e0030ca2e71ee2205a61867284ba7",
+    "game.css": "65daff5f13e260996ba88eba27f10729a2ca2143d87b5d27fb7ccbc54042be13",
     "game-config.json": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc"
   },
-  "baseline_sha256": "42aadaba2a5dc99a20444ddb95b94949516db0a0d1ad4bc41a3b491b766ac206",
   "browser_qa": {
     "baseline": "http://127.0.0.1:8766/preview/",
     "candidate": "http://127.0.0.1:8765/preview/",
@@ -26,7 +25,7 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999995,
+          "time": 1.2665999999999993,
           "moved": 165.3,
           "build": "0.9"
         },
@@ -48,13 +47,13 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2666999999999993,
+          "time": 1.2665999999999997,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2665999999999995,
-          "moved": 165.3,
+          "time": 1.2664999999999995,
+          "moved": 165.2,
           "build": "0.9"
         }
       },
@@ -70,12 +69,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999995,
+          "time": 1.2666,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2666999999999995,
+          "time": 1.2665999999999995,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -237,8 +236,86 @@
       }
     ]
   },
+  "fullscreen_qa": {
+    "title": "Cataclysm 0.9 Chrome fullscreen, game and control regression",
+    "passed": true,
+    "platforms": [
+      {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "ok": true,
+        "initial": {
+          "supported": true,
+          "already": false,
+          "visible": true,
+          "gameVersion": "0.9"
+        },
+        "result": {
+          "mode": "running",
+          "cssHeight": 390,
+          "viewportHeight": 390,
+          "fullscreen": true,
+          "controlled": true,
+          "canvasPixels": [
+            844,
+            390
+          ]
+        }
+      },
+      {
+        "viewport": {
+          "width": 640,
+          "height": 320
+        },
+        "ok": true,
+        "initial": {
+          "supported": true,
+          "already": false,
+          "visible": true,
+          "gameVersion": "0.9"
+        },
+        "result": {
+          "mode": "running",
+          "cssHeight": 320,
+          "viewportHeight": 320,
+          "fullscreen": true,
+          "controlled": true,
+          "canvasPixels": [
+            640,
+            320
+          ]
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "ok": true,
+        "initial": {
+          "supported": true,
+          "already": false,
+          "visible": true,
+          "gameVersion": "0.9"
+        },
+        "result": {
+          "mode": "running",
+          "cssHeight": 844,
+          "viewportHeight": 844,
+          "fullscreen": true,
+          "controlled": true,
+          "canvasPixels": [
+            390,
+            844
+          ]
+        }
+      }
+    ],
+    "real_device_tested": false
+  },
   "studio_decision": "game_factory/decisions/cataclysm-09-free-choice-001.md",
   "production_preview_unchanged": true,
-  "release_approval": "automated gate only; player evaluation still needed",
-  "test_evidence": "cataclysm-free-choice-001-artifacts"
+  "test_evidence": "cataclysm-09-fullscreen-qa"
 }
