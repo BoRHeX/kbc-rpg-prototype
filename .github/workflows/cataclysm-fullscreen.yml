@@ -1,0 +1,130 @@
+name: Cataclysm 0.9 fullscreen — independent Chrome validation
+on:
+  push:
+    branches: ['development/cataclysm-09']
+    paths: ['.github/workflows/cataclysm-fullscreen.yml']
+concurrency:
+  group: cataclysm-09-fullscreen-one-time
+  cancel-in-progress: false
+permissions:
+  contents: write
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/cataclysm-09
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Start isolated real-browser testing without AI API expenses
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+          node --check docs/preview/game.js
+          node --check game_factory/cataclysm_fullscreen_qa.cjs
+          node --check game_factory/audio_lab_qa.cjs
+          node --check game_factory/world_physics_qa.cjs
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/fullscreen-baseline/preview" artifacts/cataclysm-fullscreen
+          cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/fullscreen-baseline/preview/"
+          nohup python -m http.server 8766 --directory "$RUNNER_TEMP/fullscreen-baseline" >/tmp/cataclysm-fullscreen-baseline.log 2>&1 &
+          nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-fullscreen-site.log 2>&1 &
+          python - <<'PY'
+          import time,urllib.request
+          for port in [8765,8766]:
+            for attempt in range(25):
+              try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/preview/',timeout=2) as resp:
+                  assert resp.status==200
+                break
+              except Exception:
+                if attempt==24:raise
+                time.sleep(.3)
+          print('Browser servers ready')
+          PY
+      - name: Confirm actual user-gesture immersive fullscreen and controls
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/cataclysm-fullscreen
+        run: node game_factory/cataclysm_fullscreen_qa.cjs
+      - name: Confirm all 8 original torus/solid-actor physics cases
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/cataclysm-fullscreen
+        run: node game_factory/world_physics_qa.cjs
+      - name: Confirm all 8 sound effects, boss soundtrack, silence and mute cases
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/cataclysm-fullscreen
+        run: node game_factory/audio_lab_qa.cjs
+      - name: Confirm original Cataclysm mobile play tests at three viewports
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/cataclysm-fullscreen
+        run: node game_factory/graphics_experiment_qa.cjs
+      - name: Record externally executed QA and exact gameplay source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,pathlib
+          folder=pathlib.Path('artifacts/cataclysm-fullscreen')
+          tests={name:json.loads((folder/fname).read_text()) for name,fname in [
+              ('fullscreen_qa','fullscreen-qa.json'),('physics_qa','physics-qa.json'),
+              ('audio_qa','audio-qa.json'),('browser_qa','qa.json')]}
+          if not all(v.get('passed') for v in tests.values()):
+              raise SystemExit('One or more independent Chrome gates failed')
+          if len(tests['fullscreen_qa']['platforms'])!=3 or len(tests['physics_qa']['tests'])<8 or len(tests['audio_qa']['checks'])<8 or len(tests['browser_qa']['platforms'])<3:
+              raise SystemExit('Incomplete fullscreen/gameplay/physics/audio coverage')
+          base=pathlib.Path('docs/preview')
+          sourceHashes={n:hashlib.sha256((base/n).read_bytes()).hexdigest()
+             for n in ['index.html','game.js','game.css','game-config.json']}
+          report={'status':'passed','version':'0.9','branch':'development/cataclysm-09',
+                  'source_sha256':sourceHashes,'browser_qa':tests['browser_qa'],
+                  'physics_qa':tests['physics_qa'],'audio_qa':tests['audio_qa'],
+                  'fullscreen_qa':tests['fullscreen_qa'],
+                  'studio_decision':'game_factory/decisions/cataclysm-09-free-choice-001.md',
+                  'production_preview_unchanged':True,'test_evidence':'cataclysm-09-fullscreen-qa'}
+          pathlib.Path('game_factory/cataclysm_09_dev_report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('Trusted immersive fullscreen and regression tests passed')
+          PY
+          git config user.name 'BoRHeZ Cataclysm validation'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add game_factory/cataclysm_09_dev_report.json
+          git commit -m 'Validate Cataclysm 0.9 fullscreen and existing gameplay, audio, physics'
+          git fetch origin development/cataclysm-09
+          git rebase origin/development/cataclysm-09
+          git push origin HEAD:development/cataclysm-09
+      - name: Request production-safe primary Cataclysm release after QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_SHA="$(git rev-parse HEAD)"
+          python - <<'PY' > "$RUNNER_TEMP/cataclysm-fullscreen-dispatch.json"
+          import json,os
+          print(json.dumps({'event_type':'borhez-cataclysm-09-development',
+             'client_payload':{'branch':'development/cataclysm-09','sha':os.environ['SOURCE_SHA']}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/cataclysm-fullscreen-dispatch.json"
+          echo "### Cataclysm 0.9 real fullscreen QA complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "Automatic Play fullscreen and explicit exit/re-entry tested. No AI agent used." >> "$GITHUB_STEP_SUMMARY"
+      - name: Save browser screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-09-fullscreen-qa
+          path: artifacts/cataclysm-fullscreen
+          if-no-files-found: ignore
+          retention-days: 30
