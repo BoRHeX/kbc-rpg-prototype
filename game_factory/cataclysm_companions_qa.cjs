@@ -87,6 +87,9 @@ const checks=async(page,name,fn)=>{
        for(const role of roles){
          q.start();const g=q.getGame();g.enemies.length=0;g.spawn=999;
          q.summonCompanion(role);
+         // Give targeted specials a real hostile target; non-targeted ones remain usable.
+         g.enemies.push({x:g.player.x+110,y:g.player.y+34,r:17,variant:'shambler',
+           hp:999,max:999,damage:1,speed:0,phase:0,weight:1,hurt:0,mutation:null});
          const ally=g.companionSquad.find(p=>p.type===role);
          if(!ally){entries.push({role,error:'not recruited'});continue;}
          q.companionSpecialAbilityActivate(role);
