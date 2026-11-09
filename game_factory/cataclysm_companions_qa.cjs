@@ -102,10 +102,13 @@ const checks=async(page,name,fn)=>{
        return {ok:entries.length===8&&entries.every(e=>e.cooldown>0&&e.active===1&&e.rank>=1),entries};
      });
      await checks(page,'all four active ability controls are on-screen in small landscape',()=>{
-       const q=window.__COMPANION_QA,g=q.getGame();q.start();
-       const roles=q.getRoles();for(const r of roles.slice(0,4))q.summonCompanion(r);
+       const q=window.__COMPANION_QA;
+       q.start(); // start() replaces game; capture the fresh state AFTER starting.
+       const g=q.getGame(),roles=q.getRoles();
+       for(const r of roles.slice(0,4))q.summonCompanion(r);
        q.updateHud();
-       return {ok:g.companionSquad.length===4,roles:roles.slice(0,4)};
+       return {ok:g.companionSquad.length===4,roles:roles.slice(0,4),
+         actual:g.companionSquad.map(c=>c.type),count:g.companionSquad.length};
      });
      await page.setViewportSize({width:640,height:320});
      await page.waitForTimeout(180);
