@@ -3,11 +3,12 @@
   "version": "0.9",
   "branch": "development/cataclysm-09",
   "source_sha256": {
-    "index.html": "f44e93be0da9414531c71be44c06c42275261642a920e8066b69841e4cba8742",
-    "game.js": "5e84a732348d9a72027fad6620cb3816f47e0030ca2e71ee2205a61867284ba7",
-    "game.css": "65daff5f13e260996ba88eba27f10729a2ca2143d87b5d27fb7ccbc54042be13",
+    "index.html": "94a41fd1396006693d1a2497d6305dc84c825431185ff5e3c8f81f5a5a38bc61",
+    "game.js": "cd2d087981747309bd6187ff925ffb2987cb885dd6400a167083e6876afdd7fb",
+    "game.css": "939dfaa68203d73477cd729888430ad036933a2827f16dac674d997551b52bdd",
     "game-config.json": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc"
   },
+  "baseline_sha256": "5e84a732348d9a72027fad6620cb3816f47e0030ca2e71ee2205a61867284ba7",
   "browser_qa": {
     "baseline": "http://127.0.0.1:8766/preview/",
     "candidate": "http://127.0.0.1:8765/preview/",
@@ -25,12 +26,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999993,
+          "time": 1.2500999999999995,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2666999999999995,
+          "time": 1.2666,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -47,13 +48,13 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2665999999999997,
+          "time": 1.2516999999999936,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2664999999999995,
-          "moved": 165.2,
+          "time": 1.2665999999999995,
+          "moved": 165.3,
           "build": "0.9"
         }
       },
@@ -69,12 +70,12 @@
         ],
         "errors": [],
         "before": {
-          "time": 1.2666,
+          "time": 1.2666000000000002,
           "moved": 165.3,
           "build": "0.9"
         },
         "after": {
-          "time": 1.2665999999999995,
+          "time": 1.2509,
           "moved": 165.3,
           "build": "0.9"
         }
@@ -140,9 +141,9 @@
         "name": "enemy and follower chase across seam",
         "ok": true,
         "beforeE": 120,
-        "afterE": 93.39999999999873,
+        "afterE": 102.9658344575149,
         "beforeP": 128.16005617976296,
-        "afterP": 49.17264793196132
+        "afterP": 74.96054201781875
       },
       {
         "name": "solid terrain also blocks fast projectiles",
@@ -315,7 +316,264 @@
     ],
     "real_device_tested": false
   },
-  "studio_decision": "game_factory/decisions/cataclysm-09-free-choice-001.md",
+  "companions_qa": {
+    "title": "Cataclysm 0.9 eight unique companions, four active at once",
+    "passed": true,
+    "tests": [
+      {
+        "name": "exactly eight unique types and eight selectable upgrade choices",
+        "ok": true,
+        "roles": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler",
+          "sniper",
+          "engineer",
+          "trapper",
+          "bard"
+        ],
+        "limit": 4,
+        "fields": true,
+        "exposed": {
+          "limit": 4,
+          "roles": [
+            "shooter",
+            "healer",
+            "tank",
+            "brawler",
+            "sniper",
+            "engineer",
+            "trapper",
+            "bard"
+          ],
+          "active": [],
+          "ranks": {
+            "shooter": 0,
+            "healer": 0,
+            "tank": 0,
+            "brawler": 0,
+            "sniper": 0,
+            "engineer": 0,
+            "trapper": 0,
+            "bard": 0
+          },
+          "uniqueCount": 8
+        }
+      },
+      {
+        "name": "four companions recruit; fifth never exceeds cap",
+        "ok": true,
+        "first": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "after": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "strengthUpgrade": 9
+      },
+      {
+        "name": "at four active, other four roles vanish from roguelite offers",
+        "ok": true,
+        "active": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "unowned": [
+          "sniper",
+          "engineer",
+          "trapper",
+          "bard"
+        ],
+        "barred": true,
+        "eligibleActive": true,
+        "excludedFromOffers": true,
+        "commonGuaranteed": true,
+        "count": 45
+      },
+      {
+        "name": "active companion upgrade trains existing rank, no fifth recruit or swap",
+        "ok": true,
+        "oldRank": 1,
+        "newRank": 2,
+        "active": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "stillBarred": true,
+        "noSwapUi": true
+      },
+      {
+        "name": "all eight roles spawn, activate special, and begin cooldown",
+        "ok": true,
+        "entries": [
+          {
+            "role": "shooter",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "healer",
+            "cooldown": 24,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "tank",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "brawler",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "sniper",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "engineer",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "trapper",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          },
+          {
+            "role": "bard",
+            "cooldown": 18,
+            "active": 1,
+            "rank": 1
+          }
+        ]
+      },
+      {
+        "name": "all four active ability controls are on-screen in small landscape",
+        "ok": true,
+        "roles": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "actual": [
+          "shooter",
+          "healer",
+          "tank",
+          "brawler"
+        ],
+        "count": 4
+      },
+      {
+        "name": "four unique companion ability buttons fit landscape 640x320",
+        "ok": true,
+        "boxes": [
+          {
+            "x": 12,
+            "y": 268,
+            "w": 118.25,
+            "h": 44,
+            "hidden": false
+          },
+          {
+            "x": 135.25,
+            "y": 268,
+            "w": 118.25,
+            "h": 44,
+            "hidden": false
+          },
+          {
+            "x": 258.5,
+            "y": 268,
+            "w": 118.25,
+            "h": 44,
+            "hidden": false
+          },
+          {
+            "x": 381.75,
+            "y": 268,
+            "w": 118.25,
+            "h": 44,
+            "hidden": false
+          }
+        ],
+        "viewport": [
+          640,
+          320
+        ],
+        "fit": true,
+        "overlap": false
+      },
+      {
+        "name": "physical companions remain solid and simulation keeps the cap",
+        "ok": true,
+        "terrain": true,
+        "pairs": [
+          72,
+          0,
+          36,
+          36,
+          0,
+          0
+        ],
+        "hero": [
+          108,
+          0,
+          72,
+          36
+        ]
+      },
+      {
+        "name": "pause freezes all special cooldowns",
+        "ok": true,
+        "before": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "no cooldown changes in paused gameplay",
+        "ok": true,
+        "before": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "hardware": "not tested"
+  },
+  "studio_decision": "game_factory/decisions/cataclysm-09-companions-8.md",
   "production_preview_unchanged": true,
-  "test_evidence": "cataclysm-09-fullscreen-qa"
+  "release_approval": "automated regression only",
+  "test_evidence": "cataclysm-09-companions-qa"
 }

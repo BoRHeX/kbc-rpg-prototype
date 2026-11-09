@@ -170,11 +170,15 @@
   function difficulty() {
     return game.runScale * (1 + (game.wave - 1) * .065 + game.bossEncounters * .10);
   }
-  const roleNames = ['shooter','healer','tank'];
+  const MAX_COMPANIONS = 4;
+  const roleNames = ['shooter','healer','tank','brawler','sniper','engineer','trapper','bard'];
+  const specialNames = {shooter:'Burst',healer:'Heal',tank:'Guard',brawler:'Claws',sniper:'Deadeye',engineer:'Turret',trapper:'Snare',bard:'Anthem'};
   const commonIds = ['damage','fire-rate','speed','xp-gain'];
   const squadIds = ['squad-damage','squad-rate','squad-count','squad-spread','squad-bounce'];
   const upgradeIds = [...commonIds,'recover','multi-shot','ricochet','fish-magnet',...roleNames.map(r=>'companion-'+r),...squadIds];
   function upgradeAvailable(type) {
+    if(!game)return false;
+    if(type.startsWith('companion-'))return roleNames.includes(type.slice(10))&&(game.companionSquad.some(c=>c.type===type.slice(10))||game.companionSquad.length<MAX_COMPANIONS);
     if(squadIds.includes(type))return game.companionSquad.length>0;
     if(type==='recover')return game.player.hp<game.player.maxHp;
     return upgradeIds.includes(type);
@@ -370,7 +374,7 @@
     const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
       survivalTimer:0,survivalInstinctBuff:0,xpGain:1,autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
-      squadTactic:'default',squadTacticDuration:0,squadTacticCooldown:0,nextTactic:0,nightCycle:{waveCount:1},companionSquad:[],squadStats:{damage:.5,rate:1,count:1,spread:0,bounce:0},offerSeed:(new URLSearchParams(location.search).has('seed')?Number(new URLSearchParams(location.search).get('seed')):crypto.getRandomValues(new Uint32Array(1))[0])>>>0,offerState:0,companionRanks:{shooter:0,healer:0,tank:0},
+      squadTactic:'default',squadTacticDuration:0,squadTacticCooldown:0,nextTactic:0,nightCycle:{waveCount:1},companionSquad:[],squadStats:{damage:.5,rate:1,count:1,spread:0,bounce:0},offerSeed:(new URLSearchParams(location.search).has('seed')?Number(new URLSearchParams(location.search).get('seed')):crypto.getRandomValues(new Uint32Array(1))[0])>>>0,offerState:0,companionRanks:Object.fromEntries(roleNames.map(r=>[r,0])),
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
       hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:18,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
@@ -572,40 +576,81 @@
   // Content updates use simulation seconds, so pause and upgrades freeze every timer.
   // One visible representative per role; count investments multiply squad effectiveness.
   function summonCompanion(type='shooter') {
-    if(!roleNames.includes(type))return;
+    if(!game||!roleNames.includes(type))return false;
     const p=game.player;
     let ally=game.companionSquad.find(c=>c.type===type);
+    if(!ally&&game.companionSquad.length>=MAX_COMPANIONS)return false;
     if(ally)ally.rank++;
     else {ally={type,rank:1,...nearestSafeSpace(p.x+45,p.y,18),r:18,shotTimer:0,flash:0,specialAbilityReady:true,specialCooldown:0,specialDuration:0};game.companionSquad.push(ally);}
     game.companionRanks[type]=ally.rank;
+    return true;
+  }
+  // One turret and at most three temporary traps per recruited cat. No extra actors.
+  function squadHit(enemy,damage){
+    if(enemy.hp<=0)return;
+    game.director.pendingDamage+=Math.min(enemy.hp,damage);
+    enemy.hp-=damage;enemy.hurt=.15;
+    if(enemy.hp<=0)defeatEnemy(enemy);
+  }
+  function squadShot(pet,target,damage,pierce=0,origin=pet,offset=0){
+    if(!target||game.shots.length>=148)return;
+    const a=Math.atan2(wrappedDelta(origin.y,target.y),wrappedDelta(origin.x,target.x))+offset;
+    game.shots.push({x:origin.x,y:origin.y,vx:Math.cos(a)*700,vy:Math.sin(a)*700,life:1.5,r:5,
+      damage,bounces:Math.min(8,game.squadStats.bounce),pierce,mark:pet.type==='sniper',hit:[],kind:'pet',trail:[],flash:0});
   }
   function updateCompanions(dt) {
     const g=game,p=g.player,q=g.squadStats;
-    for(const pet of g.companionSquad){
+    for(const enemy of g.enemies){
+      enemy.squadStun=Math.max(0,(enemy.squadStun||0)-dt);
+      enemy.squadSlow=Math.max(0,(enemy.squadSlow||0)-dt);
+      enemy.squadMark=Math.max(0,(enemy.squadMark||0)-dt);
+    }
+    for(const [index,pet] of g.companionSquad.entries()){
       const wasCooling=pet.specialCooldown>0;
       pet.specialCooldown=Math.max(0,pet.specialCooldown-dt);
       pet.specialDuration=Math.max(0,pet.specialDuration-dt);
       pet.specialAbilityReady=pet.specialCooldown===0;
-      if(wasCooling&&pet.specialAbilityReady){notify(pet.type.toUpperCase()+' special ready',1.5);sound(520,.08,'triangle',.018);}
+      if(wasCooling&&pet.specialAbilityReady)notify(pet.type.toUpperCase()+' special ready',1.5);
       pet.flash=Math.max(0,pet.flash-dt);
-      let nearest=null,best=g.squadTactic==='aggressive'?650:460;
+      let nearest=null,best=pet.type==='sniper'?780:540;
       for(const e of g.enemies){const d=dist(pet.x,pet.y,e.x,e.y);if(e.hp>0&&d<best){best=d;nearest=e;}}
-      const a=nearest?Math.atan2(wrappedDelta(p.y,nearest.y),wrappedDelta(p.x,nearest.x)):0;
-      const formation=g.squadTactic==='defensive'?.45:g.squadTactic==='aggressive'?1.35:1;
-      let tx=wrapCoord(p.x+formation*(pet.type==='tank'?Math.cos(a)*65:pet.type==='healer'?-48:48));
-      let ty=wrapCoord(p.y+formation*(pet.type==='tank'?Math.sin(a)*65:pet.type==='healer'?-45:35));
-      const safe=citySafeTarget(tx,ty,pet);tx=safe.x;ty=safe.y;
-      const route=navigationDelta(pet,tx,ty),d=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(d,(p.speed+90)*dt);
+      const angle=nearest?Math.atan2(wrappedDelta(pet.y,nearest.y),wrappedDelta(pet.x,nearest.x)):p.aim;
+      const slot=-Math.PI*.75+index*Math.PI/2;
+      let tx=wrapCoord(p.x+Math.cos(slot)*82),ty=wrapCoord(p.y+Math.sin(slot)*82);
+      if(pet.type==='brawler'&&nearest&&best<220){tx=wrapCoord(nearest.x-Math.cos(angle)*42);ty=wrapCoord(nearest.y-Math.sin(angle)*42);}
+      const safe=citySafeTarget(tx,ty,pet),route=navigationDelta(pet,safe.x,safe.y);
+      const d=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(d,(p.speed+90)*dt);
       moveWithCollision(pet,route.x/d*step,route.y/d*step);
+      const damage=p.damage*g.effectiveBuffs.damage*q.damage*(1+pet.rank*.1)*q.count;
+      if(pet.turret){
+        const t=pet.turret;t.life-=dt;t.timer-=dt;
+        let target=null,range=520;
+        for(const e of g.enemies){const r=dist(t.x,t.y,e.x,e.y);if(e.hp>0&&r<range){range=r;target=e;}}
+        if(t.timer<=0&&target){squadShot(pet,target,damage*.65,0,t);t.timer=.35;}
+        if(t.life<=0)pet.turret=null;
+      }
+      pet.traps=(pet.traps||[]).filter(t=>{t.life-=dt;return t.life>0;});
+      for(const t of pet.traps)for(const e of g.enemies)if(e.hp>0&&dist(t.x,t.y,e.x,e.y)<t.r){e.squadSlow=.35;}
       pet.shotTimer-=dt;
-      if(pet.shotTimer>0||!nearest)continue;
-      const interval=(pet.type==='shooter'?.8:1.4)/(q.rate*(1+pet.rank*.1)*(g.squadTactic==='aggressive'?1.3:1));
-      const spread=Math.min(3,q.spread),angle=Math.atan2(wrappedDelta(pet.y,nearest.y),wrappedDelta(pet.x,nearest.x));
-      // Reserve projectile room for both cat and squad. Excess rate/spread/count becomes damage.
-      if(g.shots.length>140)continue;
-      for(let i=-spread;i<=spread;i++)g.shots.push({x:pet.x,y:pet.y,vx:Math.cos(angle+i*.18)*600,vy:Math.sin(angle+i*.18)*600,
-        life:Math.min(2,.85+q.bounce*.25),r:5,damage:p.damage*g.effectiveBuffs.damage*q.damage*(pet.type==='shooter'?1:.5)*(1+pet.rank*.1)*q.count*((1+q.spread*2)/(1+spread*2))*Math.max(1,MIN_SHOT_INTERVAL/interval)*(1+Math.max(0,q.bounce-8)*.12),bounces:Math.min(8,q.bounce),hit:[],kind:'pet',trail:[],flash:0});
-      playSfx('volley');pet.flash=.15;pet.shotTimer=Math.max(MIN_SHOT_INTERVAL,interval);
+      if(pet.shotTimer>0)continue;
+      const interval=({shooter:.8,healer:1.4,tank:1.4,brawler:.7,sniper:1.8,engineer:1.1,trapper:2.4,bard:1.2})[pet.type]/(q.rate*(1+pet.rank*.1));
+      pet.shotTimer=Math.max(MIN_SHOT_INTERVAL,interval);
+      const power=damage*Math.max(1,MIN_SHOT_INTERVAL/interval);
+      if(pet.type==='trapper'){
+        if(pet.traps.length>=3)pet.traps.shift();
+        pet.traps.push({x:pet.x,y:pet.y,r:65,life:5});
+      }
+      if(!nearest)continue;
+      if(pet.type==='brawler'){
+        if(dist(pet.x,pet.y,nearest.x,nearest.y)<85){squadHit(nearest,power*2);nearest.squadStun=nearest.variant==='boss'?.1:.35;burst(pet.x,pet.y,'#ffb49b',5);}
+      }else if(pet.type==='bard'){
+        for(const e of [...g.enemies])if(e.hp>0&&dist(pet.x,pet.y,e.x,e.y)<210)squadHit(e,power*.6);
+        burst(pet.x,pet.y,'#dfaaff',5);
+      }else{
+        const spread=pet.type==='sniper'?0:Math.min(3,q.spread);
+        for(let i=-spread;i<=spread;i++)squadShot(pet,nearest,power*(pet.type==='sniper'?2.8:pet.type==='shooter'?1:.5)*(1+q.spread*2)/(1+spread*2),pet.type==='sniper'?2:0,pet,i*.18);
+      }
+      pet.flash=.15;
     }
   }
   // A shared cooldown per role prevents duplicate recruits from spamming abilities.
@@ -628,8 +673,20 @@
       p.hp=Math.min(p.maxHp,p.hp+1+Math.min(.5,pet.rank*.1));
       for(const ally of g.companionSquad){ally.flash=.5;burst(ally.x,ally.y,'#8affbd',6);}
     }else if(type==='tank')pet.specialDuration=6;
+    else if(type==='engineer'){pet.specialDuration=8;pet.turret={x:pet.x,y:pet.y,life:8,timer:0};}
+    else if(type==='trapper'){
+      pet.traps=[-1,0,1].map(i=>({x:wrapCoord(pet.x+i*85),y:pet.y,r:95,life:8}));pet.specialDuration=8;
+    }else if(type==='bard')pet.specialDuration=7;
+    else if(type==='brawler'){
+      for(const e of [...g.enemies])if(e.hp>0&&dist(pet.x,pet.y,e.x,e.y)<190){
+        squadHit(e,p.damage*g.squadStats.damage*g.squadStats.count*(4+pet.rank*.3));e.squadStun=e.variant==='boss'?.5:2;
+      }
+    }else if(type==='sniper'){
+      const target=g.enemies.filter(e=>e.hp>0).reduce((a,e)=>!a||dist(pet.x,pet.y,e.x,e.y)<dist(pet.x,pet.y,a.x,a.y)?e:a,null);
+      squadShot(pet,target,p.damage*g.squadStats.damage*g.squadStats.count*(8+pet.rank),6);
+    }
     burst(pet.x,pet.y,type==='tank'?'#94cfff':'#8affbd',12);
-    notify(type.toUpperCase()+' · '+({shooter:'RADIAL BURST',healer:'HEALING PULSE',tank:'GUARD · 6s'})[type],2);
+    notify(type.toUpperCase()+' · '+specialNames[type],2);
     playSfx(type==='shooter'?'volley':type==='healer'?'heal':'guard');
     updateSupport(0);updateHud();
   }
@@ -656,6 +713,7 @@
       if(ally.type==='healer')b.healing+=.10+.025*strength;
       if(ally.type==='tank')b.mitigation+=.2+.04*strength;
       if(ally.type==='shooter')b.fire+=.05;
+      if(ally.type==='bard'){b.fire+=.08;b.damage*=ally.specialDuration>0?1.35:1.08;b.speed*=ally.specialDuration>0?1.12:1;}
     }
     b.fire=Math.min(1.7,b.fire);b.magnet=Math.min(180,b.magnet);b.healing=Math.min(.3,b.healing);b.mitigation=Math.min(.4,b.mitigation);
     if(g.companionSquad.length){
@@ -1060,7 +1118,7 @@
       const adaptation=Math.min(120,Math.max(0,p.speed-cfg.speed)*.25);
       const slow=(g.runicRelic.active==='slow'&&dist(enemy.x,enemy.y,p.x,p.y)<260)||relayProtects(enemy.x,enemy.y)?.45:1;
       const encoreSlow=enemy.encoreSlow>0?(enemy.variant==='boss'?.85:.45):1;
-      const chase=Math.min(slow,encoreSlow)*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
+      const chase=(enemy.squadStun>0?0:enemy.squadSlow>0?.4:1)*Math.min(slow,encoreSlow)*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
       moveWithCollision(enemy,vx*chase*pace*dt,vy*chase*pace*dt);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r+.5&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
@@ -1078,11 +1136,11 @@
       const idx=g.enemies.findIndex(e=>!s.hit.includes(e)&&dist(e.x,e.y,s.x,s.y)<e.r+s.r);
       if(idx>=0){
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
-        const hitDamage=raw*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
+        const hitDamage=raw*(e.squadMark>0?1.2:1)*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
-        s.hit.push(e);
-        if(s.bounces>0){
+        s.hit.push(e);if(s.mark)e.squadMark=4;
+        if(s.pierce>0){s.pierce--;}else if(s.bounces>0){
           s.bounces--;s.kind='bounce';s.flash=.16;burst(s.x,s.y,'#ffd568',9);
           const next=g.enemies.filter(n=>!s.hit.includes(n)).sort((a,b)=>dist(a.x,a.y,s.x,s.y)-dist(b.x,b.y,s.x,s.y))[0];
           if(next){const a=Math.atan2(wrappedDelta(s.y,next.y),wrappedDelta(s.x,next.x));s.vx=Math.cos(a)*600;s.vy=Math.sin(a)*600;s.life=Math.max(.5,s.life);}
@@ -1156,12 +1214,12 @@
       btn.hidden=!ally;
       if(!ally)continue;
       btn.disabled=game.mode!=='running'||!ally.specialAbilityReady||(type==='shooter'&&game.shots.length>144);
-      const name={shooter:'Burst',healer:'Heal',tank:'Guard'}[type];
+      const name=specialNames[type];
       btn.textContent=name+(ally.specialDuration>0?' active '+Math.ceil(ally.specialDuration)+'s':ally.specialCooldown>0?' '+Math.ceil(ally.specialCooldown)+'s':' ready');
       btn.setAttribute('aria-label',type+' special: '+btn.textContent);
       btn.style.setProperty('--ready',((1-ally.specialCooldown/(type==='healer'?24:18))*100)+'%');
     }
-    $('support-status').textContent='SQUAD '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
+    $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
     $('night-status').textContent='NIGHT '+game.nightCycle.waveCount;
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
@@ -1327,8 +1385,8 @@
     ctx.restore();
   }
   function catSprite(type,r,time,hurt=false,aim=0){
-    const hero=type==='hero',ally=['shooter','healer','tank'].includes(type);
-    const palette={hero:'#f4f3df',shooter:'#e0bd82',healer:'#a5dfc5',tank:'#a6bad4',shambler:'#789b7b',weaver:'#ad91c7',dasher:'#d8a267',orbiter:'#65b8bf',stalker:'#b9b17c',ghost:'#c9bfe5',gas:'#a5bd68',boss:'#c36b87'};
+    const hero=type==='hero',ally=roleNames.includes(type);
+    const palette={hero:'#f4f3df',shooter:'#e0bd82',healer:'#a5dfc5',tank:'#a6bad4',brawler:'#ed9c7d',sniper:'#b8d17f',engineer:'#efca70',trapper:'#87c9d1',bard:'#c5a0e5',shambler:'#789b7b',weaver:'#ad91c7',dasher:'#d8a267',orbiter:'#65b8bf',stalker:'#b9b17c',ghost:'#c9bfe5',gas:'#a5bd68',boss:'#c36b87'};
     const fur=hurt?'#fff4d7':palette[type]||palette.shambler;
     ctx.save();ctx.scale(r/22,r/22);ctx.lineCap='round';
     ctx.fillStyle='#030e17aa';ctx.beginPath();ctx.ellipse(0,20,25,8,0,0,TWO);ctx.fill();
@@ -1347,6 +1405,11 @@
     if(type==='healer'){ctx.fillStyle='#f4efdb';ctx.fillRect(-17,-13,34,6);ctx.fillStyle='#a83f59';ctx.fillRect(-2,-16,4,12);ctx.fillRect(-6,-12,12,4);ctx.fillStyle='#ecedce';ctx.fillRect(10,13,13,12);ctx.fillStyle='#327b69';ctx.fillRect(15,15,3,8);ctx.fillRect(12,18,9,3);}
     if(type==='tank'){polygon(0,0,[[-23,7],[-9,9],[-8,24],[-17,31],[-25,22]],'#7f9eb5');ctx.strokeStyle='#d9e9ec';ctx.lineWidth=2;ctx.strokeRect(-21,12,9,9);ctx.fillStyle='#526d88';ctx.fillRect(-21,-15,42,7);}
     if(type==='shooter'){ctx.fillStyle='#463e37';ctx.fillRect(-19,-13,38,7);ctx.fillStyle='#efbb6b';ctx.fillRect(-12,11,4,12);}
+    if(type==='brawler'){for(const side of [-1,1]){inkBox(side*20-6,9,12,10,'#b85948');for(let i=0;i<3;i++)inkBox(side*20-5+i*4,18,2,10,'#fff2d5','#091822',1);}}
+    if(type==='sniper'){inkBox(-20,-12,40,6,'#476647');circle(9,-8,6,'#a9efc4');inkBox(13,12,31,5,'#a6ba9b');inkBox(23,6,10,5,'#374f49');}
+    if(type==='engineer'){inkBox(-22,-18,44,9,'#d3a34d');inkBox(-9,-24,18,9,'#efcd77');inkBox(13,9,9,23,'#778e9c');circle(17,9,7,'#c6d5cb');circle(17,8,3,'#30444b');}
+    if(type==='trapper'){inkBox(-20,-14,40,5,'#3e757c');outline(18,18,11,'#b9e7df',3);inkBox(-24,10,12,14,'#588993');}
+    if(type==='bard'){polygon(0,0,[[-22,-13],[0,-30],[22,-13]],'#765090');circle(19,18,10,'#e8bd78');inkBox(11,-2,5,26,'#b58960');ctx.fillStyle='#fff0ba';ctx.font='bold 17px system-ui';ctx.fillText('♪',-27,18);}
     if(hero||type==='shooter'){
       ctx.save();ctx.translate(13,13);ctx.rotate(aim);ctx.fillStyle='#0a1821';ctx.fillRect(0,-5,24,10);ctx.fillStyle='#8baba9';ctx.fillRect(4,-5,15,4);ctx.fillStyle='#e7d3a0';ctx.fillRect(20,-3,5,6);ctx.restore();
     }
@@ -1407,6 +1470,8 @@
       if(warning){ctx.fillStyle='#d4ffac';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('GAS!',c.x,c.y);ctx.textAlign='left';}
     }
     for(const pet of g.companionSquad){
+      for(const t of pet.traps||[]){circle(t.x,t.y,t.r,'#87c9d122');outline(t.x,t.y,t.r,'#87c9d1',2);outline(t.x,t.y,12,'#d7f5e5',3);}
+      if(pet.turret){const t=pet.turret;inkBox(t.x-13,t.y-10,26,20,'#d1ae64');inkBox(t.x-4,t.y-23,8,22,'#aec9c5');}
       drawCompanionEffect(pet);
       ctx.save();ctx.translate(pet.x,pet.y);
       catSprite(pet.type,18,g.t, false,Math.atan2(wrappedDelta(pet.y,p.y),wrappedDelta(pet.x,p.x)));
@@ -1671,6 +1736,7 @@
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
     snapshot: () => ({world:{size:WORLD_SIZE,wrap:true,topology:'torus',solids:city.map(({x,y,w,h})=>({x,y,w,h}))},cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.55,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+      companions:{limit:MAX_COMPANIONS,roles:[...roleNames],active:game?game.companionSquad.map(c=>c.type):[],ranks:game?{...game.companionRanks}:{},uniqueCount:roleNames.length},
       survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
       runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
       time: game ? game.t : 0,
