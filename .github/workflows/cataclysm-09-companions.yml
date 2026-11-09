@@ -96,6 +96,18 @@ jobs:
           PY
           node --check docs/preview/game.js
           git diff --check
+      - name: Preserve source candidate BEFORE any browser test to avoid repeat AI costs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ candidate recovery'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json
+          git add game_factory/decisions/cataclysm-09-companions-8.md
+          git diff --cached --check
+          git commit -m 'UNVERIFIED Cataclysm 0.9 eight-companion candidate — independent QA pending'
+          git push origin "HEAD:refs/heads/recovery/cataclysm-companions-${{ github.run_id }}-${{ github.run_attempt }}"
+          echo "Candidate preserved for free browser-only rechecks even if subsequent QA fails."
       - name: Independently verify actual Web Audio music, boss drop and mute
         id: audio
         continue-on-error: true
@@ -119,16 +131,6 @@ jobs:
             artifacts/graphics-09/audio-gate.log
           if-no-files-found: error
           retention-days: 30
-      - name: Preserve rejected studio candidate on a separate recovery branch
-        if: steps.audio.outcome == 'failure'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'BoRHeZ isolated audio recovery'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html
-          git commit -m 'Unverified autonomous Cataclysm candidate; not live'
-          git push origin "HEAD:refs/heads/recovery/cataclysm-companions-${{ github.run_id }}-${{ github.run_attempt }}"
       - name: Refuse publish if sound fails independent browser checks
         if: steps.audio.outcome == 'failure'
         run: exit 1
