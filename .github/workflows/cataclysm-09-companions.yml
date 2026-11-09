@@ -1,0 +1,219 @@
+name: Cataclysm 0.9 — eight cat companions, four active
+on:
+  push:
+    branches: ['development/cataclysm-09']
+    paths: ['.github/workflows/cataclysm-09-companions.yml']
+concurrency:
+  group: cataclysm-09-eight-companions-one-shot
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: read
+  actions: read
+jobs:
+  revamp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/cataclysm-09
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare browser tools, immutable 0.9 baseline and local servers
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+          node --check game_factory/world_physics_qa.cjs
+          node --check game_factory/audio_lab_qa.cjs
+          node --check game_factory/cataclysm_companions_qa.cjs
+          node --check game_factory/cataclysm_fullscreen_qa.cjs
+          mkdir -p "$RUNNER_TEMP/graphics-baseline/preview" artifacts/graphics-09
+          cp docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json "$RUNNER_TEMP/graphics-baseline/preview/"
+          nohup python -m http.server 8766 --directory "$RUNNER_TEMP/graphics-baseline" >/tmp/graphics-baseline-server.log 2>&1 &
+          nohup python -m http.server 8765 --directory docs >/tmp/graphics-candidate-server.log 2>&1 &
+          python - <<'PY'
+          import urllib.request,time
+          for port in [8765,8766]:
+            for attempt in range(20):
+              try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{port}/preview/',timeout=3) as r:
+                  assert r.status==200
+                break
+              except Exception:
+                if attempt==19:raise
+                time.sleep(.5)
+          print('Both isolated test servers ready')
+          PY
+      - name: AI studio implements five new cat roles and four-active squad replacement
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm-09-companions-8.md
+      - name: Check exact role count, four-active cap, version 0.9 and authorized edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess
+          allowed={'docs/preview/game.js','docs/preview/game.css','docs/preview/index.html',
+                   'docs/preview/game-config.json','game_factory/decisions/cataclysm-09-companions-8.md'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          bad=(changed|untracked)-allowed
+          if bad:raise SystemExit('Studio attempted unauthorized file edits '+repr(sorted(bad)))
+          if not any(f.startswith('docs/preview/') for f in changed):
+              raise SystemExit('Studio did not implement a real playable game update')
+          memo=pathlib.Path('game_factory/decisions/cataclysm-09-companions-8.md')
+          if not memo.is_file() or len(memo.read_text())<350:
+              raise SystemExit('Studio council did not submit its decision record')
+          js=pathlib.Path('docs/preview/game.js').read_text()
+          html=pathlib.Path('docs/preview/index.html').read_text()
+          if len(js)>400000:raise SystemExit('Source too large')
+          if "const BUILD = '0.9'" not in js or '<title>Cataclysm 0.9 · BoRHeZ Games</title>' not in html or 'id="game-version">0.9</b>' not in html:
+              raise SystemExit('Plain Cataclysm 0.9 identity changed')
+          if any(x in html for x in ['GRAPHICS LAB','EFFECTS PASS','EXPERIMENTAL']):
+              raise SystemExit('Studio left deprecated Graphics Lab branding')
+          for contract in ['const WORLD_SIZE','function wrapCoord(','function wrappedDelta(','function isTerrainClear(','function moveWithCollision(','function resolveActorCollisions(',
+                           "const AUDIO_PASS_ID = 'graphics-lab-audio-01'"]:
+              if contract not in js:raise SystemExit('Required world or audio contract lost: '+contract)
+          if 'const MAX_COMPANIONS = 4' not in js or 'const roleNames =' not in js:
+              raise SystemExit('Expected eight-cat companion roster and 4-active contract missing')
+          if html.count('data-upgrade="companion-')!=8 or html.count('id="ability-')!=8:
+              raise SystemExit('All 8 companion recruitment/special controls must exist in HTML')
+          if 'id="companion-swap-overlay"' not in html or 'id="companion-swap-cancel"' not in html:
+              raise SystemExit('Four-follower replacement and cancellation UI missing')
+          print('Companion count/cap/UI/version source checks passed',sorted(changed|untracked))
+          PY
+          node --check docs/preview/game.js
+          git diff --check
+      - name: Independently verify actual Web Audio music, boss drop and mute
+        id: audio
+        continue-on-error: true
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        shell: bash
+        run: |
+          set -o pipefail
+          node game_factory/audio_lab_qa.cjs 2>&1 | tee artifacts/graphics-09/audio-gate.log
+      - name: Preserve rejected audio candidate without modifying the live lab
+        if: steps.audio.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-8-companions-rejected-source
+          path: |
+            docs/preview/game.js
+            docs/preview/game.css
+            docs/preview/index.html
+            artifacts/graphics-09/audio-qa.json
+            artifacts/graphics-09/audio-gate.log
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve rejected studio candidate on a separate recovery branch
+        if: steps.audio.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ isolated audio recovery'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/game.js docs/preview/game.css docs/preview/index.html
+          git commit -m 'Unverified autonomous Cataclysm candidate; not live'
+          git push origin "HEAD:refs/heads/recovery/cataclysm-companions-${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Refuse publish if sound fails independent browser checks
+        if: steps.audio.outcome == 'failure'
+        run: exit 1
+      - name: Regression-test all eight toroidal collision cases in Chrome
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/world_physics_qa.cjs
+      - name: Independently test 8 unique cat roles, 4 active and replacement choice
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/cataclysm_companions_qa.cjs
+      - name: Regression-test fullscreen entry/exit and controls at 3 viewport sizes
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/cataclysm_fullscreen_qa.cjs
+      - name: Compare old vs new across three mobile viewport layouts
+        env:
+          BORHEZ_BROWSER_CHANNEL: chrome
+          GRAPHICS_OUTPUT: artifacts/graphics-09
+        run: node game_factory/graphics_experiment_qa.cjs
+      - name: Sign trusted eight-companion QA receipt for Cataclysm 0.9 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib,os
+          source=pathlib.Path('docs/preview')
+          baseline=pathlib.Path(os.environ['RUNNER_TEMP'])/'graphics-baseline/preview/game.js'
+          folder=pathlib.Path('artifacts/graphics-09')
+          checks={name:json.loads((folder/file).read_text()) for name,file in [
+              ('browser_qa','qa.json'),('physics_qa','physics-qa.json'),
+              ('audio_qa','audio-qa.json'),('fullscreen_qa','fullscreen-qa.json'),
+              ('companions_qa','companions-qa.json')]}
+          if not all(v.get('passed') for v in checks.values()):
+              raise SystemExit('Independent browser/audio/physics/fullscreen/companion gate failed')
+          if len(checks['companions_qa']['tests'])<10:raise SystemExit('Four-active-cap and roster QA incomplete')
+          if len(checks['fullscreen_qa']['platforms'])!=3:raise SystemExit('Fullscreen QA incomplete')
+          if len(checks['browser_qa']['platforms'])!=3:raise SystemExit('Mobile layout QA incomplete')
+          if len(checks['physics_qa']['tests'])<8:raise SystemExit('Collision QA incomplete')
+          if len(checks['audio_qa']['checks'])<8:raise SystemExit('Soundtrack QA incomplete')
+          memo=pathlib.Path('game_factory/decisions/cataclysm-09-companions-8.md')
+          if not memo.is_file() or len(memo.read_text())<350:raise SystemExit('Studio role decision record missing')
+          hashes={n:hashlib.sha256((source/n).read_bytes()).hexdigest()
+                  for n in ['index.html','game.js','game.css','game-config.json']}
+          result={'status':'passed','version':'0.9','branch':'development/cataclysm-09',
+                  'source_sha256':hashes,'baseline_sha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
+                  **checks,'studio_decision':memo.as_posix(),
+                  'production_preview_unchanged':True,'release_approval':'automated regression only',
+                  'test_evidence':'cataclysm-09-companions-qa'}
+          pathlib.Path('game_factory/cataclysm_09_dev_report.json').write_text(json.dumps(result,indent=2)+'\n')
+          print('Cataclysm 0.9 eight companions QA PASS')
+          PY
+          git config user.name 'BoRHeZ Cataclysm 0.9 Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/preview/index.html docs/preview/game.js docs/preview/game.css docs/preview/game-config.json
+          git add game_factory/decisions/cataclysm-09-companions-8.md game_factory/cataclysm_09_dev_report.json
+          git diff --cached --check
+          git commit -m 'Cataclysm 0.9: eight companions, four active (verified)'
+          git fetch origin development/cataclysm-09
+          git rebase origin/development/cataclysm-09
+          git push origin HEAD:development/cataclysm-09
+      - name: Dispatch release to primary Cataclysm URL, preserving archived game
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PUBLISH_SHA="$(git rev-parse HEAD)"
+          python - <<'PY' > "$RUNNER_TEMP/cataclysm-dev-dispatch.json"
+          import json,os
+          print(json.dumps({'event_type':'borhez-cataclysm-09-development',
+             'client_payload':{'branch':'development/cataclysm-09','sha':os.environ['PUBLISH_SHA']}}))
+          PY
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/cataclysm-dev-dispatch.json"
+          echo "### Autonomous Cataclysm 0.9 studio update QA accepted" >> "$GITHUB_STEP_SUMMARY"
+          echo "Eight distinct cat roles and four-active cap — verified in Chrome" >> "$GITHUB_STEP_SUMMARY"
+          echo "Separate publisher dispatch sent; archived original not modified." >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve before/after browser screenshots and independent QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-09-companions-qa
+          path: artifacts/graphics-09
+          if-no-files-found: ignore
+          retention-days: 30
