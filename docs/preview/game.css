@@ -33,3 +33,13 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 #encore-meter::-webkit-progress-value{background:#ffcf80}
 #encore-meter::-moz-progress-bar{background:#ffcf80}
 @media(max-width:680px) and (orientation:landscape){#encore-label{font-size:6px}}
+
+/* Immersive Cataclysm 0.9: browser UI is removed only after explicit Play/toggle. */
+.arena:fullscreen{width:100vw;height:100dvh;padding:0;background:#111f26}
+.arena:fullscreen::backdrop{background:#000}
+.identity .fullscreen-toggle{pointer-events:auto;flex:0 0 auto;margin-left:4px;min-height:36px;height:36px;min-width:72px;padding:5px 8px;font-size:11px;border:1px solid #81b5a2;background:#102d34dc;box-shadow:none}
+.identity .fullscreen-toggle:focus-visible{outline:2px solid #fff}
+@media(max-width:680px){
+  .identity #build-version{display:none}
+  .identity .fullscreen-toggle{margin-left:auto;font-size:10px;min-width:66px}
+}
