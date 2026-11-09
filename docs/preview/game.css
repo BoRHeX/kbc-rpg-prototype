@@ -43,3 +43,7 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
   .identity #build-version{display:none}
   .identity .fullscreen-toggle{margin-left:auto;font-size:10px;min-width:66px}
 }
+
+/* Four permanent role controls share the available landscape width. */
+.companion-abilities button{min-width:0;padding:6px 4px;overflow-wrap:anywhere}
+#ability-brawler{border-top-color:#ed9c7d}#ability-sniper{border-top-color:#b8d17f}#ability-engineer{border-top-color:#efca70}#ability-trapper{border-top-color:#87c9d1}#ability-bard{border-top-color:#c5a0e5}
