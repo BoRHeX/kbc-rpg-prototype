@@ -66,6 +66,10 @@ jobs:
               raise SystemExit('Primary identity is not plain Cataclysm 0.9')
           if 'id="game-version">0.9</b>' not in html or 'href="../games/"' not in html:
               raise SystemExit('Required player UI version/navigation changed')
+          if 'id="fullscreen"' in html:
+              full=qa.get('fullscreen_qa',{})
+              if not full.get('passed') or len(full.get('platforms',[]))!=3:
+                  raise SystemExit('Fullscreen-enabled build lacks real browser fullscreen/exit regression evidence')
           if any(x in html for x in ['GRAPHICS LAB','EFFECTS PASS','EXPERIMENTAL']):
               raise SystemExit('Unwanted experimental branding in primary game')
           out=pathlib.Path('docs/cataclysm')
