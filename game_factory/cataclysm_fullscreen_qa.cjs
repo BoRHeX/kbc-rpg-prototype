@@ -36,6 +36,7 @@ const report={title:'Cataclysm 0.9 Chrome fullscreen, game and control regressio
        await page.waitForFunction(()=>!document.fullscreenElement,null,{timeout:5000});
        await page.locator('#fullscreen').click();
        await page.waitForFunction(()=>document.fullscreenElement===document.getElementById('arena'),null,{timeout:5000});
+       await page.waitForFunction(()=>document.getElementById('fullscreen').getAttribute('aria-pressed')==='true',null,{timeout:4000});
     }
     const result=await page.evaluate(()=>({
        mode:window.CATACLYSM_DIAGNOSTICS.snapshot().mode,
