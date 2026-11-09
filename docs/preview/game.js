@@ -1612,7 +1612,36 @@
   window.addEventListener('keyup',ev=>{keys[ev.key]=false;});
   window.addEventListener('blur',()=>{if(game&&game.mode==='running')pause();music();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&game&&game.mode==='running')pause();music();});
-  $('play').onclick=()=>{unlockAudio();resumeOrStart();music();};$('pause').onclick=()=>{unlockAudio();pause();music();};
+  // Mobile Chrome requires a direct user gesture to remove browser chrome. Fullscreen
+  // is independent of gameplay: denial or OS exit never prevents starting/resuming.
+  function syncFullscreenButton() {
+    const control=$('fullscreen');
+    const active=!!document.fullscreenElement;
+    control.textContent=active?'⛶ Exit':'⛶ Full';
+    control.setAttribute('aria-label',active?'Exit fullscreen':'Enter fullscreen');
+    control.setAttribute('aria-pressed',String(active));
+  }
+  function enterFullscreen() {
+    if(document.fullscreenElement||!$('arena').requestFullscreen)return;
+    try {
+      const request=$('arena').requestFullscreen({navigationUI:'hide'});
+      if(request && typeof request.catch==='function')request.catch(()=>{/* unsupported or denied by browser */});
+    }catch(err){/* start the game normally when fullscreen is unavailable */}
+  }
+  function toggleFullscreen() {
+    if(document.fullscreenElement){
+      try{const request=document.exitFullscreen();if(request&&request.catch)request.catch(()=>{});}catch(e){}
+    }else enterFullscreen();
+  }
+  $('fullscreen').onclick=toggleFullscreen;
+  document.addEventListener('fullscreenchange',()=>{
+    syncFullscreenButton();
+    requestAnimationFrame(resizeViewport);
+  });
+  document.addEventListener('fullscreenerror',syncFullscreenButton);
+  if(!$('arena').requestFullscreen)$('fullscreen').hidden=true;
+  syncFullscreenButton();
+  $('play').onclick=()=>{unlockAudio();enterFullscreen();resumeOrStart();music();};$('pause').onclick=()=>{unlockAudio();pause();music();};
   $('restart').onclick=()=>{unlockAudio();start();music();};$('mute').onclick=()=>{
     muted=!muted;if(muted)stopVoices();else unlockAudio();music();$('mute').textContent=muted?'♪ Sound off':'♪ Sound on';
     $('mute').setAttribute('aria-pressed',String(muted));
