@@ -1,4 +1,4 @@
-name: Cataclysm 0.9 — eight cat companions, four active
+name: Cataclysm 0.9 — eight cats, choose four (no swapping)
 on:
   push:
     branches: ['development/cataclysm-09']
@@ -52,14 +52,14 @@ jobs:
                 time.sleep(.5)
           print('Both isolated test servers ready')
           PY
-      - name: AI studio implements five new cat roles and four-active squad replacement
+      - name: AI studio implements eight companion roster with four permanent roguelite choices
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
           allow-bots: true
           prompt-file: game_factory/requests/cataclysm-09-companions-8.md
-      - name: Check exact role count, four-active cap, version 0.9 and authorized edits
+      - name: Check eight roles, no swapping, four-choice cap and version 0.9
         shell: bash
         run: |
           set -euo pipefail
@@ -90,8 +90,8 @@ jobs:
               raise SystemExit('Expected eight-cat companion roster and 4-active contract missing')
           if html.count('data-upgrade="companion-')!=8 or html.count('id="ability-')!=8:
               raise SystemExit('All 8 companion recruitment/special controls must exist in HTML')
-          if 'id="companion-swap-overlay"' not in html or 'id="companion-swap-cancel"' not in html:
-              raise SystemExit('Four-follower replacement and cancellation UI missing')
+          if 'id="companion-swap-overlay"' in html or 'id="companion-swap-cancel"' in html:
+              raise SystemExit('Unrequested companion swap menu is prohibited; choose four permanently')
           print('Companion count/cap/UI/version source checks passed',sorted(changed|untracked))
           PY
           node --check docs/preview/game.js
@@ -137,7 +137,7 @@ jobs:
           BORHEZ_BROWSER_CHANNEL: chrome
           GRAPHICS_OUTPUT: artifacts/graphics-09
         run: node game_factory/world_physics_qa.cjs
-      - name: Independently test 8 unique cat roles, 4 active and replacement choice
+      - name: Independently test 8 roles, 4 permanent choices, filtered offers and rank training
         env:
           BORHEZ_BROWSER_CHANNEL: chrome
           GRAPHICS_OUTPUT: artifacts/graphics-09
@@ -152,7 +152,7 @@ jobs:
           BORHEZ_BROWSER_CHANNEL: chrome
           GRAPHICS_OUTPUT: artifacts/graphics-09
         run: node game_factory/graphics_experiment_qa.cjs
-      - name: Sign trusted eight-companion QA receipt for Cataclysm 0.9 release
+      - name: Sign trusted eight-cat/four-choice QA receipt for Cataclysm 0.9
         shell: bash
         run: |
           set -euo pipefail
@@ -167,7 +167,7 @@ jobs:
               ('companions_qa','companions-qa.json')]}
           if not all(v.get('passed') for v in checks.values()):
               raise SystemExit('Independent browser/audio/physics/fullscreen/companion gate failed')
-          if len(checks['companions_qa']['tests'])<10:raise SystemExit('Four-active-cap and roster QA incomplete')
+          if len(checks['companions_qa']['tests'])<10:raise SystemExit('Four unique recruit choices and rank-up QA incomplete')
           if len(checks['fullscreen_qa']['platforms'])!=3:raise SystemExit('Fullscreen QA incomplete')
           if len(checks['browser_qa']['platforms'])!=3:raise SystemExit('Mobile layout QA incomplete')
           if len(checks['physics_qa']['tests'])<8:raise SystemExit('Collision QA incomplete')
@@ -209,7 +209,7 @@ jobs:
           echo "### Autonomous Cataclysm 0.9 studio update QA accepted" >> "$GITHUB_STEP_SUMMARY"
           echo "Eight distinct cat roles and four-active cap — verified in Chrome" >> "$GITHUB_STEP_SUMMARY"
           echo "Separate publisher dispatch sent; archived original not modified." >> "$GITHUB_STEP_SUMMARY"
-      - name: Preserve before/after browser screenshots and independent QA
+      - name: Preserve browser evidence and independent QA
         if: always()
         uses: actions/upload-artifact@v4
         with:
