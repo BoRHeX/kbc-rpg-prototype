@@ -1,4 +1,5 @@
 // Trusted Cataclysm 0.9 eight-companion / four-active roster browser gate.
+// Creator's rule: recruit 4 unique cats from 8 upgrade offers; unchosen roles disappear. No swapping.
 // Uses test-only injected access to the actual running game's internal functions.
 // No source changes, no gameplay fake flags; test-only initial setup is explicit.
 'use strict';
@@ -13,7 +14,7 @@ if(source.split(endMarker).length!==2)throw Error('No safe test injection point'
 const bridge=`  window.__COMPANION_QA = Object.freeze({
     getGame:()=>game, getRoles:()=>roleNames.slice(), getLimit:()=>MAX_COMPANIONS,
     start,summonCompanion,companionSpecialAbilityActivate,updateCompanions,resolveActorCollisions,
-    chooseUpgrade,isTerrainClear,dist,updateHud
+    chooseUpgrade,offerUpgrade,upgradeAvailable,isTerrainClear,dist,updateHud
   });\n`;
 const injected=source.replace(endMarker,bridge+endMarker);
 const out=process.env.GRAPHICS_OUTPUT||'artifacts/cataclysm-companions';
@@ -53,34 +54,37 @@ const checks=async(page,name,fn)=>{
        const after=g.companionSquad.map(p=>p.type);
        return {ok:first.length===4&&new Set(first).size===4&&after.length===4&&first.every(t=>after.includes(t)),first,after,strengthUpgrade:g.squadStats.count};
      });
-     await checks(page,'replacement choice is explicit and cancelable without spending upgrade',()=>{
-       const q=window.__COMPANION_QA,g=q.getGame(),newRole=q.getRoles()[4];
-       const type='companion-'+newRole;
-       g.mode='upgrade';g.pendingUpgrade=true;g.offered=[type,'damage','speed'];
-       document.getElementById('upgrade-overlay').hidden=false;
-       const before=g.upgrades.length,old=g.companionSquad.map(c=>c.type);
-       q.chooseUpgrade(type);
-       const overlay=document.getElementById('companion-swap-overlay');
-       const options=[...document.querySelectorAll('[data-replace-companion]')].filter(b=>!b.hidden&&b.offsetParent!==null);
-       const present=!!overlay&&!overlay.hidden&&options.length===4&&old.every(k=>options.some(b=>b.dataset.replaceCompanion===k));
-       const cancel=document.getElementById('companion-swap-cancel');
-       if(present&&cancel)cancel.click();
-       const after=g.companionSquad.map(c=>c.type);
-       return {ok:present&&!!cancel&&g.pendingUpgrade===true&&g.mode==='upgrade'&&g.upgrades.length===before&&old.join('|')===after.join('|'),present,choices:options.map(b=>b.dataset.replaceCompanion),mode:g.mode,remaining:g.pendingUpgrade};
+     await checks(page,'at four active, other four roles vanish from roguelite offers',()=>{
+       const q=window.__COMPANION_QA,g=q.getGame(),roles=q.getRoles();
+       const active=roles.slice(0,4),unowned=roles.slice(4);
+       const eligibleActive=active.every(r=>q.upgradeAvailable('companion-'+r));
+       const barred=unowned.every(r=>!q.upgradeAvailable('companion-'+r));
+       let excludedFromOffers=true,commonGuaranteed=true,count=0;
+       for(let i=0;i<45;i++){
+         g.mode='running';g.pendingUpgrade=false;
+         q.offerUpgrade();count++;
+         if(g.offered.some(id=>unowned.some(r=>id==='companion-'+r)))excludedFromOffers=false;
+         if(g.offered.length!==3||!['damage','fire-rate','speed','xp-gain'].includes(g.offered[0]))commonGuaranteed=false;
+       }
+       g.mode='running';g.pendingUpgrade=false;
+       document.getElementById('upgrade-overlay').hidden=true;
+       return {ok:barred&&eligibleActive&&excludedFromOffers&&commonGuaranteed&&g.companionSquad.length===4,
+           active,unowned,barred,eligibleActive,excludedFromOffers,commonGuaranteed,count};
      });
-     await checks(page,'selected recruit replaces exactly one active type and retains other ranks',()=>{
-       const q=window.__COMPANION_QA,g=q.getGame(),roles=q.getRoles(),type='companion-'+roles[4];
-       g.mode='upgrade';g.pendingUpgrade=true;g.offered=[type,'damage','speed'];
+     await checks(page,'active companion upgrade trains existing rank, no fifth recruit or swap',()=>{
+       const q=window.__COMPANION_QA,g=q.getGame(),roles=q.getRoles(),r=roles[0],unowned=roles[4];
+       const oldRank=g.companionSquad.find(c=>c.type===r).rank,oldCount=g.companionSquad.length;
+       const before=g.upgrades.length;
+       g.mode='upgrade';g.pendingUpgrade=true;g.offered=['companion-'+r,'damage','speed'];
        document.getElementById('upgrade-overlay').hidden=false;
-       q.chooseUpgrade(type);
-       const overlay=document.getElementById('companion-swap-overlay');
-       const options=[...document.querySelectorAll('[data-replace-companion]')].filter(b=>!b.hidden&&b.offsetParent!==null);
-       if(!overlay||overlay.hidden||!options.length)return {ok:false,error:'Replacement options missing'};
-       const old=options[0].dataset.replaceCompanion,rank=g.companionRanks[old],initial=g.upgrades.length;
-       options[0].click();
-       const active=g.companionSquad.map(p=>p.type);
-       return {ok:g.mode==='running'&&!g.pendingUpgrade&&active.length===4&&active.includes(roles[4])&&!active.includes(old)&&g.companionRanks[old]===rank&&g.upgrades.length===initial+1,
-         old,newRole:roles[4],active,retainedRank:g.companionRanks[old]};
+       q.chooseUpgrade('companion-'+r);
+       const upgraded=g.companionSquad.find(c=>c.type===r);
+       const trained=upgraded.rank===oldRank+1&&g.upgrades.length===before+1&&g.mode==='running';
+       q.summonCompanion(unowned);
+       const stillBarred=!g.companionSquad.some(c=>c.type===unowned)&&g.companionSquad.length===4;
+       const noSwapUi=!document.getElementById('companion-swap-overlay');
+       return {ok:trained&&stillBarred&&oldCount===4&&noSwapUi,oldRank,newRank:upgraded.rank,
+         active:g.companionSquad.map(c=>c.type),stillBarred,noSwapUi};
      });
      await checks(page,'all eight roles spawn, activate special, and begin cooldown',()=>{
        const q=window.__COMPANION_QA,roles=q.getRoles(),entries=[];
