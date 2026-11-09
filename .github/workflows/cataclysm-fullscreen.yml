@@ -1,4 +1,5 @@
 name: Cataclysm 0.9 fullscreen — independent Chrome validation
+# Retry independent browser validation after synchronizing fullscreenchange on re-entry.
 on:
   push:
     branches: ['development/cataclysm-09']
