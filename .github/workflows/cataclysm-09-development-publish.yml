@@ -70,6 +70,10 @@ jobs:
               full=qa.get('fullscreen_qa',{})
               if not full.get('passed') or len(full.get('platforms',[]))!=3:
                   raise SystemExit('Fullscreen-enabled build lacks real browser fullscreen/exit regression evidence')
+          if 'const MAX_COMPANIONS = 4' in js:
+              squad=qa.get('companions_qa',{})
+              if not squad.get('passed') or len(squad.get('tests',[]))<10:
+                  raise SystemExit('8-cat roster / four-active-cap build lacks independent roster, replacement and special ability QA')
           if any(x in html for x in ['GRAPHICS LAB','EFFECTS PASS','EXPERIMENTAL']):
               raise SystemExit('Unwanted experimental branding in primary game')
           out=pathlib.Path('docs/cataclysm')
