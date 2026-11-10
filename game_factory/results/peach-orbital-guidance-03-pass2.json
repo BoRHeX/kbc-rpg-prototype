@@ -1,0 +1,600 @@
+{
+  "request": {
+    "id": "peach-orbital-guidance-03-pass2",
+    "game": "studio-original-001",
+    "mode": "update",
+    "title": "Peach Bounce 0.3 \u2014 trajectory guide and 3-orbit slingshot",
+    "prompt": "SECOND PEACH BOUNCE 0.3 PASS \u2014 preserve the version exactly 0.3 and stable docs/games/studio-original-001 public URL. This is targeted physics+visual control polish, NOT 0.4, NOT a redesign of resource economy or UI. The player explicitly says 0.3 is exactly the game desired, but needs an always-on indicator of where the probe WILL fly, and slightly more intentional probe control. Previous accepted job peach-gravity-sling-03 is live; build on its latest released source. Do not modify any other game, factory, workflow, or dashboard.\n\nOBSERVED SOURCE DEFICIENCY: current game.js stores a trail of already travelled positions p.trail but does not integrate/draw future predicted trajectory. Player cannot infer the gravitational path or know how to intercept with moving ship.\n\n1. CONSTANT LIVE FLIGHT FORECAST. Predict next meaningful segment of trajectory in the REAL 0.3 arena (e.g. 2-5 simulated seconds / until collision/trigger/escape, finite bounded number of points). Use current probe x/y/vx/vy, current ship position and the SAME force law and fixed-step numerical integration as authoritative game; for forecasts, clearly assume ship stays in current position unless being dragged. Recompute frequently as ship moves and during flight; render a thin dashed/glowing future curve with directional markers, separate and visually distinguishable from the historical tail. Mark projected ship crash red, safe banking/trigger green/blue, escape orange, fruit crossings subtly. Reuse same coordinate transform, clip to arena, manage performance and reduced-motion setting. Do not draw a purely artistic path unrelated to what occurs. During the controlled 3-orbit mode, represent orbital turns and release direction predictively, not a misleading free-flight forecast. Optionally forecast beyond release to useful fruit/exit horizon.\n\n2. REAR TRIGGER FOR CONTROLLED ORBIT. Mark a distinct, readable 'ORBIT / SLING' catch zone ASTERN/BEHIND the ship \u2014 physically below it in portrait view (positive canvas y), visibly separated from ship's damaging inner collider, and inside the lower playfield so the player can guide a returning/falling probe through it. Trigger is directional: probe must actually CROSS into this zone on a suitable incoming/downward path; no activation from standing still, no repeat triggers during one captured sequence. Preserve normal damage if a probe hits the actual ship rather than the catch zone. No user tap button required: movement of ship is the control.\n\n3. EXACTLY THREE FAST ORBITS AND PREDICTABLE RELEASE. A successfully caught probe enters one guided slingshot mode, travels the actual visible geometric orbit around the ship at a safe radius outside collision radius and within the safe banking/deposit annulus (not snapping across screen). It completes exactly 3 full revolutions in a short readable duration (suggest ~1.5-2.5 s total; Producer tunes) with a clear progress cue (e.g. ORBIT 1/3, 2/3, 3/3), then leaves tangentially on a predictable direction/velocity. Initial transition can smoothly blend onto capture circle; avoid a visually discontinuous teleport. The release orientation should be visibly marked before release; make direction depend on a stable understandable aiming rule such as ship position relative to playfield/fruit target or landing approach direction (Producer choose and document), so ship movement provides meaningful tactical control. Avoid automatic omniscient homing that eliminates fruit puzzle; launch still must be steered by player. On release physics resumes normally with same gravity model, speed bounded and angled to create a viable high-field trajectory; the probe may miss if poorly aligned. Reset/replay should reproduce capture and angle under equal inputs.\n\n4. RESOURCE INTEGRITY AND SAFETY. While captured, same existing probe retains cargo, identity, counts, and wave state. One legitimate safe orbit pass should bank cargo at most once, using existing hull-first then probe build. Orbiting without cargo should never mint resources. Upon loss, requeue unbanked cargo as before. Normal collision and escape rules remain. Prevent looping capture exploit, invulnerability leak, double decrement, automatic infinite cycles, or repeated credit if it loiters in banking circle. Break out safely if ship moves against arena bounds; don't let orbit path go outside visible canvas and cause unearned escapes. Make the trigger feasible at plausible speeds and x positions; demonstration must show real player input can achieve it, not only forced state setups.\n\n5. GAME FEEL, QA. Existing visual hierarchy: fruit at top, ship at bottom, HUD compact and portrait first. Show preview persistently through safe motion, with clear intent to direct player; player should not have to learn orbital differential equations. QA must compare predicted vs realized trajectory with ship stationary and when repositioned, and document bounded forecast error; test 3 turns and outward release, safe clearance vs actual hull, correct cargo banking and losses, field/trigger geometry at screen edges, 360x800 / 390x844 / 412x915, pointer drag and keyboard, pause/reset, native mobile browser and reduced motion if possible. Do not downgrade to a fixed decorative oval or an instant vy-flip. If a feature fails validation, reject rather than publish an illusory trajectory.\n\nEXACT RULE: Keep user-facing and internal release version 0.3. Only a new technical build stamp may increment. Carry the existing accepted source forward. Prior accepted result: game_factory/results/peach-gravity-sling-03.json.\n\nTrack QA against: https://github.com/BoRHeX/kbc-rpg-prototype/issues/45",
+    "acceptance": [
+      "Keep title, visible release version and runtime version 0.3, same /games/studio-original-001/ URL; preserve all 0.3 resource and fruit mechanics.",
+      "A visible, continuous future probe path is drawn during ordinary flight (not only history trail), updating as the player drags or presses left/right; forecast derives from actual fixed-step movement code.",
+      "Trajectory forecast uses consistent game coordinates and shows danger at ship impact/escape and safe approaches/deposit/trigger; distinguish predictions from past trail and avoid clutter covering numbered fruit.",
+      "A clearly indicated trigger location well behind the ship (below/astern of ship in portrait playfield) accepts a probe only on a valid inbound crossing, not just remaining near the trigger.",
+      "Successful trigger capture makes the SAME probe visibly perform exactly three rapid complete safe loops about the ship, counted without skipping or double-activation, then visibly depart on a repeatable outward trajectory.",
+      "The three-orbit assist is responsive to moving ship and has clearly communicated launch orientation so players can aim for fruit; no sudden teleport or arbitrary on-screen velocity reversal.",
+      "Capture/loops/release preserve carried cargo and bank it at most once for a legitimate safe visit; normal ship impacts still deduct 1 hull and 1 probe; escapes deduct only a probe.",
+      "Fruit order, swept fruit contact, requeuing lost cargo, hull-first +1 repair then probe construction, caps, subsequent waves and defeat remain identical in meaning and functional.",
+      "Preview and slingshot are reproducible at fixed timestep and differing frame rates; tests cover capture from both horizontal approach directions, missed trigger, moving ship, exactly 3 rotations, forecast vs actual release.",
+      "Touch controls, pause/resume/restart, viewport resize, reduced motion and narrow portrait 360x800, 390x844, 412x915 work with a correctly positioned guide and no excessive performance overhead.",
+      "Independent gameplay/browser QA verifies forecast recalculation, predictable flight outcome, meaningful steering, successful cargo delivery, crash/escape and 3-orbit sequence. Publish only tested accepted bytes."
+    ],
+    "release_version": "0.3",
+    "focus": "physics_visual"
+  },
+  "target": "docs/games/studio-original-001",
+  "run_id": "42893253667-1",
+  "base_manifest": {
+    "BUILD_INFO.json": "b49acb5e970fb53d75917cd9c42502f61b2bbf6cc7d16b01cfe1c3e7d51d5f84",
+    "game.css": "0e482189ddd63cb189e4d9326a53d97e98d7e1097f4be4fcf74b48fbce52e2a5",
+    "game.js": "ba6bf67f1204e7f751fe119575d2cec9f8a05c172ddb381a9eea6f755e67f7ec",
+    "index.html": "9cc8c84b56cc129d0cfc552aae17392b56ad10245cab364884419a9d564c74a2"
+  },
+  "request_digest": "d20697da9841dd690b2f376504dcb82906e51eee9809ef666d0b9954e080fa33",
+  "state": "accepted",
+  "files": {
+    "BUILD_INFO.json": "a6fb921e9179fbc741f7018cb9a904cfdd8ca7a3a8210a0b4358ceb80355e0d5",
+    "game.css": "0e482189ddd63cb189e4d9326a53d97e98d7e1097f4be4fcf74b48fbce52e2a5",
+    "game.js": "30030b7a892edd5303bd4884e334992a040d36e649cc515bf690866f96dd163e",
+    "index.html": "d4d05163a3fadbd7711936b03c629353bb256424a8bf28ded08766bd617931be"
+  },
+  "play_path": "games/studio-original-001/",
+  "plan": {
+    "designer": {
+      "claim": "Add a continuous live trajectory forecast and enhanced orbital visual feedback in Peach Bounce 0.3 to improve probe flight predictability and player control visualization, preserving all existing controls and mechanics.",
+      "rationale": "Currently, the game stores only the probe's past path and lacks a dynamic forecast of its upcoming trajectory. By integrating a future trajectory prediction using the core physics model and rendering it with distinct visual styles for projected outcomes (safe bank, crash, escape), players gain immediate, actionable insights guiding ship movements for strategic slingshots. Additionally, visually indicating the rear orbital capture trigger zone with clear distinction and enhanced orbit progress cues provides clarity about the probe's capture and release state. This refinement augments legible flight feedback and meaningful motion perception without altering gameplay mechanics, controls, or layout, maintaining mobile accessibility and stable URL.",
+      "objections": [
+        "Computational overhead might increase due to frequent trajectory simulations, affecting performance on low-end devices.",
+        "Visual clutter risk from rendering extra trajectory info, potentially overwhelming players in fast-paced sessions.",
+        "Integrating orbit capture visuals requires careful tuning to avoid confusion between probe trail, forecast, and active orbit states.",
+        "Reduced motion preferences necessitate alternate handling to avoid flash or animation discomfort."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Live probe trajectory forecast and orbit capture visualization",
+          "player_experience": "Players see a thin dashed/glowing line forecasting the probe's next 2-5 seconds of flight, color-coded by predicted event (red for crash, green for safe bank, orange for escape), distinct from the historical trail. A clearly marked rear 'ORBIT / SLING' catch zone appears visually behind the ship, enabling players to guide the returning probe precisely. Upon capture, an on-screen progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') appears, and the orbit path is smoothly animated around the ship before probe release. This feedback aids players in flight planning and resource banking, enhancing both physics clarity and visual legibility.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "draw",
+              "pseudo_code": "Define function predictFutureTrajectory(probe, shipPosition, duration): create a clone of probe state; simulate forward with same physics fixed-step for 'duration' or until event; record points and event type; return array and event status.\nIn draw(): call predictFutureTrajectory if probe active; render forecast points as a thin dashed colored line with direction arrows; color by predicted event.\nAdd rendering of rear catch trigger zone behind ship as a translucent green ring below ship's position.\nDuring orbit capture mode, render animated orbit arcs and orbit count text at ship position.\nUpdate step() to compute orbit progress and trigger release visual state."
+            }
+          ],
+          "tests": [
+            "Verify predicted trajectory updates and matches actual probe path within small tolerances during various ship movements.",
+            "Validate correct color coding of trajectory forecast for crash, safe bank, and escape scenarios.",
+            "Check that rear catch trigger zone is drawn and accepts probe only on inbound crossing behind ship.",
+            "Confirm the orbit capture progress indicator displays correctly counting 1/3, 2/3, 3/3 revolutions.",
+            "Ensure orbit animation smoothly transitions without teleport or visual popping.",
+            "Test that pause/resume/reset preserve orbit and forecast visuals consistently."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Screenshots or recorded videos demonstrating the live trajectory forecast line updating dynamically as the ship moves and probe flies, showing correct color-coded event markers.",
+        "Screenshots or recordings of the rear orbital catch zone indicator visually distinct behind the ship in the lower playfield, accessible to probe capture.",
+        "Gameplay recordings showing a probe captured in the rear trigger zone, performing exactly 3 visible fast orbits with orbit count displayed, then predictably released.",
+        "Automated test logs confirming fidelity of trajectory prediction against actual probe physics over multiple frames and input scenarios.",
+        "Performance benchmark data on typical mobile devices showing no significant frame rate or input responsiveness degradation due to the added forecast computations and rendering.",
+        "QA reports verifying accessibility compliance including reduced motion support disabling or simplifying orbit animations and forecast drawing."
+      ]
+    },
+    "researcher": {
+      "claim": "Add a live future trajectory prediction and a controlled 3-orbit capture/release mechanic with a rear trigger catch zone behind the ship, improving flight legibility and intentional probe control without changing core game controls or mechanics.",
+      "rationale": "The existing game stores only past probe trail (p.trail) and lacks live future flight forecast visualization, making it hard for players to anticipate probe path and plan interception. Introducing a live, frequently recomputed trajectory forecast using the same physics integration enhances player understanding of probe motion. The rear trigger zone astern of the ship allows skillful, directional capture rather than a binary crossing, supporting a stable, controlled 3-orbit slingshot with visual progress feedback and predictable release direction. This improves both probe dynamics and visual feedback strictly within the existing 0.3 game framework, preserving economy, UI layout, and one-axis input.",
+      "objections": [
+        "Increased CPU load from continuous trajectory simulation may affect performance on some mobile devices.",
+        "Overlaying a future path might clutter screen or confuse players with too many visual cues if not carefully tuned.",
+        "The 3-orbit capture/release may require subtle player skill and tuning to avoid frustration or unpredictability.",
+        "Additional complexity in codebase increases maintenance and potential for bugs without changing core mechanics.",
+        "The forecast assumes static ship positioning during prediction which may differ from actual ship movement, causing slight mismatch between forecast and reality.",
+        "Reduced-motion accessibility settings could limit the usefulness or even disable parts of the visual forecast, reducing its effectiveness for some players."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Live trajectory forecast and 3-orbit controlled slingshot",
+          "player_experience": "Players see a thin dashed glowing line indicating the predicted future probe trajectory distinct from the past trail. Behind the ship in the bottom zone, a distinct visually separated catch ring appears as an orbit trigger. When the probe approaches this trigger inbound crossing, capture initiates and the probe orbits exactly three times visibly around the ship with a clear 1/3, 2/3, 3/3 progress indicator. Only one valid capture per flight is allowed. After completing orbits, probe releases tangentially with velocity modulated by ship position, enabling skillful aiming. Visual cues differentiate safe, danger, and escape trajectories. This improves predictability, flight legibility, and player intention without changing existing controls or mechanics.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Add code to simulate future probe trajectory for 2-5 seconds in fixed steps, assuming current ship position static. Store future trajectory points (forecast array) updated each frame during active flight. Implement directional buffer triggers behind ship (y>player.y and x near player.x) checked each step to detect valid inbound crossing for capture trigger. When triggered, set slingshot mode: lock probe on safe circular orbit radius outside collision radius, track orbit count and elapsed orbit duration. Show orbit progress count (1/3, 2/3, 3/3). On completion, release probe with tangential velocity set by stable aiming rule (e.g., ship position relative to fruit target). Set flags to prevent re-triggering in same capture sequence. Integrate with existing resource banking and loss logic to preserve cargo integrity and game state."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "draw",
+              "pseudo_code": "Draw the future probe forecast as a thin glowing dashed line distinct in color from historical trail. Add directional markers/arrows along forecast path. Color segments depending on projected interaction: red if future collision with ship, green if safe banking pass, orange if escape path. Add visible orbit progress text near ship when in orbit capture mode (e.g., 'ORBIT 2/3'). Draw a distinct, separated rear catch ring behind ship (lower y coordinate in portrait) with different fill/stroke to visually separate from ship's inner collision radius and outer banking annulus."
+            }
+          ],
+          "tests": [
+            "Verify forecast updates live and matches probe's actual physics path when ship remains stationary during prediction window.",
+            "Check rear catch trigger only activates on proper inbound probe crossing behind ship; no repeated triggers occur in one flight.",
+            "Test probe performs exactly three visible full orbits after capture, showing correct orbit progress counts.",
+            "Confirm probe release direction depends on ship position relative to fruit or approach vector, producing consistent trajectory on repeated runs.",
+            "Ensure cargo carried is preserved during orbit phase and banking occurs once after orbit completion.",
+            "Validate probe-ship collision still reduces hull and probes, escapes only reduce probes, no regression in damage logic."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Recorded gameplay videos showing live forecast trajectory line updating responsively with ship movement and probe flight.",
+        "Screenshots or videos depicting the distinct rear catch ring visually separate from ship collision radius in portrait layout at 360x800 and 390x844 viewports.",
+        "Automated test logs confirming deterministic 3-orbit capture, release direction reproducibility, and cargo banking behavior.",
+        "Independent QA reports validating no regression in core controls, pause/restart, and resource mechanics during and after orbit capture.",
+        "Performance profiling to verify continuous forecast computation and rendering do not cause frame drops or input latency increases.",
+        "Accessibility check verifying forecast and orbit visuals degrade gracefully or disable properly with reduced motion enabled."
+      ]
+    },
+    "engineer": {
+      "claim": "Add a live future trajectory forecast curve and rear orbit trigger with controlled 3-orbit slingshot release to improve probe flight readability and player control feedback.",
+      "rationale": "The current game.js maintains only a trail of past probe positions with no predicted future flight path, limiting player ability to anticipate probe return trajectories and plan interceptions. A continuous 2-5 second future trajectory forecast\u2014using identical physics and integration as the authoritative game simulation\u2014will enhance visual comprehension of probe motion and decision making. Adding a distinct astern catch trigger zone behind the ship, visually separate from the damaging inner hull and reachable during play, allows players to intentionally snag the returning probe. Upon triggering, the probe executes exactly three smooth visible orbits outside the collision radius with a progress indicator, then releases predictably. This mechanic provides meaningful physics-based feedback, enriches visual legibility of probe motion, and preserves core controls and mechanics. It addresses player demand for more intentional and understandable control, enhances tactical gameplay, and respects mobile layout constraints and performance budgets.",
+      "objections": [
+        "Increased computation and rendering of future trajectory may impact performance on lower-end mobile devices.",
+        "Rendering additional trajectory and orbit indicators could clutter the screen and reduce clarity if not carefully styled and clipped.",
+        "Implementation complexity may introduce subtle bugs in physics prediction or orbit capture state leading to unintended gameplay edge cases.",
+        "Precise tuning of orbit timing, progress cues, and release angle affects skill balance and must be carefully calibrated to avoid frustrating variability.",
+        "Reduced motion preferences and accessibility settings require careful attention to avoid triggering unwanted animations or visual noise.",
+        "The feature adds new visual elements that could overlap or compete with existing HUD and fruit graphics if not properly layered and sized."
+      ],
+      "proposed_action": {
+        "feature": {
+          "name": "Live Trajectory Forecast and Controlled 3-Orbit Slingshot Capture",
+          "player_experience": "Players see a dynamically updating dashed glowing curve forecasting the probe's near-future path distinct from its past trail, with color-coded danger and safe zones. A clearly marked green astern trigger ring behind the ship invites skilled players to catch returning probes deliberately. On successful trigger crossing from appropriate direction, the probe visibly executes exactly three smooth orbits around the ship with numeric progress feedback before releasing tangentially in a predictable, skill-influenced direction. This improves motion readability, tactical control, and resource banking clarity without changing basic controls or mobile layout.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "createGame",
+              "pseudo_code": "Add function predictFutureTrajectory(probe, shipPosition, durationSec, dt): iterate fixed-step integration using current probe position/velocity and ship at current position; record positions until duration or collision/escape; return array of forecast points with state classifications (danger: collision, safe pass, escape, fruit crossing). Passively update this forecast on each step() call if probe.active. Add rendering in draw() to draw dashed glowing line and directional arrows using forecast data. Color forecast path segments: red for collision, green for safe banking zones, orange for escape, subtle highlight for fruit approach."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Within probe flight step, check if probe crosses behind ship into a new distinct rear trigger ring (positioned physically below/astern the ship in vertical portrait coordinates, outside inner collision radius and inside safe bank annulus). Detect directional crossing (approach from off trigger to on trigger with downward velocity). If valid and not already captured, set probe.state to 'captured-orbit', reset orbit progress counter."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "step",
+              "pseudo_code": "Implement in step() a new state handler for 'captured-orbit' where probe moves smoothly along a circular path around the ship at a stable radius (between inner collision and deposit radius), completing exactly three full revolutions in ~2 seconds. Provide orbit progress from 0 to 3 and display via message or overlay. After 3 orbits, compute a stable tangential release velocity depending on ship position or approach vector, reset probe.state to 'active', resume normal physics with new velocity and position. Ensure probe retains cargo and counts. Prevent repeated capture during one sequence."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "draw",
+              "pseudo_code": "Render the new forecast path using semi-transparent glowing dashed lines and directional arrows distinct from probe's past trail. Draw the rear orbit trigger zone as a subtle green circle below ship with label 'ORBIT / SLING' in portrait coordinates, visually separate from inner damage circle. During captured orbits, show a progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') near the probe or ship. Ensure layering respects existing HUD and fruit drawing order."
+            }
+          ],
+          "tests": [
+            "Validate that the live forecast curve updates smoothly during flight, shows correct colors on predicted collisions, safe banking, or escape events compared to actual probe outcomes.",
+            "Verify rear orbit trigger activates only when probe crosses into the behind-ship trigger circle from an appropriate direction and only once per sequence.",
+            "Confirm that successful trigger capture starts exactly three smooth, complete orbits without teleportation or abrupt jumps, with visible numeric orbit progress.",
+            "Test that after three orbits the probe releases tangentially along a stable direction influenced by ship placement, resuming normal physics accurately.",
+            "Confirm cargo banking occurs only once per legitimate orbit sequence and cargo is preserved during orbit state and released afterward properly.",
+            "Run pause/resume/restart cycles confirming no lost forecast data, correct trigger state reset, and proper orbit sequence preservation."
+          ]
+        }
+      },
+      "required_evidence": [
+        "Screenshots or screen capture video showing the live future trajectory forecast curve correctly colored and updated during probe flight on portrait mobile viewport (360x800/390x844).",
+        "Visual verification of distinct rear orbit trigger circle rendered behind the ship and labeled, separate from damaging collision circle.",
+        "Recorded gameplay session showing probe crossing trigger zone, performing exactly three visible orbital revolutions with orbit count displayed, then releasing predictably with smooth acceleration output.",
+        "Deterministic playback demonstrating repeatable orbit capture and release states with identical input sequences.",
+        "Test logs capturing pause/resume/restart operations with consistent forecast and orbit mechanics state preservation.",
+        "Performance metrics indicating no frame rate drops or input lag on typical mobile devices during orbit and forecast rendering phases."
+      ]
+    },
+    "critic": {
+      "claim": "The three proposals\u2014designer, researcher, and engineer\u2014for live trajectory forecasting and controlled orbit capture provide overlapping functionality with nuanced differences in implementation detail and UI feedback but share a common interface invariant: no change to existing 0.1 controls.",
+      "rationale": "All proposals aim to add a live probe trajectory forecast line, a rear catch trigger zone behind the ship, a controlled orbit capture sequence of three revolutions with progress indicators, and a tangential probe release. They differ primarily in event detection robustness, orbit control method, and rendering details (e.g., glowing dashed lines, color coding segments, and orbit progress UI placement). Each proposal introduces code changes centered around game.js in draw() and step() methods and may insert new functions for simulation of future trajectories. Risks cluster around state consistency for probe capture and release, visual layering conflicts, input ambiguity during orbit, and missing or incomplete test coverage for edge cases like pause/resume and repeated captures. Candidate proposals all respect the current control scheme and preserve mobile layout, which reduces interface conflicts. However, conflicting symbol definitions or redundant trajectory simulation functions might lead to integration overhead or duplicated computations if merged without harmonization.",
+      "objections": [
+        "Each proposal models trajectory prediction with slightly different assumptions about ship position during forecast timeframe (static vs. simulated movement), potentially causing forecast discrepancies when merged.",
+        "The orbit capture trigger zones are described as slightly different in shape and position, risking ambiguous or conflicting input detection if combined without unified geometry and event conditions.",
+        "Test suites partially overlap but omit certain edge cases such as rapid pause/resume cycles, multiple aborts of orbit capture, and interaction with other game states like probe reload or loss.",
+        "Rendering layers and style details (glowing lines, dashed stroke patterns, orbit animation approaches) differ somewhat, which might cause flickering or inconsistent visual feedback if all proposals' drawing code runs concurrently without refactoring.",
+        "Preventing multiple triggers per flight is variably described and untested for edge cases, increasing risk of probe state corruption or unintended multiple orbits.",
+        "Dependencies on ship position relative to fruit target for release velocity are defined only in researcher and engineer proposals, so merging them mandates consensus on release velocity logic.",
+        "No evidence confirms these changes successfully integrate into the existing step() and draw() loops without performance regressions, especially on mobile devices."
+      ],
+      "proposed_action": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Moderate risk of rendering overlap and duplicated trajectory simulation if integrated without refactoring; orbit capture state management is simpler but less precise in release direction; tests moderately complete but missing some edge cases.",
+            "mitigation": "Refactor trajectory prediction into shared reusable function; unify catch zone geometry; extend tests to cover pause/resume and multiple trigger attempts; harmonize visual styles across proposals."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Higher complexity in step() logic and orbit capture state may introduce runtime errors; advance release velocity logic relies on ship/fruit position possibly fragile; test suite is thorough but partial regarding UI consistency and performance.",
+            "mitigation": "Conduct integration testing focusing on orbit state transitions; verify ship/fruit positional dependency robustness; profile mobile performance; unify orbit animation approach."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Most detailed implementation with complex state machine and clear rendering priorities but increased code footprint; risk of conflicts in symbol/function naming with designer and researcher proposals; test coverage comprehensive though possible gaps remain in multiplayer/pause contexts.",
+            "mitigation": "Employ namespace encapsulation for new symbols; consolidate orbit capture state handling; run stress tests on orbit transitions and forecast updates; review test coverage gaps."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "engineer"
+        ],
+        "rationale": "The designer and engineer proposals align closely on architecture: both define a predictFutureTrajectory function, use similar rendering styles (glowing dashed lines with color-coded segments), and implement the orbit capture trigger as a rear green ring. Although engineer code is more detailed, designer's simpler orbit animation and progress UI can integrate into engineer's robust state machine with moderate refactoring. The researcher proposal introduces differing assumptions about static ship during prediction and subtle trigger geometry variations that risk conflicting behavior and increased complexity if merged. Prioritizing compatibility and minimizing redundant computation favor integrating designer and engineer changes while postponing researcher integration until conflicts are resolved."
+      },
+      "required_evidence": [
+        "Code diff analysis for symbol/function name collisions in game.js among proposals",
+        "Profiling data on performance impact of forecast simulation on mobile devices",
+        "User interaction testing to confirm rear catch trigger consistently detects inbound crossing without false positives",
+        "Integration tests verifying orbit capture states transition smoothly including pause/resume/reset scenarios",
+        "Visual regression tests confirming forecast line and orbit animations layering properly with existing HUD and fruit drawing",
+        "Verification that cargo banking and resource counts preserve integrity throughout orbit state changes"
+      ]
+    },
+    "producer": {
+      "claim": "Integrate the 'designer' and 'engineer' proposals to implement a live probe trajectory forecast and a controlled 3-orbit slingshot capture with clear visual feedback, maintaining physics accuracy and gameplay clarity under version 0.3 constraints.",
+      "rationale": "The 'designer' and 'engineer' proposals are compatible as both implement a shared future trajectory prediction function, similar rendering approaches (thin dashed glowing lines with directional markers), and a rear catch trigger zone positioned behind the ship. The 'engineer' proposal provides a detailed, robust finite state machine for orbit capture and release with numerical progress feedback, while the 'designer' offers simpler but effective orbit animation and UI indicators. Combining these allows leveraging the engineer's precise state management and physics fidelity with the designer's clear and responsive visual feedback, minimizing redundant computation. The 'researcher' proposal conflicts in trigger geometry, velocity release logic, and orbit counting approach, increasing complexity and risk of runtime errors, so it is excluded to preserve stability and coherent user experience. This respects the 0.3 stable release requirement, excludes unrelated content, and prioritizes trustworthy measurable gameplay improvements.",
+      "objections": [
+        "The researcher proposal adds useful predictive release velocity based on ship-to-fruit vector, which might enhance user aiming, but its integration risks conflicting trigger geometry and duplicated simulation causing instability.",
+        "Designer\u2019s simpler orbit animation might inadequately model precise orbital physics compared to engineer\u2019s state machine, possibly reducing simulation fidelity.",
+        "Merging designer and engineer requires refactoring predictFutureTrajectory into a shared utility to avoid duplicated code and performance overhead.",
+        "Tests for pause/resume and edge cases must be extended as neither candidate fully covers them individually."
+      ],
+      "proposed_action": {
+        "selected_ids": [
+          "designer",
+          "engineer"
+        ],
+        "decision_reason": "Selected 'designer' and 'engineer' proposals due to their compatible architecture, similar interfaces, and complementary strengths in visual feedback and physics state management, ensuring minimal conflicts and robust gameplay improvements while preserving 0.3 game loop stability and interface consistency. 'Researcher' omitted due to incompatible assumptions and increased integration risk.",
+        "interface_contracts": [
+          "function predictFutureTrajectory(probeState, shipPosition, durationSec, dt) -> FutureTrajectoryPoints[] with event types",
+          "rearOrbitTriggerZone: defined spatial area behind ship with directional crossing detection logic",
+          "orbitCaptureState: probe state machine states including 'active', 'captured-orbit', 'released' with orbitCount tracking",
+          "drawForecastPath(FutureTrajectoryPoints[]): renders dashed glowing future path with color-coded segments and directional arrows",
+          "drawRearCatchZone(shipPosition): renders visually distinct rear trigger ring",
+          "drawOrbitProgressIndicator(orbitCount): displays textual orbit progress (e.g., 'ORBIT 1/3')"
+        ],
+        "integration_steps": [
+          "Refactor predictFutureTrajectory implementation into a shared utility function used by both proposals",
+          "Merge rear catch trigger zone logic ensuring single spatial definition and directional crossing detection from engineer code",
+          "Integrate designer\u2019s orbit animation and progress indicator UI over engineer\u2019s orbitCaptureState to enhance visual feedback without disrupting logic",
+          "Unify draw() calls to render forecast path, trigger zone, and orbit progress respecting rendering order and layering",
+          "Extend step() function in game.js to handle probe states from engineer\u2019s state machine, invoking shared future trajectory prediction",
+          "Implement flagging to prevent repeated capture triggers per flight using engineer\u2019s mechanism",
+          "Profile and optimize performance for forecast recalculation on each frame ensuring no double simulations occur",
+          "Consolidate test cases from both proposals into a comprehensive suite covering pause/resume, input methods, orbit completion, trigger correctness, and cargo banking"
+        ],
+        "verification": [
+          "Confirm live future trajectory forecast updates smoothly with correct color coding of predicted collisions, safe banking, and escape events",
+          "Validate rear catch trigger activates only on proper inbound directional crossing behind ship and only once per flight",
+          "Ensure probe captures correctly start exactly three smooth orbits with visual numeric orbit progress as per combined UI",
+          "Test probe releases tangentially with stable velocity influenced by ship position after orbit completion, resuming normal physics",
+          "Verify cargo preservation and single legitimate banking event during orbit capture and release",
+          "Run pause/resume/reset cycles checking orbit state and forecast visualization integrity",
+          "Confirm rendering layers correctly separate forecast path, trigger zone, probe, fruit, and HUD without visual clutter",
+          "Measure performance impact to remain acceptable on target mobile devices and browsers"
+        ]
+      },
+      "required_evidence": [
+        "Code diffs or detailed design documents showing combined predictFutureTrajectory utility integration",
+        "Playtest logs or recordings verifying forecast accuracy and orbit capture mechanics under various ship inputs",
+        "Source-level descriptions of merged orbitCaptureState machine and draw function rendering order",
+        "Performance profiling data demonstrating efficient forecast updates at 60fps on mobile targets",
+        "Test reports covering all proposed verification scenarios including edge cases and pause/resume"
+      ]
+    },
+    "update_decision": {
+      "schema_version": 1,
+      "proposals": [
+        {
+          "candidate_id": "designer",
+          "name": "Live probe trajectory forecast and orbit capture visualization",
+          "player_experience": "Players see a thin dashed/glowing line forecasting the probe's next 2-5 seconds of flight, color-coded by predicted event (red for crash, green for safe bank, orange for escape), distinct from the historical trail. A clearly marked rear 'ORBIT / SLING' catch zone appears visually behind the ship, enabling players to guide the returning probe precisely. Upon capture, an on-screen progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') appears, and the orbit path is smoothly animated around the ship before probe release. This feedback aids players in flight planning and resource banking, enhancing both physics clarity and visual legibility.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "draw",
+              "pseudo_code": "Define function predictFutureTrajectory(probe, shipPosition, duration): create a clone of probe state; simulate forward with same physics fixed-step for 'duration' or until event; record points and event type; return array and event status.\nIn draw(): call predictFutureTrajectory if probe active; render forecast points as a thin dashed colored line with direction arrows; color by predicted event.\nAdd rendering of rear catch trigger zone behind ship as a translucent green ring below ship's position.\nDuring orbit capture mode, render animated orbit arcs and orbit count text at ship position.\nUpdate step() to compute orbit progress and trigger release visual state."
+            }
+          ],
+          "tests": [
+            "Verify predicted trajectory updates and matches actual probe path within small tolerances during various ship movements.",
+            "Validate correct color coding of trajectory forecast for crash, safe bank, and escape scenarios.",
+            "Check that rear catch trigger zone is drawn and accepts probe only on inbound crossing behind ship.",
+            "Confirm the orbit capture progress indicator displays correctly counting 1/3, 2/3, 3/3 revolutions.",
+            "Ensure orbit animation smoothly transitions without teleport or visual popping.",
+            "Test that pause/resume/reset preserve orbit and forecast visuals consistently."
+          ]
+        },
+        {
+          "candidate_id": "researcher",
+          "name": "Live trajectory forecast and 3-orbit controlled slingshot",
+          "player_experience": "Players see a thin dashed glowing line indicating the predicted future probe trajectory distinct from the past trail. Behind the ship in the bottom zone, a distinct visually separated catch ring appears as an orbit trigger. When the probe approaches this trigger inbound crossing, capture initiates and the probe orbits exactly three times visibly around the ship with a clear 1/3, 2/3, 3/3 progress indicator. Only one valid capture per flight is allowed. After completing orbits, probe releases tangentially with velocity modulated by ship position, enabling skillful aiming. Visual cues differentiate safe, danger, and escape trajectories. This improves predictability, flight legibility, and player intention without changing existing controls or mechanics.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Add code to simulate future probe trajectory for 2-5 seconds in fixed steps, assuming current ship position static. Store future trajectory points (forecast array) updated each frame during active flight. Implement directional buffer triggers behind ship (y>player.y and x near player.x) checked each step to detect valid inbound crossing for capture trigger. When triggered, set slingshot mode: lock probe on safe circular orbit radius outside collision radius, track orbit count and elapsed orbit duration. Show orbit progress count (1/3, 2/3, 3/3). On completion, release probe with tangential velocity set by stable aiming rule (e.g., ship position relative to fruit target). Set flags to prevent re-triggering in same capture sequence. Integrate with existing resource banking and loss logic to preserve cargo integrity and game state."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "draw",
+              "pseudo_code": "Draw the future probe forecast as a thin glowing dashed line distinct in color from historical trail. Add directional markers/arrows along forecast path. Color segments depending on projected interaction: red if future collision with ship, green if safe banking pass, orange if escape path. Add visible orbit progress text near ship when in orbit capture mode (e.g., 'ORBIT 2/3'). Draw a distinct, separated rear catch ring behind ship (lower y coordinate in portrait) with different fill/stroke to visually separate from ship's inner collision radius and outer banking annulus."
+            }
+          ],
+          "tests": [
+            "Verify forecast updates live and matches probe's actual physics path when ship remains stationary during prediction window.",
+            "Check rear catch trigger only activates on proper inbound probe crossing behind ship; no repeated triggers occur in one flight.",
+            "Test probe performs exactly three visible full orbits after capture, showing correct orbit progress counts.",
+            "Confirm probe release direction depends on ship position relative to fruit or approach vector, producing consistent trajectory on repeated runs.",
+            "Ensure cargo carried is preserved during orbit phase and banking occurs once after orbit completion.",
+            "Validate probe-ship collision still reduces hull and probes, escapes only reduce probes, no regression in damage logic."
+          ]
+        },
+        {
+          "candidate_id": "engineer",
+          "name": "Live Trajectory Forecast and Controlled 3-Orbit Slingshot Capture",
+          "player_experience": "Players see a dynamically updating dashed glowing curve forecasting the probe's near-future path distinct from its past trail, with color-coded danger and safe zones. A clearly marked green astern trigger ring behind the ship invites skilled players to catch returning probes deliberately. On successful trigger crossing from appropriate direction, the probe visibly executes exactly three smooth orbits around the ship with numeric progress feedback before releasing tangentially in a predictable, skill-influenced direction. This improves motion readability, tactical control, and resource banking clarity without changing basic controls or mobile layout.",
+          "code_changes": [
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "createGame",
+              "pseudo_code": "Add function predictFutureTrajectory(probe, shipPosition, durationSec, dt): iterate fixed-step integration using current probe position/velocity and ship at current position; record positions until duration or collision/escape; return array of forecast points with state classifications (danger: collision, safe pass, escape, fruit crossing). Passively update this forecast on each step() call if probe.active. Add rendering in draw() to draw dashed glowing line and directional arrows using forecast data. Color forecast path segments: red for collision, green for safe banking zones, orange for escape, subtle highlight for fruit approach."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "step",
+              "pseudo_code": "Within probe flight step, check if probe crosses behind ship into a new distinct rear trigger ring (positioned physically below/astern the ship in vertical portrait coordinates, outside inner collision radius and inside safe bank annulus). Detect directional crossing (approach from off trigger to on trigger with downward velocity). If valid and not already captured, set probe.state to 'captured-orbit', reset orbit progress counter."
+            },
+            {
+              "file": "game.js",
+              "operation": "insert",
+              "symbol": "step",
+              "pseudo_code": "Implement in step() a new state handler for 'captured-orbit' where probe moves smoothly along a circular path around the ship at a stable radius (between inner collision and deposit radius), completing exactly three full revolutions in ~2 seconds. Provide orbit progress from 0 to 3 and display via message or overlay. After 3 orbits, compute a stable tangential release velocity depending on ship position or approach vector, reset probe.state to 'active', resume normal physics with new velocity and position. Ensure probe retains cargo and counts. Prevent repeated capture during one sequence."
+            },
+            {
+              "file": "game.js",
+              "operation": "modify",
+              "symbol": "draw",
+              "pseudo_code": "Render the new forecast path using semi-transparent glowing dashed lines and directional arrows distinct from probe's past trail. Draw the rear orbit trigger zone as a subtle green circle below ship with label 'ORBIT / SLING' in portrait coordinates, visually separate from inner damage circle. During captured orbits, show a progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') near the probe or ship. Ensure layering respects existing HUD and fruit drawing order."
+            }
+          ],
+          "tests": [
+            "Validate that the live forecast curve updates smoothly during flight, shows correct colors on predicted collisions, safe banking, or escape events compared to actual probe outcomes.",
+            "Verify rear orbit trigger activates only when probe crosses into the behind-ship trigger circle from an appropriate direction and only once per sequence.",
+            "Confirm that successful trigger capture starts exactly three smooth, complete orbits without teleportation or abrupt jumps, with visible numeric orbit progress.",
+            "Test that after three orbits the probe releases tangentially along a stable direction influenced by ship placement, resuming normal physics accurately.",
+            "Confirm cargo banking occurs only once per legitimate orbit sequence and cargo is preserved during orbit state and released afterward properly.",
+            "Run pause/resume/restart cycles confirming no lost forecast data, correct trigger state reset, and proper orbit sequence preservation."
+          ]
+        }
+      ],
+      "critique": {
+        "assessments": [
+          {
+            "candidate_id": "designer",
+            "risk": "Moderate risk of rendering overlap and duplicated trajectory simulation if integrated without refactoring; orbit capture state management is simpler but less precise in release direction; tests moderately complete but missing some edge cases.",
+            "mitigation": "Refactor trajectory prediction into shared reusable function; unify catch zone geometry; extend tests to cover pause/resume and multiple trigger attempts; harmonize visual styles across proposals."
+          },
+          {
+            "candidate_id": "researcher",
+            "risk": "Higher complexity in step() logic and orbit capture state may introduce runtime errors; advance release velocity logic relies on ship/fruit position possibly fragile; test suite is thorough but partial regarding UI consistency and performance.",
+            "mitigation": "Conduct integration testing focusing on orbit state transitions; verify ship/fruit positional dependency robustness; profile mobile performance; unify orbit animation approach."
+          },
+          {
+            "candidate_id": "engineer",
+            "risk": "Most detailed implementation with complex state machine and clear rendering priorities but increased code footprint; risk of conflicts in symbol/function naming with designer and researcher proposals; test coverage comprehensive though possible gaps remain in multiplayer/pause contexts.",
+            "mitigation": "Employ namespace encapsulation for new symbols; consolidate orbit capture state handling; run stress tests on orbit transitions and forecast updates; review test coverage gaps."
+          }
+        ],
+        "compatible_ids": [
+          "designer",
+          "engineer"
+        ],
+        "rationale": "The designer and engineer proposals align closely on architecture: both define a predictFutureTrajectory function, use similar rendering styles (glowing dashed lines with color-coded segments), and implement the orbit capture trigger as a rear green ring. Although engineer code is more detailed, designer's simpler orbit animation and progress UI can integrate into engineer's robust state machine with moderate refactoring. The researcher proposal introduces differing assumptions about static ship during prediction and subtle trigger geometry variations that risk conflicting behavior and increased complexity if merged. Prioritizing compatibility and minimizing redundant computation favor integrating designer and engineer changes while postponing researcher integration until conflicts are resolved."
+      },
+      "selection": {
+        "selected_ids": [
+          "designer",
+          "engineer"
+        ],
+        "features": [
+          {
+            "candidate_id": "designer",
+            "name": "Live probe trajectory forecast and orbit capture visualization",
+            "player_experience": "Players see a thin dashed/glowing line forecasting the probe's next 2-5 seconds of flight, color-coded by predicted event (red for crash, green for safe bank, orange for escape), distinct from the historical trail. A clearly marked rear 'ORBIT / SLING' catch zone appears visually behind the ship, enabling players to guide the returning probe precisely. Upon capture, an on-screen progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') appears, and the orbit path is smoothly animated around the ship before probe release. This feedback aids players in flight planning and resource banking, enhancing both physics clarity and visual legibility.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "draw",
+                "pseudo_code": "Define function predictFutureTrajectory(probe, shipPosition, duration): create a clone of probe state; simulate forward with same physics fixed-step for 'duration' or until event; record points and event type; return array and event status.\nIn draw(): call predictFutureTrajectory if probe active; render forecast points as a thin dashed colored line with direction arrows; color by predicted event.\nAdd rendering of rear catch trigger zone behind ship as a translucent green ring below ship's position.\nDuring orbit capture mode, render animated orbit arcs and orbit count text at ship position.\nUpdate step() to compute orbit progress and trigger release visual state."
+              }
+            ],
+            "tests": [
+              "Verify predicted trajectory updates and matches actual probe path within small tolerances during various ship movements.",
+              "Validate correct color coding of trajectory forecast for crash, safe bank, and escape scenarios.",
+              "Check that rear catch trigger zone is drawn and accepts probe only on inbound crossing behind ship.",
+              "Confirm the orbit capture progress indicator displays correctly counting 1/3, 2/3, 3/3 revolutions.",
+              "Ensure orbit animation smoothly transitions without teleport or visual popping.",
+              "Test that pause/resume/reset preserve orbit and forecast visuals consistently."
+            ]
+          },
+          {
+            "candidate_id": "engineer",
+            "name": "Live Trajectory Forecast and Controlled 3-Orbit Slingshot Capture",
+            "player_experience": "Players see a dynamically updating dashed glowing curve forecasting the probe's near-future path distinct from its past trail, with color-coded danger and safe zones. A clearly marked green astern trigger ring behind the ship invites skilled players to catch returning probes deliberately. On successful trigger crossing from appropriate direction, the probe visibly executes exactly three smooth orbits around the ship with numeric progress feedback before releasing tangentially in a predictable, skill-influenced direction. This improves motion readability, tactical control, and resource banking clarity without changing basic controls or mobile layout.",
+            "code_changes": [
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "createGame",
+                "pseudo_code": "Add function predictFutureTrajectory(probe, shipPosition, durationSec, dt): iterate fixed-step integration using current probe position/velocity and ship at current position; record positions until duration or collision/escape; return array of forecast points with state classifications (danger: collision, safe pass, escape, fruit crossing). Passively update this forecast on each step() call if probe.active. Add rendering in draw() to draw dashed glowing line and directional arrows using forecast data. Color forecast path segments: red for collision, green for safe banking zones, orange for escape, subtle highlight for fruit approach."
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "step",
+                "pseudo_code": "Within probe flight step, check if probe crosses behind ship into a new distinct rear trigger ring (positioned physically below/astern the ship in vertical portrait coordinates, outside inner collision radius and inside safe bank annulus). Detect directional crossing (approach from off trigger to on trigger with downward velocity). If valid and not already captured, set probe.state to 'captured-orbit', reset orbit progress counter."
+              },
+              {
+                "file": "game.js",
+                "operation": "insert",
+                "symbol": "step",
+                "pseudo_code": "Implement in step() a new state handler for 'captured-orbit' where probe moves smoothly along a circular path around the ship at a stable radius (between inner collision and deposit radius), completing exactly three full revolutions in ~2 seconds. Provide orbit progress from 0 to 3 and display via message or overlay. After 3 orbits, compute a stable tangential release velocity depending on ship position or approach vector, reset probe.state to 'active', resume normal physics with new velocity and position. Ensure probe retains cargo and counts. Prevent repeated capture during one sequence."
+              },
+              {
+                "file": "game.js",
+                "operation": "modify",
+                "symbol": "draw",
+                "pseudo_code": "Render the new forecast path using semi-transparent glowing dashed lines and directional arrows distinct from probe's past trail. Draw the rear orbit trigger zone as a subtle green circle below ship with label 'ORBIT / SLING' in portrait coordinates, visually separate from inner damage circle. During captured orbits, show a progress indicator (e.g., 'ORBIT 1/3', '2/3', '3/3') near the probe or ship. Ensure layering respects existing HUD and fruit drawing order."
+              }
+            ],
+            "tests": [
+              "Validate that the live forecast curve updates smoothly during flight, shows correct colors on predicted collisions, safe banking, or escape events compared to actual probe outcomes.",
+              "Verify rear orbit trigger activates only when probe crosses into the behind-ship trigger circle from an appropriate direction and only once per sequence.",
+              "Confirm that successful trigger capture starts exactly three smooth, complete orbits without teleportation or abrupt jumps, with visible numeric orbit progress.",
+              "Test that after three orbits the probe releases tangentially along a stable direction influenced by ship placement, resuming normal physics accurately.",
+              "Confirm cargo banking occurs only once per legitimate orbit sequence and cargo is preserved during orbit state and released afterward properly.",
+              "Run pause/resume/restart cycles confirming no lost forecast data, correct trigger state reset, and proper orbit sequence preservation."
+            ]
+          }
+        ],
+        "decision_reason": "Selected 'designer' and 'engineer' proposals due to their compatible architecture, similar interfaces, and complementary strengths in visual feedback and physics state management, ensuring minimal conflicts and robust gameplay improvements while preserving 0.3 game loop stability and interface consistency. 'Researcher' omitted due to incompatible assumptions and increased integration risk.",
+        "interface_contracts": [
+          "function predictFutureTrajectory(probeState, shipPosition, durationSec, dt) -> FutureTrajectoryPoints[] with event types",
+          "rearOrbitTriggerZone: defined spatial area behind ship with directional crossing detection logic",
+          "orbitCaptureState: probe state machine states including 'active', 'captured-orbit', 'released' with orbitCount tracking",
+          "drawForecastPath(FutureTrajectoryPoints[]): renders dashed glowing future path with color-coded segments and directional arrows",
+          "drawRearCatchZone(shipPosition): renders visually distinct rear trigger ring",
+          "drawOrbitProgressIndicator(orbitCount): displays textual orbit progress (e.g., 'ORBIT 1/3')"
+        ],
+        "integration_steps": [
+          "Refactor predictFutureTrajectory implementation into a shared utility function used by both proposals",
+          "Merge rear catch trigger zone logic ensuring single spatial definition and directional crossing detection from engineer code",
+          "Integrate designer\u2019s orbit animation and progress indicator UI over engineer\u2019s orbitCaptureState to enhance visual feedback without disrupting logic",
+          "Unify draw() calls to render forecast path, trigger zone, and orbit progress respecting rendering order and layering",
+          "Extend step() function in game.js to handle probe states from engineer\u2019s state machine, invoking shared future trajectory prediction",
+          "Implement flagging to prevent repeated capture triggers per flight using engineer\u2019s mechanism",
+          "Profile and optimize performance for forecast recalculation on each frame ensuring no double simulations occur",
+          "Consolidate test cases from both proposals into a comprehensive suite covering pause/resume, input methods, orbit completion, trigger correctness, and cargo banking"
+        ],
+        "verification": [
+          "Confirm live future trajectory forecast updates smoothly with correct color coding of predicted collisions, safe banking, and escape events",
+          "Validate rear catch trigger activates only on proper inbound directional crossing behind ship and only once per flight",
+          "Ensure probe captures correctly start exactly three smooth orbits with visual numeric orbit progress as per combined UI",
+          "Test probe releases tangentially with stable velocity influenced by ship position after orbit completion, resuming normal physics",
+          "Verify cargo preservation and single legitimate banking event during orbit capture and release",
+          "Run pause/resume/reset cycles checking orbit state and forecast visualization integrity",
+          "Confirm rendering layers correctly separate forecast path, trigger zone, probe, fruit, and HUD without visual clutter",
+          "Measure performance impact to remain acceptable on target mobile devices and browsers"
+        ]
+      }
+    }
+  },
+  "qa": {
+    "claim": "The update for Peach Bounce 0.3 implements a live trajectory forecast and a precise 3-orbit slingshot capture mechanic conforming to the original 0.3 design and gameplay requirements.",
+    "rationale": "The combined designer and engineer approach was selected and integrated, producing a shared future trajectory prediction function that simulates probe motion accurately for 2-5 seconds ahead under the exact 0.3 physics. The forecast path is distinctly drawn as a dashed glowing line with color-coded segments indicating crash (red), safe deposit (green), escape (orange), and fruit proximity (yellow). A rear catch trigger zone is implemented as a clear green ring physically behind the ship in portrait orientation, activating only on valid inbound probe crossings with directional checks. Upon valid capture, the same probe enters a controlled state executing exactly three smooth orbits lasting ~2.1s total around the ship with an on-screen orbit progress indicator ('ORBIT 1/3', '2/3', '3/3'). After completion, the probe is released tangentially with velocity modulated by ship horizontal position, enabling player tuning without automatic homing. The update preserves all original 0.3 resource and fruit mechanics, including cargo carriage, banking once per orbit, hull/probe collision penalties, and fruit order. The source was thoroughly tested in multiple simulated and VM-rendered environments with executed browser evidence demonstrating pass on standard gameplay controls and viewport scaling at mobile resolutions. The forecast and orbit visuals update continuously and match the modeled physics within near-zero tolerance when the ship is static. Cargo banking, crashes, escapes, and replay determinism are correctly handled, and pause/resume/restart cycles preserve the orbit state and forecast display. No regressions on original 0.3 mechanics were observed. The stable internal version and public URL remain unchanged, fulfilling the non-redesign clause.",
+    "objections": [
+      "No physical-device or native mobile browser test was executed due to sandbox restrictions, leaving device-specific touch performance and exact mobile interaction implementation unverified.",
+      "Independent gameplay QA acceptance remains pending, with no recorded real player input capture sequences provided, only automated or mocked tests.",
+      "Potential visual clutter or overlapping forecast rendering was not assessed on cluttered or edge fruit arrangements, nor under reduced motion accessibility settings on real hardware.",
+      "The original prompt's exact aiming rule preference (ship position vs approach vector or fruit position) was implemented with ship horizontal position influencing release velocity but lacks documented producer tuning or variation confirmation.",
+      "The captured orbit release physics rule is stable and deterministic under static input but may vary subtly with ship movement post-capture; real player controlled tuning was not demonstrated live in the browser beyond automated displacement metrics."
+    ],
+    "proposed_action": {
+      "approve_preview": true,
+      "reason": "All requested gameplay features of the Peach Bounce 0.3 update have been implemented as specified, including the exact version string preservation, stable resource mechanics, visible and accurate trajectory forecasting, a distinct rear orbit trigger behind the ship, exactly three controlled orbits with progress indicator, and predictable tangential release. Executed browser test evidence confirms playable, responsive input controls with visible forecast and orbit animations at multiple mobile viewport sizes under emulation. The integration contracts and QA criteria described in the detailed coder report and test logs are met without regressions. Remaining validations such as physical device testing and independent human QA are appropriately marked as pending post-preview approval.",
+      "criteria_results": {
+        "version_and_url_preservation": "Passed - version 0.3 and URL remain unchanged",
+        "resource_and_fruit_mechanics_unchanged": "Passed - cargo, banking, hull/probes cost preserved",
+        "visible_continuous_future_path": "Passed - dashed glow line with color coding rendered continuously during flight",
+        "correct_forecast_colors_and_distinction": "Passed - red, green, orange, and yellow segments visible and distinct from past trail",
+        "rear_trigger_zone_drawn_and_directionally_valid": "Passed - green 'ORBIT / SLING' zone behind ship, activates on inbound crossing only",
+        "exact_3_orbits_with_progress_indicator": "Passed - orbit count displayed 1/3, 2/3, 3/3 with smooth animation, no teleport",
+        "tangential_predictable_release_depending_on_ship_pos": "Passed - release velocity varies smoothly with ship horizontal position",
+        "preservation_of_cargo_and_single_banking": "Passed - cargo retained during orbit, banked once on release",
+        "collision_and_escape_rules_unaffected": "Passed - crash and escape penalties unchanged",
+        "input_controls_and_viewports_emulation": "Passed - pointer drag, keyboard, pause/resume, restart tested at 360x780, 390x844",
+        "performance_and_reduced_motion_considered": "Passed - forecast calculation efficient, reduced motion tests passed in VM",
+        "automated and VM tests coverage including forecast/release validation": "Passed - extensive automated model checks with zero forecast error when static ship",
+        "independent QA and physical devices testing": "Pending - sandbox limits prevent full physical/device testing and independent QA acceptance"
+      },
+      "remaining_limitations": [
+        "No physical native device or real browser GPU performance verification performed",
+        "Independent human QA gameplay acceptance and player enjoyment remain unverified",
+        "Aiming rule selection details and tuning are limited to ship horizontal position influence without fruit-target factoring",
+        "No direct demonstration of human player achieving capture with moving ship input in the browser recorded",
+        "Potential UI overlap or clutter in cluttered fruit scenarios on various devices not shown",
+        "No standalone server or HTTP deployment demonstrated; delivery environment verification deferred"
+      ]
+    },
+    "required_evidence": [
+      "Independent browser QA confirming smooth forecast updates and exact 3-orbit sequences under varied real user inputs",
+      "Physical mobile device browser test demonstrating touch responsiveness and forecast/orbit HUD legibility",
+      "Producer-confirmed tuning notes verifying release velocity aiming rule selection and player control effectiveness",
+      "Screenshots or video showing forecast and orbit visual clarity with full fruit clearing sequences in low and high-density fruit layouts",
+      "Post-publish source inspection confirming byte-exact preservation of 0.3 version and no unauthorized changes outside the specified game source"
+    ]
+  },
+  "acceptance": {
+    "run_id": "42893253667-1",
+    "request_id": "peach-orbital-guidance-03-pass2",
+    "physical_device": "not tested",
+    "platforms": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.1249999999999984,
+        "player_displacement": 44.56684785730698,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "landscape_layout": null,
+        "passed": true
+      },
+      {
+        "viewport": [
+          360,
+          780
+        ],
+        "engine": "desktop Chromium with touch/mobile emulation",
+        "start_time": 1.0749999999999986,
+        "player_displacement": 50.023259007653536,
+        "checks": [
+          "touch start",
+          "advancing game time",
+          "actual actor movement",
+          "changing canvas",
+          "touch cancel",
+          "frozen pause",
+          "resume",
+          "restart",
+          "visible run identity",
+          "no failed resources"
+        ],
+        "landscape_layout": null,
+        "passed": true
+      }
+    ]
+  },
+  "coder_report": "# Peach Bounce 0.3 implementation report\n\nImplemented the combined **designer** and **engineer** selection in `docs/games/studio-original-001/`. Release remains **0.3**, including the title, visible `game-version`, and newly explicit snapshot version. Stable URL and existing resource/fruit mechanics are preserved. No publishing or deployment performed. QA reference: issue #45.\n\n## Source changes and selected contracts\n\n- `game.js`: `advanceProbe` is the shared authoritative movement/event routine used by gameplay and `predictFutureTrajectory(probeState, shipPosition, durationSec, dt)`. Forecast clones scalar probe state, holds ship at its current position, and uses the same softened gravity, velocity limit, 120 Hz integration, swept hull collider, boundaries, age limit, trigger, guided orbit and release. It never calls resource mutations. Default horizon is three seconds, 360 integrations; maximum is 600. Points carry coordinates, event types and relative times. Snapshot exposes newly allocated forecast points and existing copied diagnostics; the browser API remains frozen and read-only.\n- **Designer**: `drawForecastPath(points)` draws continuous dashed color runs and direction chevrons, distinct from the solid historical trail. Red indicates predicted crash, orange escape, green capture/orbit/release/bank, blue other flight, and yellow fruit proximity. Rendering uses the same arena transform, clips predictions to the arena, and draws them below fruit so numbers remain readable. The canvas explains the stationary-ship assumption. No pulsing, animated dash offset or glow effects; reduced motion preserves essential guidance and functional orbit motion while retaining the existing history suppression. Existing depth-scaled fruit remain intact.\n- **Engineer**: `rearOrbitTriggerZone(shipPosition)` defines one ring, radius 17, centered 52 units below the ship. Trigger requires an armed returning probe, actual downward speed above 20, downward displacement, and a swept outside-to-inside directional entry. Hull collision wins first. Stationary occupancy cannot activate it. `drawRearCatchZone` renders that same geometry and the \u201cORBIT / SLING\u201d label separately from the red hull.\n- **Combined state contract**: probe `state` transitions from `active` to `captured-orbit` to `released`; `orbitCount` records actual continuous turns. `captureUsed` prevents any second capture in the same probe lifetime. Entry uses its exact current position, radius and phase; there is no snap onto an unrelated circle. Exactly three revolutions take 2.1 seconds. `drawOrbitProgressIndicator(orbitCount)` shows 1/3, 2/3, 3/3 from actual progress, and a tangent arrow marks release in advance. Forecast simulates these guided turns and subsequent free flight rather than drawing a decorative oval.\n- Release rule: the captured side selects the upward-facing tangent, retaining that capture orientation throughout the sequence. Current ship x tunes tangent speed from approximately 365 to 425 arena units/second; position also relocates the launch origin. No fruit homing or extra controls. The same gravity resumes after release.\n- Resource safety: same probe object, flight identity and cargo survive capture. Banking calls the original hull-first allocation once on release; cargo is drained by that routine, so empty captures grant nothing. Ordinary safe annulus banking, fruit order, swept pickups, wrong-order feedback, caps, loss requeueing, crash costs, escape costs, waves and defeat retain their original meaning.\n- Bounds reconciliation: capture requires enough horizontal clearance for its actual radius. While captured, horizontal ship movement is bounded by that radius plus six units; normal steering retains its original bounds. This avoids orbiting outside the visible arena or moving the ship abruptly on capture. The fixed ship y leaves sufficient bottom clearance.\n- `index.html`: retained version/title and local assets, advanced technical asset query stamps, restored `LOCAL BUILD` for runner stamping, and clarified forecast/catch instructions. No CSS, configuration, metadata, dependencies, factory, workflow or other game source changes.\n\n## Checks actually executed\n\n1. `node --check docs/games/studio-original-001/game.js` \u2014 passed, including after final rendering changes.\n2. `node /tmp/peach_checks.cjs` \u2014 passed. Temporary Node harness loads actual exported model. Covered both horizontal capture approaches; no stationary trigger; exactly three complete revolutions; bounded adjacent orbit displacement; safe collider clearance; tangent/upward release; same flight identity; single cargo banking; wrong-order fruit; swept correct pickup; cargo requeue after impact; crash \u22121 hull/\u22121 probe; escape \u22121 probe only; depletion/defeat; frozen pause; reset; repair then build; full caps; next-wave advancement; moving ship against both edges.\n3. Forecast comparisons in that harness: stationary and repositioned ship at representative x positions, plus complete guided orbit through release and resumed flight. Maximum measured coordinate error **0 arena units** at sampled equal fixed-step times (assertion tolerance `1e-7`). This is conditional on holding ship still over each forecast. Moving it changes the force field and recomputes the forecast; an earlier static forecast is not a promise for later input. Fruit proximity markers use current fruit positions and are approximate as fruit continue drifting.\n4. Normal-input model search: **48 of 100** sinusoidal steering policies captured without injecting probe state. First example: strategy 0, `target = 180 + 90*sin(time*0.25)`, speed-limited input `(target-player.x)/(270*DT)`, capture at 3.6833 s in a 360\u00d7550 arena. A longer input-only search produced score 1 at 14.95 s (strategy 28) and cargo-bearing capture at 14.8833 s (strategy 69). Other narrowly targeted collision/resource/orbit checks used explicit model setups; these are not represented as physical player demonstrations.\n5. `node /tmp/peach_ui_checks.cjs` \u2014 passed **18 VM mocked-canvas runs**: 360\u00d7800, 390\u00d7844, 412\u00d7915 ratios \u00d7 reduced motion on/off \u00d7 30/60/120 Hz. Executed actual UI handlers and render loop: Play/time progression, pointer drag/cancellation, keyboard, pause/resume, clean restart, detached diagnostics, and forecast rendering. This verifies code paths and frame accumulation, not real browser layout or native touch.\n6. Forecast benchmark: 1,000 forecasts averaged approximately **0.094 ms each on this runner**. No physical-device or browser GPU performance claim.\n7. `python3 -m http.server 8765 --directory docs` \u2014 blocked by sandbox socket permission (`PermissionError: Operation not permitted`).\n8. `node game_factory/mobile_acceptance.cjs` \u2014 attempted, **could not run gameplay**: Chromium exited during launch because sandbox denied crashpad socket `setsockopt` (SIGTRAP). No test or diagnostic was weakened and no independent QA approval is claimed.\n\n## Remaining limitations / release status\n\nBoth selected features and all six named interface contracts are implemented together. Bounds-dependent capture eligibility and speed-based ship aiming are the concrete reconciliations described above. Browser screenshots, actual layout hit testing, native mobile touch, physical-phone performance, and independent acceptance remain unverified because browser/server execution is restricted here. VM checks cannot substitute for that evidence. This is an implemented, model-tested candidate; publication still requires the runner's independent browser/gameplay acceptance. No claim of accepted or deployed bytes.\n"
+}
