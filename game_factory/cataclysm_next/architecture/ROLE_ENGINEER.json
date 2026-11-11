@@ -1,0 +1,55 @@
+{
+  "claim": "A bounded Gate 0 architecture and task decomposition plan grounded in the fixed R1-R7 requirements is feasible by modularizing legacy monolithic source functions into discrete subsystems with clear interfaces, defining a deterministic 13-second clock, redesigning companion abilities for auto activation, completing animation frame registries, and specifying boss/elite reroll economy, without code changes or testing at this stage.",
+  "rationale": "The contract enforces strict game timing (100 nights\u00d713s), entity counts (e.g. 9 bosses, 6 elites, 8 companions), and performance standards (animation frame minimums). Source inventory reveals a legacy monolithic global game state with direct canvas drawing and inconsistent timing constructs, requiring migration seams for modularization. Key functions (enemy_spawn, companion_ability, upgrade_offers, boss_spawn) naturally group into modules: Timing, Combat/AI, Companions, Animation, Economy/Progression. The deterministic 13-second clock unifies scheduling to replace varied legacy intervals. Companion abilities require redesign from explicit player activation to automated triggers matching R3. Animation frames are incomplete per the frame counts in contract, requiring registry completion. Reroll economy for bosses/elites to enable provisional 9+9+9 victory conditions must be architected. The fixed Gate 0 deliverables (architecture ADR, module manifest, migration plan, risk/performance budget, test inventory) establish bounded scope focusing on planning and risk identification prior to code changes or testing. Proposed modular interfaces with typed signatures and dependency DAGs ensure minimal safe first refactor and incremental implementation by downstream gates and roles.",
+  "objections": [
+    "Modular migration may underestimate integration complexity due to pervasive monolithic dependencies.",
+    "Transitioning companion abilities from explicit to auto-activation risks unforeseen gameplay and UX issues.",
+    "Provisionally interpreted 9+9+9 victory condition integration may cause scope creep or player confusion if mechanics shift.",
+    "Test inventory may not adequately cover complex legacy interactions or performance bottlenecks.",
+    "Legacy animation frame incompleteness risks visual inconsistencies not fully resolvable in planning stage.",
+    "Deterministic clock design may conflict with subtle legacy timing expectations embedded in the code base."
+  ],
+  "proposed_action": {
+    "decisions": [
+      "Approve architecture ADR defining modular separation and clear migration seams from monolithic global state and direct canvas rendering.",
+      "Implement single deterministic 13-second clock as core scheduling mechanism replacing disparate timing intervals.",
+      "Redesign companion ability system for auto-activation responding to game state events covering all companion archetypes.",
+      "Complete animation frame registry to meet or exceed minimum frames for enemies (162), squads (96), and heroes (120).",
+      "Specify boss and elite reroll economy mechanics enabling strategic rerolls supporting verified 9+9+9 campaign victory.",
+      "Develop comprehensive test inventory covering timing accuracy, AI behavior, animation completeness, reroll economy, and victory condition verification.",
+      "Establish risk and performance budget highlighting legacy migration seams, behavioral timing transitions, and animation performance hotspots."
+    ],
+    "deliverables": [
+      "Architecture ADR document detailing modular boundaries, legacy decoupling strategy, and migration seams.",
+      "Module manifest enumerating discrete subsystems: Timing, Combat/AI, Companion Abilities, Animation, Economy/Progression.",
+      "Source migration plan mapping key legacy functions (enemy_spawn, companion_ability, upgrade_offers, boss_spawn, game_loop) to new modules with minimal safe refactor targets.",
+      "Risk and performance budget identifying critical behavior risks, migration challenges, and animation bottlenecks.",
+      "Comprehensive test inventory specifying automated/manual tests addressing R1-R7 requirements.",
+      "Gate 0 milestone report summarizing analyses, architectural decisions, risk assessments, and planning outcomes."
+    ],
+    "risks": [
+      "Complex legacy monolithic global state and code dependencies complicate modular migration and increase integration risk.",
+      "Incomplete animation frame data may cause visual and gameplay regressions if not fully addressed in subsequent gates.",
+      "Behavioral timing changes from deterministic 13-second clock risk subtle gameplay inconsistencies.",
+      "Companion ability auto-activation redesign may negatively impact UX without extensive iteration.",
+      "QA gaps in reroll economy and verified campaign victory expectations may delay final gate approvals.",
+      "Provisional 9+9+9 final victory interpretation may require future adjustments impacting planned scope."
+    ],
+    "next_steps": [
+      "Map existing timing mechanisms and global state usages to proposed modular layers through detailed source code analysis.",
+      "Engage combat and progression SMEs to specify companion ability auto-activation API and triggers.",
+      "Draft architecture ADR and module manifest capturing migration seams and module responsibilities.",
+      "Conduct audit of existing automated/manual tests against R1-R7 to identify coverage gaps.",
+      "Perform risk and performance analyses focusing on timing convergence, animation registry completeness, and legacy coupling.",
+      "Present Gate 0 deliverables for stakeholder and producer review prior to Gate 1 design execution."
+    ]
+  },
+  "required_evidence": [
+    "Function-level source code mappings revealing timing, spawning, companion ability, animation, and scoring logic.",
+    "Documentation and code excerpts demonstrating current explicit companion ability activations.",
+    "Animation frame registry and frame count data showing gaps versus contract minimums.",
+    "Spawn logic and economy data around boss and elite reroll mechanics or their absence.",
+    "QA test coverage reports exposing gaps relative to new comprehensive test needs.",
+    "Job role definitions and deliverable timelines showing gate-based modular progression planning."
+  ]
+}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f1b"><title>CATACLYSM 1.0 — THE CATASTROPHE · Major Playtest</title><link rel="stylesheet" href="./game.css?build=CATASTROPHE-MAJOR-01"></head><body><main id="arena" class="arena">
+<canvas id="canvas" aria-label="Cataclysm. Drag to move; arrows or WASD also work."></canvas>
+<header class="identity"><a href="../games/" class="back">← Games</a><span>CATACLYSM <b id="game-version">1.0</b></span><small id="build-version" data-run="AI PLAYTEST BUILD CATASTROPHE-MAJOR-01">AI PLAYTEST BUILD CATASTROPHE-MAJOR-01</small><button id="fullscreen" type="button" class="fullscreen-toggle" aria-label="Enter fullscreen" aria-pressed="false">⛶ Full</button></header>
+<div class="hud">
+<div class="hud-block"><small>NIGHT <b id="night-count">1/100</b></small><b id="time">00:00</b></div><div class="hud-block"><small id="encore-label">FISH · 0/3</small><b id="fish">0</b><progress id="encore-meter" max="1" value="0" aria-label="Fishbone Encore: collect 3 fish in eight seconds"></progress></div><div class="hud-block"><small>KILLS</small><b id="kills">0</b></div><div class="hud-block"><small>HP</small><b id="health">3 / 3</b></div><div class="hud-block"><small>SCORE</small><b id="score">0</b></div><div class="hud-block"><small>XP / LEVEL</small><b id="xp-level">0 / 10 · L1</b></div>
+</div><div id="night-status">NIGHT 1</div><div id="boss-status" hidden><span>ALLEY KING</span><progress id="boss-health" max="1" value="1" aria-label="Alley King health"></progress></div>
+<div id="major-buff-icons" aria-label="Active buffs and abilities" role="status"></div><p id="support-status" role="status"></p><p id="buff-status" role="status"></p><div id="encounter-status" aria-live="polite" role="status"></div>
+<nav class="actions" aria-label="Game controls"><button id="pause" aria-label="Pause game" hidden>Ⅱ</button><button id="mute" aria-label="Mute sound" aria-pressed="false">♪ Sound on</button><label class="volume-control" for="volume">Volume<input id="volume" type="range" min="0" max="100" step="1" value="70" aria-label="Sound volume"></label><button id="restart">↻ Restart</button><button id="squad-tactic" aria-label="Squad tactics toggle">Tactic: ATK</button><button id="runic-relic-activate" hidden>Activate relic</button></nav><div id="companionAbilityButtons" class="companion-abilities" role="group" aria-label="Companion special abilities"><button id="ability-shooter" hidden>Burst ready</button><button id="ability-healer" hidden>Heal ready</button><button id="ability-tank" hidden>Guard ready</button><button id="ability-brawler" hidden>Claws ready</button><button id="ability-sniper" hidden>Deadeye ready</button><button id="ability-engineer" hidden>Turret ready</button><button id="ability-trapper" hidden>Snare ready</button><button id="ability-bard" hidden>Anthem ready</button></div>
+<div id="start-overlay" class="overlay"><div class="overline">BO RHEZ GAMES · CATACLYSM 1.0 · MAJOR EDITION</div><h1 id="overlay-title">THE CATASTROPHE</h1><p id="overlay-copy">100 nights. 13 seconds each. 9 bosses, 9 elite kills and 9 super-elite kills stand between you and 999,999,999 points. Fight through the living city, recruit your squad and use earned rerolls to survive The Catastrophe.</p><button id="play" class="primary" disabled>LOADING…</button><small>Best <b id="best">0</b> · Play enters fullscreen when supported · <span class="rotate-hint">Landscape recommended · </span>WASD / arrows supported</small><small id="build-stats"></small></div>
+      <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
+        <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
+        <p id="upgrade-copy">Time and combat are frozen. Choose your build.</p><div id="upgrade-actions"><span>Rerolls: <b id="reroll-count">0</b></span><button id="reroll-upgrades" type="button" disabled aria-label="Reroll all four offered upgrades">⟳ Reroll (1)</button></div>
+
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-shooter" hidden>Special · Shooter familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-healer" hidden>Special · Healer familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-tank" hidden>Special · Tank familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-brawler" hidden>Recruit brawler</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-sniper" hidden>Recruit sniper</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-engineer" hidden>Recruit engineer</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-trapper" hidden>Recruit trapper</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-bard" hidden>Recruit bard</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="multi-shot" hidden>Special · Multi-shot<small>Add two spread shots · more ranks aggregate damage after nine projectiles</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · more ranks improve bounce damage after eight bounces</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · repeatable range growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="equip-lens" hidden>lens</button>
+<button type="button" class="upgrade" data-upgrade="equip-coil" hidden>coil</button>
+<button type="button" class="upgrade" data-upgrade="equip-capacitor" hidden>capacitor</button>
+        <button type="button" class="upgrade" data-upgrade="xp-gain" hidden>xp-gain</button>
+        <button type="button" class="upgrade" data-upgrade="squad-damage" hidden>squad-damage</button>
+        <button type="button" class="upgrade" data-upgrade="squad-rate" hidden>squad-rate</button>
+        <button type="button" class="upgrade" data-upgrade="squad-count" hidden>squad-count</button>
+        <button type="button" class="upgrade" data-upgrade="squad-spread" hidden>squad-spread</button>
+        <button type="button" class="upgrade" data-upgrade="squad-bounce" hidden>squad-bounce</button>
+        <button type="button" class="upgrade" data-upgrade="armor" hidden>armor</button>
+        <button type="button" class="upgrade" data-upgrade="critical" hidden>critical</button>
+        <button type="button" class="upgrade" data-upgrade="shield-pulse" hidden>shield-pulse</button>
+        <button type="button" class="upgrade" data-upgrade="area-burst" hidden>area-burst</button>
+        <button type="button" class="upgrade" data-upgrade="focus" hidden>focus</button>
+        <button type="button" class="upgrade" data-upgrade="squad-range" hidden>squad-range</button>
+        <button type="button" class="upgrade" data-upgrade="tactical-momentum" hidden>tactical-momentum</button>
+        <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×1.05 · fast volleys aggregate extra damage</small></button>
+        <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder · repeatable damage growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · diminishing speed growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="recover">Patch up<small>Restore one heart · heal one heart and gain 0.25 maximum HP</small></button>
+      </section>
+<div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div><div id="city-notice" role="status" aria-live="polite" hidden></div><div id="notice" class="notice" role="status" hidden></div><p id="runtime-status" role="alert" hidden></p><noscript>JavaScript is required to play.</noscript></main>
+<script>
+(function () {
+  var expected = '1.0';
+  var status = document.getElementById('runtime-status');
+  var play = document.getElementById('play');
+  var acknowledged = false;
+  var timer = setTimeout(function () {
+    if (!acknowledged) fail('Game initialization timed out. Reload this page.');
+  }, 10000);
+  function fail(message) {
+    clearTimeout(timer);
+    status.hidden = false;
+    status.textContent = message;
+    document.getElementById('overlay-copy').textContent = message + ' If reloading does not help, clear this site’s cached files and report code ' + expected + '.';
+    play.disabled = true;
+    play.textContent = 'RELOAD REQUIRED';
+  }
+  window.CATACLYSM_BOOT = {
+    fail: fail,
+    ready: function (build) {
+      document.getElementById('game-version').textContent = build;
+      document.getElementById('build-version').textContent = document.getElementById('build-version').dataset.run + ' · CODE ' + build;
+      if (build !== expected) {
+        fail('Game files are from different builds. Reload this page to update.');
+        throw Error('Game build mismatch: expected ' + expected + ', loaded ' + build);
+      }
+      acknowledged = true;
+      clearTimeout(timer);
+      window.CATACLYSM_READY = true;
+      play.disabled = false;
+      play.textContent = '▶ START RUN';
+    }
+  };
+  window.addEventListener('error', function (event) {
+    fail('Game error: ' + (event.message || 'resource failed to load') + '. Reload this page.');
+  });
+  window.addEventListener('unhandledrejection', function (event) {
+    fail('Game error: ' + String(event.reason || 'unhandled promise') + '. Reload this page.');
+  });
+})();
+</script>
+<script src="./campaign.js?build=CATASTROPHE-MAJOR-01" defer onerror="window.CATACLYSM_BOOT.fail('Campaign module failed to load')"></script>
+<script src="./animation.js?build=CATASTROPHE-MAJOR-01" defer onerror="window.CATACLYSM_BOOT.fail('Animation module failed to load')"></script>
+<script src="./game.js?build=CATASTROPHE-MAJOR-01" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+</body></html>

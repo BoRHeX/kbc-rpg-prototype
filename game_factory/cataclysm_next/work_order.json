@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "order_id": "cataclysm-1-0-catastrophe-major-20261111",
+  "game": "cataclysm",
+  "version_target": "1.0",
+  "candidate_status": "not_started",
+  "user_authorized_scope": "R1-R7",
+  "baseline": {
+    "source": "docs/cataclysm-1-0-preview/",
+    "stable": "docs/cataclysm/",
+    "archive": "docs/preview/",
+    "do_not_modify": [
+      "docs/cataclysm/",
+      "docs/cataclysm-1-0-preview/",
+      "docs/preview/",
+      "flame-game-studio"
+    ]
+  },
+  "candidate": "docs/cataclysm-1-0-major/",
+  "constraints": {
+    "night_seconds": 13,
+    "total_nights": 100,
+    "total_seconds": 1300,
+    "score_on_verified_win": 999999999,
+    "max_active_companions": 4,
+    "companion_archetypes": 8,
+    "normal_enemies": 9,
+    "melee": 3,
+    "ranged": 3,
+    "caster": 3,
+    "unique_bosses": 9,
+    "boss_events": 11,
+    "boss_every_n_nights": 9,
+    "elite_archetypes": 6,
+    "super_elite_archetypes": 3,
+    "elite_events": 16,
+    "elite_every_n_nights": 6,
+    "minimum_enemy_frames": 162,
+    "minimum_squad_frames": 96,
+    "minimum_hero_frames": 120,
+    "total_minimum_animation_frames": 378,
+    "additional_original_songs": 2
+  },
+  "boss_nights": [
+    9,
+    18,
+    27,
+    36,
+    45,
+    54,
+    63,
+    72,
+    81,
+    90,
+    99
+  ],
+  "elite_nights": [
+    6,
+    12,
+    18,
+    24,
+    30,
+    36,
+    42,
+    48,
+    54,
+    60,
+    66,
+    72,
+    78,
+    84,
+    90,
+    96
+  ],
+  "normal_elite_nights": [
+    6,
+    18,
+    30,
+    42,
+    54,
+    66,
+    78,
+    90,
+    100
+  ],
+  "super_elite_nights": [
+    12,
+    24,
+    36,
+    48,
+    60,
+    72,
+    84,
+    96,
+    100
+  ],
+  "victory": {
+    "night": 100,
+    "require": "alive AND night100_final_wave_cleared AND boss_kills>=9 AND elite_kills>=9 AND super_elite_kills>=9",
+    "state": "victory",
+    "score": 999999999,
+    "provisional_interpretation": true
+  },
+  "source_documents": [
+    "PRODUCTION_BRIEF.md",
+    "AGENT_ORCHESTRATION.md",
+    "DECISIONS.md",
+    "ACCEPTANCE.md"
+  ],
+  "budget": {
+    "planning_roles_max": 5,
+    "provider_calls_with_response_retry_max": 10,
+    "planning_model": "gpt-4.1-mini",
+    "full_implementation_spend_requires_review": true,
+    "notes": "Architecture planner sends five role requests, with at most one malformed-response retry per role via existing agent API. This is not a dollar-denominated hard spend cap."
+  },
+  "jobs": [
+    {
+      "id": "P00",
+      "role": "producer-and-technical-director",
+      "gate": 0,
+      "depends_on": [],
+      "owner_paths": [
+        "game_factory/cataclysm_next/architecture/"
+      ],
+      "deliverables": [
+        "architecture ADR",
+        "module manifest",
+        "source migration plan",
+        "risk/performance budget",
+        "test inventory"
+      ],
+      "must_pass": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7"
+      ]
+    },
+    {
+      "id": "P01",
+      "role": "engine-architect",
+      "gate": 1,
+      "depends_on": [
+        "P00"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/engine/"
+      ],
+      "deliverables": [
+        "deterministic 13s clock",
+        "state and event bus",
+        "save adapter",
+        "baseline diagnostics"
+      ]
+    },
+    {
+      "id": "P02",
+      "role": "combat-and-ai",
+      "gate": 2,
+      "depends_on": [
+        "P01"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/combat/"
+      ],
+      "deliverables": [
+        "9 melee/ranged/caster enemy roster (3+3+3)",
+        "9 bosses",
+        "6 elites",
+        "3 super-elites",
+        "caster kiting",
+        "wave event ledger"
+      ]
+    },
+    {
+      "id": "P03",
+      "role": "progression-and-economy",
+      "gate": 2,
+      "depends_on": [
+        "P01"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/progression/"
+      ],
+      "deliverables": [
+        "more choices",
+        "rare boss/elite reroll token drops",
+        "three unique choices",
+        "auto companion abilities",
+        "win score 999999999 only on verified Night100"
+      ]
+    },
+    {
+      "id": "P04",
+      "role": "world-and-navigation",
+      "gate": 2,
+      "depends_on": [
+        "P01"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/world/"
+      ],
+      "deliverables": [
+        "expanded map with larger buildings",
+        "dumpsters",
+        "parked cars",
+        "collision/nav and offscreen spawning"
+      ]
+    },
+    {
+      "id": "P05",
+      "role": "rig-and-animation",
+      "gate": 3,
+      "depends_on": [
+        "P02"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/animation/"
+      ],
+      "deliverables": [
+        "162 articulated enemy frame samples",
+        "96 squad frames",
+        "120 hero frames across idle/run/damage/feral/adrenaline"
+      ]
+    },
+    {
+      "id": "P06",
+      "role": "composer-and-sfx",
+      "gate": 3,
+      "depends_on": [
+        "P01"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/audio/"
+      ],
+      "deliverables": [
+        "two original new songs",
+        "additional unique SFX",
+        "bounded event-driven WebAudio"
+      ]
+    },
+    {
+      "id": "P07",
+      "role": "ui-and-accessibility",
+      "gate": 3,
+      "depends_on": [
+        "P03"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/ui/"
+      ],
+      "deliverables": [
+        "icons and active/cooldown indicators",
+        "reroll UI",
+        "responsive HUD"
+      ]
+    },
+    {
+      "id": "P08",
+      "role": "integrator",
+      "gate": 4,
+      "depends_on": [
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "owner_paths": [
+        "docs/cataclysm-1-0-major/index.html",
+        "docs/cataclysm-1-0-major/main.mjs",
+        "docs/cataclysm-1-0-major/game.css",
+        "docs/cataclysm-1-0-major/assets-manifest.json"
+      ],
+      "deliverables": [
+        "tested integrated playable candidate"
+      ]
+    },
+    {
+      "id": "P09",
+      "role": "independent-qa-performance",
+      "gate": 5,
+      "depends_on": [
+        "P08"
+      ],
+      "owner_paths": [
+        "game_factory/cataclysm_next/qa/",
+        "tests/cataclysm_major/"
+      ],
+      "deliverables": [
+        "independent browser acceptance",
+        "100-night accelerated simulation",
+        "frame and song evidence review",
+        "failure ledger"
+      ]
+    },
+    {
+      "id": "P10",
+      "role": "release-engineer",
+      "gate": 6,
+      "depends_on": [
+        "P09"
+      ],
+      "owner_paths": [
+        "game_factory/cataclysm_next/releases/"
+      ],
+      "deliverables": [
+        "source sha receipt",
+        "rollback ref",
+        "verified separately published playtest"
+      ],
+      "requires_creator_review": true
+    }
+  ]
+}

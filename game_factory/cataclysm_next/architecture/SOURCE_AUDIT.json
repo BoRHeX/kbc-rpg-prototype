@@ -1,0 +1,56 @@
+{
+  "source": "docs/cataclysm-1-0-preview/game.js",
+  "lines": 2060,
+  "bytes": 132955,
+  "critical_function_lines": {
+    "game_entry": [
+      477
+    ],
+    "game_loop": [
+      1292
+    ],
+    "world_chunk": [
+      47
+    ],
+    "enemy_spawn": [
+      644
+    ],
+    "enemy_traits": [
+      669
+    ],
+    "fusion": [
+      710
+    ],
+    "companion_ability": [
+      873
+    ],
+    "upgrade_offers": [
+      532
+    ],
+    "score": [
+      1448
+    ],
+    "audio_scheduler": [
+      391
+    ],
+    "sprite_renderer": [
+      1645
+    ],
+    "boss_spawn": [
+      1038
+    ],
+    "final_boss": [
+      100
+    ],
+    "diagnostics": [
+      2019
+    ]
+  },
+  "known_legacy_constraints": [
+    "Monolithic global game variable and direct canvas drawing",
+    "Different night, wave and boss intervals must be replaced by single 13s clock",
+    "Current companion skills require explicit button activation",
+    "Existing posed cat renderer has no complete 6/12/24-frame registry",
+    "No boss/elite reroll economy and no 9+9+9 verified campaign victory"
+  ]
+}
