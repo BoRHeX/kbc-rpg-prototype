@@ -26,7 +26,7 @@ MODEL = os.environ.get("COUNCIL_MODEL", "gpt-4.1-mini")
 def verified_contract():
     contract = json.loads((SPEC / "work_order.json").read_text())
     assert contract["order_id"] == "cataclysm-1-0-catastrophe-major-20261111"
-    assert contract["budget"]["planning_api_calls_max"] == 5
+    assert contract["budget"]["planning_roles_max"] == 5 and contract["budget"]["provider_calls_with_response_retry_max"] == 10
     assert contract["constraints"]["total_seconds"] == 1300
     assert contract["constraints"]["total_minimum_animation_frames"] == 378
     assert len(contract["jobs"]) == 11
@@ -152,7 +152,7 @@ def main():
         (OUT / "PRODUCER_HANDOFF.md").write_text("\n".join(report)+"\n")
         (OUT / "COUNCIL_DECISIONS.json").write_text(json.dumps({
             "run_id":RUN_ID,"order_id":contract["order_id"],
-            "status":"proposed_not_implemented","max_model_calls":5,
+            "status":"proposed_not_implemented","roles_requested":5,"provider_calls_with_retries_max":10,
             "roles":results,"baseline":inventory},indent=2)+"\n")
     finally:
         memory.close()
