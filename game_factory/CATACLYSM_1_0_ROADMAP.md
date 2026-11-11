@@ -4,6 +4,8 @@
 
 The creator explicitly requested the existing Studio to produce 1.0 using the NEW private 0.9 recording `cataclysm__review-07.mp4`. The current request is the comprehensive binding work order; the older hypotheses below do not narrow it. This is separate from Flame Game Studio. One on-demand release with existing bounded repair; no new schedules.
 
+**2026-11-11 QA correction:** Run `43087177881` processed the review and passed all eight browser viewports but was rejected for incomplete release scope. Complete releases now use a fixed 25-requirement ledger and four sequential source-preserving passes: foundation -> evolution -> builds -> presentation. Critic/Producer coordinate interfaces without voting requirements out. Each pass checkpoints exact candidate bytes; full-scope QA may request one bounded content continuation. A rejected candidate stays recoverable and cannot be published. Ordinary small-game jobs retain their existing route.
+
 **Source/delivery:** `docs/cataclysm/` is the newer illustrated 0.9 primary game with physical world, original audio, fullscreen and eight companions. Compare accepted `docs/preview/` director/city-encounter/reward additions read-only and carry compatible improvements forward. Preserve that archive and the earlier graphics archive. Publish 1.0 at `/cataclysm/` after independent QA, updating only primary dashboard labels.
 
 **Remember the full agreed vision:**

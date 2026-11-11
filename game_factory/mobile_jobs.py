@@ -36,6 +36,11 @@ def validate_request(value):
     ):
         raise ValueError("Supply 1–12 concise acceptance criteria")
     request = {k: value[k] for k in ("id", "game", "mode", "title", "prompt", "acceptance")}
+    if "release_scope" in value:
+        from game_factory.release_scope import validate_scope
+        if request["game"] != "cataclysm" or request["mode"] != "update":
+            raise ValueError("Complete release scope is for Cataclysm update jobs")
+        request["release_scope"] = validate_scope(value["release_scope"])
     if "evidence_drive_file_id" in value:
         fid = value["evidence_drive_file_id"]
         if (request["mode"] != "update" or not isinstance(fid, str) or
@@ -144,6 +149,11 @@ def prepare_command():
                    "acceptance": ["Implement the supplied prompt while preserving working mobile controls."]}
     else:
         request = json.loads((ROOT / "game_factory/requests/current.json").read_text())
+    if request.get("release_scope") and os.getenv("FULL_RELEASE_PIPELINE") != "1":
+        validate_request(request)
+        output("active", "false")
+        print("Complete release routed to the staged release workflow; no small-feature council or model calls.")
+        return
     job = prepare(ROOT, request, run_id)
     output("active", str(job is not None).lower())
     if job is None:
@@ -559,6 +569,9 @@ def package_command():
                "qa": json.loads((WORK / "qa.json").read_text()),
                "acceptance": json.loads((WORK / "acceptance.json").read_text()),
                "coder_report": (WORK / "CODER_REPORT.md").read_text()}
+    if job["request"].get("release_scope"):
+        from game_factory.release_scope import completion_evidence
+        receipt["scope_completion"] = completion_evidence(job, WORK)
     bundle = WORK / "release"
     bundle.mkdir(exist_ok=True)
     shutil.copytree(ROOT / job["target"], bundle / "game", dirs_exist_ok=True)
@@ -589,6 +602,9 @@ def publish_bundle(root, bundle):
     target = target_for(request["game"], request.get("release_version"))
     if receipt["target"] != target or receipt["request_digest"] != digest(request):
         raise ValueError("Candidate target or request was altered")
+    if request.get("release_scope"):
+        from game_factory.release_scope import verify_completion
+        verify_completion(receipt)
     tests = receipt.get("acceptance", {})
     if (receipt.get("state") != "accepted" or
             receipt.get("qa", {}).get("proposed_action", {}).get("approve_preview") is not True or
@@ -743,6 +759,9 @@ def verify_published(root, request_id):
     request = validate_request(receipt["request"])
     if request["id"] != request_id or receipt["request_digest"] != digest(request):
         raise ValueError("Accepted request identity mismatch")
+    if request.get("release_scope"):
+        from game_factory.release_scope import verify_completion
+        verify_completion(receipt)
     if receipt["target"] != target_for(request["game"], request.get("release_version")) or manifest(root / receipt["target"]) != receipt["files"]:
         raise ValueError("Published source differs from accepted game bytes")
     tests = receipt.get("acceptance", {})

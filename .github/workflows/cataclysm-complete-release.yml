@@ -1,0 +1,188 @@
+name: Complete Cataclysm Release
+run-name: Cataclysm complete release · four implementation passes
+on:
+  push:
+    branches: [main]
+    paths: ['game_factory/requests/current.json']
+  workflow_dispatch:
+concurrency:
+  group: borhez-mobile-game-jobs
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    outputs:
+      active: ${{ steps.job.outputs.active }}
+      job_digest: ${{ steps.job.outputs.job_digest }}
+      plan_digest: ${{ steps.plan.outputs.plan_digest }}
+    env:
+      FULL_RELEASE_PIPELINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve only an explicitly complete-release request
+        id: job
+        run: python -m game_factory.release_scope resolve
+      - name: Install private review dependencies
+        if: steps.job.outputs.active == 'true'
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 update -qq
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 install -y ffmpeg
+          fi
+          python -m pip install --disable-pip-version-check openai requests
+      - name: Process original review once for the complete-release council
+        if: steps.job.outputs.active == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run: python -m game_factory.private_playback
+      - name: Plan all mandatory requirements without feature voting
+        id: plan
+        if: steps.job.outputs.active == 'true'
+        env:
+          EXPECTED_JOB_DIGEST: ${{ steps.job.outputs.job_digest }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.release_scope plan
+      - name: Preserve only the public gameplay contract and integration plan
+        if: steps.job.outputs.active == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-complete-release-plan
+          path: |
+            artifacts/mobile/job.json
+            artifacts/mobile/plan.json
+            artifacts/mobile/review-coverage.json
+          if-no-files-found: error
+          retention-days: 14
+
+  foundation:
+    needs: plan
+    if: needs.plan.outputs.active == 'true'
+    uses: ./.github/workflows/cataclysm-release-pass.yml
+    with:
+      stage: foundation
+      job_digest: ${{ needs.plan.outputs.job_digest }}
+      plan_digest: ${{ needs.plan.outputs.plan_digest }}
+    secrets: inherit
+  evolution:
+    needs: [plan, foundation]
+    uses: ./.github/workflows/cataclysm-release-pass.yml
+    with:
+      stage: evolution
+      previous_stage: foundation
+      job_digest: ${{ needs.plan.outputs.job_digest }}
+      plan_digest: ${{ needs.plan.outputs.plan_digest }}
+    secrets: inherit
+  builds:
+    needs: [plan, evolution]
+    uses: ./.github/workflows/cataclysm-release-pass.yml
+    with:
+      stage: builds
+      previous_stage: evolution
+      job_digest: ${{ needs.plan.outputs.job_digest }}
+      plan_digest: ${{ needs.plan.outputs.plan_digest }}
+    secrets: inherit
+  presentation:
+    needs: [plan, builds]
+    uses: ./.github/workflows/cataclysm-release-pass.yml
+    with:
+      stage: presentation
+      previous_stage: builds
+      job_digest: ${{ needs.plan.outputs.job_digest }}
+      plan_digest: ${{ needs.plan.outputs.plan_digest }}
+      final: true
+    secrets: inherit
+  continuation:
+    needs: [plan, presentation]
+    if: needs.presentation.outputs.needs_repair == 'true'
+    uses: ./.github/workflows/cataclysm-release-pass.yml
+    with:
+      stage: repair
+      previous_stage: presentation
+      job_digest: ${{ needs.plan.outputs.job_digest }}
+      plan_digest: ${{ needs.plan.outputs.plan_digest }}
+      final: true
+    secrets: inherit
+
+  publish:
+    needs: [plan, presentation, continuation]
+    if: always() && needs.plan.result == 'success' && ((needs.presentation.result == 'success' && needs.presentation.outputs.needs_repair == 'false') || (needs.continuation.result == 'success' && needs.continuation.outputs.needs_repair == 'false'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: borhez-game-publish
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+      - name: Validate candidate hashes and preserve accepted code history
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m game_factory.mobile_jobs publish
+          git config user.name 'BoRHeZ Mobile Game Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/games docs/preview docs/cataclysm game_factory/results
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "Deliver tested mobile game job #$GITHUB_RUN_ID"
+          fi
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+      - name: Request delivery from the newly committed source and wait for live verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_ID: ${{ steps.publish.outputs.request_id }}
+          DELIVERY_KEY: ${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DELIVERY_TITLE="Deliver $REQUEST_ID ($DELIVERY_KEY)"
+          python - <<'PYDISPATCH' > "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          import json,os
+          print(json.dumps({"event_type":"borhez-mobile-delivery","client_payload":{
+              "request_id":os.environ["REQUEST_ID"],"delivery_key":os.environ["DELIVERY_KEY"]}}))
+          PYDISPATCH
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          delivery_run=""
+          for attempt in {1..18}; do
+            if gh run list --workflow mobile-game-delivery.yml --event repository_dispatch --limit 30 --json databaseId,displayTitle > "$RUNNER_TEMP/mobile-delivery-runs.json"; then
+              delivery_run="$(python - <<'PYRUN'
+          import json,os
+          from pathlib import Path
+          runs=json.loads((Path(os.environ['RUNNER_TEMP'])/'mobile-delivery-runs.json').read_text())
+          print(next((str(r['databaseId']) for r in runs if r['displayTitle']==os.environ['DELIVERY_TITLE']),''))
+          PYRUN
+              )"
+            fi
+            if [ -n "$delivery_run" ]; then break; fi
+            sleep 5
+          done
+          if [ -z "$delivery_run" ]; then
+            echo "::error::Accepted source saved, but delivery run did not start"
+            exit 1
+          fi
+          echo "Delivery run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$delivery_run" >> "$GITHUB_STEP_SUMMARY"
+          gh run watch "$delivery_run" --exit-status --interval 10
+          echo "Live delivery verified for $REQUEST_ID" >> "$GITHUB_STEP_SUMMARY"

@@ -100,6 +100,12 @@ async function test(browser, width, height) {
     await page.waitForTimeout(1100);
     const started = await snap();
     if(started.mode !== 'running' || !Number.isFinite(started.time) || !(started.time > 0.5)) throw Error('Real touch start did not advance running game state');
+    if(job.request.release_scope){
+      if(started.build !== job.request.release_version) throw Error('Runtime release version differs from the complete-release request');
+      const normalize=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(!normalize(await page.title()).includes(normalize(job.request.title))) throw Error('Complete-release game title is missing');
+      if((await page.locator('#game-version').innerText()).trim() !== job.request.release_version) throw Error('Runtime boot overwrote the visible release version');
+    }
     const layoutEvidence = landscapeJob ? await testLandscapeLayout(page,width,height) : null;
     const canvas = page.locator('#canvas');
     await canvas.scrollIntoViewIfNeeded();
@@ -133,7 +139,7 @@ async function test(browser, width, height) {
     await page.screenshot({path:path.join('artifacts/mobile',`phone-${width}.png`),fullPage:true});
     if(errors.length) throw Error(errors.slice(0,5).join('; '));
     const result = {viewport:[width,height],engine:'desktop Chromium with touch/mobile emulation',
-      start_time:started.time,player_displacement:Math.hypot(moved.player.x-before.player.x,moved.player.y-before.player.y),
+      start_time:started.time,runtime_release:started.build,player_displacement:Math.hypot(moved.player.x-before.player.x,moved.player.y-before.player.y),
       checks:['touch start','advancing game time','actual actor movement','changing canvas','touch cancel','frozen pause','resume','restart','visible run identity','no failed resources'],landscape_layout:layoutEvidence,passed:true};
     evidence.platforms.push(result);
     console.log('PASS mobile '+width+'x'+height+': real gameplay, pause, resume, restart, run identity');

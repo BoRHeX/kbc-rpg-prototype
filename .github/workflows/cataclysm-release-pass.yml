@@ -1,0 +1,120 @@
+name: Complete Cataclysm release pass
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        required: true
+      previous_stage:
+        type: string
+        default: ''
+      job_digest:
+        type: string
+        required: true
+      plan_digest:
+        type: string
+        required: true
+      final:
+        type: boolean
+        default: false
+    outputs:
+      needs_repair:
+        value: ${{ jobs.code.outputs.needs_repair }}
+permissions:
+  contents: read
+jobs:
+  code:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      needs_repair: ${{ steps.qa.outputs.needs_repair }}
+    env:
+      RELEASE_STAGE: ${{ inputs.stage }}
+      PREVIOUS_STAGE: ${{ inputs.previous_stage }}
+      EXPECTED_JOB_DIGEST: ${{ inputs.job_digest }}
+      EXPECTED_PLAN_DIGEST: ${{ inputs.plan_digest }}
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test tools before the coding sandbox starts
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-complete-release-plan
+          path: artifacts/mobile
+      - uses: actions/download-artifact@v4
+        if: inputs.previous_stage != ''
+        with:
+          name: cataclysm-pass-${{ inputs.previous_stage }}
+          path: artifacts/mobile/previous
+      - name: Restore hash-verified predecessor and bind every pass requirement
+        run: python -m game_factory.release_scope prepare_pass
+      - name: Start the local game server
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-release-http.log 2>&1 &
+      - name: Implement the complete assigned subsystem scope
+        id: coder
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/mobile/CODER_PROMPT.md
+      - name: Independent source and eight-viewport controls checks
+        id: gate
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          { python -m game_factory.mobile_jobs validate && python -m game_factory.mobile_jobs stamp && node game_factory/mobile_acceptance.cjs; } 2>&1 | tee artifacts/mobile/gate.log
+      - name: Save exact candidate and enforce complete pass coverage
+        if: always() && steps.coder.outcome != 'skipped'
+        env:
+          PASS_GATE_OUTCOME: ${{ steps.gate.outcome }}
+        run: python -m game_factory.release_scope checkpoint
+      - name: Independent QA against every release requirement
+        if: inputs.final
+        id: qa
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.release_scope review
+      - name: Seal only the fully approved candidate
+        if: inputs.final && steps.qa.outputs.needs_repair == 'false'
+        run: python -m game_factory.mobile_jobs package
+      - uses: actions/upload-artifact@v4
+        if: inputs.final && steps.qa.outputs.needs_repair == 'false'
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve candidate even when content QA rejects it
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-pass-${{ inputs.stage }}
+          path: artifacts/mobile/checkpoint
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Preserve pass report and executed test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-pass-evidence-${{ inputs.stage }}
+          path: |
+            artifacts/mobile/STAGE_REPORT.json
+            artifacts/mobile/CODER_REPORT.md
+            artifacts/mobile/gate.log
+            artifacts/mobile/acceptance.json
+            artifacts/mobile/qa.json
+          if-no-files-found: ignore
+          retention-days: 14

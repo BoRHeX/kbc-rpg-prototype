@@ -21,7 +21,7 @@ from game_factory import mobile_jobs as mobile
 
 def candidate_request_matches(original, current):
     keys = ("id", "game", "mode", "title", "prompt", "acceptance",
-            "redesign", "release_version")
+            "redesign", "release_version", "release_scope")
     return all(original.get(k) == current.get(k) for k in keys)
 
 

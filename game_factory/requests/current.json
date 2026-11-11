@@ -1,11 +1,11 @@
 {
-  "id": "cataclysm-10-the-catastrophe-review-07",
+  "id": "cataclysm-10-the-catastrophe-review-07-full",
   "mode": "update",
   "game": "cataclysm",
   "title": "Cataclysm 1.0: The Catastrophe",
   "release_version": "1.0",
   "evidence_drive_file_id": "1cKz1LJxc6eTibKGTNmkNS9fVN62dVZ4I",
-  "prompt": "CATACLYSM 1.0: THE CATASTROPHE — explicit creator release order, 2026-11-11. Produce one substantial coherent playable expansion from the actual latest primary 0.9, not a version rename. Have creative freedom within the agreed identity and requirements below. Make it fun to PLAY and WATCH. This is the existing BoRHeZ Games Studio experiment; do not touch the separate Flame Game Studio, other games, credentials, workflows or tests.\n\nEVIDENCE. evidence_drive_file_id is the NEW cataclysm__review-07.mp4 review of 0.9. Consume the complete available private gameplay transcript and sampled visuals via private_playback, extracting EVERY distinct gameplay observation with timestamps where available. Distinguish observations, creator requests and hypotheses. The newest review resolves earlier gameplay ambiguities; keep private speech/media/personal details out of public output. Do not retranscribe review-06 or older recordings. Read the 2026-11-11 release section in game_factory/CATACLYSM_1_0_ROADMAP.md and prior accepted reports.\n\nBASELINE. The primary illustrated 0.9 with physical world, revised audio, fullscreen and eight companions is docs/cataclysm, NOT the older /preview/ archive. Trusted orchestration now targets docs/cataclysm for 1.0. Compare docs/preview read-only and retain/backport compatible accepted living-horde director, enemy mutations, city encounter patterns and tactical rewards. Do not downgrade primary graphics/audio/controls or overwrite archives/branches. Reuse existing systems. Preserve boot handshake, diagnostic API, play/pause/restart/mute/fullscreen and build label required by independent QA.\n\n1. WORLD AND 3-6-9. Deliver the discussed 3-6-9 progression: endless world scrolling DOWN through distinct biome chunks, biome changes about every THREE MINUTES, meaningful milestones rather than only speed/HP inflation. Preserve horizontal looping if useful; replace vertical toroidal wrapping with coherent chunk progression where needed. After player level 9 introduce the rising shadow, with warning, chase pressure and fair escape/counterplay. Implement the LEVEL-99 BOSS and its NINE-DEFEAT endgame as actual tracked game state with distinct feedback and final result/reward. Demonstrate via accelerated deterministic checks, not nine real-time playthroughs. Keep movement responsive and routes legible. Account for the earlier luck/dance biome/progression influence: reconcile its exact meaning with this review, state the implemented rule, and do not silently omit it or invent a precise prior agreement.\n\n2. DIRECTOR AND MUTATION. Use a bounded threat/cost budget, gradual enemy introductions and sensible wave/recovery rhythm: no awkward unexplained empty pauses or punishment spikes for strong builds. Choose varied enemy traits with costs instead of unbounded numbers. Add procedural modular anatomy (legs/tentacles, torso, arms, heads/abilities), tying visible traits to behavior; include readable flying and obstacle-phasing enemies with counterplay. Implement fusion -> visible vulnerable COCOON -> MUTANT with real inherited traits, deterministic bounded combinations and clear telegraphs. Consume parents exactly once; never duplicate rewards or escape the threat budget. Preserve collision/pathfinding for the cat, ground enemies and squad; avoid trapped allies/pickups and teleport hits. Newly spawned enemies, ordinary collectibles, magnets and boosts originate OUTSIDE the visible viewport plus a margin; wrapping/chunks must not pop them into view.\n\n3. BUILDS AND SQUAD. Make main-cat, squad and equipment builds viable, with readable tactical synergies. Companions remain until run end, never 45-second rentals. Keep all EIGHT differentiated types, maximum FOUR UNIQUE active companions. Unlocks appear randomly among three-choice roguelite upgrade offers. After four unique allies are chosen, suppress other unowned unlocks; keep owned upgrades eligible. Preserve healer/tank/shooter plus the five other roles, abilities and useful coordinated behavior. Random pool retains Damage, Fire Rate, Move Speed, XP Gain; companion unlock, damage as fraction of player damage, fire rate, count within cap; Multishot, Bouncing Bullets, companion multishot/bounce and Cat's Catch. Preserve active relics; do not restore the removed aura activation menu. Equipment combinations must change tactics, not only decorate a stat. Avoid artificial progression caps, duplicate/impossible offers and upgrade-menu softlocks. Freeze ALL combat, encounters, simulation clocks and damaging states during choices and pause.\n\n4. EXPLORATION. Magnets remain VERY VERY RARE but last much longer than earlier releases. Collectible boosts also remain very rare. Spawn them beyond the screen so exploration matters, without filling the game with free boosts. Keep health recovery, fish/XP feedback, encounter rewards and boss pressure. Integrate events, biome transitions and shadow without overlapping unavoidable damage.\n\n5. PRESENTATION. Push simplified colorful readable animation. Make the MAIN CAT visibly alive (idle/run/attack/hit); differentiate squad/enemy silhouettes and animate cocoon assembly/emergence. Prior 12-FPS pose idea should retain smooth movement/rendering, aiming at 60 FPS subject to mobile performance. Use restrained particles, hit feedback, depth/2.5D cues and biome mood without hiding hazards. Improve the original hard-rock/DnB soundtrack with adaptive BUILDUP AND DROPS, distinct dubstep boss intensity and biome/event transitions. Sync cues with actions, keep levels controlled, mute/volume persistent and gesture-based browser audio startup. Bound audio scheduling; no external downloads or unrelated musical style.\n\n6. MOBILE. Landscape first: arena, HUD, pause, restart, sound, fullscreen, squad/relic actions and all THREE upgrade choices fit ONE SCREEN. No page scrolling or controls outside/below the play window. Keep portrait fallback and correct touch-to-world scaling on Samsung/mobile browsers. Test 640x320, 844x390, 915x412, desktop and narrow portrait. Keep game title/subtitle/settings and a dashboard link; no studio/devlog/AI-factory tabs inside the game.\n\nSTUDIO CONTRACT. Designer/Researcher/Engineer/Critic/Producer agree subsystem interfaces BEFORE coding. Do not shrink this order to one tiny feature or treat selected proposal count as a cap on requested systems. Implement compatible systems together with one integration owner and independent QA. Use the existing bounded coding/repair pipeline, no schedules or endless retry loop. Map EVERY numbered requirement to implemented+tested evidence or an explicit release blocker; prose and green syntax checks cannot establish completion. Verify real touch play, three choices, four-of-eight offer gating, collisions, offscreen spawning, rare long magnet, fusion/trait/cocoon accounting, biome transitions, shadow, 3-6-9, level-99 nine-victory progression, equipment/squad synergy and pause/restart/audio. Run accelerated long survival across several biomes/endgame states plus real browser input. Report limits honestly; physical Samsung is untested unless actually tested. Keep visible/runtime release EXACTLY 1.0 with The Catastrophe title/subtitle and a new technical build ID, stable /cataclysm/ URL. Publish only independently accepted exact bytes; update primary dashboard labels and verify live delivery. Preserve 0.9 archives and other games.",
+  "prompt": "CORRECTION OF QA-REJECTED RUN 43087177881. Use the complete-release pipeline with FOUR sequential source-preserving passes, not the old two-feature selection. Every release_scope requirement is mandatory and assigned to a pass.\n\nCATACLYSM 1.0: THE CATASTROPHE — explicit creator release order, 2026-11-11. Produce one substantial coherent playable expansion from the actual latest primary 0.9, not a version rename. Have creative freedom within the agreed identity and requirements below. Make it fun to PLAY and WATCH. This is the existing BoRHeZ Games Studio experiment; do not touch the separate Flame Game Studio, other games, credentials, workflows or tests.\n\nEVIDENCE. evidence_drive_file_id is the NEW cataclysm__review-07.mp4 review of 0.9. Consume the complete available private gameplay transcript and sampled visuals via private_playback, extracting EVERY distinct gameplay observation with timestamps where available. Distinguish observations, creator requests and hypotheses. The newest review resolves earlier gameplay ambiguities; keep private speech/media/personal details out of public output. Do not retranscribe review-06 or older recordings. Read the 2026-11-11 release section in game_factory/CATACLYSM_1_0_ROADMAP.md and prior accepted reports.\n\nBASELINE. The primary illustrated 0.9 with physical world, revised audio, fullscreen and eight companions is docs/cataclysm, NOT the older /preview/ archive. Trusted orchestration now targets docs/cataclysm for 1.0. Compare docs/preview read-only and retain/backport compatible accepted living-horde director, enemy mutations, city encounter patterns and tactical rewards. Do not downgrade primary graphics/audio/controls or overwrite archives/branches. Reuse existing systems. Preserve boot handshake, diagnostic API, play/pause/restart/mute/fullscreen and build label required by independent QA.\n\n1. WORLD AND 3-6-9. Deliver the discussed 3-6-9 progression: endless world scrolling DOWN through distinct biome chunks, biome changes about every THREE MINUTES, meaningful milestones rather than only speed/HP inflation. Preserve horizontal looping if useful; replace vertical toroidal wrapping with coherent chunk progression where needed. After player level 9 introduce the rising shadow, with warning, chase pressure and fair escape/counterplay. Implement the LEVEL-99 BOSS and its NINE-DEFEAT endgame as actual tracked game state with distinct feedback and final result/reward. Demonstrate via accelerated deterministic checks, not nine real-time playthroughs. Keep movement responsive and routes legible. Account for the earlier luck/dance biome/progression influence: reconcile its exact meaning with this review, state the implemented rule, and do not silently omit it or invent a precise prior agreement.\n\n2. DIRECTOR AND MUTATION. Use a bounded threat/cost budget, gradual enemy introductions and sensible wave/recovery rhythm: no awkward unexplained empty pauses or punishment spikes for strong builds. Choose varied enemy traits with costs instead of unbounded numbers. Add procedural modular anatomy (legs/tentacles, torso, arms, heads/abilities), tying visible traits to behavior; include readable flying and obstacle-phasing enemies with counterplay. Implement fusion -> visible vulnerable COCOON -> MUTANT with real inherited traits, deterministic bounded combinations and clear telegraphs. Consume parents exactly once; never duplicate rewards or escape the threat budget. Preserve collision/pathfinding for the cat, ground enemies and squad; avoid trapped allies/pickups and teleport hits. Newly spawned enemies, ordinary collectibles, magnets and boosts originate OUTSIDE the visible viewport plus a margin; wrapping/chunks must not pop them into view.\n\n3. BUILDS AND SQUAD. Make main-cat, squad and equipment builds viable, with readable tactical synergies. Companions remain until run end, never 45-second rentals. Keep all EIGHT differentiated types, maximum FOUR UNIQUE active companions. Unlocks appear randomly among three-choice roguelite upgrade offers. After four unique allies are chosen, suppress other unowned unlocks; keep owned upgrades eligible. Preserve healer/tank/shooter plus the five other roles, abilities and useful coordinated behavior. Random pool retains Damage, Fire Rate, Move Speed, XP Gain; companion unlock, damage as fraction of player damage, fire rate, count within cap; Multishot, Bouncing Bullets, companion multishot/bounce and Cat's Catch. Preserve active relics; do not restore the removed aura activation menu. Equipment combinations must change tactics, not only decorate a stat. Avoid artificial progression caps, duplicate/impossible offers and upgrade-menu softlocks. Freeze ALL combat, encounters, simulation clocks and damaging states during choices and pause.\n\n4. EXPLORATION. Magnets remain VERY VERY RARE but last much longer than earlier releases. Collectible boosts also remain very rare. Spawn them beyond the screen so exploration matters, without filling the game with free boosts. Keep health recovery, fish/XP feedback, encounter rewards and boss pressure. Integrate events, biome transitions and shadow without overlapping unavoidable damage.\n\n5. PRESENTATION. Push simplified colorful readable animation. Make the MAIN CAT visibly alive (idle/run/attack/hit); differentiate squad/enemy silhouettes and animate cocoon assembly/emergence. Prior 12-FPS pose idea should retain smooth movement/rendering, aiming at 60 FPS subject to mobile performance. Use restrained particles, hit feedback, depth/2.5D cues and biome mood without hiding hazards. Improve the original hard-rock/DnB soundtrack with adaptive BUILDUP AND DROPS, distinct dubstep boss intensity and biome/event transitions. Sync cues with actions, keep levels controlled, mute/volume persistent and gesture-based browser audio startup. Bound audio scheduling; no external downloads or unrelated musical style.\n\n6. MOBILE. Landscape first: arena, HUD, pause, restart, sound, fullscreen, squad/relic actions and all THREE upgrade choices fit ONE SCREEN. No page scrolling or controls outside/below the play window. Keep portrait fallback and correct touch-to-world scaling on Samsung/mobile browsers. Test 640x320, 844x390, 915x412, desktop and narrow portrait. Keep game title/subtitle/settings and a dashboard link; no studio/devlog/AI-factory tabs inside the game.\n\nSTUDIO CONTRACT. Plan the entire fixed ledger before code. Passes: FOUNDATION (world/biomes/progression/shadow/endgame), EVOLUTION (director/traits/fusion), BUILDS (squad/upgrades/equipment/rare exploration rewards), PRESENTATION (animation/audio/mobile and long-run verification). Each pass preserves the same candidate and earlier completed mechanics in a hashed checkpoint. Do not shrink the scope or defer mandatory requirements. Read the attached previous QA rejection and the full new review evidence ledger. Implement every assigned requirement with actual state and executable checks, keeping all baseline controls/boot/read-only diagnostics. Trace requirements to implementation and checks in the required stage report. Final independent QA must judge every requirement; one bounded continuation can finish missing content. Never publish a partial version rename as 1.0. Exact accepted hashes, stable /cataclysm/ URL, dashboard labels and live verification remain required after QA. Preserve archived 0.9 and all other games.",
   "acceptance": [
     "Review-07 is consumed with complete available audio and honest sampled-frame coverage; gameplay requirements are traced without publishing private dialogue.",
     "Primary /cataclysm/ ships Cataclysm 1.0: The Catastrophe from latest illustrated 0.9, retaining compatible archived additions while archives and other games stay intact.",
@@ -18,5 +18,186 @@
     "Eight independent browser viewports cover portrait, small landscape and desktop; HUD/actions/three choices fit one screen and real touch/pause/restart/fullscreen/audio work.",
     "Accelerated long-run checks exercise biomes, fusion, synergies, shadow and late boss cycles with bounded state; independent QA covers every scope item or blocks release.",
     "Only accepted exact bytes publish at stable primary URL; dashboard primary labels show 1.0 The Catastrophe; live delivery verifies accepted hashes."
-  ]
+  ],
+  "release_scope": {
+    "previous_qa_run": 43087177881,
+    "qa_feedback": "Independent QA rejected the previous run because only randomized offscreen relics and a timed squad-synergy buff were implemented. All eight independent controls/viewports passed. Missing: downward biomes and 3-6-9 progression, rising shadow, level-99 nine-victory endgame, fusion/cocoons/inheritance, long magnet/rare exploration rules globally, equipment depth and adaptive audio/animation. The Producer deferred mandatory work and the coder followed a two-feature selection. Do not repeat that selection. Complete every fixed requirement through the four staged passes, retaining exact source between passes; final QA must review the full scope. Prior run: https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/43087177881",
+    "requirements": [
+      {
+        "id": "world-scroll",
+        "stage": "foundation",
+        "owner": "engineer",
+        "description": "Implement endless downward-scrolling world chunks with meaningful terrain/collisions; preserve useful horizontal looping and replace vertical torus repetition.",
+        "verification": "Exercise real chunk crossings and world/camera coordinates; confirm downward progression, retained collision and no visible pop-in."
+      },
+      {
+        "id": "biome-cadence",
+        "stage": "foundation",
+        "owner": "designer",
+        "description": "Distinct biome chunks change approximately every three simulation minutes with readable identities and useful environmental differences.",
+        "verification": "Accelerate across at least three biome transitions and confirm cadence, unique state/geometry and restart reset."
+      },
+      {
+        "id": "progression-369",
+        "stage": "foundation",
+        "owner": "designer",
+        "description": "Implement meaningful 3-6-9 progression milestones rather than only enemy speed/HP inflation.",
+        "verification": "Exercise milestones and record the resulting player-facing state/unlocks and readable feedback."
+      },
+      {
+        "id": "rising-shadow",
+        "stage": "foundation",
+        "owner": "engineer",
+        "description": "Introduce a rising pursuing shadow after player level 9, with warning, fair movement counterplay and correct damage/failure behavior.",
+        "verification": "Compare level 8/9 activation, advance threat, demonstrate escape/collision behavior, pause freeze and clean restart."
+      },
+      {
+        "id": "nine-victory-boss",
+        "stage": "foundation",
+        "owner": "researcher",
+        "description": "Implement the level-99 boss with tracked NINE-defeat endgame progression and a defined final result/reward.",
+        "verification": "Accelerated actual-source checks exercise entry, each victory count, no duplicate credits and ninth-victory resolution."
+      },
+      {
+        "id": "navigation-safety",
+        "stage": "foundation",
+        "owner": "engineer",
+        "description": "Preserve physical collision and reliable player/squad/ground-enemy/pickup navigation across chunks; no trapped allies or teleport hits.",
+        "verification": "Check actor/wall and actor/actor collisions near seams and narrow passages with player movement and companions."
+      },
+      {
+        "id": "threat-director",
+        "stage": "evolution",
+        "owner": "researcher",
+        "description": "Use population-aware bounded threat costs, gradual introductions and fair wave/recovery rhythm without awkward unexplained gaps or retaliatory spikes.",
+        "verification": "Advance early and late director states, compare clearance/low-health recovery, and assert spawn/threat/object caps."
+      },
+      {
+        "id": "modular-traits",
+        "stage": "evolution",
+        "owner": "designer",
+        "description": "Procedural legs/tentacles, torso, arms and heads/abilities produce visibly distinct enemies whose actual behavior follows their traits.",
+        "verification": "Create varied actual enemy records and verify distinct movement/attack/health/appearance contracts and bounded combinations."
+      },
+      {
+        "id": "flying-phasing",
+        "stage": "evolution",
+        "owner": "engineer",
+        "description": "Add readable flying and obstacle-phasing variants with explicit terrain rules and counterplay; preserve ground collisions.",
+        "verification": "Compare ground/flying/phasing paths through solid terrain, their telegraphs and player damage/counterplay."
+      },
+      {
+        "id": "fusion-cocoon",
+        "stage": "evolution",
+        "owner": "engineer",
+        "description": "Implement enemy fusion -> visible vulnerable cocoon -> emerged mutant, not merely a renamed timed buff or notice.",
+        "verification": "Run actual fusion lifecycle, destroy a cocoon, complete another, and verify parent consumption and finite transitions."
+      },
+      {
+        "id": "trait-inheritance",
+        "stage": "evolution",
+        "owner": "engineer",
+        "description": "Mutants inherit meaningful parent traits within bounded combinations; consume parents/rewards exactly once and respect the director budget.",
+        "verification": "Deterministically combine distinct parents, verify inherited behavior, counts/threat/reward accounting and no duplicate resurrection."
+      },
+      {
+        "id": "offscreen-origins",
+        "stage": "evolution",
+        "owner": "researcher",
+        "description": "New enemies, ordinary collectible spawns, magnets and boosts originate outside the actual visible viewport plus a margin; wrapping/chunks never pop new entities into view.",
+        "verification": "Test spawn origins with moving camera, varied viewports and seams; preserve understandable visible loot feedback for legitimate kills."
+      },
+      {
+        "id": "permanent-squad",
+        "stage": "builds",
+        "owner": "engineer",
+        "description": "Keep all EIGHT differentiated companion roles, maximum FOUR UNIQUE active, permanent until run end, with useful abilities and navigation.",
+        "verification": "Exercise all roles, duplicate/cap boundaries, long survival without timeout and clean reset."
+      },
+      {
+        "id": "companion-offers",
+        "stage": "builds",
+        "owner": "researcher",
+        "description": "Companion unlocks are randomly offered among roguelite choices; after four unique selections no unowned unlocks appear, while owned upgrades remain.",
+        "verification": "Generate offers before/after four unique companions and assert eligibility, randomness, exactly three valid cards and no softlocks."
+      },
+      {
+        "id": "upgrade-pool",
+        "stage": "builds",
+        "owner": "researcher",
+        "description": "Retain damage/fire-rate/speed/XP upgrades, companion damage/fire-rate/count within cap, multishot, bounce, companion variants and Cats Catch; no removed aura menu or artificial progression caps.",
+        "verification": "Exercise upgrade effects and eligibility at late levels, stacking and duplicate/impossible choices."
+      },
+      {
+        "id": "equipment-builds",
+        "stage": "builds",
+        "owner": "designer",
+        "description": "Make main-cat, squad and equipment-focused builds viable with meaningful equipment combinations and tactical cross-synergies.",
+        "verification": "Demonstrate at least three differentiated build routes and actual interaction effects beyond cosmetic stat labels."
+      },
+      {
+        "id": "magnet-rarity",
+        "stage": "builds",
+        "owner": "researcher",
+        "description": "Magnets and collectible boosts remain VERY VERY RARE and beyond the screen; magnet effect lasts substantially longer than the baseline 12 seconds.",
+        "verification": "Check real interval/chance bounds, offscreen positions, long magnet duration and expiration, with no flood of free boosts."
+      },
+      {
+        "id": "encounter-recovery",
+        "stage": "builds",
+        "owner": "designer",
+        "description": "Preserve compatible accepted city events, tactical rewards, boss pressure, health recovery and fish/XP feedback without unavoidable overlap.",
+        "verification": "Exercise at least two encounter patterns and recovery/reward transitions against the new biome/director systems."
+      },
+      {
+        "id": "frozen-clocks",
+        "stage": "builds",
+        "owner": "engineer",
+        "description": "ALL combat, damaging states, encounters, shadow/fusion timers and simulation progression freeze during pause and upgrade choices.",
+        "verification": "Compare full relevant state across paused/choice ticks and verify resume, restart and multi-level choice recovery."
+      },
+      {
+        "id": "living-animation",
+        "stage": "presentation",
+        "owner": "designer",
+        "description": "Make the main cat alive through idle/run/attack/hit animation; differentiate squad/enemy silhouettes and animate cocoon emergence and biome transitions with restrained depth/particles.",
+        "verification": "Inspect actual browser output and animation state; verify smooth movement independent of pose cadence, bounded effects and reduced-motion behavior."
+      },
+      {
+        "id": "adaptive-music",
+        "stage": "presentation",
+        "owner": "engineer",
+        "description": "Improve original hard-rock/DnB with adaptive buildup/drops, biome/event transitions and distinct dubstep boss intensity synced with real game events.",
+        "verification": "Exercise score states and transitions, event/SFX timing and bounded voices/scheduling without external assets."
+      },
+      {
+        "id": "mobile-screen",
+        "stage": "presentation",
+        "owner": "designer",
+        "description": "Landscape-first arena/HUD/pause/restart/sound/fullscreen/squad/relic controls and ALL THREE choices fit ONE SCREEN; portrait remains playable with correct touch scaling and no studio tabs.",
+        "verification": "Pass the eight independent viewport checks including 640x320, 844x390, 915x412, portrait and desktop; verify actual touch/fullscreen/resize."
+      },
+      {
+        "id": "audio-controls",
+        "stage": "presentation",
+        "owner": "engineer",
+        "description": "Preserve gesture-based browser audio startup, controlled levels and persistent mute/volume preferences; pause/restart never leak voices or scheduling.",
+        "verification": "Exercise startup/mute/volume/storage/pause/restart and verify inactive audio cleanup, no external media dependency."
+      },
+      {
+        "id": "long-run-verification",
+        "stage": "presentation",
+        "owner": "researcher",
+        "description": "Run meaningful accelerated actual-source checks across multiple biomes, fusion, builds, shadow and late boss cycles; bound enemies/projectiles/pickups/particles/audio and preserve boot/read-only diagnostics.",
+        "verification": "Record commands and measured bounds/results; use real source state, not fabricated diagnostic values; physical Samsung remains explicitly untested."
+      },
+      {
+        "id": "review-ledger",
+        "stage": "presentation",
+        "owner": "researcher",
+        "description": "Trace every distinct gameplay observation from the full private review to implementation, tested-existing behavior or an explicit uncertainty. Resolve the prior luck/dance wording only if evidence defines it; otherwise document ambiguity honestly.",
+        "verification": "Reconcile the timecoded council review ledger against final source and pass reports without publishing private speech or inventing a prior agreement."
+      }
+    ]
+  }
 }
