@@ -1,0 +1,16 @@
+{
+  "order_id": "cataclysm-1-0-catastrophe-major-20261111",
+  "action": "run_gate0_architecture_only",
+  "full_implementation_authorized": false,
+  "primary_tracking_issue": 46,
+  "production_pr": 47,
+  "phase": "architecture",
+  "authorized_roles": [
+    "researcher",
+    "designer",
+    "engineer",
+    "critic",
+    "producer"
+  ],
+  "run_once": true
+}
