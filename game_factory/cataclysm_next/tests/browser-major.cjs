@@ -12,9 +12,10 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
   try{
     for(const [width,height] of SIZES){
       const page=await browser.newPage({viewport:{width,height},isMobile:width<1000,hasTouch:true,deviceScaleFactor:1});
-      const errors=[];
+      const errors=[],badResources=[];
       page.on('pageerror',error=>errors.push(error.stack||error.message));
-      page.on('console',msg=>{if(msg.type()==='error')errors.push(msg.text());});
+      page.on('response',response=>{if(response.status()>=400)badResources.push(response.status()+' '+response.url());});
+      page.on('console',msg=>{if(msg.type()==='error'&&!msg.text().startsWith('Failed to load resource'))errors.push(msg.text());});
       const url='http://127.0.0.1:8765/cataclysm-1-0-major/';
       const result=await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
       assert.equal(result.status(),200,'server returns candidate at '+width+'x'+height);
@@ -38,6 +39,8 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.major.rerollTokens,0);
       assert.ok(snapshot.time>=0);
       assert.ok(snapshot.player.hp>0);
+      const realFailures=badResources.filter(x=>!x.endsWith('/favicon.ico'));
+      assert.equal(realFailures.length,0,'Missing resources: '+realFailures.join(' | '));
       assert.equal(errors.length,0,errors.join('\n'));
       const frame=page.locator('#canvas');
       const box=await frame.boundingBox();
