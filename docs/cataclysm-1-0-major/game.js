@@ -1650,12 +1650,36 @@
     if(noticeTTL>0){noticeTTL-=dt;if(noticeTTL<=0){$('notice').hidden=true;if(noticeQueue.length){const n=noticeQueue.shift();notify(n.message,n.duration,n.id);}}}
     updateHud();
   }
+  let lastMajorHud=-1;
+  function renderMajorBuffs(){
+    if(!game||Math.floor(game.t*4)===lastMajorHud)return;
+    lastMajorHud=Math.floor(game.t*4);
+    const g=game,p=g.player;
+    const active=[
+      ['⚡','ADRENALINE',g.buffs.survivalInstinct],
+      ['♨','FERAL',g.feralInstinct.active?g.feralInstinct.timer:0],
+      ['✦','RAGE',g.buffs.rage],['◎','MAGNET',g.buffs.magnet],
+      ['✚','INVULNERABLE',p.inv],['⬟','SHIELD',g.runicRelic.duration],
+      ['⟳','REROLL',g.rerollTokens]
+    ].filter(item=>item[2]>0).slice(0,7);
+    const icon=$('major-buff-icons');icon.replaceChildren();
+    for(const [glyph,title,duration] of active){
+      const chip=document.createElement('span');chip.className='major-buff active';
+      const symbol=document.createElement('strong');symbol.textContent=glyph;
+      const text=document.createElement('span');text.textContent=title+' '+(title==='REROLL'?duration:Math.ceil(duration)+'s');
+      chip.append(symbol,text);icon.append(chip);
+    }
+  }
+
   function updateHud(){
     if(!game)return;
     updateCityNotice();
     $('time').textContent=String(Math.floor(game.t/60)).padStart(2,'0')+':'+
       String(Math.floor(game.t%60)).padStart(2,'0');
-    $('score').textContent=Math.floor(game.t*2+game.kills*7+game.fish*9);
+    $('score').textContent=game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9);
+    $('night-count').textContent=game.campaign.night+'/100';
+    $('reroll-count').textContent=game.rerollTokens;
+    $('reroll-upgrades').disabled=game.rerollTokens<1;
     $('build-stats').textContent='Speed '+Math.round(game.player.speed)+' · Damage '+game.player.damage.toFixed(2)+
       ' · XP ×'+game.player.xpGain.toFixed(1)+' · Shots/s '+(1/game.player.shotInterval).toFixed(2)+' · Spread '+(1+game.player.multishot*2)+
       ' · Bounces '+game.player.ricochet+' · Pickup '+Math.round(135+game.player.magnet*65+(game.player.speed-cfg.speed)*2/3)+'px'+' · Lens '+game.equipment.lens+' / Coil '+game.equipment.coil+' / Rune '+game.equipment.capacitor;
@@ -1675,17 +1699,21 @@
       const ally=game.companionSquad.find(c=>c.type===type),btn=$('ability-'+type);
       btn.hidden=!ally;
       if(!ally)continue;
-      btn.disabled=game.mode!=='running'||!ally.specialAbilityReady||(type==='shooter'&&game.shots.length>144);
+      btn.disabled=true; // Read-only status: gameplay abilities automatically activate on valid cooldown.
       const name=specialNames[type];
-      btn.textContent=name+(ally.specialDuration>0?' active '+Math.ceil(ally.specialDuration)+'s':ally.specialCooldown>0?' '+Math.ceil(ally.specialCooldown)+'s':' ready');
+      const icons={shooter:'✹',healer:'✚',tank:'⬟',brawler:'⚔',sniper:'◎',engineer:'⚙',trapper:'⌁',bard:'♫'};
+      btn.textContent=icons[type]+' '+name+' '+(ally.specialDuration>0?'● '+Math.ceil(ally.specialDuration)+'s':ally.specialCooldown>0?'◔ '+Math.ceil(ally.specialCooldown)+'s':'✓ AUTO');
       btn.setAttribute('aria-label',type+' special: '+btn.textContent);
       btn.style.setProperty('--ready',((1-ally.specialCooldown/(type==='healer'?24:18))*100)+'%');
     }
     $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent=BIOMES[game.world.epoch%4].name+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
+    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · '+BIOMES[game.world.epoch%4].name+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
-    if(boss){$('boss-status').setAttribute('aria-label',boss.finalBoss?'Catastrophe crown '+boss.round+'/9':'Alley King');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label','Alley King '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
+    if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
+    $('encounter-status').textContent='BOSSES '+game.campaign.boss+'/9 · ELITES '+game.campaign.elite+'/9 · SUPER '+game.campaign.superElite+'/9'+
+      (game.campaign.night===100?' · FINAL CLEAR':'');
+    renderMajorBuffs();
     $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
     tactic.disabled=game.mode!=='running'||game.squadTacticCooldown>0;
@@ -1867,6 +1895,13 @@
     ctx.restore();
   }
   function catSprite(type,r,time,hurt=false,aim=0){
+    const state=type==='hero'&&game?
+      game.player.animation.state==='hit'?'hit':
+      game.feralInstinct.active?'feral':
+      game.buffs.survivalInstinct>0||game.feralInstinctOverdrive>0?'adrenaline':
+      game.player.animation.moving?'run':'idle':'run';
+    return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion);
+    // Original fallback below is retained as inert reference during migration.
     const hero=type==='hero',ally=roleNames.includes(type);
     const palette={hero:'#f4f3df',shooter:'#e0bd82',healer:'#a5dfc5',tank:'#a6bad4',brawler:'#ed9c7d',sniper:'#b8d17f',engineer:'#efca70',trapper:'#87c9d1',bard:'#c5a0e5',shambler:'#789b7b',weaver:'#ad91c7',dasher:'#d8a267',orbiter:'#65b8bf',stalker:'#b9b17c',ghost:'#c9bfe5',gas:'#a5bd68',boss:'#c36b87'};
     const fur=hurt?'#fff4d7':palette[type]||palette.shambler;
@@ -1934,7 +1969,10 @@
       const g={...source,
         fishItems:source.fishItems.filter(a=>visible(a)),pickupEffects:source.pickupEffects.filter(a=>visible(a)),
         powerups:source.powerups.filter(a=>visible(a)),companionSquad:source.companionSquad.filter(a=>visible(a,280)),
-        shots:source.shots.filter(a=>visible(a,80)),enemies:source.enemies.filter(a=>visible(a,280)),
+        shots:source.shots.filter(a=>visible(a,80)),
+        enemyShots:source.enemyShots.filter(a=>visible(a,80)),
+        rerollDrops:source.rerollDrops.filter(a=>visible(a,80)),
+        enemies:source.enemies.filter(a=>visible(a,280)),
         particles:source.particles.filter(a=>visible(a,20)),
         runicRelic:{...source.runicRelic,items:source.runicRelic.items.filter(a=>visible(a))},
         hazards:{toxicGasClouds:source.hazards.toxicGasClouds.filter(a=>visible(a,120))}};
@@ -1945,6 +1983,14 @@
     renderCityEncounter();
     renderEncore();
     for(const rune of g.runicRelic.items){outline(rune.x,rune.y,24,'#94cfff',3);ctx.fillStyle='#d6eaff';ctx.font='bold 26px system-ui';ctx.fillText(rune.type==='shield'?'◇':'❄',rune.x-12,rune.y+9);}
+    for(const token of g.rerollDrops){
+      ctx.save();ctx.translate(token.x,token.y);
+      ctx.rotate(reducedMotion?0:source.t*1.4);outline(0,0,17,'#ffe29a',3);
+      circle(0,0,11,'#715833');ctx.fillStyle='#fff6c2';ctx.font='bold 17px system-ui';
+      ctx.textAlign='center';ctx.fillText('⟳',0,6);ctx.textAlign='left';
+      ctx.restore();
+      ctx.fillStyle='#fff1bd';ctx.font='bold 12px system-ui';ctx.fillText('×'+token.value,token.x+18,token.y-15);
+    }
     for(const f of g.fishItems){
       circle(f.x,f.y,18,'#dfc26b33');ctx.save();ctx.translate(f.x,f.y+(reducedMotion?0:Math.sin(f.phase)*4));
       polygon(9,0,[[0,0],[11,-8],[11,8]],'#f6cb62');
@@ -1995,6 +2041,12 @@
         ctx.restore();
       }
     }
+    for(const s of g.enemyShots){
+      ctx.save();ctx.translate(s.x,s.y);
+      circle(0,0,s.r+4,s.kind==='plague'?'#baf58d45':'#fcb6b342');
+      circle(0,0,s.r,s.kind==='plague'?'#c9f392':s.kind==='hex'?'#ff9de9':'#ffac86');
+      ctx.restore();
+    }
     for(const e of [...g.enemies.filter(e=>e.variant!=='ghost'),...g.enemies.filter(e=>e.variant==='ghost')]){
       if(e.x+e.r+230<cameraX||e.x-e.r-230>cameraX+W||e.y+e.r+230<cameraY||e.y-e.r-230>cameraY+H)continue;
       ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
@@ -2003,6 +2055,13 @@
       if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(e.huntAge%5<1.5?'HUNT · SIDESTEP':'HUNT · STRIKE',0,-e.r-22);ctx.textAlign='left';
         if(e.huntAge%5<1.5){ctx.strokeStyle='#f1c3ff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.huntX*210,e.huntY*210);ctx.stroke();}}
 
+      if(e.windup>0){
+        const c=e.attackKind==='plague'?'#c1e975':e.attackKind==='shockwave'?'#9dd7ff':'#ff9dca';
+        outline(0,0,e.r+15+(1-e.windup)*8,c,4);
+        ctx.save();ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);
+        const target=source.player,dx=wrappedDelta(e.x,target.x),dy=target.y-e.y;
+        const dd=Math.max(1,Math.hypot(dx,dy));ctx.lineTo(dx/dd*Math.min(250,dd),dy/dd*Math.min(250,dd));ctx.stroke();ctx.restore();
+      }
       const color=e.variant==='ghost'?'#c7adff':e.variant==='orbiter'?'#65d6ef':e.variant==='stalker'?'#ffdb76':e.variant==='boss'?'#e56d9f':e.variant==='weaver'?'#b294ed':e.variant==='dasher'?'#f6af62':'#6faa8f';
       if((e.variant==='dasher'&&e.phase%9<2)||(e.variant==='boss'&&e.phase%7<2))outline(0,0,e.r+8,'#ffe6a1',3);
       if(e.variant==='ghost')outline(0,0,e.r+9,'#c7adff',3);
@@ -2013,7 +2072,7 @@
         ctx.fillText(e.mutation==='burst'?(e.mutationAge<1?'RUSH!':'»'):e.mutation==='shield'?'◇':'≈',0,-e.r-18);ctx.textAlign='left';
       }
       drawAnatomy(e);
-      if(!e.cocoon)catSprite(e.variant,e.r,e.phase,e.hurt);
+      if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt);
       if(e.hurt){
         outline(0,0,e.r+5,'#fff5db',2);
         // Existing hurt lifetime provides finite contact sparks even when the shot is removed.
