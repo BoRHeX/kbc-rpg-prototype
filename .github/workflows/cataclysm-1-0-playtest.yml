@@ -138,8 +138,8 @@ jobs:
           <div class="tagline">PLAYTEST · CATACLYSM 1.0</div><h3>Cataclysm 1.0 — The Catastrophe</h3>
           <p>Complete four-pass candidate: new biomes, shadow, mutations and fusions, expanded builds, eight companions, adaptive sound and nine-victory endgame. Automated Chrome checks passed; final hardware and human-play QA remain pending. This is a playable development build, not the stable release.</p>
           <div class="build-links"><a href="../cataclysm-1-0-preview/">▶ Play Cataclysm 1.0</a><a href="https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/43107251758" target="_blank" rel="noopener noreferrer">Verification record ↗</a></div>
-        </article>
-'''
+          </article>
+          '''
           if 'href="../cataclysm-1-0-preview/"' not in s:
             s=s.replace(marker,marker+tile,1)
             page.write_text(s)
