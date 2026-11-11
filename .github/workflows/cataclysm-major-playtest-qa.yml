@@ -1,0 +1,50 @@
+name: Cataclysm major · independent gameplay QA
+run-name: The Catastrophe · real 8-viewport gameplay and 100-night contract
+on:
+  push:
+    branches: [production/cataclysm-1-0-catastrophe-major-20261111]
+    paths:
+      - docs/cataclysm-1-0-major/**
+      - game_factory/cataclysm_next/tests/**
+      - .github/workflows/cataclysm-major-playtest-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-major-sandbox-qa
+  cancel-in-progress: true
+jobs:
+  gameplay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify all authored game scripts are syntactically valid
+        run: |
+          set -euo pipefail
+          for script in docs/cataclysm-1-0-major/*.js; do node --check "$script"; done
+          node --check game_factory/cataclysm_next/tests/major-systems.cjs
+          node --check game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Verify real campaign scheduling and animation contract
+        run: node game_factory/cataclysm_next/tests/major-systems.cjs
+      - name: Install independent browser test library
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Serve entire Pages tree locally without production publishing
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-major-http.log 2>&1 &
+      - name: Run eight real mobile/desktop Chrome playtests, touch input and JS exceptions
+        run: node game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Preserve test screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-major-browser-evidence
+          path: artifacts/cataclysm-major/
+          if-no-files-found: ignore
+          retention-days: 30
