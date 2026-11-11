@@ -394,6 +394,17 @@
     else if(kind==='hit'||kind==='critical'){crunch(.06,.055,800);tone(kind==='critical'?780:170,.07,.035,'triangle',0,90);}
     else if(kind==='danger'){tone(240,.16,.05,'sawtooth',0,100);}
     else if(kind==='guard'){crunch(.12,.06,700);tone(120,.23,.07,'triangle');}
+    else if(kind==='reroll'){[440,554.37,739.99,880].forEach((n,i)=>tone(n,.09,.055,'triangle',i*.04));}
+    else if(kind==='boss-spawn'){crunch(.27,.16,330);tone(94,.42,.10,'sawtooth');tone(141,.34,.055,'square',.12);}
+    else if(kind==='super-elite'){tone(175,.22,.065,'sawtooth');tone(261,.27,.06,'square',.12);crunch(.12,.08,540);}
+    else if(kind==='elite-spawn'){tone(310,.2,.055,'sawtooth');tone(465,.17,.045,'triangle',.09);}
+    else if(kind==='boss-warn'){tone(200,.17,.07,'sawtooth',0,160);tone(330,.15,.04,'square',.12);}
+    else if(kind==='enemy-cast'){tone(380,.15,.05,'sine',0,165);tone(540,.15,.035,'triangle',.07);}
+    else if(kind==='enemy-shot'){crunch(.09,.05,1300);tone(300,.13,.045,'triangle',0,190);}
+    else if(kind==='boss-defeat'){crunch(.25,.12,500);[164.81,246.94,329.63,493.88].forEach((hz,i)=>tone(hz,.28,.06,'triangle',i*.075));}
+    else if(kind==='elite-defeat'){tone(492,.17,.06,'triangle');tone(738,.17,.04,'sine',.1);}
+    else if(kind==='victory'){[261.63,329.63,392,523.25,659.25,783.99,1046.5].forEach((n,i)=>tone(n,.38,.08,'triangle',i*.12));}
+    else if(kind==='failure'){[220,196,164.81,110].forEach((n,i)=>tone(n,.24,.05,'sawtooth',i*.12));}
     else {const notes=kind==='level'?[659.25,783.99,987.77,1318.51]:kind==='heal'?[329.63,493.88,659.25]:kind==='power'?[440,659.25,880]:[987.77,1318.51];
       notes.forEach((hz,i)=>tone(hz,kind==='level'?.22:.13,.035,'sine',i*.055));}
   }
@@ -405,7 +416,7 @@
   }
   function music() {
     const active=!!(audio&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'&&audio.state==='running');
-    const next=active?(game.enemies.some(e=>e.variant==='boss')?'boss':'survival'):'silent';
+    const next=active?(game.enemies.some(e=>e.variant==='boss')?'boss':game.campaign.night>67?'afterlight':game.campaign.night>34?'ironmarch':'survival'):'silent';
     if(!audio||!musicBus)return;
     const now=audio.currentTime;
     if(masterBus)masterBus.gain.setTargetAtTime(muted||document.hidden||game&&game.mode==='paused'?0:volume,now,.015);
@@ -432,11 +443,42 @@
       arrangement.phase=phase;arrangement.biome=biome;arrangement.event=event;arrangement.transitions++;
     }
     if(musicNext<now-.15)musicNext=now;
-    const boss=next==='boss',stepLen=60/(boss?142:174)/4;
+    const boss=next==='boss',newSong=MAJOR.songs[next],stepLen=60/(newSong?newSong.bpm:boss?142:174)/4;
     // E minor: E–C–G–D, each root lasts two bars; fixed original rhythmic motifs.
     while(musicNext<now+.12){
       const s=scoreStep%16,bar=Math.floor(scoreStep/16)%8,t=musicNext;
       const root=[82.4069,65.4064,97.9989,73.4162][(Math.floor(bar/2)+biome)%4];
+      if(newSong){
+        // Two distinct original 16-step phrases, with separated percussion and melodic contour.
+        const rootHz=newSong.roots[bar%newSong.roots.length],semi=newSong.lead[s],bassSemi=newSong.bass[s];
+        if(next==='ironmarch'){
+          if([0,6,8,11].includes(s))drum('kick',t,1.1);
+          if([4,12].includes(s))drum('snare',t,.9);
+          if(s%2===0)drum('hat',t,.85);
+          if(s%4===3)drum('hat',t,.42);
+        }else{
+          if([0,7,10].includes(s))drum('kick',t,.8);
+          if([5,13].includes(s))drum('snare',t,.55);
+          if(s%3===0)drum('hat',t,.45);
+        }
+        if(bassSemi!==null){
+          const hz=rootHz*.5*Math.pow(2,bassSemi/12);
+          scoreCounts.bass++;
+          voice(hz,t,stepLen*(next==='ironmarch'?1.7:2.8),next==='ironmarch'?.076:.048,'sawtooth','music',next==='ironmarch'?650:900,0,next==='ironmarch');
+          voice(hz/2,t,stepLen*2,.032,'sine');
+        }
+        if(semi!==null){
+          const hz=rootHz*2*Math.pow(2,semi/12);scoreCounts.lead++;
+          voice(hz,t,stepLen*(next==='ironmarch'?1.3:2.7),next==='ironmarch'?.037:.028,
+            next==='ironmarch'?'square':'triangle','music',next==='ironmarch'?1800:2600);
+          if(next==='afterlight')voice(hz*.5,t+stepLen*.2,stepLen*2,.013,'sine','music',1900);
+        }
+        if(s===15&&bar%2===1){
+          voice(rootHz*4,t,stepLen*1.7,.031,'triangle','music',2500);
+        }
+        musicBeat++;scoreStep++;musicNext+=stepLen;
+        continue;
+      }
       if(phase==='buildup'&&s%2===0){drum('snare',t,.22+(game.t%8)/24);voice(root*4,t,stepLen,.012,'sawtooth','music',800+(game.t%8)*400);}
       if(phase==='event'&&s===15)drum('snare',t,.55);
       if((boss?[0,7,10]:[0,6,10,14]).includes(s))drum('kick',t);
