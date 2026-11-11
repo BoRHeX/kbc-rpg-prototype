@@ -1,0 +1,219 @@
+name: Recover Cataclysm 1.0 from tested archive
+run-name: Recover complete Cataclysm 1.0 without rebuilding four passes
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-0-recovery-43092519643.json
+  workflow_dispatch:
+concurrency:
+  group: borhez-mobile-game-jobs
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    env:
+      EXPECTED_JOB_DIGEST: d7c8f07e7e559cfc42ea6411548bbf0b518f73b30b0678220fe81d4e6a9bf71c
+      EXPECTED_PLAN_DIGEST: 947d19eccd0ba1ad88c0d32dc761dc77c89766f830f94a5cfc247dbde9bdc01f
+      RELEASE_STAGE: repair
+      PASS_GATE_OUTCOME: success
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser acceptance tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Download exact original four-pass council plan
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43092519643
+          github-token: ${{ github.token }}
+          name: cataclysm-complete-release-plan
+          path: artifacts/mobile
+      - name: Download final corrected source and rejected checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43092519643
+          github-token: ${{ github.token }}
+          name: cataclysm-pass-repair
+          path: artifacts/mobile/archived_repair
+      - name: Authenticate candidate hashes, reports, identity and original failure
+        run: python -m game_factory.recover_cataclysm_1_0 bootstrap
+      - name: Validate actual source and regression invariants
+        run: |
+          python -m game_factory.mobile_jobs validate
+          node --check docs/cataclysm/game.js
+          git diff --check
+      - name: Start the actual game locally
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-10-recovery-http.log 2>&1 &
+      - name: Independently test real Chrome touch and layouts at all eight viewports
+        shell: bash
+        run: |
+          set -euo pipefail
+          node game_factory/mobile_acceptance.cjs 2>&1 | tee artifacts/mobile/gate.log
+      - name: Revalidate all 25 requirements and seal the corrected stage report
+        run: |
+          python -m game_factory.release_scope checkpoint
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          c=json.loads(Path('artifacts/mobile/checkpoint/checkpoint.json').read_text())
+          assert c['passed'] is True and c['stage']=='repair'
+          assert len(c['reports'])==5 and not c.get('failure')
+          print('PASS: five complete stages, unchanged game hashes, corrected repair report, independent mobile browser acceptance')
+          PY
+      - name: Preserve independent verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-1-0-recovery-evidence
+          path: |
+            artifacts/mobile/gate.log
+            artifacts/mobile/acceptance.json
+            artifacts/mobile/STAGE_REPORT.json
+            artifacts/mobile/recovery-correction.json
+            artifacts/mobile/checkpoint/checkpoint.json
+          if-no-files-found: ignore
+      - name: Export verified source and original contracts to independent QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-1-0-verified-source
+          path: artifacts/mobile/
+          if-no-files-found: error
+  review:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      EXPECTED_JOB_DIGEST: d7c8f07e7e559cfc42ea6411548bbf0b518f73b30b0678220fe81d4e6a9bf71c
+      EXPECTED_PLAN_DIGEST: 947d19eccd0ba1ad88c0d32dc761dc77c89766f830f94a5cfc247dbde9bdc01f
+      RELEASE_STAGE: repair
+      COUNCIL_MODEL: gpt-4.1-mini
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-1-0-verified-source
+          path: artifacts/mobile
+      - name: Install source-only independent QA dependencies
+        run: python -m pip install --disable-pip-version-check openai requests
+      - name: Restore only hash-verified, separately tested code for QA inspection
+        run: python -m game_factory.recover_cataclysm_1_0 restore_for_review
+      - name: Independent final QA - all 25 mandatory requirements
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python -m game_factory.release_scope review
+      - name: Package only QA-approved exact game bytes using existing publisher
+        run: python -m game_factory.mobile_jobs package
+      - name: Retain final QA findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-1-0-recovery-qa
+          path: |
+            artifacts/mobile/qa.json
+            artifacts/mobile/checkpoint/checkpoint.json
+          if-no-files-found: ignore
+      - name: Hand approved bundle to GitHub publisher
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+          if-no-files-found: error
+          retention-days: 30
+  publish:
+    needs: review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: borhez-game-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: mobile-accepted-game
+          path: artifacts/mobile/release
+      - name: Validate source hashes, QA acceptance and existing release history
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m game_factory.mobile_jobs publish
+          git config user.name 'BoRHeZ Mobile Game Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/games docs/preview docs/cataclysm game_factory/results
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "Release independently accepted Cataclysm 1.0 The Catastrophe"
+          fi
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+      - name: Dispatch existing live delivery and verify published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_ID: ${{ steps.release.outputs.request_id }}
+          DELIVERY_KEY: ${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DELIVERY_TITLE="Deliver $REQUEST_ID ($DELIVERY_KEY)"
+          python - <<'PYDISPATCH' > "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          import json,os
+          print(json.dumps({"event_type":"borhez-mobile-delivery","client_payload":{
+            "request_id":os.environ["REQUEST_ID"],"delivery_key":os.environ["DELIVERY_KEY"]}}))
+          PYDISPATCH
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input "$RUNNER_TEMP/mobile-delivery-dispatch.json"
+          delivery_run=""
+          for attempt in {1..18}; do
+            if gh run list --workflow mobile-game-delivery.yml --event repository_dispatch --limit 30 --json databaseId,displayTitle > "$RUNNER_TEMP/mobile-delivery-runs.json"; then
+              delivery_run="$(python - <<'PYRUN'
+          import json,os
+          from pathlib import Path
+          runs=json.loads((Path(os.environ['RUNNER_TEMP'])/'mobile-delivery-runs.json').read_text())
+          print(next((str(r['databaseId']) for r in runs if r['displayTitle']==os.environ['DELIVERY_TITLE']),''))
+          PYRUN
+              )"
+            fi
+            if [ -n "$delivery_run" ]; then break; fi
+            sleep 5
+          done
+          if [ -z "$delivery_run" ]; then
+            echo "::error::Game source committed, but live delivery did not start"
+            exit 1
+          fi
+          gh run watch "$delivery_run" --exit-status --interval 10
+          echo "Live Cataclysm 1.0 delivery independently verified" >> "$GITHUB_STEP_SUMMARY"
