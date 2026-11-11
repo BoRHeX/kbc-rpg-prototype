@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "source_run": 43107251758,
+  "source_artifact": "cataclysm-1-0-verified-source",
+  "release_kind": "development_playtest",
+  "target": "docs/cataclysm-1-0-preview",
+  "preserve_stable": "docs/cataclysm"
+}
