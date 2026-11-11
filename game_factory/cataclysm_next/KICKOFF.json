@@ -12,5 +12,7 @@
     "critic",
     "producer"
   ],
-  "run_once": true
+  "run_once": true,
+  "attempt": 2,
+  "fix": "Enforce typed decisions in all five council roles"
 }
