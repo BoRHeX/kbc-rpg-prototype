@@ -1,0 +1,108 @@
+name: Cataclysm major 1.0 · architecture council
+run-name: Cataclysm major · Gate 0 five-agent production plan
+on:
+  push:
+    branches:
+      - production/cataclysm-1-0-catastrophe-major-20261111
+    paths:
+      - game_factory/cataclysm_next/KICKOFF.json
+  workflow_dispatch:
+concurrency:
+  group: cataclysm-major-architecture-20261111
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  council:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      COUNCIL_MODEL: gpt-4.1-mini
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify actual baseline and compile planner before spending API
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_next/plan_gate0.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('game_factory/cataclysm_next')
+          order=json.loads((p/'work_order.json').read_text())
+          kickoff=json.loads((p/'KICKOFF.json').read_text())
+          assert kickoff['order_id']==order['order_id']
+          assert kickoff['action']=='run_gate0_architecture_only'
+          assert kickoff['full_implementation_authorized'] is False
+          assert len(order['jobs'])==11
+          assert Path('docs/cataclysm-1-0-preview/game.js').is_file()
+          print('PASS: source and narrow planning authorization')
+          PY
+      - name: Five independent bounded council roles produce architecture only
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python -m game_factory.cataclysm_next.plan_gate0
+      - name: Verify actual council output shape and scope before archival
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=Path('game_factory/cataclysm_next/architecture')
+          source=json.loads((d/'SOURCE_AUDIT.json').read_text())
+          summary=json.loads((d/'COUNCIL_DECISIONS.json').read_text())
+          assert summary['status']=='proposed_not_implemented'
+          assert set(summary['roles'])=={'researcher','designer','engineer','critic','producer'}
+          assert source['critical_function_lines']['companion_ability']
+          assert (d/'PRODUCER_HANDOFF.md').stat().st_size>100
+          assert not list(d.glob('*.sqlite3')),'do not publish private agent memory'
+          assert not list(d.glob('*.py')),'no agent code may be published by this gate'
+          print('PASS: architecture artifacts, role coverage and no unauthorized edits')
+          PY
+          git diff --exit-code -- docs/
+      - name: Preserve public proposed architecture output and human review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-major-gate0-architecture
+          path: game_factory/cataclysm_next/architecture/
+          if-no-files-found: error
+          retention-days: 30
+  archive:
+    needs: council
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: production/cataclysm-1-0-catastrophe-major-20261111
+      - uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-major-gate0-architecture
+          path: game_factory/cataclysm_next/architecture
+      - name: Commit only proposed public architecture to isolated production branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Cataclysm Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add game_factory/cataclysm_next/architecture
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'No new architecture output'
+            exit 1
+          fi
+          git commit -m 'Council: propose bounded Cataclysm major production architecture'
+          git fetch origin production/cataclysm-1-0-catastrophe-major-20261111
+          git rebase origin/production/cataclysm-1-0-catastrophe-major-20261111
+          git push origin HEAD:production/cataclysm-1-0-catastrophe-major-20261111
+          echo 'Gate 0 architectural proposal delivered; no game source modified or published.' >> "$GITHUB_STEP_SUMMARY"
