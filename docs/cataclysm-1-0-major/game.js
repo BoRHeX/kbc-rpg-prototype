@@ -416,7 +416,7 @@
   }
   function music() {
     const active=!!(audio&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'&&audio.state==='running');
-    const next=active?(game.enemies.some(e=>e.variant==='boss')?'boss':game.campaign.night>67?'afterlight':game.campaign.night>34?'ironmarch':'survival'):'silent';
+    const next=active?(game.enemies.some(e=>e.variant==='boss')?'boss':(Math.floor((game.campaign.night-1)/12)%3===0?'ironmarch':Math.floor((game.campaign.night-1)/12)%3===1?'afterlight':'survival')):'silent';
     if(!audio||!musicBus)return;
     const now=audio.currentTime;
     if(masterBus)masterBus.gain.setTargetAtTime(muted||document.hidden||game&&game.mode==='paused'?0:volume,now,.015);
