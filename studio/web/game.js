@@ -102,7 +102,7 @@
     game.enemies.push({x:clamp(p.x+Math.cos(angle)*r,30,2370),y:clamp(p.y+Math.sin(angle)*r,30,2370),
       r:extra===2?25:18, hp:cfg.enemyHp+(extra-1)*3, max:cfg.enemyHp+(extra-1)*3,
       speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
-      phase:rnd(0,TWO),weight:extra,hurt:0});
+      phase:rnd(0,TWO),weight:extra,hurt:0,fearTimer:0});
   }
   function shotAtEnemy() {
     if(!game.enemies.length)return;
@@ -134,7 +134,7 @@
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=cfg.shotInterval/(1+.1*(p.level-1));}
     for(const enemy of g.enemies){
       const dx=p.x-enemy.x,dy=p.y-enemy.y, d=Math.max(1,Math.hypot(dx,dy));
-      enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;
+      if(enemy.fearTimer>0){enemy.fearTimer=Math.max(0,enemy.fearTimer-dt);}else if(d<=p.r+enemy.r+5&&rand()<0.07){enemy.fearTimer=0.3;}if(enemy.fearTimer<=0){enemy.x+=dx/d*enemy.speed*dt;enemy.y+=dy/d*enemy.speed*dt;}
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       if(d<p.r+enemy.r-3&&p.inv===0){
         p.hp--;p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
