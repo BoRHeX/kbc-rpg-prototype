@@ -6,9 +6,11 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-final-continuation';
+  const PATCH_ID = 'cataclysm-10-major-campaign-01';
+  const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART;
+  if(!MAJOR||!ART)throw Error('Catastrophe major modules did not load');
   const AUDIO_PASS_ID = 'catastrophe-adaptive-02';
-  const UNLOCKS = {shambler:0,weaver:120,dasher:240,orbiter:420,stalker:660,ghost:960,gas:1200};
+  const UNLOCKS = {shambler:0,weaver:40,dasher:50,orbiter:70,stalker:85,hexer:95,ghost:140,summoner:160,blight:190,gas:1200};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   let W = 1280, H = 720;
   const TWO = Math.PI * 2;
@@ -29,7 +31,7 @@
   let seeded = 424242, stars = [], city = [], noticeTTL = 0, noticeQueue = [];
   const rand = () => ((seeded = (Math.imul(1664525, seeded) + 1013904223) >>> 0) / 4294967296);
   const clamp = (v, lo, hi) => Math.min(hi,Math.max(lo,v));
-  const WORLD_SIZE = 2400;
+  const WORLD_SIZE = 4200;
   function wrapCoord(value) { return ((value % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE; }
   function wrappedDelta(from,to) { return wrapCoord(to-from+WORLD_SIZE/2)-WORLD_SIZE/2; }
   function verticalDelta(from,to){return to-from;}
@@ -49,12 +51,14 @@
     const epochs=game&&game.world?game.world.epochs:[];
     let biome=0;for(const e of epochs)if(index>=e.from)biome=e.biome;
     const solids=[];
-    for(let row=0;row<4;row++)for(let col=0;col<4;col++){
-      if(row===2&&col===2)continue;
-      const shift=((index%3+3)%3)*24;
-      solids.push({x:330+col*470+shift,y:index*WORLD_SIZE+330+row*470,
-        w:biome===1?240:biome===3?95:130+(col%2)*25,
-        h:biome===2?240:biome===3?95:135+(row%2)*20,lit:(row+col)%2===0});
+    for(let row=0;row<6;row++)for(let col=0;col<6;col++){
+      if(row===3&&col===3)continue;
+      const n=(row*7+col*11+Math.abs(index)*5)%9, shift=((index%3+3)%3)*23;
+      const kind=n===0||n===5?'car':n===2||n===7?'dumpster':'building';
+      const w=kind==='car'?146:kind==='dumpster'?86:biome===1?340:biome===2?390:305+((col+row)%3)*50;
+      const h=kind==='car'?76:kind==='dumpster'?79:biome===2?410:biome===3?240:300+((col*2+row)%3)*45;
+      solids.push({x:210+col*670+shift,y:index*WORLD_SIZE+225+row*665,
+        w,h,lit:(row+col)%2===0,kind,style:n%4});
     }
     const chunk={index,biome,solids};chunkCache.set(index,chunk);
     if(chunkCache.size>12){const far=[...chunkCache.keys()].sort((a,b)=>Math.abs(b-index)-Math.abs(a-index));chunkCache.delete(far[0]);}
@@ -91,7 +95,7 @@
         if(p.y-p.r<sh.y&&p.inv<=0){damageTaken();p.hp=Math.max(0,p.hp-.75);p.inv=1.5;sh.hits++;g.shake=.5;burst(p.x,p.y,'#aa72ea',12);notify('SHADOW HIT · Escape DOWN ↓',2);if(p.hp<=0){end();return;}}
       }
     }
-    if(p.level>=99&&!g.endgame.complete){
+    if(false && p.level>=99&&!g.endgame.complete){ // Legacy level-99 finale retired by 100-night campaign
       if(!g.endgame.active){g.endgame.active=true;sh.warning=8;notify('LEVEL 99 · NINE CROWNS · Defeat the Catastrophe nine times',5);}
       g.endgame.cooldown=Math.max(0,g.endgame.cooldown-dt);
       if(!g.enemies.some(e=>e.finalBoss)&&g.endgame.cooldown===0)spawnFinalBoss();
@@ -480,20 +484,22 @@
     recordRun();
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
-    const player={x:1200,y:1200,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,
+    const player={x:2100,y:2100,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,armor:0,criticalBoost:0,focus:0,areaBurst:0,tacticalMomentum:0,
       animation:{state:'idle',clock:0,frame:0,attack:0,hit:0,moving:false},survivalTimer:0,survivalInstinctBuff:0,xpGain:1,autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
       squadTactic:'default',squadTacticDuration:0,squadTacticCooldown:0,nextTactic:0,nightCycle:{waveCount:1},companionSquad:[],squadStats:{damage:.5,rate:1,count:1,spread:0,bounce:0},offerSeed:(new URLSearchParams(location.search).has('seed')?Number(new URLSearchParams(location.search).get('seed')):crypto.getRandomValues(new Uint32Array(1))[0])>>>0,offerState:0,companionRanks:Object.fromEntries(roleNames.map(r=>[r,0])),
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
       hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:EXPLORATION.first,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
+    game.campaign=MAJOR.newLedger();game.rerollTokens=0;game.enemyShots=[];game.majorEncounterSerial=0;
+    game.majorFinalSpawned=false;game.victory=false;
     game.equipment={lens:0,coil:0,capacitor:0};game.buildEffects={conducted:0,recharged:0,slowed:0};game.exploration={attempts:0,spawned:0,lastSpawn:-150};
     game.encore={charge:0,window:0,cooldown:0,wave:null,activations:0,hits:0};
     game.director={budget:12,aliveThreat:0,nearby:0,kills:0,dps:0,pendingKills:0,pendingDamage:0,blocked:false,recovery:0,mutationCooldown:0,spawnDelay:1.65,spawns:0,suppressed:0,mutations:0,criticalShots:0,fusionCooldown:12,fusions:0,emerged:0,cocoonsDestroyed:0,serial:0,frameMs:16.7,framePressure:false};
     game.cityEvents={active:null,nextCrane:90,nextCity:120,cityIndex:0,serial:0,
       counts:{crane:0,street:0,elite:0},completed:{crane:0,street:0,elite:0},recoveryUntil:0,
       relayUnlocked:false,relay:null,playerHits:0,enemyHits:0,avoids:0,maxDebris:0};
-    game.world={epoch:0,currentBiomeId:BIOMES[0].id,epochs:[{from:-Number.MAX_SAFE_INTEGER,biome:0}],frontier:1,maxY:1200,cameraY:1200-H/2,chunk:0};
+    game.world={epoch:0,currentBiomeId:BIOMES[0].id,epochs:[{from:-Number.MAX_SAFE_INTEGER,biome:0}],frontier:1,maxY:2100,cameraY:2100-H/2,chunk:0};
     game.progressionMilestones=[];game.risingShadow={active:false,warning:0,y:0,hits:0};
     game.endgame={active:false,victories:0,spawned:0,cooldown:0,complete:false,reward:null};
     game.offerState=game.offerSeed;
@@ -1510,8 +1516,8 @@
     if(right<=left||bottom<=top)return;
     ctx.fillStyle=BIOMES[renderBiome].floor;ctx.fillRect(left,top,right-left,bottom-top);
     // Flat paving, road paint and tiny rubble are explicitly decorative.
-    for(let row=Math.max(0,Math.floor(top/300));row<Math.min(8,Math.ceil(bottom/300));row++)
-      for(let col=Math.max(0,Math.floor(left/300));col<Math.min(8,Math.ceil(right/300));col++){
+    for(let row=Math.max(0,Math.floor(top/300));row<Math.min(14,Math.ceil(bottom/300));row++)
+      for(let col=Math.max(0,Math.floor(left/300));col<Math.min(14,Math.ceil(right/300));col++){
         const x=col*300,y=row*300;
         ctx.strokeStyle='#203339';ctx.lineWidth=1;ctx.strokeRect(x,y,300,300);
         ctx.fillStyle='#9d956255';ctx.fillRect(x+145,y+20,3,48);ctx.fillRect(x+20,y+145,48,3);
@@ -1521,6 +1527,25 @@
     for(const c of city){
       if(c.x+c.w<cx-35||c.x>cx+W+35||c.y+c.h<cy-35||c.y>cy+H+35)continue;
       const n=inkHash(c.x,c.y);
+      if(c.kind==='car'){
+        ctx.fillStyle='#09111699';ctx.fillRect(c.x+8,c.y+8,c.w,c.h);
+        inkBox(c.x+4,c.y+13,c.w-8,c.h-25,c.style%2?'#bd785d':'#648caa','#1a2831',3);
+        inkBox(c.x+34,c.y+5,c.w-68,c.h-10,'#243c4c','#131e28',2);
+        ctx.fillStyle='#a9deef';ctx.fillRect(c.x+40,c.y+10,22,c.h-19);
+        ctx.fillRect(c.x+c.w-62,c.y+10,22,c.h-19);
+        ctx.fillStyle='#fae1a3';ctx.fillRect(c.x+c.w-10,c.y+18,8,14);
+        ctx.fillStyle='#f88f7a';ctx.fillRect(c.x+2,c.y+18,8,14);
+        ctx.fillStyle='#172b32';ctx.fillRect(c.x+23,c.y+4,24,7);ctx.fillRect(c.x+c.w-49,c.y+c.h-11,24,7);
+        continue;
+      }
+      if(c.kind==='dumpster'){
+        ctx.fillStyle='#050e1599';ctx.fillRect(c.x+8,c.y+8,c.w,c.h);
+        inkBox(c.x,c.y+8,c.w,c.h-12,'#48796d','#162f31',4);
+        inkBox(c.x-7,c.y+2,c.w+14,16,'#77a998','#132d32',3);
+        for(let i=12;i<c.w-5;i+=16){ctx.fillStyle='#244d48';ctx.fillRect(c.x+i,c.y+21,4,c.h-30);}
+        for(const x of [12,c.w-12]){circle(c.x+x,c.y+c.h-2,8,'#152832');circle(c.x+x,c.y+c.h-2,3,'#b8b89b');}
+        continue;
+      }
       ctx.fillStyle='#060f16aa';ctx.fillRect(c.x+13,c.y+17,c.w,c.h);
       ctx.fillStyle=c.lit?'#33474a':'#293a42';ctx.fillRect(c.x,c.y,c.w,c.h);
       ctx.fillStyle='#111f29';ctx.fillRect(c.x+5,c.y+5,c.w-10,c.h-16);
