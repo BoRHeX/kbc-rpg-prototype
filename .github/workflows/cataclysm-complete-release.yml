@@ -55,13 +55,14 @@ jobs:
           COUNCIL_MODEL: gpt-4.1-mini
         run: python -m game_factory.release_scope plan
       - name: Preserve only the public gameplay contract and integration plan
-        if: steps.job.outputs.active == 'true'
+        if: always() && steps.job.outputs.active == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-complete-release-plan
           path: |
             artifacts/mobile/job.json
             artifacts/mobile/plan.json
+            artifacts/mobile/partial-plan.json
             artifacts/mobile/review-coverage.json
           if-no-files-found: error
           retention-days: 14

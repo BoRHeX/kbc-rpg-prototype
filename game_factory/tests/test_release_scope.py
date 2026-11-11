@@ -88,18 +88,27 @@ class ReleaseScopeTests(unittest.TestCase):
         def ask(memory, agent, run, task, refs, **kwargs):
             calls.append(agent)
             if agent=='cataclysm.release-evidence':
-                return answer({'coverage_complete':True,'omissions':[], 'observations':[]})
+                return answer({'limitations':['Only sampled visuals are available.'], 'observations':[]})
             if agent in release.ROLES:
                 owned=[r for r in scope()['requirements'] if r['owner']==agent]
                 return answer({'requirements':{r['id']:plan()['requirements'][r['id']] for r in owned},'evidence_notes':[]})
             if agent=='critic':return answer({'blockers':[]})
             return answer({'blockers':[],'stage_contracts':{s:'Keep '+s for s in release.STAGES}})
         result=release.plan_release(Memory(),'model',{'request':request(),'target':'docs/cataclysm','run_id':'123-1'},
-                                    {'private_gameplay':{'transcript':'private speech must not be published'}},ask)
+                                    {'private_gameplay':{'audio_coverage':'entire recording','transcript':'private speech must not be published'}},ask)
         self.assertEqual(set(result['requirements']),{r['id'] for r in scope()['requirements']})
         self.assertNotIn('selected_ids',str(result))
         self.assertNotIn('private speech',str(result))
         self.assertEqual(calls,['cataclysm.release-evidence',*release.ROLES,'critic','producer'])
+        self.assertEqual(result['review_ledger']['input_coverage']['audio'],'entire recording')
+        self.assertIn('sampled visuals',result['review_ledger']['limitations'][0])
+
+    def test_actual_missing_or_truncated_audio_stops_before_paid_planning(self):
+        for playback in ({'transcript':'','audio_coverage':'entire recording'},
+                         {'transcript':'some words','audio_coverage':'first 40 minutes'}):
+            with self.assertRaisesRegex(ValueError,'missing or truncated'):
+                release.plan_release(Memory(),'model',{'request':request()},
+                                     {'private_gameplay':playback},lambda *a,**kw:self.fail('No paid call permitted'))
 
     def test_old_two_feature_plan_cannot_erase_complete_scope(self):
         value=plan();value['requirements'].pop('requirement-evolution')

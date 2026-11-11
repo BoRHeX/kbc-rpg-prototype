@@ -101,7 +101,7 @@ def validate_plan(plan, scope):
     return plan
 
 
-def plan_release(memory, model, job, evidence, ask):
+def plan_release(memory, model, job, evidence, ask, on_progress=None):
     scope = validate_scope(job["request"]["release_scope"])
     common = (
         "This is ONE creator-authorized COMPLETE RELEASE, divided into four sequential coding passes. "
@@ -116,8 +116,11 @@ def plan_release(memory, model, job, evidence, ask):
         "of a definition is not permission to invent a prior agreement or abandon other requirements. "
         "Propose code-level steps, not claims of completed edits/tests. Keep per-requirement steps concise."
     )
-    ledger_schema = decision(obj({"coverage_complete": {"type": "boolean"},
-        "omissions": array(STRING), "observations": array(obj({
+    playback = evidence.get("private_gameplay", {})
+    if (playback.get("audio_coverage") != "entire recording" or
+            not isinstance(playback.get("transcript"), str) or not playback["transcript"].strip()):
+        raise ValueError("Complete review transcript is missing or truncated")
+    ledger_schema = decision(obj({"limitations": array(STRING), "observations": array(obj({
             "timecode": STRING, "observation": STRING, "action": STRING,
             "stage": {"type": "string", "enum": list(STAGES)},
         }), 0, 60)}))
@@ -126,16 +129,22 @@ def plan_release(memory, model, job, evidence, ask):
                  "review into a timecoded, gameplay-only evidence ledger. Consolidate repetitions, retain "
                  "ambiguities and contradictions. Do not quote speech or include personal details. "
                  "Distinguish a requested change from an inference in observation/action. Assign the "
-                 "related implementation pass. The ledger is not a five-item triage summary. Set "
-                 "coverage_complete=false and name omissions if the entire review cannot be represented.\n" +
-                 json.dumps(evidence.get("private_gameplay", {})),
+                 "related implementation pass. The ledger is not a five-item triage summary. You receive "
+                 "the ENTIRE audio transcript and explicitly SAMPLED visuals, not continuous video. "
+                 "Extract all distinct observations within that supplied evidence; preserve limits in "
+                 "limitations without demanding unavailable continuous-video/physical-device proof. "
+                 "Do not invent missing spoken words or facts between sampled frames.\n" +
+                 json.dumps(playback),
                  ["complete private review"], model=model, max_output_tokens=4000, word_limit=1700,
                  response_schema=ledger_schema, format_name="complete_release_review_ledger")
     ledger_action = ledger.get("proposed_action", {})
-    if ledger_action.get("coverage_complete") is not True or ledger_action.get("omissions") != []:
-        raise ValueError("Review evidence ledger is incomplete; do not silently reduce feedback")
+    if not isinstance(ledger_action.get("observations"), list) or not isinstance(ledger_action.get("limitations"), list):
+        raise ValueError("Invalid timecoded gameplay evidence ledger")
+    ledger_action["input_coverage"] = {"audio": "entire recording", "visuals": playback.get("sample_method", "sampled frames")}
     plan = {"release_scope": scope, "stage_order": list(STAGES), "requirements": {},
             "contributors": {}, "review_ledger": ledger_action}
+    if on_progress:
+        on_progress(plan)
     evidence = {**evidence, "review_ledger": ledger_action}
     for role in ROLES:
         assigned = [r for r in scope["requirements"] if r["owner"] == role]
@@ -152,6 +161,8 @@ def plan_release(memory, model, job, evidence, ask):
             raise ValueError(role + " omitted or changed assigned requirements")
         plan["requirements"].update(steps)
         plan["contributors"][role] = result
+        if on_progress:
+            on_progress(plan)
     critic_schema = decision(obj({"interface_contracts": array(STRING, 2, 10),
                                   "risks_and_mitigations": array(STRING, 1, 12), "blockers": array(STRING)}))
     plan["critic"] = ask(memory, memory.register("critic", model), job["run_id"],
@@ -161,6 +172,8 @@ def plan_release(memory, model, job, evidence, ask):
                          json.dumps({"scope": scope, "steps": plan["requirements"]}),
                          ["complete requirement coverage"], model=model, max_output_tokens=2600,
                          word_limit=1000, response_schema=critic_schema, format_name="complete_release_critique")
+    if on_progress:
+        on_progress(plan)
     if plan["critic"].get("proposed_action", {}).get("blockers") != []:
         raise ValueError("Critic reports unresolved release-planning blockers")
     producer_schema = decision(obj({"stage_contracts": obj({s: STRING for s in STAGES}),
@@ -175,6 +188,8 @@ def plan_release(memory, model, job, evidence, ask):
                            json.dumps({"scope": scope, "steps": plan["requirements"], "critic": plan["critic"]}),
                            ["all required stages"], model=model, max_output_tokens=2600, word_limit=1000,
                            response_schema=producer_schema, format_name="complete_release_integration")
+    if on_progress:
+        on_progress(plan)
     return validate_plan(plan, scope)
 
 
@@ -222,7 +237,9 @@ def plan_command():
                                         if (m.ROOT / "docs/preview" / n).is_file()}}
     memory = CouncilMemory(m.WORK / "memory.sqlite3")
     try:
-        plan = plan_release(memory, os.getenv("COUNCIL_MODEL", "gpt-4.1-mini"), job, evidence, ask_agent)
+        def preserve_progress(value):
+            (m.WORK / "partial-plan.json").write_text(json.dumps(value, indent=2) + "\n")
+        plan = plan_release(memory, os.getenv("COUNCIL_MODEL", "gpt-4.1-mini"), job, evidence, ask_agent, preserve_progress)
         (m.WORK / "plan.json").write_text(json.dumps(plan, indent=2) + "\n")
         m.output("plan_digest", m.digest(plan))
         (m.WORK / "review-coverage.json").write_text(json.dumps({
