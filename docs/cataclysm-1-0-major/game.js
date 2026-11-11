@@ -263,7 +263,8 @@
   const squadIds = ['squad-damage','squad-rate','squad-count','squad-spread','squad-bounce'];
   const equipmentIds=['equip-lens','equip-coil','equip-capacitor'];
   const EXPLORATION=Object.freeze({first:150,intervalMin:120,intervalMax:180,chance:.18,cap:2,magnetDuration:60});
-  const upgradeIds = [...equipmentIds,...commonIds,'recover','multi-shot','ricochet','fish-magnet',...roleNames.map(r=>'companion-'+r),...squadIds];
+  const majorUpgradeIds=['armor','critical','shield-pulse','area-burst','focus','squad-range','tactical-momentum'];
+  const upgradeIds = [...equipmentIds,...commonIds,'recover','multi-shot','ricochet','fish-magnet',...majorUpgradeIds,...roleNames.map(r=>'companion-'+r),...squadIds];
   function upgradeAvailable(type) {
     if(!game)return false;
     if(type.startsWith('companion-'))return roleNames.includes(type.slice(10))&&(game.companionSquad.some(c=>c.type===type.slice(10))||game.companionSquad.length<MAX_COMPANIONS);
@@ -281,6 +282,16 @@
     if(equipmentIds.includes(id)){const key=id.slice(6),rank=game.equipment[key];return ({lens:'Prism lens · piercing + marks; coil marks conduct damage',coil:'Frost coil · shots slow; lens hits conduct; traps mark',capacitor:'Rune capacitor · longer runes; coil kills recharge specials'})[key]+' · '+rank+' → '+(rank+1);}
     if(rows[id]){const [label,old,next]=rows[id];return label+' · '+n(old)+' → '+n(next);}
     if(id==='recover')return 'Patch up · +1 HP, +0.25 maximum HP';
+    const majorUpgrades={
+      armor:'Armored fur · reduce incoming damage by 10% (max 65%)',
+      critical:'Precision claws · +7% critical shot chance',
+      'shield-pulse':'Shield pulse · +0.5 maximum HP and a recovery window',
+      'area-burst':'Shock burst · +1 Fishbone Encore damage radius rank',
+      focus:'Hunter instinct · +11% player weapon damage',
+      'squad-range':'Long-range squad · +10% companion damage and range',
+      'tactical-momentum':'Momentum · +8% movement and fire rate'
+    };
+    if(majorUpgrades[id])return majorUpgrades[id];
     const role=id.slice(10),ally=game.companionSquad.find(c=>c.type===role);
     return role.toUpperCase()+' · '+(ally?'Train rank '+ally.rank+' → '+(ally.rank+1):'Recruit permanent follower');
   }
@@ -297,7 +308,7 @@
   readBest();
   function saveBest() {
     if (!game) return;
-    const score = Math.floor(game.t*2 + game.kills*7 + game.fish*9);
+    const score = game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2 + game.kills*7 + game.fish*9);
     readBest();
     if (score > personalBest) {
       personalBest = score;
@@ -491,7 +502,7 @@
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
       hazards:{toxicGasClouds:[],spawnTimer:0},powerups:[],buffs:{rage:0,magnet:0,survivalInstinct:0},survivalTimer:0,lastDamage:-10,escapeOverdriveTimer:0,feralInstinctOverdrive:0,escapeOrigin:null,runicRelic:{held:null,active:null,duration:0,cooldown:0,nextSpawn:35,items:[]},nextPower:EXPLORATION.first,powerCount:0,bossMilestone:0,
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
-    game.campaign=MAJOR.newLedger();game.rerollTokens=0;game.enemyShots=[];game.majorEncounterSerial=0;
+    game.campaign=MAJOR.newLedger();game.rerollTokens=0;game.rerollDrops=[];game.enemyShots=[];game.majorEncounterSerial=0;
     game.majorFinalSpawned=false;game.victory=false;
     game.equipment={lens:0,coil:0,capacitor:0};game.buildEffects={conducted:0,recharged:0,slowed:0};game.exploration={attempts:0,spawned:0,lastSpawn:-150};
     game.encore={charge:0,window:0,cooldown:0,wave:null,activations:0,hits:0};
@@ -535,6 +546,36 @@
     }
     pointer=null;keys={};$('stick').hidden=true;$('thumb').style.transform='translate(0,0)';
   }
+  // All four choices are real, unique and weighted; rerolls cannot sell an empty pool.
+  function rollMajorChoices(){
+    const buttons=[...document.querySelectorAll('[data-upgrade]')];
+    let pool=buttons.filter(b=>upgradeAvailable(b.dataset.upgrade));
+    const prior=(game.offered||[]).join('|'),offered=[];
+    const weight=b=>commonIds.includes(b.dataset.upgrade)?5:['squad-damage','squad-rate','squad-count'].includes(b.dataset.upgrade)?3:majorUpgradeIds.includes(b.dataset.upgrade)?3:1;
+    for(let i=0;i<4&&pool.length;i++){
+      const eligible=i===0?pool.filter(b=>commonIds.includes(b.dataset.upgrade)):pool;
+      const use=eligible.length?eligible:pool;
+      let roll=offerRand()*use.reduce((n,b)=>n+weight(b),0),chosen=use[use.length-1];
+      for(const b of use){roll-=weight(b);if(roll<0){chosen=b;break;}}
+      offered.push(chosen);pool=pool.filter(b=>b!==chosen);
+    }
+    if(offered.map(x=>x.dataset.upgrade).join('|')===prior&&pool.length){
+      offered[offered.length-1]=pool[Math.floor(offerRand()*pool.length)];
+    }
+    game.offered=offered.map(b=>b.dataset.upgrade);
+    buttons.forEach(b=>{b.hidden=!offered.includes(b);b.disabled=false;b.textContent=upgradeText(b.dataset.upgrade);});
+    $('reroll-count').textContent=game.rerollTokens;
+    $('reroll-upgrades').disabled=game.rerollTokens<1;
+    return offered;
+  }
+  function rerollMajorChoices(){
+    if(!game||game.mode!=='upgrade'||game.rerollTokens<1)return;
+    game.rerollTokens--;
+    const offers=rollMajorChoices();playSfx('reroll');notify('CHOICES REROLLED · '+game.rerollTokens+' REMAIN');
+    offers[0]?.focus({preventScroll:true});
+  }
+  $('reroll-upgrades').onclick=rerollMajorChoices;
+
   function offerUpgrade() {
     game.pendingUpgrade=true;game.mode='upgrade';clearInput();
     const milestone=game.player.level%3===0;
@@ -544,21 +585,9 @@
     }
     $('upgrade-title').textContent='LEVEL '+game.player.level+' · CHOOSE ONE';
     $('upgrade-copy').textContent=(milestone?'+1 maximum heart. ':'')+'Choose one investment. Combat frozen.';
-    const buttons=[...document.querySelectorAll('[data-upgrade]')];
-    let pool=buttons.filter(b=>upgradeAvailable(b.dataset.upgrade));
-    const offered=[];
-    // A usable player common is guaranteed; the other two use the full weighted pool.
-    for(let i=0;i<3;i++){
-      const eligible=i===0?pool.filter(b=>commonIds.includes(b.dataset.upgrade)):pool;
-      const weight=b=>commonIds.includes(b.dataset.upgrade)?6:['squad-damage','squad-rate','squad-count'].includes(b.dataset.upgrade)?3:b.dataset.upgrade==='recover'?3:1;
-      let roll=offerRand()*eligible.reduce((n,b)=>n+weight(b),0),chosen=eligible[eligible.length-1];
-      for(const b of eligible){roll-=weight(b);if(roll<0){chosen=b;break;}}
-      offered.push(chosen);pool=pool.filter(b=>b!==chosen);
-    }
-    game.offered=offered.map(b=>b.dataset.upgrade);
-    buttons.forEach(b=>{b.hidden=!offered.includes(b);b.disabled=false;b.textContent=upgradeText(b.dataset.upgrade);});
+    const offered=rollMajorChoices();
     $('upgrade-overlay').hidden=false;$('pause').hidden=true;
-    updateHud();music();playSfx('level');offered[0].focus({preventScroll:true});
+    updateHud();music();playSfx('level');offered[0]?.focus({preventScroll:true});
   }
 
   function chooseUpgrade(type) {
@@ -569,6 +598,13 @@
     else if(type==='recover'){p.maxHp+=.25;p.hp=Math.min(p.maxHp,p.hp+1);}
     else if(type==='speed')p.speed+=18/Math.sqrt(1+(p.speed-cfg.speed)/180);
     else if(type==='xp-gain')p.xpGain+=.2;
+    else if(type==='armor')p.armor=Math.min(.65,p.armor+.1);
+    else if(type==='critical')p.criticalBoost=Math.min(.5,p.criticalBoost+.07);
+    else if(type==='shield-pulse'){p.maxHp+=.5;p.hp=Math.min(p.maxHp,p.hp+.75);p.inv=Math.max(p.inv,2);}
+    else if(type==='area-burst')p.areaBurst++;
+    else if(type==='focus'){p.focus++;p.damage*=1.11;}
+    else if(type==='squad-range'){p.squadRange=(p.squadRange||0)+1;game.squadStats.damage+=.1;}
+    else if(type==='tactical-momentum'){p.tacticalMomentum++;p.speed*=1.08;p.shotInterval*=.92;}
     else if(type.startsWith('companion-'))summonCompanion(type.slice(10));
     else if(type==='squad-damage')game.squadStats.damage+=.15;
     else if(type==='squad-rate')game.squadStats.rate*=1.2;
@@ -775,7 +811,7 @@
     const p=game.player;
     shot.pierce=Math.min(4,game.equipment.lens);shot.mark=game.equipment.lens>0;
     shot.damage*=1+Math.max(0,game.equipment.lens-4)*.12;
-    shot.critical=rand()<clamp(.06+(p.level-1)*.004+Math.max(0,p.damage-1)*.012,.06,.22);
+    shot.critical=rand()<clamp(.06+(p.level-1)*.004+Math.max(0,p.damage-1)*.012+p.criticalBoost,.06,.75);
     shot.calculateDamage=Shot.calculateDamage;shot.isCriticalHit=Shot.isCriticalHit;
     if(shot.critical)game.director.criticalShots++;
     return shot;
