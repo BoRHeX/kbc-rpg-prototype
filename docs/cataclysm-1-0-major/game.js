@@ -916,7 +916,7 @@
       pet.specialAbilityReady=pet.specialCooldown===0;
       if(wasCooling&&pet.specialAbilityReady)notify(pet.type.toUpperCase()+' special ready',1.5);
       pet.flash=Math.max(0,pet.flash-dt);
-      let nearest=null,best=pet.type==='sniper'?780:540;
+      let nearest=null,best=(pet.type==='sniper'?780:540)+(p.squadRange||0)*40;
       for(const e of g.enemies){const d=dist(pet.x,pet.y,e.x,e.y);if(e.hp>0&&d<best){best=d;nearest=e;}}
       const angle=nearest?Math.atan2(verticalDelta(pet.y,nearest.y),wrappedDelta(pet.x,nearest.x)):p.aim;
       const slot=-Math.PI*.75+index*Math.PI/2;
@@ -1277,6 +1277,7 @@
   }
   // Fishbone Encore: earned pickup rhythm, never a replacement for dodging.
   const ENCORE_RADIUS=230,ENCORE_WINDOW=8,ENCORE_COOLDOWN=10;
+  const majorEncoreRadius=()=>ENCORE_RADIUS+(game?.player.areaBurst||0)*45;
   function updateEncore(dt){
     if(!game||game.mode!=='running')return;
     const c=game.encore;
@@ -1315,7 +1316,7 @@
     if(!w)return;
     ctx.save();ctx.globalAlpha=Math.min(1,w.life);
     // One outward sweep, then a steady boundary: no strobe or full-screen flash.
-    const r=reducedMotion?ENCORE_RADIUS:ENCORE_RADIUS*Math.min(1,(3-w.life)/.5);
+    const r=reducedMotion?ENCORE_RADIUS:majorEncoreRadius()*Math.min(1,(3-w.life)/.5);
     outline(w.x,w.y,r,'#ffcf80',3);
     ctx.setLineDash([8,12]);outline(w.x,w.y,ENCORE_RADIUS,'#ffcf8066',2);ctx.setLineDash([]);
     ctx.fillStyle='#fff0c6';ctx.font='bold 15px system-ui';ctx.textAlign='center';
@@ -2342,7 +2343,7 @@
   renderBest();
   // Read-only snapshots let QA verify simulation progress without changing game state.
   window.CATACLYSM_DIAGNOSTICS = Object.freeze({
-    snapshot: () => ({world:{size:WORLD_SIZE,wrap:true,wrapY:false,topology:'horizontal-cylinder',...(game?JSON.parse(JSON.stringify(game.world)):{}),chunks:[...chunkCache.values()].map(c=>({index:c.index,biome:BIOMES[c.biome].id,solids:c.solids.map(s=>({...s}))})),solids:game?terrainNear(game.player.y).map(s=>({...s})):[]},progressionMilestones:game?[...game.progressionMilestones]:[],risingShadow:game?{...game.risingShadow}:null,endgame:game?{...game.endgame}:null,cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.75,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
+    snapshot: () => ({major:{campaign:game?{...game.campaign}:null,nightDuration:MAJOR.NIGHT_SECONDS,roster:{normal:MAJOR.catalog.normal.length,boss:MAJOR.catalog.bosses.length,elite:MAJOR.catalog.elites.length,superElite:MAJOR.catalog.superElites.length},animationFrames:ART.frameTotal,songs:Object.keys(MAJOR.songs),rerollTokens:game?game.rerollTokens:0,rerollDrops:game?game.rerollDrops.length:0,enemyShots:game?game.enemyShots.length:0,victory:game?game.victory:false},world:{size:WORLD_SIZE,wrap:true,wrapY:false,topology:'horizontal-cylinder',...(game?JSON.parse(JSON.stringify(game.world)):{}),chunks:[...chunkCache.values()].map(c=>({index:c.index,biome:BIOMES[c.biome].id,solids:c.solids.map(s=>({...s}))})),solids:game?terrainNear(game.player.y).map(s=>({...s})):[]},progressionMilestones:game?[...game.progressionMilestones]:[],risingShadow:game?{...game.risingShadow}:null,endgame:game?{...game.endgame}:null,cityEvents:game?JSON.parse(JSON.stringify(game.cityEvents)):null,director:game?{...game.director,maxEnemies:liveCap(),minSpawnDelay:.75,maxSpawnDelay:2.8}:null,viewport:{width:W,height:H,pixels:[canvas.width,canvas.height]},squadTactic:game?game.squadTactic:'default',squadTacticDuration:game?game.squadTacticDuration:0,squadTacticCooldown:game?game.squadTacticCooldown:0,nightCycle:game?{...game.nightCycle}:{waveCount:1},build: BUILD,patch:PATCH_ID,threatUnlocks:{...UNLOCKS},availableThreats:game?availableThreats(game.t):[],
       companions:{limit:MAX_COMPANIONS,roles:[...roleNames],active:game?game.companionSquad.map(c=>c.type):[],ranks:game?{...game.companionRanks}:{},uniqueCount:roleNames.length},
       survivalTimer:game?game.survivalTimer:0,escapeOverdriveTimer:game?game.escapeOverdriveTimer:0,feralInstinctOverdrive:game?game.feralInstinctOverdrive:0,
       runicRelic:game?{...game.runicRelic,items:game.runicRelic.items.map(i=>({...i}))}:null,offered:game?[...(game.offered||[])]:[],lastNotice:game&&game.lastNotice?{...game.lastNotice}:null, mode: game ? game.mode : 'ready',
@@ -2353,7 +2354,7 @@
       difficulty:game?difficulty():1,bossEncounters:game?game.bossEncounters:0,
       escapeArmed:!!(game&&game.escapeArmed),
       upgradeAvailability:game?Object.fromEntries(upgradeIds.map(k=>[k,upgradeAvailable(k)])):{},
-      score:game?Math.floor(game.t*2+game.kills*7+game.fish*9):0,
+      score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
       presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0},
