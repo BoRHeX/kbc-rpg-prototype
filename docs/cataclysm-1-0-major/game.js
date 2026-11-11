@@ -915,6 +915,26 @@
       pet.flash=.15;
     }
   }
+  // State-aware auto-cast: never waste the healer, sniper or defense abilities.
+  function autoActivateMajorAbilities(){
+    const g=game;if(!g||g.mode!=='running')return;
+    for(const pet of g.companionSquad){
+      if(!pet.specialAbilityReady||pet.specialCooldown>0)continue;
+      const nearby=g.enemies.filter(e=>e.hp>0&&dist(pet.x,pet.y,e.x,e.y)<(pet.type==='sniper'?780:450));
+      const injured=g.player.hp<g.player.maxHp-.3;
+      const valid=pet.type==='healer'?injured:
+        pet.type==='tank'?nearby.some(e=>dist(g.player.x,g.player.y,e.x,e.y)<230):
+        pet.type==='brawler'?nearby.some(e=>dist(pet.x,pet.y,e.x,e.y)<190):
+        pet.type==='sniper'?nearby.length>0:
+        pet.type==='engineer'||pet.type==='trapper'||pet.type==='bard'?nearby.length>0:
+        pet.type==='shooter'?nearby.length>1||nearby.some(e=>e.creditCategory):nearby.length>0;
+      if(valid)companionSpecialAbilityActivate(pet.type);
+    }
+    const relic=g.runicRelic;
+    if(relic.held&&relic.cooldown<=0&&
+      (g.enemies.some(e=>e.creditCategory&&dist(e.x,e.y,g.player.x,g.player.y)<340)||
+       g.player.hp<g.player.maxHp*.4))activateRunicRelic();
+  }
   // A shared cooldown per role prevents duplicate recruits from spamming abilities.
   function companionSpecialAbilityActivate(type){
     if(!game||game.mode!=='running')return;
@@ -1321,6 +1341,16 @@
     if(e.cocoon){g.director.cocoonsDestroyed++;notify('COCOON BROKEN · Evolution stopped',2);}
     if(g.equipment.capacitor&&g.equipment.coil&&e.squadSlow>0){const refund=.3*g.equipment.capacitor;g.runicRelic.cooldown=Math.max(0,g.runicRelic.cooldown-refund);for(const ally of g.companionSquad)ally.specialCooldown=Math.max(0,ally.specialCooldown-refund);g.buildEffects.recharged++;}
     g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
+    if(e.creditCategory){
+      MAJOR.kill(g.campaign,e.majorId,e.creditCategory);
+      notify(e.creditCategory.toUpperCase()+' CLEARED · B'+g.campaign.boss+
+        ' E'+g.campaign.elite+' S'+g.campaign.superElite,2,'major-kill-'+e.majorId);
+    }
+    if(e.creditCategory||e.elite){
+      const amount=e.creditCategory==='boss'?2:e.creditCategory==='superElite'?3:1;
+      if(g.rerollDrops.length<16)g.rerollDrops.push({x:e.x,y:e.y,value:amount,expires:g.t+65,age:0});
+      playSfx(e.creditCategory==='boss'?'boss-defeat':'elite-defeat');
+    }
     if(e.finalBoss){
       g.endgame.victories++;g.endgame.cooldown=8;g.director.recovery=Math.max(g.director.recovery,8);pardonShadow();
       game.player.hp=game.player.maxHp;game.player.inv=4;
@@ -1452,7 +1482,7 @@
     const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
     g.wave=nextNight;g.nightCycle.waveCount=nextNight;
     if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
-    if(g.t>1325&&!g.victory){$('overlay-title').textContent='THE CITY ENDURES';end();return;}
+    if(g.t>1325&&!g.victory){end();$('overlay-title').textContent='THE CATASTROPHE ENDURES';$('overlay-copy').textContent='Run limit reached. The final tally: '+g.campaign.boss+' bosses · '+g.campaign.elite+' elites · '+g.campaign.superElite+' super-elites. Need 9 of each and the Night100 final clear.';return;}
     updateFoundation(dt);if(g.mode!=='running')return;
     for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
     if(g.t>=g.nextPower){
@@ -1538,7 +1568,7 @@
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
       updateMajorEnemyAttack(enemy,dt,target,d);
       if(canEnemyContact(enemy)&&g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r+.5&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
-        damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
+        damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation)*(1-p.armor));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
         playSfx('danger');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
@@ -1585,6 +1615,18 @@
           g.xp-=7+p.level*3;p.level++;offerUpgrade();return;
         }
       }
+    }
+    for(let i=g.rerollDrops.length-1;i>=0;i--){
+      const token=g.rerollDrops[i];token.age+=dt;
+      if(token.expires<=g.t){g.rerollDrops.splice(i,1);continue;}
+      const d=dist(p.x,p.y,token.x,token.y);
+      if(d<165+p.magnet*45+g.effectiveBuffs.magnet||g.buffs.magnet>0){
+        const length=Math.max(1,d),speed=Math.min(length,(p.speed+240)*dt);
+        moveWithCollision(token,wrappedDelta(token.x,p.x)/length*speed,(p.y-token.y)/length*speed);
+      }
+      if(d<32){g.rerollTokens=Math.min(99,g.rerollTokens+token.value);
+        notify('REROLL TOKENS +'+token.value+' · TOTAL '+g.rerollTokens,2);
+        playSfx('reroll');g.rerollDrops.splice(i,1);}
     }
     for(let i=g.powerups.length-1;i>=0;i--){
       const item=g.powerups[i];
