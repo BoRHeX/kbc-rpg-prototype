@@ -506,7 +506,7 @@
     clearInput(); noticeTTL=0;noticeQueue=[];$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
-    musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();updateHud();
+    musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();startMajorNight(1);updateHud();
   }
   function end() {
     if(!game || game.mode==='dead')return;
@@ -598,7 +598,7 @@
     if(pointer){vx+=pointer.vx;vy+=pointer.vy;}
     const mag=Math.hypot(vx,vy); return mag>0?{x:vx/Math.max(1,mag),y:vy/Math.max(1,mag)}:{x:0,y:0};
   }
-  const threatWeights={shambler:1,weaver:1.4,dasher:2,orbiter:2.2,stalker:2.6,ghost:3,boss:12};
+  const threatWeights={shambler:1,weaver:1.4,dasher:2,orbiter:2.2,stalker:2.6,ghost:3,hexer:2.5,summoner:3,blight:2.8,boss:12};
   const liveCap=()=>Math.min(72,Math.max(1,Math.floor(cfg.maxEnemies)));
   const enemyThreat=e=>e.threatCost??(e.elite?6:(threatWeights[e.variant]||1)*(e.weight===2?1.5:1)+(e.mutation?1:0));
   const ThreatDirector=Object.freeze({getThreatBudget:()=>game?game.director.budget:12});
@@ -662,6 +662,10 @@
       hp,max:hp,damage:1+Math.floor((scale-1)/1.5),speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
       phase:rnd(0,TWO),weight:extra,hurt:0,mutation:null,mutationTime:0,applyMutation};
     installTraits(e,traits);e.id=++d.serial;e.threatCost=cost;
+    const spec=MAJOR.catalog.normal.find(a=>a.id===variant);
+    if(spec){e.role=spec.role;e.attackKind=spec.attack;e.attackCooldown=1.2+rand()*1.5;e.windup=0;
+      e.hp*=spec.hp;e.max=e.hp;e.speed*=spec.speed;e.r=spec.role==='caster'?21:e.r;}
+
     if(game.t>=360&&d.mutationCooldown===0&&d.aliveThreat+cost+1<=d.budget&&
       game.enemies.filter(n=>n.mutation).length<2&&rand()<.18){
       const requested=mutationFlags&&mutationFlags.type;
@@ -1119,7 +1123,7 @@
   function updateMajorEnemyAttack(e,dt,target,d){
     const role=e.role || (MAJOR.catalog.normal.find(n=>n.id===e.variant)||{}).role;
     if(role!=='ranged'&&role!=='caster'&&!e.creditCategory)return;
-    e.attackCooldown=(e.attackCooldown??(2+Math.random()))-dt;
+    e.attackCooldown=(e.attackCooldown??(2+rand()))-dt;
     if(e.windup>0){
       e.windup-=dt;
       if(e.windup<=0){fireMajorAttack(e,target);e.windup=0;}
@@ -1408,11 +1412,12 @@
     g.squadTacticCooldown=Math.max(0,g.squadTacticCooldown-dt);
     if(!g.squadTacticDuration)g.squadTactic='default';
     updateEncore(dt);
-    g.t+=dt;g.nightCycle.waveCount=1+Math.floor(g.t/300);g.shake=Math.max(0,g.shake-dt*5);
-    g.wave=1+Math.floor(g.t/90);
+    g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
+    const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
+    g.wave=nextNight;g.nightCycle.waveCount=nextNight;
+    if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
+    if(g.t>1325&&!g.victory){$('overlay-title').textContent='THE CITY ENDURES';end();return;}
     updateFoundation(dt);if(g.mode!=='running')return;
-    const milestone=Math.floor(g.t/300)*10;
-    if(!g.endgame.active&&milestone>g.bossMilestone){g.bossMilestone=milestone;spawnBoss(milestone);}
     for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
     if(g.t>=g.nextPower){
       g.exploration.attempts++;
@@ -1435,6 +1440,7 @@
     updateSupport(dt);
     updateGas(dt);if(g.mode!=='running')return;
     updateGhosts(dt);updateCompanions(dt);
+    autoActivateMajorAbilities();
     const beforeX=p.x,beforeY=p.y;
     const input=moveInput(),speed=(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed;
     const biomeSpeed=BIOMES[g.world.epoch%4].speed;
@@ -1453,7 +1459,13 @@
       const target=guard||p;
       const dx=wrappedDelta(enemy.x,target.x),dy=verticalDelta(enemy.y,target.y), d=Math.max(1,Math.hypot(dx,dy));
       let vx=dx/d,vy=dy/d,pace=1;
-      if(enemy.variant==='orbiter'){
+      const enemyRole=enemy.role||(MAJOR.catalog.normal.find(n=>n.id===enemy.variant)||{}).role;
+      if(enemyRole==='caster'||enemyRole==='ranged'){
+        const minRange=enemyRole==='caster'?225:155,maxRange=enemyRole==='caster'?340:enemy.variant==='ghost'?405:310;
+        if(d<minRange){vx=-dx/d;vy=-dy/d;pace=enemyRole==='caster'?1.5:1.1;}
+        else if(d>maxRange){pace=enemyRole==='caster'?.95:1.1;}
+        else {vx=-dy/d;vy=dx/d;pace=enemyRole==='caster'?.68:.9;}
+      }else if(enemy.variant==='orbiter'){
         // Circle at close range, then periodically cut inward.
         const orbit=d<240&&enemy.phase%12<8;
         if(orbit){vx=-dy/d;vy=dx/d;pace=1.2;}
@@ -1488,12 +1500,14 @@
       const chase=(enemy.squadStun>0?0:enemy.squadSlow>0?.4:1)*Math.min(slow,encoreSlow)*(d>330?Math.max(enemy.speed+adaptation,Math.min(420,p.speed*1.08)):enemy.speed+adaptation);
       moveWithCollision(enemy,vx*chase*pace*dt,vy*chase*pace*dt);
       enemy.phase+=dt*3;enemy.hurt=Math.max(0,enemy.hurt-dt);
+      updateMajorEnemyAttack(enemy,dt,target,d);
       if(canEnemyContact(enemy)&&g.mode==='running'&&!g.pendingUpgrade&&dist(p.x,p.y,enemy.x,enemy.y)<p.r+enemy.r+.5&&p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){
         damageTaken();p.hp=Math.max(0,p.hp-enemy.damage*(1-g.effectiveBuffs.mitigation));p.inv=1.3;g.shake=.6;burst(p.x,p.y,'#fb7995',14);
         playSfx('danger');if(p.hp<=0){updateHud();end();return;}notify('OUCH! ♥ -'+(enemy.damage*(1-g.effectiveBuffs.mitigation)).toFixed(1));
       }
     }
     resolveActorCollisions();
+    updateEnemyProjectiles(dt);if(g.mode!=='running')return;
     for(let i=g.shots.length-1;i>=0;i--){
       const s=g.shots[i];
       s.trail.push({x:s.x,y:s.y});if(s.trail.length>(reducedMotion?1:6))s.trail.shift();
@@ -1549,6 +1563,7 @@
     }
     // A merged fish cache can earn several levels; resolve one choice at a time.
     if(g.xp>=7+p.level*3){g.xp-=7+p.level*3;p.level++;offerUpgrade();return;}
+    finalizeMajorVictory();if(g.mode!=='running')return;
     for(let i=g.pickupEffects.length-1;i>=0;i--){g.pickupEffects[i].life-=dt;if(g.pickupEffects[i].life<=0)g.pickupEffects.splice(i,1);}
     for(let i=g.particles.length-1;i>=0;i--){
       const s=g.particles[i];s.x=wrapCoord(s.x+s.vx*dt);s.y=(s.y+s.vy*dt);s.vx*=.96;s.vy*=.96;s.life-=dt;
