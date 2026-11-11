@@ -1,0 +1,157 @@
+name: Publish Cataclysm 1.0 development playtest
+run-name: Deploy verified Cataclysm 1.0 playtest without altering 0.9
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-0-playtest-43107251758.json
+  workflow_dispatch:
+concurrency:
+  group: cataclysm-1-0-playtest
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install independent Chrome acceptance toolchain
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Download exact previously verified complete Cataclysm 1.0 build
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43107251758
+          github-token: ${{ github.token }}
+          name: cataclysm-1-0-verified-source
+          path: artifacts/mobile
+      - name: Authenticate five complete stages and immutable 1.0 source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,shutil,hashlib
+          from pathlib import Path
+          from game_factory import mobile_jobs as m
+          from game_factory import release_scope as s
+          work=Path('artifacts/mobile')
+          job=json.loads((work/'job.json').read_text())
+          data=json.loads((work/'checkpoint/checkpoint.json').read_text())
+          assert job['run_id']=='43092519643-1'
+          assert job['request']['id']=='cataclysm-10-the-catastrophe-review-07-full'
+          assert job['request']['release_version']=='1.0'
+          assert data['passed'] is True and data['stage']=='repair'
+          assert not data.get('failure')
+          assert data['job_digest']==m.digest(job)
+          assert set(data['reports'])=={*s.STAGES,'repair'}
+          for stage,report in data['reports'].items():
+            s.validate_stage_report(report,job['request']['release_scope'],stage)
+          source=work/'checkpoint/source'
+          assert m.manifest(source)==data['files']
+          assert data['files']['game.js']=='08e0b9df6b7f5cd9510b0316460ee7cc01a0428b4b7c322e5b0a7f15dec5fbda'
+          assert data['files']['index.html']=='3c8f7875e5f4f1a0bab79a9f853923c8149788e392994e230cb734ff8e118276'
+          assert data['files']['game.css']=='a25ed625d7c074c1aa3d2ef5147b6ec75afe2385183f54c53ade249dbd29bb06'
+          dest=Path('docs/cataclysm-1-0-preview')
+          dest.mkdir(exist_ok=True)
+          for name in data['files']:
+            shutil.copy2(source/name,dest/name)
+          assert m.manifest(dest)==data['files']
+          assert '<title>Cataclysm 1.0: The Catastrophe</title>' in (dest/'index.html').read_text()
+          print('PASS: all required systems and exact hash-verified archived candidate; not a final QA approval')
+          PY
+          node --check docs/cataclysm-1-0-preview/game.js
+          git diff --check
+      - name: Start actual 1.0 playtest page in local server
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-10-playtest-http.log 2>&1 &
+      - name: Test 1.0 playtest in Chrome across eight touch and landscape resolutions
+        env:
+          MOBILE_TEST_URL: http://127.0.0.1:8765/cataclysm-1-0-preview/
+          BORHEZ_BROWSER_CHANNEL: chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          node game_factory/mobile_acceptance.cjs 2>&1 | tee artifacts/mobile/playtest-browser.log
+      - name: Preserve playtest acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-1-0-playtest-evidence
+          path: |
+            artifacts/mobile/playtest-browser.log
+            artifacts/mobile/acceptance.json
+          if-no-files-found: ignore
+      - name: Hand only browser-verified inert source to release job
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-1-0-playtest-source
+          path: docs/cataclysm-1-0-preview/
+          if-no-files-found: error
+  deploy:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-1-0-playtest-source
+          path: docs/cataclysm-1-0-preview/
+      - name: Enforce immutable source, preserve stable 0.9 and expose 1.0 playtest card
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          preview=Path('docs/cataclysm-1-0-preview')
+          expected={
+            'game.js':'08e0b9df6b7f5cd9510b0316460ee7cc01a0428b4b7c322e5b0a7f15dec5fbda',
+            'game.css':'a25ed625d7c074c1aa3d2ef5147b6ec75afe2385183f54c53ade249dbd29bb06',
+            'index.html':'3c8f7875e5f4f1a0bab79a9f853923c8149788e392994e230cb734ff8e118276'}
+          for name,digest in expected.items():
+            assert hashlib.sha256((preview/name).read_bytes()).hexdigest()==digest,name+' candidate changed'
+          assert '0.9' in Path('docs/cataclysm/index.html').read_text(), 'do not overwrite published 0.9'
+          page=Path('docs/games/index.html')
+          s=page.read_text()
+          marker='      <div class="builds-grid">\n'
+          assert s.count(marker)==1
+          tile='''        <article class="build-tile">
+          <div class="tagline">PLAYTEST · CATACLYSM 1.0</div><h3>Cataclysm 1.0 — The Catastrophe</h3>
+          <p>Complete four-pass candidate: new biomes, shadow, mutations and fusions, expanded builds, eight companions, adaptive sound and nine-victory endgame. Automated Chrome checks passed; final hardware and human-play QA remain pending. This is a playable development build, not the stable release.</p>
+          <div class="build-links"><a href="../cataclysm-1-0-preview/">▶ Play Cataclysm 1.0</a><a href="https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/43107251758" target="_blank" rel="noopener noreferrer">Verification record ↗</a></div>
+        </article>
+'''
+          if 'href="../cataclysm-1-0-preview/"' not in s:
+            s=s.replace(marker,marker+tile,1)
+            page.write_text(s)
+          print('PASS: Playtest staged without changing primary Cataclysm 0.9')
+          PY
+          git config user.name 'BoRHeZ Mobile Game Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/cataclysm-1-0-preview docs/games/index.html
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish verified Cataclysm 1.0 The Catastrophe playable development preview"
+          fi
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
