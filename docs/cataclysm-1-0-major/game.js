@@ -1041,6 +1041,112 @@
     game.exploration.lastSpawn=game.t;game.exploration.spawned++;
     game.powerups.push({...safeSpawn(600,24),kind,expires:game.t+120});return true;
   }
+  // The 100-night encounter director owns its event ledger; never infer credit from a despawn.
+  function spawnMajorEncounter(kind,night,finalWave=false){
+    const g=game,roster=kind==='boss'?MAJOR.catalog.bosses:kind==='elite'?MAJOR.catalog.elites:MAJOR.catalog.superElites;
+    const event=MAJOR.getNight(Math.min(100,night));
+    const index=kind==='boss'?event.bossIndex>=0?event.bossIndex:8:
+      kind==='elite'?Math.floor(night/12)%roster.length:Math.floor(night/12)%roster.length;
+    const spec=roster[index%roster.length],boss=kind==='boss';
+    const baseHp=boss?21:kind==='superElite'?21:13;
+    const hp=Math.min(165,(baseHp+night*(boss?.62:kind==='superElite'?.44:.33))*(1+Math.min(.5,(g.player.level-1)*.014)));
+    const point=safeSpawn(boss?650:610,boss?48:36);
+    const e={...point,id:++g.director.serial,majorId:'major-'+(++g.majorEncounterSerial),
+      variant:boss?'boss':'shambler',role:'special',bossKind:boss?spec.id:null,eliteKind:!boss?spec.id:null,
+      creditCategory:kind,name:spec.name,attackKind:spec.attack,attackCooldown:2.1,windup:0,attackTarget:null,
+      finalWave,elite:!boss,superElite:kind==='superElite',r:boss?43:kind==='superElite'?34:28,
+      hp,max:hp,damage:boss?1.25:kind==='superElite'?1.2:.8,
+      speed:cfg.enemySpeed*(boss?.82:kind==='superElite'?1.25:1.1),phase:0,weight:boss?16:6,hurt:0,
+      huntAge:0,huntX:1,huntY:0,night,traits:{legs:'feet',torso:'plated',arms:'claws',head:'howler'},traitAge:0};
+    g.enemies.push(e);
+    g.director.recovery=Math.max(g.director.recovery,2);
+    notify((boss?'BOSS':kind==='superElite'?'SUPER-ELITE':'ELITE')+' · '+spec.name.toUpperCase(),2.9,'night-event-'+night+'-'+kind);
+    playSfx(boss?'boss-spawn':kind==='superElite'?'super-elite':'elite-spawn');
+    return e;
+  }
+  function startMajorNight(n){
+    const g=game,entry=MAJOR.getNight(n),key='night-'+n;
+    if(g.campaign.events.includes(key))return;
+    g.campaign.events.push(key);g.campaign.night=n;
+    if(entry.boss)spawnMajorEncounter('boss',n);
+    if(entry.elite)spawnMajorEncounter(entry.eliteCategory,n);
+    if(entry.final){
+      g.majorFinalSpawned=true;
+      spawnMajorEncounter('elite',100,true);
+      spawnMajorEncounter('superElite',100,true);
+      notify('NIGHT 100 · THE CATASTROPHE · FINAL CLEAR',5,'finale');
+    }else if(n%3===1)notify('NIGHT '+n+' / 100 · THE CITY NEVER SLEEPS',1.4,'night-'+n);
+  }
+  function finalizeMajorVictory(){
+    const g=game;
+    if(!g||g.victory||g.mode!=='running'||!g.majorFinalSpawned)return;
+    if(g.enemies.some(e=>e.finalWave&&!e.consumed&&e.hp>0))return;
+    g.campaign.finaleCleared=true;
+    if(!MAJOR.won(g.campaign,g.player.hp>0))return;
+    g.victory=true;g.mode='won';g.campaign.won=true;
+    clearInput();stopVoices('music');stopVoices('fx');
+    try{const last=Number(localStorage.getItem('cataclysm-best')||0);
+      localStorage.setItem('cataclysm-best',String(Math.max(last,MAJOR.VICTORY_SCORE)));
+      localStorage.setItem('cataclysm-major-win',JSON.stringify({score:MAJOR.VICTORY_SCORE,night:100,credited:g.campaign.credited.length}));
+    }catch(e){}
+    $('overlay-title').textContent='THE CATASTROPHE · DEFEATED';
+    $('overlay-copy').textContent='NIGHT 100 CLEAR! '+g.campaign.boss+' BOSSES · '+g.campaign.elite+' ELITES · '+g.campaign.superElite+
+      ' SUPER-ELITES · 999,999,999 POINTS. THE CITY BELONGS TO THE SURVIVORS.';
+    $('play').textContent='↻ NEW RUN';$('start-overlay').hidden=false;
+    $('pause').hidden=true;$('stick').hidden=true;updateHud();
+    playSfx('victory');
+  }
+  function fireMajorAttack(e,target){
+    const g=game,kind=e.attackKind||'single',d=Math.max(1,dist(e.x,e.y,target.x,target.y));
+    if(g.enemyShots.length>90)return;
+    const theta=Math.atan2(verticalDelta(e.y,target.y),wrappedDelta(e.x,target.x));
+    const patterns={single:[0],hex:[0],pierce:[0],charge:[-.15,0,.15],cleave:[-.45,-.2,0,.2,.45],
+      spiral:[-.75,-.4,0,.4,.75],summon:[-.35,0,.35],plague:[-.3,0,.3],
+      shockwave:[-1.5,-1,-.5,0,.5,1,1.5],chain:[-.4,-.2,0,.2,.4],
+      nova:[-2.4,-1.8,-1.2,-.6,0,.6,1.2,1.8,2.4]} ;
+    if(kind==='summon'&&g.enemies.length<liveCap()-3){
+      for(let i=0;i<2;i++)spawnEnemy('shambler');
+    }
+    for(const a of patterns[kind]||[0]){
+      if(g.enemyShots.length>=90)break;
+      const angle=theta+a,speed=kind==='pierce'?405:kind==='shockwave'||kind==='nova'?265:310;
+      g.enemyShots.push({x:e.x,y:e.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+        life:kind==='plague'?2.5:2.1,r:kind==='shockwave'?12:kind==='nova'?10:8,kind,damage:e.damage*.58,trail:[]});
+    }
+    burst(e.x,e.y,kind==='plague'?'#bbee83':'#eeabd1',8);
+    playSfx(kind==='plague'?'enemy-cast':'enemy-shot');
+  }
+  function updateMajorEnemyAttack(e,dt,target,d){
+    const role=e.role || (MAJOR.catalog.normal.find(n=>n.id===e.variant)||{}).role;
+    if(role!=='ranged'&&role!=='caster'&&!e.creditCategory)return;
+    e.attackCooldown=(e.attackCooldown??(2+Math.random()))-dt;
+    if(e.windup>0){
+      e.windup-=dt;
+      if(e.windup<=0){fireMajorAttack(e,target);e.windup=0;}
+    }else if(e.attackCooldown<=0&&d<(role==='caster'?500:e.creditCategory?630:460)&&d>50){
+      e.windup=role==='caster'?.75:e.creditCategory?1:.45;
+      e.attackTarget={x:target.x,y:target.y};
+      e.attackCooldown=e.creditCategory?4.2:role==='caster'?3.6:2.6;
+      if(e.creditCategory)playSfx('boss-warn');
+    }
+  }
+  function updateEnemyProjectiles(dt){
+    const g=game,p=g.player;
+    for(let i=g.enemyShots.length-1;i>=0;i--){
+      const s=g.enemyShots[i];s.life-=dt;
+      s.x=wrapCoord(s.x+s.vx*dt);s.y+=s.vy*dt;
+      if(s.life<=0||!isTerrainClear(s.x,s.y,s.r)){g.enemyShots.splice(i,1);continue;}
+      if(p.inv===0&&dist(s.x,s.y,p.x,p.y)<p.r+s.r){
+        if(g.runicRelic.active!=='shield'){
+          damageTaken();p.hp=Math.max(0,p.hp-s.damage*(1-g.effectiveBuffs.mitigation)*(1-Math.min(.65,p.armor)));
+          p.inv=1.25;burst(p.x,p.y,'#ff8c9f',12);playSfx('danger');
+        }
+        g.enemyShots.splice(i,1);
+        if(p.hp<=0){updateHud();end();return;}
+      }
+    }
+  }
+
   function spawnBoss(night) {
     if(game.enemies.length>=liveCap()){const i=game.enemies.findIndex(e=>e.variant!=='boss');if(i<0)return;game.enemies.splice(i,1);}
     // The scheduled boss occupies the same budget, replacing distant ordinary threats.
