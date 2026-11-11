@@ -28,6 +28,46 @@ def bundle(root, job):
 
 
 class MobileJobTests(unittest.TestCase):
+    def test_major_cataclysm_release_uses_primary_and_preserves_archive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            game(root / "docs/cataclysm", "new illustrated baseline")
+            game(root / "docs/preview", "preserved archive")
+            (root / "docs/cataclysm/qa-report.json").write_text('{"version":"0.9"}')
+            req = dict(request("update", "cataclysm-10-test"), game="cataclysm",
+                       title="Cataclysm 1.0: The Catastrophe", release_version="1.0")
+            job = prepare(root, req, "20-1")
+            self.assertEqual(job["target"], "docs/cataclysm")
+            self.assertNotIn("qa-report.json", job["base_manifest"])
+            candidate = bundle(root, job)
+            path = candidate / "receipt.json"
+            receipt = json.loads(path.read_text())
+            receipt["play_path"] = "cataclysm/"
+            receipt["acceptance"]["platforms"] = [
+                {"passed": True, "viewport": list(size)} for size in
+                ((390, 844), (360, 780), (640, 320), (667, 375),
+                 (780, 360), (844, 390), (915, 412), (1280, 720))
+            ]
+            path.write_text(json.dumps(receipt))
+            publish_bundle(root, candidate)
+            self.assertEqual((root / "docs/preview/game.js").read_text(), "preserved archive")
+            self.assertEqual((root / "docs/cataclysm/game.js").read_text(), "version one")
+            qa = json.loads((root / "docs/cataclysm/qa-report.json").read_text())
+            self.assertEqual(qa["version"], "1.0")
+            self.assertEqual(qa["source_sha256"], receipt["files"])
+            self.assertEqual(verify_published(root, req["id"]), receipt)
+            self.assertEqual(publish_bundle(root, candidate), receipt)
+
+    def test_major_cataclysm_cannot_publish_with_only_portrait_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            game(root / "docs/cataclysm", "baseline")
+            req = dict(request("update"), game="cataclysm", release_version="1.0")
+            job = prepare(root, req, "20-1")
+            with self.assertRaisesRegex(ValueError, "independent acceptance"):
+                publish_bundle(root, bundle(root, job))
+            self.assertEqual((root / "docs/cataclysm/game.js").read_text(), "baseline")
+
     def test_reject_paths_and_ambiguous_requests(self):
         for key, bad in (("game", "../escape"), ("id", "bad\nname"), ("mode", "replace"),
                          ("acceptance", []), ("prompt", "")):

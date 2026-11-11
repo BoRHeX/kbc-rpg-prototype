@@ -5,7 +5,7 @@ const path = require('path');
 const job = JSON.parse(fs.readFileSync('artifacts/mobile/job.json', 'utf8'));
 const base = process.env.MOBILE_TEST_URL || 'http://127.0.0.1:8765/' + job.target.replace(/^docs\//, '') + '/';
 const legacy = job.request.game === 'cataclysm';
-const landscapeJob = legacy && job.request.id === 'cataclysm-08-landscape-ui-001';
+const landscapeJob = legacy && (job.request.id === 'cataclysm-08-landscape-ui-001' || Number((job.request.release_version || '0.0').split('.')[0]) >= 1);
 const evidence = {run_id: job.run_id, request_id: job.request.id, physical_device: 'not tested', platforms: []};
 
 

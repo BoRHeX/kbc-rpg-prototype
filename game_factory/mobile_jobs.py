@@ -77,8 +77,13 @@ def validate_request(value):
     return request
 
 
-def target_for(game):
-    return "docs/preview" if game == "cataclysm" else "docs/games/" + game
+def target_for(game, release_version=None):
+    if game == "cataclysm":
+        # The illustrated 0.9 game is primary; /preview/ is now an archive.
+        if release_version and int(release_version.split(".")[0]) >= 1:
+            return "docs/cataclysm"
+        return "docs/preview"
+    return "docs/games/" + game
 
 
 def manifest(directory):
@@ -90,6 +95,9 @@ def manifest(directory):
             raise ValueError("Game files cannot be symbolic links")
         if path.is_file():
             name = path.relative_to(directory).as_posix()
+            # Trusted publisher metadata is separate from executable game bytes.
+            if name == "qa-report.json":
+                continue
             if name not in GAME_FILES | BUILD_FILES:
                 raise ValueError(f"Unexpected game file: {name}")
             if path.stat().st_size > 400_000:
@@ -112,7 +120,7 @@ def prepare(root, request, run_id):
         if receipt.get("request_digest") != digest(request):
             raise ValueError("Job ID already belongs to a different request; use a new ID")
         return None  # Re-running a delivered request must not spend API credits again.
-    target = target_for(request["game"])
+    target = target_for(request["game"], request.get("release_version"))
     directory = root / target
     exists = (directory / "index.html").exists()
     if request["mode"] == "create" and directory.exists():
@@ -322,6 +330,11 @@ def plan_command():
         if not roadmap.is_file():
             raise RuntimeError("Cataclysm development roadmap is missing")
         evidence["living_roadmap"] = roadmap.read_text(encoding="utf-8")
+        if job["target"] == "docs/cataclysm":
+            evidence["archived_release_comparison"] = {
+                name: (ROOT / "docs/preview" / name).read_text()
+                for name in GAME_FILES if (ROOT / "docs/preview" / name).is_file()
+            }
     try:
         if job["request"]["mode"] == "create":
             plan = creative_plan(memory, model, job, evidence, ask_agent)
@@ -559,7 +572,10 @@ def accepted_browser_evidence(tests, request):
     if not isinstance(platforms, list) or any(
             not isinstance(p, dict) or p.get("passed") is not True for p in platforms):
         return False
-    if request["id"] != "cataclysm-08-landscape-ui-001":
+    landscape = (request["id"] == "cataclysm-08-landscape-ui-001" or
+                 (request["game"] == "cataclysm" and
+                  int(request.get("release_version", "0.0").split(".")[0]) >= 1))
+    if not landscape:
         return len(platforms) == 2
     expected = {(390, 844), (360, 780), (640, 320), (667, 375),
                 (780, 360), (844, 390), (915, 412), (1280, 720)}
@@ -570,7 +586,7 @@ def accepted_browser_evidence(tests, request):
 def publish_bundle(root, bundle):
     receipt = json.loads((bundle / "receipt.json").read_text())
     request = validate_request(receipt["request"])
-    target = target_for(request["game"])
+    target = target_for(request["game"], request.get("release_version"))
     if receipt["target"] != target or receipt["request_digest"] != digest(request):
         raise ValueError("Candidate target or request was altered")
     tests = receipt.get("acceptance", {})
@@ -592,6 +608,13 @@ def publish_bundle(root, bundle):
     for name in set(manifest(root / target)) - set(receipt["files"]):
         (root / target / name).unlink()
     shutil.copytree(bundle / "game", root / target, dirs_exist_ok=True)
+    if target == "docs/cataclysm":
+        (root / target / "qa-report.json").write_text(json.dumps({
+            "status": "passed", "version": request["release_version"],
+            "request_id": request["id"], "run_id": receipt["run_id"],
+            "source_sha256": receipt["files"],
+            "acceptance": receipt["acceptance"], "qa": receipt["qa"],
+        }, indent=2) + "\n")
     result.parent.mkdir(parents=True, exist_ok=True)
     result.write_text(json.dumps(receipt, indent=2) + "\n")
     catalog(root)
@@ -688,6 +711,24 @@ def catalog(root):
     if not found:
         raise ValueError("Game catalog is missing the end marker; refusing to overwrite its design")
     refreshed = prefix + begin + "\n" + "\n".join(cards) + "\n" + end + suffix
+    primary = latest.get("cataclysm", {})
+    primary_request = primary.get("request", {})
+    if primary.get("target") == "docs/cataclysm":
+        version = html.escape(primary_request["release_version"])
+        title = html.escape(primary_request["title"])
+        refreshed = re.sub(r'(<span>)CATACLYSM [0-9.]+(</span>)',
+                           lambda m: m[1] + "CATACLYSM " + version + m[2], refreshed)
+        refreshed = re.sub(r'(<h2 id="builds-heading">)[^<]*(</h2>)',
+                           lambda m: m[1] + "Cataclysm releases." + m[2], refreshed)
+        def primary_card(match):
+            card = re.sub(r'PRIMARY · CATACLYSM [0-9.]+', "PRIMARY · CATACLYSM " + version, match[0])
+            card = re.sub(r'(<h3>)[^<]*(</h3>)', lambda m: m[1] + title + m[2], card)
+            card = re.sub(r'▶ Play Cataclysm [0-9.]+', "▶ Play Cataclysm " + version, card)
+            card = re.sub(r'/tree/development/cataclysm-09', '/tree/main', card)
+            card = re.sub(r'/actions/runs/[0-9]+', '/actions/runs/' + primary["run_id"].split("-")[0], card)
+            return card
+        refreshed = re.sub(r'<article class="build-tile">\s*<div class="tagline">PRIMARY.*?</article>',
+                           primary_card, refreshed, flags=re.S)
     game_count = 1 + sum(game != "cataclysm" for game in latest)
     refreshed = re.sub(r'(<strong id="game-count">)[^<]*(</strong>)',
                        lambda m: m[1] + str(game_count) + " playable games" + m[2], refreshed)
@@ -702,7 +743,7 @@ def verify_published(root, request_id):
     request = validate_request(receipt["request"])
     if request["id"] != request_id or receipt["request_digest"] != digest(request):
         raise ValueError("Accepted request identity mismatch")
-    if receipt["target"] != target_for(request["game"]) or manifest(root / receipt["target"]) != receipt["files"]:
+    if receipt["target"] != target_for(request["game"], request.get("release_version")) or manifest(root / receipt["target"]) != receipt["files"]:
         raise ValueError("Published source differs from accepted game bytes")
     tests = receipt.get("acceptance", {})
     if (receipt.get("state") != "accepted" or

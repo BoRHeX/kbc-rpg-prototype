@@ -1,5 +1,24 @@
 # Cataclysm — progression toward 1.0 (living roadmap)
 
+## Authorized release: 2026-11-11 — Cataclysm 1.0: The Catastrophe
+
+The creator explicitly requested the existing Studio to produce 1.0 using the NEW private 0.9 recording `cataclysm__review-07.mp4`. The current request is the comprehensive binding work order; the older hypotheses below do not narrow it. This is separate from Flame Game Studio. One on-demand release with existing bounded repair; no new schedules.
+
+**Source/delivery:** `docs/cataclysm/` is the newer illustrated 0.9 primary game with physical world, original audio, fullscreen and eight companions. Compare accepted `docs/preview/` director/city-encounter/reward additions read-only and carry compatible improvements forward. Preserve that archive and the earlier graphics archive. Publish 1.0 at `/cataclysm/` after independent QA, updating only primary dashboard labels.
+
+**Remember the full agreed vision:**
+
+- **3–6–9/world:** endless downward scrolling biome chunks; changes about every three minutes; meaningful milestones; rising shadow after player level 9; level-99 boss defeated nine times with tracked endgame progress. Resolve the earlier luck/dance biome influence against the new review and state the rule without inventing a prior agreement.
+- **Enemies:** bounded threat/cost director, fair wave/recovery rhythm; modular legs/tentacles, torso, arms and heads/abilities; readable flying/phasing variants; fusion -> vulnerable cocoon -> mutant with real inherited traits, bounded combinations and exact parent/reward accounting.
+- **Builds:** viable main-cat, squad and equipment routes with tactical synergies. Eight distinct permanent companions, four unique active maximum. Random unlocks among upgrades; after four suppress unowned unlocks but retain owned upgrades. Preserve full roguelite pool, Cat's Catch, relics/abilities; keep removed aura menu removed.
+- **Exploration:** new enemies/pickups spawn outside viewport with a margin; exceptionally rare magnets and collectible boosts; much longer magnet effect. Preserve collisions, navigation, rewards, recovery and city events. Avoid empty pacing gaps or sudden retaliatory spawns.
+- **Presentation:** alive main cat, distinct squad/enemy silhouettes, readable fusion/biomes, simplified colorful poses (12-FPS animation with smooth movement), restrained particles/depth, original adaptive hard-rock/DnB buildup/drops and dubstep bosses. Preserve mute/volume and browser audio startup.
+- **Mobile:** landscape-first single-screen HUD/actions/fullscreen and all three upgrade choices; correct touch scaling, portrait fallback, no scrolling/studio tabs. Freeze combat and simulation clocks for pause/choices.
+
+**Done means tested:** council agrees interfaces before code; coder implements the complete explicit scope, not merely two small proposals. QA traces each requirement to checks or names a release blocker. Exercise real touch input, eight browser viewports, long survival across biomes, deterministic fusion/traits/spawns/budgets, squad offer gating, equipment synergy, shadow and accelerated level-99 nine-boss progression. Preserve boot/diagnostics. A rename, planning prose or syntax-only pass is insufficient. Private transcripts/media remain private. Verify accepted live bytes; physical Samsung verification stays pending unless performed.
+
+---
+
 **Baseline:** [Cataclysm 0.7 frozen](https://github.com/BoRHeX/kbc-rpg-prototype/tree/release/cataclysm-v0.7-frozen), source commit `b981b4e7edf8ff6ea2074c3d0db400a2212365fb`, published playtest build `42312781802-1`.
 
 **Owner:** AI Studio Producer. The human tester supplies recorded play sessions and priorities; the Council owns technical decomposition. This document tracks hypotheses, proposed content, implementation dependencies and release decisions, **not** a rigid list of mandatory mechanics. Do not overwrite the frozen 0.7 branch. No new implementation is approved merely by appearing here.

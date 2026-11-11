@@ -64,7 +64,7 @@ jobs:
     # Ubuntu 26.04 currently breaks openai/codex-action@v1 drop-sudo socket ACL check.
     # Pin only the coding job; preserve default sandbox privilege restrictions.
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 60
     permissions:
       contents: read
       issues: read
@@ -106,7 +106,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python -m game_factory.council_resume
       - name: Install FFmpeg for gameplay evidence extraction
-        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 update -qq
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 install -y ffmpeg
+          fi
+          ffmpeg -hide_banner -version
       - name: Private gameplay playback (only for explicitly attached Drive evidence)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -323,7 +328,7 @@ jobs:
           python -m game_factory.mobile_jobs publish
           git config user.name 'BoRHeZ Mobile Game Studio'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add docs/games docs/preview game_factory/results
+          git add docs/games docs/preview docs/cataclysm game_factory/results
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m "Deliver tested mobile game job #$GITHUB_RUN_ID"

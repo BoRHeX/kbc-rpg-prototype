@@ -254,6 +254,16 @@ def negotiate_update(memory, model, job, evidence, ask_agent):
             "release while deferring unsafe changes to later milestones. "
             "Never reproduce private speech in public outputs."
         )
+        if int(job["request"].get("release_version", "0.0").split(".")[0]) >= 1:
+            shared += (
+                " RELEASE WORK ORDER: the current explicit user request and the "
+                "2026-11-11 Catastrophe section of the roadmap are BINDING scope, "
+                "not merely routing notes. The three proposals decompose this "
+                "one release into compatible subsystems; do not discard required "
+                "features because only two or three proposals are selected. "
+                "Reconcile the newer primary game with archived release changes. "
+                "Report any unmet requirement as an explicit release blocker."
+            )
     if redesign:
         shared += (
             " IMPORTANT: The user's original update prompt is the binding game "

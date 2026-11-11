@@ -74,6 +74,26 @@ class DashboardCatalogTests(unittest.TestCase):
         self.assertIn('href="./tiny-new-game/"', markup)
         self.assertIn("KEEP MY FEEDBACK UI", markup)
 
+    def test_primary_release_labels_change_without_relabeling_archives(self):
+        self.page.write_text(self.page.read_text() +
+            '<span>CATACLYSM 0.9</span><h2 id="builds-heading">Cataclysm 0.9 builds.</h2>'
+            '<article class="build-tile"><div class="tagline">PRIMARY · CATACLYSM 0.9</div>'
+            '<h3>Cataclysm 0.9</h3><a href="../cataclysm/">▶ Play Cataclysm 0.9</a></article>'
+            '<article class="build-tile"><h3>Cataclysm 0.9 — Original release</h3>'
+            '<a href="../preview/">▶ Play original</a></article>')
+        data = {"request": {"game": "cataclysm", "id": "cat-release",
+                            "title": "Cataclysm 1.0: The Catastrophe", "release_version": "1.0"},
+                "target": "docs/cataclysm", "run_id": "500-1"}
+        (self.root / "game_factory/results/cat-release.json").write_text(json.dumps(data))
+        catalog(self.root)
+        markup = self.page.read_text()
+        self.assertIn("Cataclysm 1.0: The Catastrophe</h3>", markup)
+        self.assertIn("PRIMARY · CATACLYSM 1.0", markup)
+        self.assertIn("Cataclysm 0.9 — Original release", markup)
+        self.assertIn('href="../preview/">▶ Play original', markup)
+        catalog(self.root)
+        self.assertEqual(self.page.read_text(), markup)
+
     def test_missing_marker_fails_without_erasing_page(self):
         self.page.write_text("DO NOT OVERWRITE")
         with self.assertRaisesRegex(ValueError, "start marker"):
