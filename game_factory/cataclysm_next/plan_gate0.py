@@ -102,6 +102,22 @@ def agent_task(role, contract, inventory, earlier):
     return shared + focus[role] + "\nPUBLIC EVIDENCE: " + evidence
 
 
+def decision_schema():
+    string = {"type": "string"}
+    strings = {"type": "array", "items": string}
+    detail = {"type": "object", "properties": {
+        "decisions": strings, "deliverables": strings,
+        "risks": strings, "next_steps": strings
+    }, "required": ["decisions", "deliverables", "risks", "next_steps"],
+        "additionalProperties": False}
+    return {"type": "object", "properties": {
+        "claim": string, "rationale": string,
+        "objections": strings, "proposed_action": detail,
+        "required_evidence": strings
+    }, "required": ["claim", "rationale", "objections", "proposed_action", "required_evidence"],
+        "additionalProperties": False}
+
+
 def assess(reply, role):
     assert isinstance(reply, dict), role + " response not an object"
     assert {"claim", "rationale", "objections", "proposed_action", "required_evidence"} <= set(reply), role + " missing fields"
@@ -122,7 +138,9 @@ def main():
             output = ask_agent(memory, agent, RUN_ID,
                                agent_task(role,contract,inventory,results),
                                ["PRODUCTION_BRIEF.md","AGENT_ORCHESTRATION.md","DECISIONS.md","ACCEPTANCE.md","work_order.json",inventory["source"]],
-                               max_output_tokens=2300,word_limit=820)
+                               max_output_tokens=2300,word_limit=820,
+                               response_schema=decision_schema(),
+                               format_name="cataclysm_major_gate0_decision")
             assess(output,role)
             results[role] = output
             (OUT / ("ROLE_" + role.upper() + ".json")).write_text(json.dumps(output,indent=2)+"\n")
