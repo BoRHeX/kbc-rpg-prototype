@@ -108,9 +108,11 @@
     "ACCEPTANCE.md"
   ],
   "budget": {
-    "planning_api_calls_max": 5,
+    "planning_roles_max": 5,
+    "provider_calls_with_response_retry_max": 10,
     "planning_model": "gpt-4.1-mini",
-    "full_implementation_spend_requires_review": true
+    "full_implementation_spend_requires_review": true,
+    "notes": "Architecture planner sends five role requests, with at most one malformed-response retry per role via existing agent API. This is not a dollar-denominated hard spend cap."
   },
   "jobs": [
     {
