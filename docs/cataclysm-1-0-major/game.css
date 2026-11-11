@@ -91,3 +91,48 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
  #start-overlay .overline{font-size:8px;letter-spacing:1px}
  #build-stats{display:none}
 }
+
+/* CATACLYSM MAJOR — dense, icon-first, 4-choice mobile HUD. */
+.identity{height:38px}.hud{top:40px;grid-template-columns:repeat(6,minmax(0,1fr));right:130px}
+.hud-block{background:#091722ed;backdrop-filter:blur(6px)}
+#night-count{font-size:10px;color:#ffcf91;display:inline}
+#major-buff-icons{position:absolute;left:12px;right:136px;top:115px;z-index:5;display:flex;gap:5px;flex-wrap:wrap;pointer-events:none}
+.major-buff{display:flex;gap:4px;align-items:center;min-height:22px;padding:2px 6px;background:#061722d9;border:1px solid #65949490;box-shadow:0 2px 6px #0005;border-radius:4px;font-size:10px}
+.major-buff.active{border-color:#f4be7c;color:#ffe6b9}.major-buff.cooldown{opacity:.65}.major-buff strong{font-size:14px}
+#encounter-status{position:absolute;left:12px;right:135px;top:140px;pointer-events:none;z-index:4;font-size:11px;letter-spacing:1px;color:#ffe4aa;text-shadow:0 2px 4px #000}
+#encounter-status:empty{display:none}
+.companion-abilities{bottom:8px;left:max(12px,env(safe-area-inset-left));right:132px;gap:4px}
+.companion-abilities button{min-height:35px;max-height:38px;flex:1;cursor:default;border-radius:5px;font-size:9px;line-height:1.1;padding:2px 3px;border-top:2px solid #dfbd77}
+.companion-abilities button:disabled{opacity:.92}
+#support-status{bottom:49px}#buff-status{bottom:63px}.notice{bottom:86px}
+#night-status{top:88px}
+#upgrade-overlay{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:20px 20px 1fr 38px;inset:80px 130px 48px 10px;padding:9px;gap:5px}
+#upgrade-overlay h2,#upgrade-copy{grid-column:1 / -1}
+#upgrade-overlay .upgrade{font-size:11px;min-width:0;min-height:56px;line-height:1.2;padding:6px 7px}
+#upgrade-actions{grid-column:1 / -1;display:flex;justify-content:center;align-items:center;gap:12px;font-size:12px;color:#ffe1a8}
+#reroll-upgrades{font-size:12px;border-color:#ffd17d;background:#463a2b;min-height:36px}
+#reroll-upgrades:disabled{opacity:.43}
+@media(max-width:680px) and (orientation:landscape){
+ .hud{top:39px}.hud-block b{font-size:11px}
+ #upgrade-overlay{top:79px;right:119px;bottom:42px;grid-template-rows:18px 20px minmax(48px,1fr) 32px;gap:4px;padding:5px}
+ #upgrade-overlay .upgrade{font-size:9px;min-height:44px;padding:5px}
+ #upgrade-overlay h2{font-size:14px}#upgrade-copy{font-size:9px}
+ #upgrade-actions{font-size:10px}#reroll-upgrades{min-height:30px;font-size:10px}
+ .companion-abilities{right:120px}.companion-abilities button{font-size:8px;min-height:30px}
+ #major-buff-icons{top:105px}
+}
+@media(orientation:portrait){
+ .hud{right:8px;top:46px;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #major-buff-icons{right:8px;top:147px}
+ #encounter-status{right:8px;top:185px}
+ #upgrade-overlay{inset:146px 8px 155px;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:20px 30px repeat(2,minmax(45px,1fr)) 40px;overflow-y:auto}
+ #upgrade-overlay h2,#upgrade-copy,#upgrade-actions{grid-column:1 / -1}
+ #upgrade-overlay .upgrade{min-height:45px;font-size:11px}
+ .companion-abilities{bottom:112px;left:8px;right:8px}
+ #support-status{bottom:157px}#buff-status{bottom:172px}.notice{bottom:192px}
+}
+@media(max-height:350px) and (orientation:landscape){
+ #upgrade-overlay{inset:69px 120px 35px 8px}
+ #upgrade-overlay .upgrade{min-height:40px}
+ .actions{top:35px}.companion-abilities{bottom:4px}
+}
