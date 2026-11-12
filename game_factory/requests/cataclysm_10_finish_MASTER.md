@@ -1,0 +1,24 @@
+# BoRHeZ Games — Executive Order — FINISH CATACLYSM 1.0 THE CATASTROPHE
+
+One authorized autonomous production epic, no schedules and no per-step human approvals. Existing playable targets are docs/cataclysm-1-0-major/ (campaign) and docs/cataclysm-100-lab/ (Night 99/100 stress mode). Do NOT edit historical docs/preview, docs/cataclysm, Flame Game or website. Do not promote version to 1.1. Preserve approved white-cat painted hero identity and current physical painted frames. Keep all eight named permanent companions, 27 enemy archetypes, 100 nights, four-choice upgrade + reroll, sound, controls and collision core.
+
+SCORING: weightedKills means accumulated internal enemy weights (existing g.kills), not plain entity count. Fish means actually collected fish. Survival accrues 2*(1+0.015*(night-1)) points each running simulation second (not while paused/upgrading), so late nights accrue slowly more. Total = floor(survivalPoints) + 7*weightedKills + 9*fish + SUM(milestone bonuses). After player ALIVE clears the complete Night100 final wave including killing last spawned enemy, AWARD ADDITIONAL +999999999 exactly once. Do not replace farming score. Persist breakdown, rule version and one-time milestone IDs for eventual fair leaderboards. Endless-mode milestones are future extensibility; no leaderboard service requested.
+
+FOLLOWERS: all invulnerable (no HP), but relevant ranged and melee physical hits interrupt their preparations/reloads/ability casts; brief stagger protection prevents permastun. Tank cannot be interrupted while actively guarding and brawler cannot while clawing, but recharge/recovery for both can be interrupted. Each follower has different movement speed and preferred relative top/bottom/left/right slot, obstacle awareness, preparation and performance time, distinct stamina/recovery, real state-driven animation and icon/status. Roles:
+ shooter right flank with finite magazine and interruptible reload;
+ healer tight near hero who must stand still to be healed; movement or hit aborts;
+ tank front shield guarding and vulnerable rest/recharge;
+ brawler front-left engages enemy and unstoppable during strike, interrupted recovery;
+ sniper rear-left kneels to aim, requires line of sight, moving/hit aborts;
+ engineer rear-right slows to build a real turret, interruption aborts deployment;
+ trapper near left/front needs player nearby to help place snare;
+ bard rear-center sings continuously but taunts attackers that can interrupt the song; no invincible decoy exploits.
+ Continue smart auto-activation, allow manual ability use, active 4 role cap and 8 recruitable roles.
+
+ART/ANIMATION: Actual sprite behavior, not decorative effects. True 2D illustrated/painterly mobile textures; never code-painted primitives instead of art. Trusted image stage produces 8 companions x 3 new attack/special/hit sprite sheets of 8 frames and 7 newly repainted properly projected environment assets. Use manifest data to select proper state and play actual attack frames for damage, sound sync, hit interruption and recover. Existing 27 mobs should move and react clearly. Hero keeps approved white face/scarf/pistols but MUST point BOTH real painted pistols at actual targets even while moving; use painted directional arms with robust anchors, not code-stitched sticks. No change to old protected character PNGs. World roads/cars/dumpsters/buildings must be coherent elevated top-down, not stickers, with grounded contact shadows, variation and readable sizes.
+
+UI/UPGRADES: Preserve working four unique weighted choices, reroll, permanent squad, existing upgrade IDs. Visually redesign cards with role identity, icons, genuine before/after values, synergy; rebalance diminishing returns, eligibility and follower specialty paths without making choices meaningless. Thumb-friendly portrait and landscape layouts; clear casts/stuns and player-cooperation hints; reduce overlay clutter.
+
+BALANCE/ENDGAME: Full 100-night progression and real 18-enemy finale must be challenging. The prior 17s player invulnerability plus group enemy immunity is NOT an acceptable balance test; individual telegraphs okay but each enemy becomes damageable/dangerous independently, no script-forced trivial victory. Compare seeded solo/balanced/damage/support builds. Keep performance smooth on tall Samsung screens, verify projectile and UI scale. Outcome evidence includes score components, follower interrupt/cast counts, FPS/frame pressure, screenshot recordings and Chrome tests.
+
+Execute autonomous stages in order: scoring -> follower gameplay -> painted animation and hero aiming -> world/UI/upgrades -> balance/finish -> independent QA -> PR -> deploy LIVE both playable builds. One prompt MUST NOT stop after only documenting work; stage acceptance tests reject empty/no-op work. A genuine stage failure should stop publication, retain diagnostics and never falsely declare release.
