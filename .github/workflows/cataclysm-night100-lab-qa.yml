@@ -6,6 +6,8 @@ on:
       - 'docs/cataclysm-100-lab/**'
       - 'game_factory/cataclysm_next/tests/*night100*'
       - '.github/workflows/cataclysm-night100-lab-qa.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
