@@ -30,7 +30,13 @@ class ReferenceAnimatorTests(unittest.TestCase):
         for x in (22, 29, 36, 43, 50, 57):
             image = Image.new("RGB", (96, 96), (0, 255, 0))
             draw = ImageDraw.Draw(image)
-            draw.ellipse((x, 24, x+20, 70), fill=(220, 220, 230), outline=(15, 28, 42), width=2)
+            draw.ellipse((38, 24, 58, 59), fill=(220, 220, 230), outline=(15, 28, 42), width=2)
+            # Articulated legs genuinely alternate. A mere x-translation is
+            # deliberately insufficient after avatar recentering.
+            phase=(x-22)//7
+            draw.polygon([(39,53),(45,53),(45+phase%3*4,72),(38+phase%3*4,74)],fill=(30,39,55))
+            draw.polygon([(51,53),(58,53),(53-phase%3*4,72),(48-phase%3*4,74)],fill=(38,43,57))
+            draw.line((38,42,27+phase%3*6,39),fill=(240,180,99),width=5)
             frames.append(image)
         buf = BytesIO()
         frames[0].save(buf, format="GIF", save_all=True, append_images=frames[1:],
