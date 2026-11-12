@@ -67,10 +67,11 @@ jobs:
           for file in changes:
               p=Path(file)
               if p.parent==allowed_root and p.name in permitted:continue
-              if p.is_relative_to(allowed_root/'art') and p.suffix.lower() in ('.png','.svg','.webp'):continue
+              if p.is_relative_to(allowed_root/'art') and p.suffix.lower() in ('.png','.svg','.webp','.py','.md'):continue
+              if p.is_relative_to(Path('artifacts/cataclysm-art')):continue
               bad.append(file)
           if bad:raise SystemExit('Unauthorized art-agent edits: '+str(sorted(bad)))
-          if not any(file.startswith(str(allowed_root/'art')+'/') for file in changes):
+          if not any(file.startswith(str(allowed_root/'art')+'/') and file.endswith('.png') for file in changes):
               raise SystemExit('NO ART FILES CREATED: concept-only output rejected')
           if 'docs/cataclysm-1-0-major/animation.js' not in changes:
               raise SystemExit('NO ART INTEGRATION: animation renderer untouched')
