@@ -136,7 +136,29 @@ jobs:
           run-id: ${{ steps.request.outputs.anchor_source_run }}
           name: character-animation-visual-review
           github-token: ${{ github.token }}
-          path: artifacts/
+          path: artifacts/prior-painted-art/
+      - name: Copy ONLY previously accepted anchor and its critic verdict
+        if: steps.request.outputs.anchor_source_run != ''
+        run: |
+          python - <<'PY'
+          import json,shutil
+          from pathlib import Path
+          root=Path('artifacts/prior-painted-art')
+          active=Path('artifacts/character-animation')
+          # Strictly isolate previous run artifacts. Never overwrite the NEW
+          # job.json, source request, visual QA settings or retry budget.
+          expected=('painted-hero-anchor.png','anchor-review.json')
+          for name in expected:
+              matches=list(root.rglob(name))
+              if len(matches)!=1:raise SystemExit('Missing or ambiguous prior artifact '+name)
+              shutil.copyfile(matches[0],active/name)
+          job=json.loads((active/'job.json').read_text())
+          assert job.get('reuse_anchor_run_id'), 'Active request was overwritten'
+          assert job.get('max_visual_retries')==2, 'Visual correction budget lost'
+          assert job.get('texture_first') is True, 'Texture-first setting lost'
+          print('Approved painted anchor restored without altering active job:',
+                job.get('request_id'))
+          PY
       - name: Inspect reference pixels, animate requested poses with image model, then run independent vision review
         if: steps.request.outputs.active == 'true'
         env:
