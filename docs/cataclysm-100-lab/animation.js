@@ -1,4 +1,4 @@
-/* Procedural articulated, keyframed cat actors. No network assets.
+/* Original painted atlases with procedural articulated loading/failure fallback.
    Five independent body groups, deterministic frame selection and readable states. */
 (function(root){
 'use strict';
@@ -15,6 +15,43 @@ const characters=Object.freeze({
  allies:Object.freeze(Object.fromEntries(allyIds.map(id=>[id,12]))),
  hero:Object.freeze({idle:24,run:24,hit:24,feral:24,adrenaline:24})
 });
+// Resolve against this script so both document links and nested routes use local art.
+const assetBase=typeof document!=='undefined'&&document.currentScript
+ ?new URL('art/',document.currentScript.src).href:'./art/';
+const atlases=Object.create(null);
+let loaded=0,failed=0,total=0;
+function loadAtlas(key,count){
+ total++;
+ const entry={image:null,ready:false,count};atlases[key]=entry;
+ if(typeof root.Image!=='function')return;
+ const img=new root.Image();entry.image=img;
+ let settled=false;
+ const fail=()=>{if(!settled){settled=true;failed++;}};
+ img.onerror=fail;
+ img.onload=()=>{
+  if(img.naturalWidth!==count*96||img.naturalHeight!==96){fail();return;}
+  const ready=()=>{if(!settled){settled=true;entry.ready=true;loaded++;}};
+  if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
+ };
+ img.src=assetBase+key+'.png';
+}
+for(const state of ['idle','run','hit','feral','adrenaline','attack'])loadAtlas('hero-'+state,24);
+for(const id of allyIds)loadAtlas(id+'-run',12);
+for(const id of enemyIds)loadAtlas(id+'-run',6);
+function assetStatus(){return {loaded,failed,total};}
+// A separate metal gun layer pivots at the hands, keeping aim continuous between atlas frames.
+function paintedGun(ctx,id,aim,recoil){
+ const long=id==='sniper'||id==='echo-reaper'||id==='ghost';
+ ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
+ if(Math.cos(Number.isFinite(aim)?aim:0)<0)ctx.scale(1,-1);
+ poly(ctx,[[-5,-4],[12,-4],[17,-2],[long?40:29,-2],[long?40:29,2],[16,2],[11,5],[-5,5]],'#172737','#071421',1.2);
+ rect(ctx,-3,-3,16,2,'#90a9ad');rect(ctx,4,5,7,7,'#435865');
+ rect(ctx,18,-1,long?21:10,1,'#d5c9a0');
+ for(let k=0;k<4;k++)rect(ctx,13+k*3,-3,1,2,'#6e878b');
+ if(long){rect(ctx,3,-7,13,3,'#283f50');rect(ctx,13,-7,3,3,'#83e8de');}
+ oval(ctx,-5,5,3.5,3,id==='hero'?'#f0e9d7':PALETTES[id]);
+ ctx.restore();
+}
 const TWO=Math.PI*2;
 function frameCount(id,state){
   if(id==='hero')return 24;
@@ -55,6 +92,29 @@ function oval(ctx,x,y,rx,ry,color){
 function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   if(!PALETTES[id])id='shambler';
   const count=frameCount(id,state),frame=reduced?0:Math.floor(Math.max(0,time)*(id==='hero'?24:allyIds.includes(id)?12:6))%count;
+  const sheet=atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-run'];
+  if(sheet&&sheet.ready){
+    // Atlas feet sit at y=82; entity origin at (48,58), matching the fallback footprint.
+    const unit=r/23,recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
+    ctx.save();ctx.scale(unit,unit);
+    ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);
+    if(damaged){
+      // Repaint only the sprite silhouette with a bright exposure; transparency remains intact.
+      ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
+      ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
+    }
+    if(id==='hero'||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost')paintedGun(ctx,id,aim,recoil);
+    if(state==='feral'||state==='adrenaline'){
+      ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=1.5;ctx.globalAlpha=.65;
+      ctx.beginPath();ctx.ellipse(0,24,26,6,0,0,TWO);ctx.stroke();
+      if(!reduced)for(let k=0;k<3;k++)rect(ctx,-34-k*4,-8+k*12,7+Math.sin(time*9+k)*3,1,ctx.strokeStyle);
+    }
+    if(state==='attack'&&!reduced&&recoil>.15){
+      ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
+      poly(ctx,[[29,0],[35,-5],[34,-1],[43,0],[34,2],[36,5]],'#ffe8a2',null);ctx.restore();
+    }
+    ctx.restore();return frame;
+  }
   const p=pose(id,state,frame),color=PALETTES[id],detail=shape[id]||'fangs';
   const hero=id==='hero',ally=allyIds.includes(id),elite=major.catalog.elites.some(e=>e.id===id),superElite=major.catalog.superElites.some(e=>e.id===id);
   const boss=major.catalog.bosses.some(e=>e.id===id);
@@ -141,7 +201,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
