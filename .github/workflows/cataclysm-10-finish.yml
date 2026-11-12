@@ -7,6 +7,7 @@ on:
       - game_factory/requests/cataclysm_10_finish_LAUNCH.md
       - game_factory/requests/cataclysm_10_finish_RESUME.md
       - game_factory/requests/cataclysm_10_finish_RESUME2.md
+      - game_factory/requests/cataclysm_10_finish_RESUME3.md
 permissions:
   contents: read
   actions: read
@@ -16,7 +17,7 @@ concurrency:
 
 jobs:
   scoring:
-    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: score
@@ -30,7 +31,7 @@ jobs:
       previous: score
     secrets: inherit
   recover:
-    if: ${{ contains(github.event.head_commit.message, '[resume-followers-43317139783]') }}
+    if: ${{ contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -68,9 +69,48 @@ jobs:
             docs/cataclysm-100-lab/
           if-no-files-found: error
           retention-days: 30
+  recover_animation:
+    if: ${{ contains(github.event.head_commit.message, '[resume-animation-43322025281]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Restore exact independently accepted painted animation checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43322025281
+          github-token: ${{ github.token }}
+          name: cataclysm-10-finish-animation
+          path: docs/
+      - name: Validate actual game scoring, followers, painted poses and asset parity
+        run: |
+          set -euo pipefail
+          for js in docs/cataclysm-1-0-major/*.js docs/cataclysm-100-lab/*.js; do node --check "$js"; done
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs animation
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          echo "Recovered verified animation-stage candidate from 43322025281"
+      - name: Hand exact approved animation candidate to presentation stage
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-finish-animation
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
+
   animation:
     needs: [followers, recover]
-    if: ${{ always() && (needs.followers.result == 'success' || needs.recover.result == 'success') }}
+    if: ${{ always() && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') && (needs.followers.result == 'success' || needs.recover.result == 'success') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: animation
@@ -78,7 +118,8 @@ jobs:
       art_cache_run: 43319559952
     secrets: inherit
   presentation:
-    needs: animation
+    needs: [animation, recover_animation]
+    if: ${{ always() && (needs.animation.result == 'success' || needs.recover_animation.result == 'success') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: presentation
@@ -86,6 +127,7 @@ jobs:
     secrets: inherit
   balance:
     needs: presentation
+    if: ${{ always() && needs.presentation.result == 'success' }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: balance
@@ -94,6 +136,7 @@ jobs:
 
   release:
     needs: balance
+    if: ${{ always() && needs.balance.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment:
