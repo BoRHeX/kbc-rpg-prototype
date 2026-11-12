@@ -19,4 +19,9 @@
 
 For another game: supply a corresponding character manifest and integration/acceptance adapter (browser script), not a copied Cataclysm-specific workflow. This is capability infrastructure; game-specific asset rules live in job manifests and adapters. Initial browser adapter intentionally tests Cataclysm, while the central producer, vision reviewer and mechanical animation checks are reusable.
 
-**Cost/control:** explicitly requested runs only, one art job at a time, preserve API budget; stop when the gate fails rather than looping uncontrolled. Requires repository `OPENAI_API_KEY` for Codex and the two independent vision reviews.
+**Cost/control:** explicitly requested runs only, one art job at a time, preserve API budget. Each run starts with one artist candidate and can make at most **two autonomous corrective art passes** if independent multimodal QA rejects it (three artistic candidates maximum, no unbounded retry). The actual visual concerns and runtime frames are handed back to the artist. Each correction must repeat source, gameplay and browser checks, then receive a fresh independent review. If still rejected, fail closed, preserve visual evidence and do not merge or publish. Requires repository `OPENAI_API_KEY` for Codex and the independent vision reviews.
+
+## When the art director rejects
+- The first rejection is recorded as `artifacts/art-department/visual-review-attempt-1.json` and distilled into `revision-brief.md`, so the next artist pass has precise evidence rather than a generic 'try again' prompt.
+- Each repair re-renders the entire 24-frame running and attack cycles **in the actual browser Canvas**. It cannot claim completion from pixel hashes or mechanical alpha silhouette counts.
+- At most two repairs; pass only with `artifacts/art-department/accepted.json` produced by independent visual approval. The visual thresholds are not reduced to make publishing easier. If all attempts fail, leave Cataclysm 1.0 unchanged and retain evidence.
