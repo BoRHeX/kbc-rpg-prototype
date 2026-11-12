@@ -136,6 +136,11 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet openai pillow
           python -m py_compile game_factory/cataclysm_finish_art.py
           python -m game_factory.cataclysm_finish_art
+      - name: Keep world textures, character sprites and all local game code on ONE browser cache revision
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_asset_release.py
+          python -m game_factory.cataclysm_asset_release --stage "$STAGE" --run-id "$GITHUB_RUN_ID"
       - name: Reject empty stages, unauthorized edits and any protected character changes
         run: |
           set -euo pipefail
@@ -192,10 +197,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Preserve unaccepted game candidate source for targeted recovery, even if QA fails
-        if: failure() && inputs.stage == 'animation'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: cataclysm-10-unaccepted-animation-source
+          name: cataclysm-10-unaccepted-${{ inputs.stage }}-source
           path: |
             docs/cataclysm-1-0-major/
             docs/cataclysm-100-lab/
