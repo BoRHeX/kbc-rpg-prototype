@@ -35,6 +35,25 @@ module.exports.prove=async(page,job,out)=>{
   const buf=Buffer.from(png,'base64');
   assert.ok(buf.length>12000,'Real runtime character sprite render unexpectedly empty');
   fs.writeFileSync(path.join(out,'motion-render.png'),buf);
+  // Inspect every actual runtime frame: a four-image montage can hide a two-pose loop.
+  for(const state of ['run','attack']){
+    const cycle=await page.evaluate((motion)=>{
+      const sheet=document.createElement('canvas');
+      sheet.width=6*144;sheet.height=4*148;
+      const c=sheet.getContext('2d');
+      c.fillStyle='#1d2736';c.fillRect(0,0,sheet.width,sheet.height);
+      c.font='bold 14px sans-serif';c.textBaseline='top';
+      for(let k=0;k<24;k++){
+        const col=k%6,row=Math.floor(k/6),x=col*144,y=row*148;
+        c.save();c.translate(x+72,y+82);
+        CATA_ART.draw(c,'hero',30,k/24,motion,0,false,false);
+        c.restore();
+        c.fillStyle='#f8fafc';c.fillText(motion+' '+String(k).padStart(2,'0'),x+7,y+3);
+      }
+      return sheet.toDataURL('image/png').split(',')[1];
+    },state);
+    fs.writeFileSync(path.join(out,state+'-cycle.png'),Buffer.from(cycle,'base64'));
+  }
   // Also exercise the 99-night stress scene after loading the new art mirror.
   const stress=await page.goto('http://127.0.0.1:8765/cataclysm-100-lab/',{waitUntil:'domcontentloaded'});
   assert.equal(stress.status(),200);
