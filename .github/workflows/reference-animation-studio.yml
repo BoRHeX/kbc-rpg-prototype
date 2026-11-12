@@ -110,6 +110,15 @@ jobs:
               raise SystemExit('Anchor reuse/retries only permitted in painted texture-first mode')
           job['reuse_anchor_run_id']=reuse
           job['max_visual_retries']=retries
+          resume_id=str(job.get('resume_art_run_id','')).strip()
+          resume_names=[v.strip() for v in str(job.get('resume_states','')).split(',') if v.strip()]
+          if resume_id and (not resume_id.isdecimal() or len(resume_id)>16):
+              raise SystemExit('Invalid approved source artwork run ID')
+          if resume_names and (not resume_id or not set(resume_names).issubset(states)
+                               or len(set(resume_names))!=len(resume_names)):
+              raise SystemExit('Resume states require exact source run and unique requested state names')
+          job['resume_art_run_id']=resume_id
+          job['resume_states']=','.join(resume_names)
           if job['texture_first'] and job['actor'] != 'hero':
               raise SystemExit('This first texture-first release is scoped to Cataclysm hero only')
           if job['texture_first'] and len(states) != 6:
@@ -121,6 +130,7 @@ jobs:
               fd.write('texture_first='+str(job['texture_first']).lower()+'\n')
               fd.write('anchor_source_run='+reuse+'\n')
               fd.write('max_visual_retries='+str(retries)+'\n')
+              fd.write('resume_source_run='+resume_id+'\n')
           print('Validated reference animation request',job['actor'],states,maximum)
           PY
       - name: Offline pipeline tests and existing game contracts (no API charges)
@@ -159,6 +169,32 @@ jobs:
           print('Approved painted anchor restored without altering active job:',
                 job.get('request_id'))
           PY
+      - name: Restore previously approved individual GIF frames without old job metadata
+        if: steps.request.outputs.resume_source_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.request.outputs.resume_source_run }}
+          name: character-animation-visual-review
+          github-token: ${{ github.token }}
+          path: artifacts/prior-animation-states/
+      - name: Copy only permitted previously accepted state GIFs
+        if: steps.request.outputs.resume_source_run != ''
+        run: |
+          python - <<'PY'
+          import json,shutil
+          from pathlib import Path
+          job=json.loads(Path('artifacts/character-animation/job.json').read_text())
+          source=Path('artifacts/prior-animation-states')
+          dest=Path('artifacts/character-animation/resume')
+          dest.mkdir(parents=True,exist_ok=True)
+          for state in job['resume_states'].split(','):
+              if not state:continue
+              matches=list(source.rglob(state+'.gif'))
+              if len(matches)!=1:raise SystemExit('Missing approved source GIF '+state)
+              shutil.copy2(matches[0],dest/(state+'.gif'))
+          print('Resumed approved reference GIF states',job['resume_states'],
+                'from',job['resume_art_run_id'])
+          PY
       - name: Inspect reference pixels, animate requested poses with image model, then run independent vision review
         if: steps.request.outputs.active == 'true'
         env:
@@ -183,6 +219,7 @@ jobs:
           else:args+=['--drive-file-id',job['drive_file_id']]
           if job.get('texture_first'):args.append('--texture-first')
           if job.get('reuse_anchor_run_id'):args.append('--reuse-painted-anchor')
+          if job.get('resume_states'):args+=['--reuse-states',job['resume_states']]
           if job.get('max_visual_retries'):
               args+=['--max-visual-retries',str(job['max_visual_retries'])]
           run(args)
