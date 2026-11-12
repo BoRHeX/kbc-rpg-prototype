@@ -13,7 +13,7 @@ import re
 import subprocess
 import urllib.request
 
-from PIL import Image, ImageChops, ImageDraw, ImageStat
+from PIL import Image, ImageChops, ImageDraw, ImageStat, ImageOps
 
 ROOT = Path(__file__).resolve().parents[2]
 JOB_PATH = ROOT / os.environ.get("ART_JOB", "game_factory/art_department/jobs/active.json")
@@ -107,6 +107,36 @@ def changed_paths():
     return set(tracked + untracked)
 
 
+
+def silhouette_families(atlas, frame_count, size, state):
+    """Count articulated full-body pose families, including mirror-equivalent frames.
+
+    Ignore paint/lighting noise: work from normalized binary alpha silhouettes.
+    In a 2-pose loop repeated 12 times this yields at most two families, even if
+    every PNG frame has a different RGB pixel hash or minor color variation.
+    """
+    masks = []
+    for k in range(frame_count):
+        frame = atlas.crop((k * size, 0, (k + 1) * size, size))
+        a = frame.getchannel("A").resize((48, 48), Image.Resampling.NEAREST)
+        masks.append(a.point(lambda x: 255 if x >= 100 else 0))
+    def difference(left, right):
+        a, b = left.tobytes(), right.tobytes()
+        union = sum(1 for x, y in zip(a, b) if x or y)
+        altered = sum(1 for x, y in zip(a, b) if x != y)
+        return altered / max(1, union)
+    families = []
+    for mask in masks:
+        if not any(min(difference(mask, old), difference(mask, ImageOps.mirror(old))) < 0.055
+                   for old in families):
+            families.append(mask)
+    minimum = {'run': 8, 'attack': 7, 'adrenaline': 8, 'feral': 7,
+               'hit': 5, 'idle': 3}.get(state, 6)
+    assert len(families) >= minimum, (
+        f'{state}: only {len(families)} non-mirrored body silhouettes, need {minimum}; '
+        'reject two-pose, palette-only, bouncing or mirrored loops')
+    return len(families)
+
 def validate():
     j = job()
     base = Path(j["source_dir"])
@@ -147,7 +177,8 @@ def validate():
             assert animated >= n - 3, (state + " lacks meaningful frame changes " + str(animated))
             assert len({hashlib.sha256(f.tobytes()).hexdigest() for f in frames}) >= n - 2, (
                 "Identical frames " + state)
-            score[state] = {"animated_transitions": animated, "bytes": len(raw)}
+            families = silhouette_families(src, n, s, state)
+            score[state] = {"animated_transitions": animated, "non_mirrored_silhouette_families": families, "bytes": len(raw)}
             draw.text((5, row * 190 + 6), state, fill="#fff9df")
             for k, frame_no in enumerate((0, n // 4, n // 2, 3 * n // 4)):
                 crop = src.crop((frame_no * s, 0, (frame_no + 1) * s, s))
@@ -169,17 +200,20 @@ def validate():
 def review():
     j = job()
     images = [OUT / "reference.png", OUT / "animation-contact.png",
-              OUT / "motion-render.png", OUT / "actual-game.png"]
+              OUT / "motion-render.png", OUT / "run-cycle.png", OUT / "attack-cycle.png",
+              OUT / "actual-game.png"]
     assert all(p.is_file() and p.stat().st_size > 3000 for p in images), (
         "Missing real visual evidence " + str([p for p in images if not p.is_file()]))
     instruction = (
         "Independent game-art QA. Images ordered: reference hero; new sprite contact sheet "
         "(rows are states, columns different animation frames); real browser Canvas rendered "
-        "animation; screenshot after actually starting the game. "
+        "animation; full 24-frame run cycle; full 24-frame attack cycle; screenshot after "
+        "actually starting the game. Count ACTUAL distinct poses, disregard tiny differences. "
         "Assess (1) identifiable consistent character and props, (2) convincing anatomical "
         "articulation between frames rather than static shifts, (3) art aesthetic and readability "
         "at native/mobile game scale, (4) actual integration and visible gameplay. "
-        "Do not approve merely because files and tests exist. "
+        "Do not approve merely because files and tests exist. FAIL if run reads as just "
+        "two alternating or mirrored poses, or if primary joint articulation is invisible. "
         "Respond with ONLY valid JSON keys pass (boolean), identity (integer 0-5), "
         "motion (integer 0-5), quality (integer 0-5), integration (integer 0-5), "
         "concerns (array of strings). Reject if indistinct shapes, few believable pose "
