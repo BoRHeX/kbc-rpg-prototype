@@ -29,7 +29,7 @@ function reserveShare(n){
  }
  return 0;
 }
-function budgetForNight(n){return Math.floor(8+n*1.08);}
+function budgetForNight(n){return Math.floor(25+n*.8);}
 function create(seed=990100){
  let state=seed>>>0,bank=0,lastNight=0,totalSpent=0,totalEarned=0;
  const rand=()=>((state=(Math.imul(state,1664525)+1013904223)>>>0)/4294967296);
