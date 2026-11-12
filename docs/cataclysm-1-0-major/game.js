@@ -2187,6 +2187,22 @@
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
+    if(source.lab.enabled&&source.campaign.night===100){
+      ctx.save();
+      const pulse=reducedMotion?0:Math.sin(source.t*7)*.5+.5;
+      ctx.fillStyle='rgba(255,58,12,'+(.09+pulse*.05)+')';ctx.fillRect(0,0,W,H);
+      for(let i=0;i<34;i++){
+        const x=((i*337.13+Math.floor(source.t*5)*17)% (W+140))-70;
+        const base=H-((i*97)%Math.max(1,Math.floor(H*.36)));
+        const height=20+(i*19)%70+(reducedMotion?0:Math.sin(source.t*9+i)*12);
+        ctx.beginPath();ctx.moveTo(x-13,base+12);ctx.quadraticCurveTo(x-12,base-height*.65,x,base-height);
+        ctx.quadraticCurveTo(x+16,base-height*.35,x+14,base+12);ctx.closePath();
+        ctx.fillStyle=i%3===0?'#ffb441aa':i%3===1?'#ff4d21aa':'#f72d3c99';ctx.fill();
+      }
+      ctx.fillStyle='#ffd0a6';ctx.font='bold 17px system-ui';ctx.textAlign='center';
+      ctx.fillText('NIGHT 100 · THE CATASTROPHE',W/2,Math.max(115,H*.16));
+      ctx.restore();
+    }
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
