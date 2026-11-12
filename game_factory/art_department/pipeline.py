@@ -257,7 +257,7 @@ def review():
             "silhouette counts and image hashes look sufficiently different.",
             "Review all 24 run/attack browser frames and keep version 1.0.",
         ]
-        (OUT / "revision-brief.md").write_text("\\n".join(brief) + "\\n")
+        (OUT / "revision-brief.md").write_text("\n".join(brief) + "\n")
         print("REJECTED visual attempt", attempt, json.dumps(verdict), flush=True)
         raise AssertionError("Image review REJECTED candidate: " + json.dumps(verdict))
     (OUT / "accepted.json").write_text(json.dumps({
