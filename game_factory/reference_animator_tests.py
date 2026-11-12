@@ -25,6 +25,21 @@ class ReferenceAnimatorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             mod.validate_job("trapper", "run", drive_file_id="")
 
+    def test_trusted_existing_hero_atlas_can_seed_a_painted_anchor(self):
+        # The LITE MOBILE release must NOT require a Drive upload. Hero alone
+        # can use its existing checked-in pose; only the first atlas cell is sent.
+        source="docs/cataclysm-1-0-major/art/hero-idle.png"
+        states=mod.validate_job("hero","idle,run,attack,hit,feral,adrenaline",
+                                reference_path=source)
+        self.assertEqual(len(states),6)
+        data=mod.load_reference(source, actor="hero")
+        with Image.open(BytesIO(data)) as reference:
+            self.assertEqual(reference.size,(384,384))
+        with self.assertRaises(ValueError):
+            mod.validate_job("trapper","run",reference_path=source)
+        self.assertEqual(mod.FRAME_TARGET["run"],8)
+        self.assertEqual(mod.FRAME_TARGET["attack"],8)
+
     def test_synthetic_gif_becomes_real_transparent_motion_atlas(self):
         frames = []
         for x in (22, 29, 36, 43, 50, 57):
