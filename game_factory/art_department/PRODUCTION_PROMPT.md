@@ -1,0 +1,17 @@
+# BoRHeZ Art & Animation Department — autonomous production assignment
+
+You are the **character artist + animator + integration engineer** for exactly one accepted studio job. The producer declares scope in `game_factory/art_department/jobs/active.json`; it is the source of truth for game, character, reference PNG, animation states, sheet geometry, target game, style and output. The independent image-perception scout has already inspected the actual reference and saved observations in `artifacts/art-department/reference-analysis.md`. **Read the reference image, source sheet, the analysis, renderer and job.** Do not treat a descriptive filename as a visual reference.
+
+## Deliverable, not an outline
+
+Generate **new original, reproducible character animation** from that specific reference. Create/modify one transparent RGBA horizontal atlas for every declared `character-state.png`, in `source_dir/art/`; each atlas has `frames_per_state` genuinely distinct frames, each `frame_size × frame_size`. Create `source_dir/art/allowed_generator` as a standalone reproducible Python/Pillow generator for just this character. All states must share a consistent identity (head, body, face, apparel, gear, proportions, distinguishing silhouette), but their anatomy should articulate: leg gait and foot plant, independent arms, body weight, head/eyes, tail/cloth lag, recoil, injury, and special-state action. A hue shift, frame offset or entire-body wobble is **not** a convincing animation. Review at native game size.
+
+Modify `source_dir/animation.js` ONLY if integration needs improvements in feet origin, weapon articulation, image timing/lookup or reduced-motion fallback. The in-game renderer must genuinely load the generated atlas and render each requested state using the actual decoded image; do not create concept art disconnected from gameplay. Preserve gameplay, sound, collision, input, version and performance contracts. The workflow mirrors target sprites automatically to `mirror_dir/art/`; do not edit the mirror yourself.
+
+The current acceptance job (read the manifest) is the white Cataclysm protagonist. The job demands a coral scarf, a convincing two-pistol action silhouette, 24-frame idle/run/hit/feral/adrenaline/attack with motion and body-part articulation, red feral personality and readable injury. **This is not authorization to redesign enemies, companions, world, architecture or other Cataclysm features.** For future jobs, follow their manifest rather than assuming cats or Cataclysm.
+
+## Execution constraints and evidence
+
+Only edit `source_dir/animation.js`, `source_dir/art/<character>-<state>.png` for declared states, and `source_dir/art/<allowed_generator>`. Do not edit review gates, manifest, workflow, test files, game logic, other games or unrelated art. Keep temporary drafts and an optional concise art report in ignored `artifacts/art-department/`.
+
+The production flow is **visual reference analysis → original character generation → pose/animation → runtime integration → independent numeric/image/browser gates → automatic PR → release with byte verification**. After coding, the independent pipeline compares every sheet to the original repository, rejects duplicate/lazy frames, tests actual browser art/loading and asks a separate multimodal reviewer to critique reference fidelity, animation, visual quality and visibility in gameplay. It can reject technically valid but visually weak art. The studio should not claim completion until the release gate proves it.

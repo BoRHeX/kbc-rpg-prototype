@@ -1,0 +1,210 @@
+"""Reusable source/image/motion gates for BoRHeZ Art & Animation Department.
+
+Production is performed by the GitHub coding worker; this independent module
+handles intake, visual understanding, provenance, frame validation and critique.
+"""
+from __future__ import annotations
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import urllib.request
+
+from PIL import Image, ImageChops, ImageDraw, ImageStat
+
+ROOT = Path(__file__).resolve().parents[2]
+JOB_PATH = ROOT / os.environ.get("ART_JOB", "game_factory/art_department/jobs/active.json")
+OUT = ROOT / "artifacts/art-department"
+OUT.mkdir(parents=True, exist_ok=True)
+
+
+def job():
+    data = json.loads(JOB_PATH.read_text(encoding="utf-8"))
+    for field in ("game", "character", "reference", "source_dir", "states", "mirror_dir"):
+        assert data.get(field), "Missing job field: " + field
+    for key in ("game", "character"):
+        assert re.fullmatch(r"[a-z0-9-]+", data[key]), "Invalid " + key
+    for key in ("source_dir", "mirror_dir"):
+        assert data[key].startswith("docs/") and ".." not in Path(data[key]).parts
+        assert (ROOT / data[key]).is_dir(), "Missing game directory " + data[key]
+    assert data["reference"].startswith("docs/") and ".." not in Path(data["reference"]).parts
+    assert (ROOT / data["reference"]).is_file(), "Image reference is required"
+    assert re.fullmatch(r"[a-z0-9_-]+\.py", data["allowed_generator"])
+    assert len(data["states"]) >= 2 and len(set(data["states"])) == len(data["states"])
+    assert all(re.fullmatch(r"[a-z0-9-]+", s) for s in data["states"])
+    assert 2 <= int(data["frames_per_state"]) <= 48
+    assert 48 <= int(data["frame_size"]) <= 256
+    return data
+
+
+def atlas_paths(j):
+    return [ROOT / j["source_dir"] / "art" / (j["character"] + "-" + state + ".png")
+            for state in j["states"]]
+
+
+def as_b64(path):
+    return "data:image/png;base64," + base64.b64encode(Path(path).read_bytes()).decode("ascii")
+
+
+def vision(prompt, images, model="gpt-4.1-mini"):
+    key = os.environ.get("OPENAI_API_KEY", "")
+    if not key:
+        raise RuntimeError("OPENAI_API_KEY missing: image understanding/review is mandatory")
+    pieces = [{"type": "input_text", "text": prompt}]
+    pieces += [{"type": "input_image", "image_url": as_b64(p)} for p in images]
+    payload = json.dumps({"model": model, "input": [{"role": "user", "content": pieces}],
+                          "max_output_tokens": 1000}).encode()
+    request = urllib.request.Request(
+        "https://api.openai.com/v1/responses", data=payload,
+        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+        method="POST")
+    with urllib.request.urlopen(request, timeout=110) as response:
+        result = json.load(response)
+    answer = "\n".join(c["text"] for item in result.get("output", [])
+                       for c in item.get("content", []) if c.get("type") == "output_text")
+    if not answer.strip():
+        raise RuntimeError("Vision model returned no visible assessment")
+    return answer
+
+
+def reference_sample(j):
+    im = Image.open(ROOT / j["reference"]).convert("RGBA")
+    s = int(j["frame_size"])
+    # Existing sprite sheets may be wider than one frame. Use their first pose.
+    if im.width >= s and im.height >= s:
+        im = im.crop((0, 0, s, s))
+    im.thumbnail((512, 512))
+    im.resize((max(384, im.width), max(384, im.height)), Image.Resampling.NEAREST).save(
+        OUT / "reference.png")
+
+
+def prepare():
+    j = job()
+    reference_sample(j)
+    brief = (
+        "You are the VISUAL SCOUT of a reusable game character animation department. "
+        "Examine the actual attached reference pixel image (not its filename). "
+        "Describe species/anatomy, silhouette, apparel and gear, exact visual landmarks, "
+        "body part topology/head/torso/arms/legs/tail, visual palette, weapon pivot, "
+        "likely animation constraints and what must stay consistent across states. "
+        "Propose materially different motion in idle/run/hit/attack/power states, "
+        "including identifiable changes at 96px. Distinguish observations from proposals. "
+        "Do NOT give generic graphic-design advice. The character must be recognizable."
+        " Job art brief: " + j["visual_direction"]
+    )
+    notes = vision(brief, [OUT / "reference.png"])
+    (OUT / "reference-analysis.md").write_text("# Reference image analysis\n\n" + notes + "\n")
+    print("Visual scout inspected actual image; spec:", j["game"], j["character"])
+
+
+def changed_paths():
+    tracked = subprocess.check_output(["git", "diff", "--name-only", "HEAD"], cwd=ROOT).decode().splitlines()
+    untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"],
+                                        cwd=ROOT).decode().splitlines()
+    return set(tracked + untracked)
+
+
+def validate():
+    j = job()
+    base = Path(j["source_dir"])
+    mirror = Path(j["mirror_dir"])
+    art = ROOT / base / "art"
+    generator = art / j["allowed_generator"]
+    assert generator.is_file(), "Missing reproducible character generator"
+    candidate = {p.relative_to(ROOT).as_posix() for p in atlas_paths(j)}
+    allowed = candidate | {(base / "animation.js").as_posix(), generator.relative_to(ROOT).as_posix()}
+    changes = changed_paths()
+    forbidden = sorted(p for p in changes if p not in allowed and not p.startswith("artifacts/"))
+    assert not forbidden, "Artist altered files outside job scope: " + str(forbidden)
+    assert (base / "animation.js").as_posix() in allowed
+    assert candidate.issubset(changes), "Every state must contain new generated artwork: " + str(candidate - changes)
+    assert generator.relative_to(ROOT).as_posix() in changes, "Generator must be new or revised"
+    n, s = int(j["frames_per_state"]), int(j["frame_size"])
+    score = {}
+    contact = Image.new("RGB", (5 * 180, len(j["states"]) * 190), "#17202b")
+    draw = ImageDraw.Draw(contact)
+    for row, (state, p) in enumerate(zip(j["states"], atlas_paths(j))):
+        raw = p.read_bytes()
+        assert raw.startswith(bytes.fromhex("89504e470d0a1a0a")), "Not a PNG: " + str(p)
+        baseline = subprocess.run(["git", "show", "HEAD:" + p.relative_to(ROOT).as_posix()],
+                                  cwd=ROOT, capture_output=True, check=False)
+        if baseline.returncode == 0:
+            assert hashlib.sha256(baseline.stdout).digest() != hashlib.sha256(raw).digest(), (
+                "Old sprite sheet reused: " + str(p))
+        with Image.open(p) as src:
+            assert src.mode == "RGBA", "Transparent RGBA required: " + str(p)
+            assert src.size == (n * s, s), "Wrong sheet geometry: " + str(p) + " " + str(src.size)
+            alpha = src.getchannel("A")
+            bounds = alpha.getextrema()
+            assert bounds[0] == 0 and bounds[1] >= 220, "Missing real transparency/opaque figure"
+            frames = [src.crop((k * s, 0, (k + 1) * s, s)).convert("RGB") for k in range(n)]
+            deltas = [sum(ImageStat.Stat(ImageChops.difference(frames[k], frames[(k+1) % n])).sum)
+                      for k in range(n)]
+            animated = sum(d >= 2000 for d in deltas)
+            assert animated >= n - 3, (state + " lacks meaningful frame changes " + str(animated))
+            assert len({hashlib.sha256(f.tobytes()).hexdigest() for f in frames}) >= n - 2, (
+                "Identical frames " + state)
+            score[state] = {"animated_transitions": animated, "bytes": len(raw)}
+            draw.text((5, row * 190 + 6), state, fill="#fff9df")
+            for k, frame_no in enumerate((0, n // 4, n // 2, 3 * n // 4)):
+                crop = src.crop((frame_no * s, 0, (frame_no + 1) * s, s))
+                crop.thumbnail((150, 150))
+                tile = Image.new("RGBA", (150, 150), "#314352")
+                tile.alpha_composite(crop, ((150 - crop.width)//2, (150 - crop.height)//2))
+                contact.paste(tile.convert("RGB"), (125 + k * 190, row * 190 + 20))
+    contact.save(OUT / "animation-contact.png")
+    assert "drawImage(" in (ROOT / base / "animation.js").read_text(), "No actual image integration in renderer"
+    # Mirror only the artist's requested character sprites, never unrelated game content.
+    dst = ROOT / mirror / "art"
+    dst.mkdir(parents=True, exist_ok=True)
+    for p in atlas_paths(j):
+        (dst / p.name).write_bytes(p.read_bytes())
+    (OUT / "mechanical-gate.json").write_text(json.dumps(score, indent=2))
+    print("PASS mechanical art gates:", score)
+
+
+def review():
+    j = job()
+    images = [OUT / "reference.png", OUT / "animation-contact.png",
+              OUT / "motion-render.png", OUT / "actual-game.png"]
+    assert all(p.is_file() and p.stat().st_size > 3000 for p in images), (
+        "Missing real visual evidence " + str([p for p in images if not p.is_file()]))
+    instruction = (
+        "Independent game-art QA. Images ordered: reference hero; new sprite contact sheet "
+        "(rows are states, columns different animation frames); real browser Canvas rendered "
+        "animation; screenshot after actually starting the game. "
+        "Assess (1) identifiable consistent character and props, (2) convincing anatomical "
+        "articulation between frames rather than static shifts, (3) art aesthetic and readability "
+        "at native/mobile game scale, (4) actual integration and visible gameplay. "
+        "Do not approve merely because files and tests exist. "
+        "Respond with ONLY valid JSON keys pass (boolean), identity (integer 0-5), "
+        "motion (integer 0-5), quality (integer 0-5), integration (integer 0-5), "
+        "concerns (array of strings). Reject if indistinct shapes, few believable pose "
+        "changes, missing body parts, inconsistent identity, or game screenshot is not "
+        "proof of integration. Visual direction: " + j["visual_direction"]
+    )
+    answer = vision(instruction, images)
+    (OUT / "visual-review-raw.txt").write_text(answer)
+    try:
+        verdict = json.loads(answer.strip().removeprefix("```json").removesuffix("```").strip())
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("Visual reviewer must return valid JSON") from exc
+    scores = ("identity", "motion", "quality", "integration")
+    minimum = int(j["minimum_visual_score"])
+    assert verdict.get("pass") is True and all(
+        isinstance(verdict.get(x), int) and verdict[x] >= minimum for x in scores
+    ), "Image review REJECTED candidate: " + json.dumps(verdict)
+    (OUT / "visual-review.json").write_text(json.dumps(verdict, indent=2))
+    print("PASS independent image-based assessment:", verdict)
+
+
+if __name__ == "__main__":
+    import sys
+    action = sys.argv[1] if len(sys.argv) > 1 else ""
+    actions = {"prepare": prepare, "gate": validate, "review": review}
+    if action not in actions:
+        raise SystemExit("Usage: python -m game_factory.art_department.pipeline {prepare|gate|review}")
+    actions[action]()
