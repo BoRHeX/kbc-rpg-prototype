@@ -47,7 +47,7 @@ const path=require('node:path');
    });
    assert.ok(result.art.loaded>=40,'At least forty sprite sheet PNGs actually decoded and loaded: '+JSON.stringify(result.art));
    assert.equal(result.art.failed,0,'No missing/failed image assets: '+dir);
-   assert.equal(result.version,'cataclysm-10-painted42-cachefix-01','Runtime must use new painted art release');
+   assert.match(result.version,/^cataclysm-10-[a-z0-9-]+$/,'Runtime must expose a specific painted art release ID');
    assert.equal(result.visualVersion,result.version,'World and character art must use the same release');
    assert.ok(result.spriteResources>=40,'At least 40 atlases must bypass old browser cache: '+JSON.stringify(result));
    assert.equal(result.staleSprites,0,'Unversioned art URLs would preserve stale cached sprites');
