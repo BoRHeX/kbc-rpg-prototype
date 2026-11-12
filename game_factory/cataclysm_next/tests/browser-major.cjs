@@ -34,6 +34,9 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.major.animationFrames,378);
       assert.deepEqual(snapshot.major.songs,['ironmarch','afterlight']);
       assert.equal(snapshot.world.size,4200);
+      assert.equal(snapshot.world.scrollDirection,'north');
+      assert.equal(snapshot.presentation.worldScrollY,-28);
+      assert.equal(snapshot.presentation.visualPass,'catastrophe-neon-noir-02');
       assert.equal(snapshot.major.campaign.night,1);
       assert.equal(snapshot.major.victory,false);
       assert.equal(snapshot.major.rerollTokens,0);
@@ -46,6 +49,9 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       const box=await frame.boundingBox();
       assert.ok(box&&box.width>100&&box.height>100,'canvas fills mobile view');
       if(width===844){
+        await page.waitForTimeout(550);
+        const drift=await page.evaluate(()=>window.CATACLYSM_DIAGNOSTICS.snapshot());
+        assert.ok(drift.player.y<snapshot.player.y-4,'idle player drifts north, environment scrolls down');
         await page.mouse.move(box.x+box.width*.4,box.y+box.height*.65);
         await page.mouse.down();
         await page.mouse.move(box.x+box.width*.54,box.y+box.height*.8,{steps:6});

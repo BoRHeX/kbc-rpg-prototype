@@ -24,17 +24,20 @@ function frameCount(id,state){
 function pose(id,state,frame){
   const count=frameCount(id,state),f=((Math.floor(frame)%count)+count)%count;
   const t=f/count*TWO,run=state==='run'||state==='feral'||state==='adrenaline';
-  const feral=state==='feral',adrenaline=state==='adrenaline',hit=state==='hit';
-  const intensity=run?1:state==='idle'?.24:.6;
+  const feral=state==='feral',adrenaline=state==='adrenaline',hit=state==='hit',attack=state==='attack';
+  const intensity=run?1.3:state==='idle'?.32:attack?.72:.68;
+  const stride=Math.sin(t),lift=Math.max(0,stride),recoil=attack?Math.max(0,Math.sin(t*2))*.8:0;
+  const weight=feral?1.3:adrenaline?1.18:1;
   return Object.freeze({
     frame:f,
-    head:{x:Math.sin(t)*.9,y:Math.sin(t*2)*.7+(hit?Math.sin(t*3)*2:0),rotation:Math.sin(t)*.035+(hit?.1:0)},
-    torso:{y:Math.sin(t*2)*1.7*intensity,scale:1+Math.cos(t*2)*.025},
-    legs:{left:Math.sin(t)*6*intensity,right:-Math.sin(t)*6*intensity,front:Math.sin(t)*3*intensity},
-    arms:{left:Math.sin(t+Math.PI)*7*intensity,right:Math.sin(t)*7*intensity},
-    tail:{x:Math.sin(t+.6)*10*(feral?1.7:1),rotation:Math.sin(t+.7)*.25},
+    head:{x:stride*1.8*weight,y:Math.cos(t*2)*1.45*intensity+(hit?Math.sin(t*3)*3:0)-recoil*1.8,rotation:stride*.06+(hit?.17:0)-recoil*.08},
+    torso:{y:Math.cos(t*2)*2.4*intensity-recoil*2,scale:1+Math.cos(t*2)*.055*intensity,tilt:stride*.055+(feral?.07:0)},
+    legs:{left:(stride*9-lift*4)*intensity,right:(-stride*9-Math.max(0,-stride)*4)*intensity,front:stride*4*intensity},
+    arms:{left:-stride*11*intensity+recoil*4,right:stride*11*intensity-recoil*7},
+    tail:{x:Math.sin(t+.6)*14*weight,rotation:Math.sin(t+.7)*.36*weight},
     eyes:{open:hit?.5:feral?1.35:adrenaline?1.2:1,offset:Math.sin(t)*.7},
-    whiskers:Math.sin(t*3),
+    whiskers:Math.sin(t*3)*1.8,
+    recoil,effort:weight*intensity,
     glow:feral?'#ff853a':adrenaline?'#80f4ff':hit?'#ff5c73':null,
     speedStreak:feral?1.8:adrenaline?2:0
   });
@@ -72,9 +75,11 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
     rect(ctx,sx-4+motion*.5,24+motion,8,2,'#2b3b45');
   }
   // TORSO and armored garment.
-  ctx.save();ctx.translate(0,p.torso.y);ctx.scale(p.torso.scale,1);
+  ctx.save();ctx.translate(0,p.torso.y);ctx.rotate(p.torso.tilt);ctx.scale(p.torso.scale,1);
   oval(ctx,0,5,boss?22:19,boss?18:17,'#091923');
   oval(ctx,0,4,boss?19:16,boss?15:14,hero?'#57867d':ally?'#2c5357':'#43575a');
+  poly(ctx,[[-10,-7],[-3,-12],[10,-9],[8,-5],[-6,-3]],hero?'#b2e4cb':ally?'#8db9b4':'#6d8389',null);
+  poly(ctx,[[-7,8],[1,9],[12,6],[9,11],[-9,13]],hero?'#2d5c62':ally?'#1f4049':'#273f4c',null);
   if(detail==='armor'||boss)poly(ctx,[[-18,-5],[-9,-19],[9,-19],[18,-5],[12,16],[-12,16]],'#34454d','#a2b4b4',2);
   if(hero)poly(ctx,[[-15,10],[16,11],[13,14],[-10,14]],'#78efce',null);
   ctx.restore();
@@ -91,6 +96,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.save();ctx.translate(p.head.x,-10+p.head.y);ctx.rotate(p.head.rotation);
   poly(ctx,[[-18,-6],[-18,-29],[-7,-20],[7,-20],[18,-29],[19,-6],[14,8],[-13,8]],'#061723');
   poly(ctx,[[-15,-5],[-15,-24],[-6,-15],[6,-15],[15,-24],[16,-6],[11,5],[-10,5]],color);
+  poly(ctx,[[-14,-15],[-7,-17],[-2,-12],[11,-14],[9,-10],[-10,-9]],hero?'#ffffff77':ally?'#d0fff077':'#ffe5d555',null);
   poly(ctx,[[-13,-21],[-8,-16],[-13,-12]],'#e8a1a6',null);
   poly(ctx,[[13,-21],[8,-16],[13,-12]],'#e8a1a6',null);
   // Archetype-specific gear and silhouettes.
@@ -115,7 +121,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   // Weapons/role silhouettes attached to upper body, distinct states.
   if(hero||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'){
-    ctx.save();ctx.translate(13,11);ctx.rotate(Number.isFinite(aim)?aim:0);
+    ctx.save();ctx.translate(13-p.recoil*4,11+p.recoil*2);ctx.rotate(Number.isFinite(aim)?aim:0);
     rect(ctx,1,-4,id==='sniper'||id==='echo-reaper'?34:23,8,'#152a38');rect(ctx,8,-4,14,3,'#93afaf');rect(ctx,22,-2,7,4,'#e2ba74');ctx.restore();
   }
   if(detail==='healer'){rect(ctx,19,11,12,15,'#e9e8df');rect(ctx,24,13,3,11,'#52b5a1');rect(ctx,21,17,10,3,'#52b5a1');}
@@ -131,6 +137,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
     }
   }
   if(damaged){ctx.globalAlpha=.55;ctx.strokeStyle='#fff0c2';ctx.lineWidth=3;ctx.strokeRect(-25,-28,50,55);}
+  if(state==='attack'&&!reduced){ctx.globalAlpha=.55;ctx.strokeStyle='#e5f7de';ctx.lineWidth=2;ctx.beginPath();ctx.arc(16,12,8+p.recoil*7,-.6,.7);ctx.stroke();}
   ctx.restore();
   return frame;
 }

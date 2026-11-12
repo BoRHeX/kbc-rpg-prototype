@@ -6,9 +6,10 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-major-campaign-01';
-  const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART;
-  if(!MAJOR||!ART)throw Error('Catastrophe major modules did not load');
+  const PATCH_ID = 'cataclysm-10-major-neon-noir-02';
+  const WORLD_SCROLL_Y=-28; // Northbound, so the environment scrolls down.
+  const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS;
+  if(!MAJOR||!ART||!VIS)throw Error('Catastrophe visual/campaign/animation modules did not load');
   const AUDIO_PASS_ID = 'catastrophe-adaptive-02';
   const UNLOCKS = {shambler:0,weaver:40,dasher:50,orbiter:70,stalker:85,hexer:95,ghost:140,summoner:160,blight:190,gas:1200};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
@@ -49,7 +50,7 @@
   function chunkAt(index){
     if(chunkCache.has(index))return chunkCache.get(index);
     const epochs=game&&game.world?game.world.epochs:[];
-    let biome=0;for(const e of epochs)if(index>=e.from)biome=e.biome;
+    let biome=0;for(const e of epochs)if(index<=e.from)biome=e.biome;
     const solids=[];
     for(let row=0;row<6;row++)for(let col=0;col<6;col++){
       if(row===3&&col===3)continue;
@@ -72,27 +73,27 @@
     const epoch=Math.floor(g.t/180);
     if(epoch>w.epoch){w.transition=2.5;w.epoch=epoch;w.currentBiomeId=BIOMES[epoch%4].id;
       // Only assign unvisited terrain beyond the padded viewport: no solid appears on actors.
-      const from=Math.max(w.epochs[w.epochs.length-1].from+1,w.frontier+1,Math.floor((p.y+H/2+400)/WORLD_SIZE)+1);
+      const from=Math.min(w.epochs[w.epochs.length-1].from-1,w.frontier-1,Math.floor((p.y-H/2-400)/WORLD_SIZE)-1);
       w.epochs.push({from,biome:epoch%4});
-      for(const index of chunkCache.keys())if(index>=from)chunkCache.delete(index);
+      for(const index of chunkCache.keys())if(index<=from)chunkCache.delete(index);
       notify(BIOMES[epoch%4].name+' · '+BIOMES[epoch%4].cover,4,'biome-'+epoch);
       if(g.cityEvents.active)finishCityEncounter(false);
       p.inv=Math.max(p.inv,2);g.cityEvents.recoveryUntil=Math.max(g.cityEvents.recoveryUntil,g.t+5);
     }
-    w.frontier=Math.max(w.frontier,Math.floor((p.y+H/2+320)/WORLD_SIZE));
-    w.maxY=Math.max(w.maxY,p.y);w.cameraY=p.y-H/2;w.chunk=Math.floor(p.y/WORLD_SIZE);
+    w.frontier=Math.min(w.frontier,Math.floor((p.y-H/2-320)/WORLD_SIZE));
+    w.minY=Math.min(w.minY,p.y);w.maxY=Math.max(w.maxY,p.y);w.cameraY=p.y-H/2;w.chunk=Math.floor(p.y/WORLD_SIZE);
     for(const level of [3,6,9])if(p.level>=level&&!g.progressionMilestones.includes(level)){
       g.progressionMilestones.push(level);
       if(level===3){p.ricochet++;notify('LEVEL 3 · COVER RICOCHET unlocked',4,'milestone-3');}
       if(level===6){g.cityEvents.relayUnlocked=true;p.maxHp++;p.hp=Math.min(p.maxHp,p.hp+1);notify('LEVEL 6 · RALLY FIELDS + extra heart',4,'milestone-6');}
-      if(level===9){p.speed+=30;notify('LEVEL 9 · SHADOW RISING · RUN DOWN ↓',5,'milestone-9');}
+      if(level===9){p.speed+=30;notify('LEVEL 9 · SHADOW RISING · RUN UP ↑',5,'milestone-9');}
     }
     const sh=g.risingShadow;
-    if(p.level>=9&&!sh.active){sh.active=true;sh.warning=8;sh.y=p.y-H/2-260;}
+    if(p.level>=9&&!sh.active){sh.active=true;sh.warning=8;sh.y=p.y+H/2+260;}
     if(sh.active&&!g.endgame.active){
       if(sh.warning>0)sh.warning=Math.max(0,sh.warning-dt);
-      else {sh.y+=Math.min(p.speed*.45,85+Math.max(0,p.y-sh.y-H)*.08)*dt;
-        if(p.y-p.r<sh.y&&p.inv<=0){damageTaken();p.hp=Math.max(0,p.hp-.75);p.inv=1.5;sh.hits++;g.shake=.5;burst(p.x,p.y,'#aa72ea',12);notify('SHADOW HIT · Escape DOWN ↓',2);if(p.hp<=0){end();return;}}
+      else {sh.y-=Math.min(p.speed*.45,85+Math.max(0,sh.y-p.y-H)*.08)*dt;
+        if(p.y+p.r>sh.y&&p.inv<=0){damageTaken();p.hp=Math.max(0,p.hp-.75);p.inv=1.5;sh.hits++;g.shake=.5;burst(p.x,p.y,'#aa72ea',12);notify('SHADOW HIT · Escape UP ↑',2);if(p.hp<=0){end();return;}}
       }
     }
     if(false && p.level>=99&&!g.endgame.complete){ // Legacy level-99 finale retired by 100-night campaign
@@ -552,7 +553,7 @@
     game.cityEvents={active:null,nextCrane:90,nextCity:120,cityIndex:0,serial:0,
       counts:{crane:0,street:0,elite:0},completed:{crane:0,street:0,elite:0},recoveryUntil:0,
       relayUnlocked:false,relay:null,playerHits:0,enemyHits:0,avoids:0,maxDebris:0};
-    game.world={epoch:0,currentBiomeId:BIOMES[0].id,epochs:[{from:-Number.MAX_SAFE_INTEGER,biome:0}],frontier:1,maxY:2100,cameraY:2100-H/2,chunk:0};
+    game.world={epoch:0,currentBiomeId:BIOMES[0].id,epochs:[{from:Number.MAX_SAFE_INTEGER,biome:0}],frontier:0,minY:2100,maxY:2100,cameraY:2100-H/2,chunk:0,scrollDirection:'north',scrollSpeed:Math.abs(WORLD_SCROLL_Y)};
     game.progressionMilestones=[];game.risingShadow={active:false,warning:0,y:0,hits:0};
     game.endgame={active:false,victories:0,spawned:0,cooldown:0,complete:false,reward:null};
     game.offerState=game.offerSeed;
@@ -1453,7 +1454,7 @@
   function updateCityEncounter(dt){
     if(!game||game.mode!=='running')return;
     const g=game,m=g.cityEvents;
-    if(m.active&&(g.enemies.some(e=>e.variant==='boss')||g.endgame.active||(g.risingShadow.active&&g.risingShadow.warning===0&&g.player.y-g.risingShadow.y<H*.65))){finishCityEncounter(false);return;}
+    if(m.active&&(g.enemies.some(e=>e.variant==='boss')||g.endgame.active||(g.risingShadow.active&&g.risingShadow.warning===0&&g.risingShadow.y-g.player.y<H*.65))){finishCityEncounter(false);return;}
     if(m.relay){m.relay.life-=dt;if(m.relay.life<=0)m.relay=null;}
     if(!m.active){
       if(g.t>=90&&(g.player.level>=3||g.t>=180)&&g.t>=m.recoveryUntil){
@@ -1553,13 +1554,13 @@
     const beforeX=p.x,beforeY=p.y;
     const input=moveInput(),speed=(cfg.speed+300*Math.log1p((p.speed-cfg.speed)/300))*g.effectiveBuffs.speed;
     const biomeSpeed=BIOMES[g.world.epoch%4].speed;
-    moveWithCollision(p,input.x*speed*biomeSpeed*dt,(input.y*speed*biomeSpeed+18)*dt);
-    g.world.cameraY=p.y-H/2;g.world.chunk=Math.floor(p.y/WORLD_SIZE);g.world.maxY=Math.max(g.world.maxY,p.y);
+    moveWithCollision(p,input.x*speed*biomeSpeed*dt,(input.y*speed*biomeSpeed+WORLD_SCROLL_Y)*dt);
+    g.world.cameraY=p.y-H/2;g.world.chunk=Math.floor(p.y/WORLD_SIZE);g.world.minY=Math.min(g.world.minY,p.y);g.world.maxY=Math.max(g.world.maxY,p.y);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval/g.effectiveBuffs.fire);}
     const anim=p.animation;
     anim.clock+=dt;anim.attack=Math.max(0,anim.attack-dt);anim.hit=Math.max(0,anim.hit-dt);
     if(g.shots.some(s=>s.kind==='normal'&&dist(s.x,s.y,p.x,p.y)<65))anim.attack=.14;
-    anim.moving=Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-18*dt)>.1;
+    anim.moving=Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-WORLD_SCROLL_Y*dt)>.1;
     anim.state=anim.hit>0?'hit':anim.attack>0?'attack':anim.moving?'run':'idle';
     anim.frame=Math.floor(anim.clock*12)%12;
     for(const enemy of g.enemies){
@@ -1785,6 +1786,7 @@
     const left=Math.max(0,cx),top=Math.max(0,cy),right=Math.min(WORLD_SIZE,cx+W),bottom=Math.min(WORLD_SIZE,cy+H);
     if(right<=left||bottom<=top)return;
     ctx.fillStyle=BIOMES[renderBiome].floor;ctx.fillRect(left,top,right-left,bottom-top);
+    VIS.ground(ctx,{left,top,right,bottom},renderBiome,game?game.t:0,reducedMotion);
     // Flat paving, road paint and tiny rubble are explicitly decorative.
     for(let row=Math.max(0,Math.floor(top/300));row<Math.min(14,Math.ceil(bottom/300));row++)
       for(let col=Math.max(0,Math.floor(left/300));col<Math.min(14,Math.ceil(right/300));col++){
@@ -1806,6 +1808,7 @@
         ctx.fillStyle='#fae1a3';ctx.fillRect(c.x+c.w-10,c.y+18,8,14);
         ctx.fillStyle='#f88f7a';ctx.fillRect(c.x+2,c.y+18,8,14);
         ctx.fillStyle='#172b32';ctx.fillRect(c.x+23,c.y+4,24,7);ctx.fillRect(c.x+c.w-49,c.y+c.h-11,24,7);
+        VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
         continue;
       }
       if(c.kind==='dumpster'){
@@ -1814,6 +1817,7 @@
         inkBox(c.x-7,c.y+2,c.w+14,16,'#77a998','#132d32',3);
         for(let i=12;i<c.w-5;i+=16){ctx.fillStyle='#244d48';ctx.fillRect(c.x+i,c.y+21,4,c.h-30);}
         for(const x of [12,c.w-12]){circle(c.x+x,c.y+c.h-2,8,'#152832');circle(c.x+x,c.y+c.h-2,3,'#b8b89b');}
+        VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
         continue;
       }
       ctx.fillStyle='#060f16aa';ctx.fillRect(c.x+13,c.y+17,c.w,c.h);
@@ -1830,6 +1834,7 @@
       ctx.fillStyle='#34494d';ctx.fillRect(c.x+12,c.y+7,24,7);
       ctx.fillStyle='#0a171f';ctx.fillRect(c.x+c.w-31,c.y+c.h-29,17,24);
       if(n>.5){ctx.fillStyle='#70c4b3';ctx.fillRect(c.x+c.w-36,c.y+c.h-36,27,5);}
+      VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
       // One bounded pool of lamplight per facade, under all actors.
       const lx=c.x+c.w+9,ly=c.y+c.h;
       const light=ctx.createRadialGradient(lx,ly,1,lx,ly,44);light.addColorStop(0,'#f3bb6430');light.addColorStop(1,'#f3bb6400');ctx.fillStyle=light;ctx.fillRect(lx-44,ly-44,88,88);
@@ -1942,7 +1947,9 @@
       game.player.animation.state==='hit'?'hit':
       game.feralInstinct.active?'feral':
       game.buffs.survivalInstinct>0||game.feralInstinctOverdrive>0?'adrenaline':
+      game.player.animation.state==='attack'?'attack':
       game.player.animation.moving?'run':'idle':'run';
+    VIS.aura(ctx,type,r,time,state,reducedMotion);
     return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion);
     // Original fallback below is retained as inert reference during migration.
     const hero=type==='hero',ally=roleNames.includes(type);
@@ -2021,7 +2028,7 @@
         hazards:{toxicGasClouds:source.hazards.toxicGasClouds.filter(a=>visible(a,120))}};
       ctx.save();ctx.translate(-cameraX+shakeX,-cameraY+shakeY);
     const shadow=source.risingShadow;
-    if(shadow.active){ctx.fillStyle='#291331cc';ctx.fillRect(cameraX,cameraY,W,Math.max(0,Math.min(H,shadow.y-cameraY)));
+    if(shadow.active){ctx.fillStyle='#291331cc';ctx.fillRect(cameraX,Math.max(cameraY,shadow.y),W,Math.max(0,Math.min(H,cameraY+H-shadow.y)));
       ctx.strokeStyle=shadow.warning>0?'#ffc979':'#cb83ff';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(cameraX,shadow.y);ctx.lineTo(cameraX+W,shadow.y);ctx.stroke();}
     renderCityEncounter();
     renderEncore();
@@ -2074,6 +2081,7 @@
       circle(s.x,s.y,s.kind==='normal'?5:7,'#0a1b25');
       circle(s.x,s.y,s.kind==='normal'?3:5,color);
       circle(s.x,s.y,1.5,'#fff7d9');
+       VIS.shot(ctx,s,g.t,reducedMotion);
       Renderer.drawCriticalHitEffect(s);
       if(s.flash>0){
         ctx.save();ctx.translate(s.x,s.y);ctx.globalAlpha=clamp(s.flash*8,0,1);
@@ -2117,7 +2125,8 @@
       drawAnatomy(e);
       if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt);
       if(e.hurt){
-        outline(0,0,e.r+5,'#fff5db',2);
+        VIS.impact(ctx,e.r,e.phase,false,reducedMotion);
+         outline(0,0,e.r+5,'#fff5db',2);
         // Existing hurt lifetime provides finite contact sparks even when the shot is removed.
         for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*TWO/4+.4);
           polygon(e.r+3,0,[[0,-2],[9,0],[0,2]],'#ffd48a');ctx.restore();}
@@ -2159,6 +2168,7 @@
     const grad=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,650);
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
@@ -2357,7 +2367,7 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,worldScrollY:WORLD_SCROLL_Y},
       music:{volume,voices:audioVoices.size,scheduledAhead:audio?Math.max(0,musicNext-audio.currentTime):0,arrangement:{...arrangement},mode:musicMode,enabled:!muted,active:!!(audio&&audio.state==='running'&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'),beat:musicBeat,...scoreCounts,pass:AUDIO_PASS_ID,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
       pendingUpgrade:!!(game&&game.pendingUpgrade),
       fishItems:game?game.fishItems.map(f=>({...f})):[],
