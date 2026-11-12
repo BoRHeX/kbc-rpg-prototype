@@ -9,8 +9,8 @@
   const PATCH_ID = 'cataclysm-100-isolated-balance-lab-01';
   const WORLD_SCROLL_Y=-28; // Northbound, so the environment scrolls down.
   const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR;
-  const LAB_MODE=true;
-  if(!LAB)throw Error('Night 100 director failed to load');
+  const LAB_MODE=true, FIRE=globalThis.CATA_LAB_FIRE;
+  if(!LAB||!FIRE)throw Error('Night 100 director or firestorm module failed to load');
   if(!MAJOR||!ART||!VIS)throw Error('Catastrophe visual/campaign/animation modules did not load');
   const AUDIO_PASS_ID = 'catastrophe-adaptive-02';
   const UNLOCKS = {shambler:0,weaver:40,dasher:50,orbiter:70,stalker:85,hexer:95,ghost:140,summoner:160,blight:190,gas:1200};
@@ -586,6 +586,7 @@
     }
     g.rerollTokens=3;g.nextPower=g.t+120;
     g.world.epoch=7;g.world.currentBiomeId=BIOMES[3].id;
+    g.progressionMilestones=[3,6,9];
   }
   function end() {
     if(!game || game.mode==='dead')return;
@@ -1858,6 +1859,7 @@
         ctx.fillStyle='#f88f7a';ctx.fillRect(c.x+2,c.y+18,8,14);
         ctx.fillStyle='#172b32';ctx.fillRect(c.x+23,c.y+4,24,7);ctx.fillRect(c.x+c.w-49,c.y+c.h-11,24,7);
         VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+        if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
         continue;
       }
       if(c.kind==='dumpster'){
@@ -1867,6 +1869,7 @@
         for(let i=12;i<c.w-5;i+=16){ctx.fillStyle='#244d48';ctx.fillRect(c.x+i,c.y+21,4,c.h-30);}
         for(const x of [12,c.w-12]){circle(c.x+x,c.y+c.h-2,8,'#152832');circle(c.x+x,c.y+c.h-2,3,'#b8b89b');}
         VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+        if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
         continue;
       }
       ctx.fillStyle='#060f16aa';ctx.fillRect(c.x+13,c.y+17,c.w,c.h);
@@ -1884,6 +1887,7 @@
       ctx.fillStyle='#0a171f';ctx.fillRect(c.x+c.w-31,c.y+c.h-29,17,24);
       if(n>.5){ctx.fillStyle='#70c4b3';ctx.fillRect(c.x+c.w-36,c.y+c.h-36,27,5);}
       VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+      if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
       // One bounded pool of lamplight per facade, under all actors.
       const lx=c.x+c.w+9,ly=c.y+c.h;
       const light=ctx.createRadialGradient(lx,ly,1,lx,ly,44);light.addColorStop(0,'#f3bb6430');light.addColorStop(1,'#f3bb6400');ctx.fillStyle=light;ctx.fillRect(lx-44,ly-44,88,88);
@@ -2218,6 +2222,7 @@
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
+    if(source.campaign.night>=99)FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
