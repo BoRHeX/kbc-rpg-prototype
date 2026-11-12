@@ -100,6 +100,16 @@ jobs:
               raise SystemExit('Image requests exceed user-approved maximum (1-6)')
           job['max_generations']=maximum
           job['texture_first']=job.get('texture_first') is True
+          reuse=str(job.get('reuse_anchor_run_id','')).strip()
+          retries=int(job.get('max_visual_retries',0))
+          if reuse and (not reuse.isdecimal() or len(reuse)>16):
+              raise SystemExit('Invalid anchored source run ID')
+          if not 0<=retries<=2:
+              raise SystemExit('Image critique corrective calls must be 0-2')
+          if (reuse or retries) and not job['texture_first']:
+              raise SystemExit('Anchor reuse/retries only permitted in painted texture-first mode')
+          job['reuse_anchor_run_id']=reuse
+          job['max_visual_retries']=retries
           if job['texture_first'] and job['actor'] != 'hero':
               raise SystemExit('This first texture-first release is scoped to Cataclysm hero only')
           if job['texture_first'] and len(states) != 6:
@@ -109,6 +119,8 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'],'a') as fd:
               fd.write('active=true\nactor='+job['actor']+'\nstates='+','.join(states)+'\n')
               fd.write('texture_first='+str(job['texture_first']).lower()+'\n')
+              fd.write('anchor_source_run='+reuse+'\n')
+              fd.write('max_visual_retries='+str(retries)+'\n')
           print('Validated reference animation request',job['actor'],states,maximum)
           PY
       - name: Offline pipeline tests and existing game contracts (no API charges)
@@ -117,6 +129,14 @@ jobs:
           python -m unittest game_factory.reference_animator_tests -v
           node game_factory/cataclysm_next/tests/major-systems.cjs
           node game_factory/cataclysm_next/tests/spawn-economy.cjs
+      - name: Restore previously reviewed painted anchor (avoid repainting unchanged identity)
+        if: steps.request.outputs.anchor_source_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.request.outputs.anchor_source_run }}
+          name: character-animation-visual-review
+          github-token: ${{ github.token }}
+          path: artifacts/
       - name: Inspect reference pixels, animate requested poses with image model, then run independent vision review
         if: steps.request.outputs.active == 'true'
         env:
@@ -140,6 +160,9 @@ jobs:
           if job.get('reference_path'):args+=['--reference',job['reference_path']]
           else:args+=['--drive-file-id',job['drive_file_id']]
           if job.get('texture_first'):args.append('--texture-first')
+          if job.get('reuse_anchor_run_id'):args.append('--reuse-painted-anchor')
+          if job.get('max_visual_retries'):
+              args+=['--max-visual-retries',str(job['max_visual_retries'])]
           run(args)
           PY
       - name: Validate only the character's PNG atlases and two mirrored manifests were edited
