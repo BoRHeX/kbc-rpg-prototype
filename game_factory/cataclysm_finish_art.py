@@ -112,6 +112,46 @@ def perform_role(role,state,task):
         time.sleep((attempt+1)*3)
     raise RuntimeError(f"Painted motion {role}/{state} failed: {last}")
 
+
+def generate_hero_aim():
+    """Eight real painted compass-direction dual-pistol poses for joint aiming."""
+    original=GAME/"characters/hero/anchor.png"
+    client=OpenAI(timeout=240,max_retries=1)
+    prompt=(
+      "Animate the SAME illustrated WHITE CAT with coral red scarf, expressive blue eyes, "
+      "identical head, clothing and TWO separate pistols as the supplied official anchor art. "
+      "Create EXACTLY EIGHT PAINTED complete character key poses representing eight "
+      "consecutive directional dual-pistol aiming bearings, in this strict order: "
+      "(1) both pistols aim right/east, (2) lower-right/southeast, (3) down/south, "
+      "(4) lower-left/southwest, (5) left/west, (6) upper-left/northwest, "
+      "(7) up/north, (8) upper-right/northeast. "
+      "These are DIFFERENT gun bearing poses, not running frames. "
+      "Arms are genuine painted anatomically attached forearms, hands and pistols; "
+      "barrels must point to each bearing, consistent shoulder anchors and body "
+      "scale, unchanged hero identity, premium indie cartoon furry painted texture. "
+      "Both pistols visible where anatomy permits; no detached floating gun. "
+      "Whole character in each frame with stable planted feet and no extra cats. "
+      "Pure chroma-green #00FF00 background throughout, no text or captions. "
+      "One character per frame, clean illustrated 2D sprites for a mobile game."
+    )
+    last=None
+    for attempt in range(2):
+      try:
+        with BytesIO(original.read_bytes()) as ref:
+          ref.name="approved-cataclysm-hero.png"
+          result=client.images.edit(model=MODEL,image=ref,prompt=prompt,
+                     size="512x512",output_format="gif",
+                     frame_count=8,frame_duration_ms=175,quality="high")
+        frames=normalize_frames(base64.b64decode(result.data[0].b64_json))
+        if len(frames)!=8:raise ValueError("No eight directional hero aim poses")
+        if len({hashlib.sha256(x.tobytes()).hexdigest() for x in frames})<7:
+          raise ValueError("Hero did not paint eight different gun-bearing poses")
+        return atlas(frames)
+      except Exception as exc:
+        last=exc;print("RETRY hero aiming",str(exc)[:200],flush=True)
+        time.sleep((attempt+1)*3)
+    raise RuntimeError("Hero gun aim art missing: "+str(last))
+
 def scene_image(name,description,ground):
     original=GAME/name
     with Image.open(original) as im:
@@ -170,6 +210,7 @@ def main():
     if failures:
       (EVIDENCE/"failures.json").write_text(json.dumps(failures,indent=2))
       raise RuntimeError("Character animation job incomplete; nothing published")
+    hero_aim=generate_hero_aim()
     scenes={}
     for i,description in enumerate(GROUNDS):
       key="ground-"+str(i)+".png"
@@ -186,13 +227,17 @@ def main():
         "frames":8,"fps":8,"scale":1,"embedded_weapon":True}
     for name,data in scenes.items():
       (GAME/name).write_bytes(data);(LAB/name).write_bytes(data)
-    assert original_hero==json.dumps(before["characters"]["hero"],sort_keys=True)
+    for key,value in json.loads(original_hero).items():
+      assert before["characters"]["hero"][key]==value, "Existing approved hero state altered"
+    (GAME/"characters/hero/aim.png").write_bytes(hero_aim)
+    (LAB/"characters/hero/aim.png").write_bytes(hero_aim)
+    before["characters"]["hero"]["aim"]={"frames":8,"fps":8,"scale":1,"embedded_weapon":True}
     assert hero_hash=={str(p.relative_to(GAME)):hashlib.sha256(p.read_bytes()).hexdigest()
-                       for p in (GAME/"characters/hero").rglob("*") if p.is_file()}
+                       for p in (GAME/"characters/hero").rglob("*") if p.is_file() and p.name!="aim.png"}
     final=json.dumps(before,indent=2)+"\n"
     (GAME/"character-animations.json").write_text(final)
     (LAB/"character-animations.json").write_text(final)
-    summary={"status":"generated","count_role_animations":len(generated),
+    summary={"status":"generated","count_role_animations":len(generated),"count_hero_aim_directions":8,
        "count_scene_assets":len(scenes),
        "stated_role_actions":[f"{r}:{s}" for r,s in sorted(generated)],
        "protected_hero_identical":True}
