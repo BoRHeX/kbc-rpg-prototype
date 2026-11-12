@@ -19,11 +19,15 @@
   "visual_direction": "White cat protagonist with coral scarf, two pistols, unmistakable readable head/torso/arm/leg/tail articulation, distinct idle/run/fire/damaged/feral/adrenaline silhouettes at game scale. Maintain consistent identity, no shallow palette swaps.",
   "minimum_visual_score": 3,
   "allowed_generator": "hero_generate.py",
-  "acceptance_tests": [
+  "publish": true,
+  "browser_adapter": "game_factory/art_department/adapters/cataclysm.cjs",
+  "unit_tests": [
     "game_factory/cataclysm_next/tests/art-integration.cjs",
     "game_factory/cataclysm_next/tests/major-systems.cjs",
-    "game_factory/cataclysm_next/tests/browser-art.cjs"
+    "game_factory/cataclysm_next/tests/spawn-economy.cjs"
   ],
-  "publish": true,
-  "browser_adapter": "game_factory/art_department/adapters/cataclysm.cjs"
+  "browser_tests": [
+    "game_factory/cataclysm_next/tests/browser-art.cjs",
+    "game_factory/cataclysm_next/tests/browser-major.cjs"
+  ]
 }
