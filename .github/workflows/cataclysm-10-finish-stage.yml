@@ -59,6 +59,14 @@ jobs:
           permission-profile: ':workspace'
           allow-bots: true
           prompt-file: game_factory/requests/cataclysm_10_finish_${{ inputs.stage }}.md
+      - name: Animation-source preflight before making expensive image calls
+        if: inputs.stage == 'animation'
+        run: |
+          set -euo pipefail
+          for js in docs/cataclysm-1-0-major/*.js docs/cataclysm-100-lab/*.js; do node --check "$js"; done
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
       - name: Trusted image studio paints REAL follower behavior states and coherent city textures
         if: inputs.stage == 'animation'
         env:
