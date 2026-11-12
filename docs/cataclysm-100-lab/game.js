@@ -530,7 +530,10 @@
     }
   }
   function notify(message,duration=1.5,id=message) {
-    if(noticeTTL>0){if(noticeQueue.length<4&&!noticeQueue.some(n=>n.id===id))noticeQueue.push({message,duration,id});return;}
+    // Rare story beats only. Environmental warnings, ability triggers and ordinary loot are visual.
+    if(!/^(NIGHT 99|NIGHT 100|BOSS|SUPER-ELITE|ELITE|LEVEL [369]|THE CATASTROPHE|CROWN)/.test(message))return;
+    duration=Math.min(duration,2.2);
+    if(noticeTTL>0){if(noticeQueue.length<2&&!noticeQueue.some(n=>n.id===id))noticeQueue.push({message,duration,id});return;}
     if(game){game.lastNotice={id,message,time:game.t};}
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
   }
@@ -1143,7 +1146,7 @@
     h.spawnTimer-=dt;
     if(h.spawnTimer<=0){
       const cloud=gasSpawn();
-      if(cloud){h.toxicGasClouds.push(cloud);notify('TOXIC GAS · Clear the green ring',2.5);sound(340,.3,'triangle',.025);}
+      if(cloud){h.toxicGasClouds.push(cloud);sound(340,.3,'triangle',.025);}
       h.spawnTimer=cloud?30:1;
     }
     let exposed=false;
@@ -1156,7 +1159,7 @@
     h.exposure=exposed?(h.exposure||0)+dt:0;
     if(h.exposure>=1){h.exposure-=1;
       if(p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){damageTaken();p.hp=Math.max(0,p.hp-(1-g.effectiveBuffs.mitigation));p.inv=.35;g.shake=.3;
-        burst(p.x,p.y,'#b6ee75',10);notify('TOXIC GAS · Move out!');sound(170,.1);
+        burst(p.x,p.y,'#b6ee75',10);sound(170,.1);
         if(p.hp<=0){updateHud();end();}}
     }
   }
@@ -1568,12 +1571,8 @@
     if(e.age>=e.duration)finishCityEncounter(e.kind!=='elite');
   }
   function updateCityNotice(){
-    const m=game.cityEvents,e=m.active,node=$('city-notice');node.hidden=!e;
-    if(!e)return;
-    const label={crane:'CRANE · Dodge orange targets',street:'LIVE STREET · Use the open gap',elite:'ELITE HUNT · Sidestep, then strike'}[e.kind];
-    const text=(e.age<e.warning?'WARNING · ':'')+label+' · '+Math.ceil((e.age<e.warning?e.warning:e.duration)-e.age)+'s';
-    // Update the live region once per displayed second, not every animation frame.
-    if(node.textContent!==text)node.textContent=text;
+    // Environmental hazards retain visual and audible telegraphs, never text announcements.
+    $('city-notice').hidden=true;
   }
   function renderCityEncounter(){
     const m=game.cityEvents,e=m.active;
@@ -1696,7 +1695,7 @@
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
         const hitDamage=raw*(e.squadSlow>0&&g.equipment.lens&&g.equipment.coil?1+.25*Math.sqrt(g.equipment.lens*g.equipment.coil):1)*(e.squadMark>0?1.2:1)*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
-        g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,age:0});
+        if(s.critical||e.creditCategory)g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,major:!!e.creditCategory,age:0});
         if(g.damagePopups.length>80)g.damagePopups.shift();
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
         if(g.equipment.coil){e.squadSlow=Math.max(e.squadSlow||0,1+Math.log1p(g.equipment.coil));g.buildEffects.slowed++;if(g.equipment.lens)g.buildEffects.conducted++;}
@@ -2201,12 +2200,12 @@
         for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*TWO/4+.4);
           polygon(e.r+3,0,[[0,-2],[9,0],[0,2]],'#ffd48a');ctx.restore();}
       }
-      const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
-      ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-21,barW,5);
-      ctx.fillStyle=e.creditCategory?'#ffbd76':'#fa7e85';ctx.fillRect(-e.r,-e.r-21,barW*pct,5);
-      ctx.fillStyle=e.creditCategory?'#ffeacb':'#e5f8f2';ctx.font='bold 10px system-ui';ctx.textAlign='center';
-      ctx.fillText('HP '+Math.max(0,Math.ceil(e.hp))+'/'+Math.ceil(e.max)+'  DMG '+(e.damage||1).toFixed(1),0,-e.r-26);
-      ctx.textAlign='left';
+      // Regular zombies: silhouette and hit reaction only. Major enemies: slim bar when injured.
+      if(e.creditCategory&&e.hp<e.max){
+        const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
+        ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-19,barW,4);
+        ctx.fillStyle=e.creditCategory==='boss'?'#ffc477':'#d99ac5';ctx.fillRect(-e.r,-e.r-19,barW*pct,4);
+      }
       ctx.restore();
     }
     if(visible(p,300)){
@@ -2230,6 +2229,7 @@
     ctx.restore();
     }
     for(const hit of g.damagePopups){
+      if(!hit.critical&&!hit.major)continue;
       ctx.save();ctx.globalAlpha=Math.max(0,1-hit.age/.9);ctx.font=hit.critical?'bold 19px system-ui':'bold 15px system-ui';
       ctx.textAlign='center';ctx.fillStyle=hit.critical?'#ffe38a':'#ffffff';
       ctx.fillText('-'+hit.amount,hit.x,hit.y-hit.age*40);ctx.restore();
