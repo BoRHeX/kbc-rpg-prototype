@@ -40,11 +40,17 @@ jobs:
           assert '<title>BoRHeZ Games' in content
           assert '<!-- BEGIN GENERATED GAME CARDS -->' in content
           assert '<!-- END GENERATED GAME CARDS -->' in content
-          assert Path('docs/preview/index.html').is_file()
-          assert 'href="../preview/"' in content
+          # All displayed PLAY links must lead to a committed playable index.
+          for item in re.findall(r'href="\.\./([a-z0-9/-]+/)"', content):
+              assert (Path('docs') / item / 'index.html').is_file(), item
           for item in re.findall(r'href="\./([a-z0-9-]+)/"', content):
               assert (Path('docs/games') / item / 'index.html').is_file(), item
-          print('Dashboard and all linked game directories verified')
+          assert 'href="../cataclysm-1-0-major/"' in content
+          assert 'href="../cataclysm-100-lab/"' in content
+          assert 'href="../preview/"' in content
+          assert 'id="flame"' in content
+          assert 'id="other"' in content
+          print('Version branches, primary/lab links and every local game target verified')
           PY
       - uses: actions/upload-pages-artifact@v3
         with:
