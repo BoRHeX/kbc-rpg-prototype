@@ -25,7 +25,7 @@ jobs:
           from pathlib import Path
           root=Path('docs/cataclysm-1-0-major')
           base='https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/'
-          names=['index.html','game.js','game.css','campaign.js','animation.js','game-config.json']
+          names=['index.html','game.js','game.css','campaign.js','animation.js','visuals.js','game-config.json']
           for name in names:
               expected=hashlib.sha256((root/name).read_bytes()).hexdigest()
               for attempt in range(12):
