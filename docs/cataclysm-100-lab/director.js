@@ -82,7 +82,7 @@ function create(seed=990100){
   const unspent=budget-spent;
   const result=Object.freeze({
    night:n,income,reserved,released:release,bankAfter:bank,budget,spent,unspent,
-   isPeak:peak,isSurprise:isSurprise(n),rank:tier,interval:n===100?1:n>=95?.65:.9,
+   isPeak:peak,isSurprise:isSurprise(n),rank:tier,interval:n===100?1:n>=95?.45:.9,
    queue:Object.freeze(queue.map(x=>Object.freeze({...x}))),
    counts:Object.freeze(queue.reduce((acc,x)=>(acc[x.id]=(acc[x.id]||0)+1,acc),{}))
   });
