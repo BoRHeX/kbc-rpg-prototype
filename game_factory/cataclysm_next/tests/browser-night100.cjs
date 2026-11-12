@@ -12,7 +12,13 @@ const fs=require('node:fs');
   page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('/favicon.ico'))missing.push(r.status()+' '+r.url());});
   const response=await page.goto('http://127.0.0.1:8765/cataclysm-100-lab/?directorSeed=990100',{waitUntil:'domcontentloaded'});
   assert.equal(response.status(),200);
-  await page.waitForFunction(()=>window.CATACLYSM_READY===true,{timeout:15000});
+  await page.waitForTimeout(2000);
+  const boot=await page.evaluate(()=>({ready:window.CATACLYSM_READY===true,
+    runtime:document.querySelector('#runtime-status')?.textContent,
+    overlay:document.querySelector('#overlay-copy')?.textContent,
+    scripts:[...document.scripts].map(x=>x.src).filter(Boolean)}));
+  console.log('BOOT DIAGNOSTIC',JSON.stringify({boot,errors,missing}));
+  assert.equal(boot.ready,true,'Night100 lab never booted');
   assert.equal(await page.locator('#play').textContent(),'▶ TEST NIGHT 99');
   await page.locator('#play').click({force:true});
   await page.waitForTimeout(1200);
