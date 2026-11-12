@@ -7,7 +7,7 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
   const PATCH_ID = 'cataclysm-10-full-campaign-horde-hazards-03';
-  const WORLD_SCROLL_Y=-28; // Northbound, so the environment scrolls down.
+  const WORLD_SCROLL_Y=-45; // Faster northbound travel; wave timing is unchanged.
   const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR, HAZ = globalThis.CATA_HAZARDS;
   const LAB_MODE=true, FIRE=globalThis.CATA_LAB_FIRE;
   if(!LAB||!FIRE||!HAZ)throw Error('Director, firestorm or hazard animation module failed to load');
@@ -265,7 +265,7 @@
   const commonIds = ['damage','fire-rate','speed','xp-gain'];
   const squadIds = ['squad-damage','squad-rate','squad-count','squad-spread','squad-bounce'];
   const equipmentIds=['equip-lens','equip-coil','equip-capacitor'];
-  const EXPLORATION=Object.freeze({first:150,intervalMin:120,intervalMax:180,chance:.18,cap:2,magnetDuration:60});
+  const EXPLORATION=Object.freeze({first:150,intervalMin:120,intervalMax:180,chance:.18,cap:2,magnetSweep:true});
   const majorUpgradeIds=['armor','critical','shield-pulse','area-burst','focus','squad-range','tactical-momentum'];
   const upgradeIds = [...equipmentIds,...commonIds,'recover','multi-shot','ricochet','fish-magnet',...majorUpgradeIds,...roleNames.map(r=>'companion-'+r),...squadIds];
   function upgradeAvailable(type) {
@@ -1696,8 +1696,8 @@
     for(let i=g.fishItems.length-1;i>=0;i--){
       const f=g.fishItems[i];f.phase+=dt*4;
       const d=dist(f.x,f.y,p.x,p.y);
-      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet||g.buffs.magnet>0)f.attracted=true;
-      if(f.attracted){const route=navigationDelta(f,p.x,p.y),length=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(length,(p.speed+240)*dt);
+      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet)f.attracted=true;
+      if(f.attracted){const route=navigationDelta(f,p.x,p.y),length=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(length,(f.swept?Math.max(950,p.speed*3):p.speed+240)*dt);
         moveWithCollision(f,route.x/length*step,route.y/length*step);}
       if(d<28){
         g.fish+=f.value;g.xp+=f.value*p.xpGain;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
@@ -1713,7 +1713,7 @@
       const token=g.rerollDrops[i];token.age+=dt;
       if(token.expires<=g.t){g.rerollDrops.splice(i,1);continue;}
       const d=dist(p.x,p.y,token.x,token.y);
-      if(d<165+p.magnet*45+g.effectiveBuffs.magnet||g.buffs.magnet>0){
+      if(d<165+p.magnet*45+g.effectiveBuffs.magnet){
         const length=Math.max(1,d),speed=Math.min(length,(p.speed+240)*dt);
         moveWithCollision(token,wrappedDelta(token.x,p.x)/length*speed,(p.y-token.y)/length*speed);
       }
@@ -1727,9 +1727,14 @@
       if(dist(item.x,item.y,p.x,p.y)<p.r+23){
         if(item.kind==='relay'){g.cityEvents.relayUnlocked=true;for(const pet of g.companionSquad)pet.specialCooldown=Math.max(0,pet.specialCooldown-4);}
         else if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
-        else g.buffs[item.kind]=item.kind==='magnet'?EXPLORATION.magnetDuration:12;
+        else if(item.kind==='magnet'){
+          // One sweep of all fish currently on the board, never an ongoing pickup aura.
+          for(const fish of g.fishItems){fish.attracted=true;fish.swept=true;}
+          g.buffs.magnet=0;g.magnetSweepCount=(g.magnetSweepCount||0)+1;
+          g.magnetSweepFish=g.fishItems.length;g.magnetFlash=.9;
+        }else g.buffs[item.kind]=12;
         g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);playSfx(item.kind==='heal'?'heal':'power');
-        notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 60s',2);
+        notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · FISH SWEEP',2);
       }
     }
     // A merged fish cache can earn several levels; resolve one choice at a time.
@@ -1751,15 +1756,15 @@
     const active=[
       ['⚡','ADRENALINE',g.buffs.survivalInstinct],
       ['♨','FERAL',g.feralInstinct.active?g.feralInstinct.timer:0],
-      ['✦','RAGE',g.buffs.rage],['◎','MAGNET',g.buffs.magnet],
+      ['✦','RAGE',g.buffs.rage],
       ['✚','INVULNERABLE',p.inv],['⬟','SHIELD',g.runicRelic.duration],
       ['⟳','REROLL',g.rerollTokens]
-    ].filter(item=>item[2]>0).slice(0,7);
+    ].filter(item=>item[2]>0 && item[1]!=='REROLL').slice(0,3);
     const icon=$('major-buff-icons');icon.replaceChildren();
     for(const [glyph,title,duration] of active){
       const chip=document.createElement('span');chip.className='major-buff active';
       const symbol=document.createElement('strong');symbol.textContent=glyph;
-      const text=document.createElement('span');text.textContent=title+' '+(title==='REROLL'?duration:Math.ceil(duration)+'s');
+      const text=document.createElement('span');text.textContent=Math.ceil(duration)+'s';chip.title=title;
       chip.append(symbol,text);icon.append(chip);
     }
   }
@@ -1795,22 +1800,18 @@
       btn.disabled=true; // Read-only status: gameplay abilities automatically activate on valid cooldown.
       const name=specialNames[type];
       const icons={shooter:'✹',healer:'✚',tank:'⬟',brawler:'⚔',sniper:'◎',engineer:'⚙',trapper:'⌁',bard:'♫'};
-      btn.textContent=icons[type]+' '+name+' '+(ally.specialDuration>0?'● '+Math.ceil(ally.specialDuration)+'s':ally.specialCooldown>0?'◔ '+Math.ceil(ally.specialCooldown)+'s':'✓ AUTO');
+      btn.textContent=icons[type]+(ally.specialDuration>0?' '+Math.ceil(ally.specialDuration):ally.specialCooldown>0?' '+Math.ceil(ally.specialCooldown):'');
       btn.setAttribute('aria-label',type+' special: '+btn.textContent);
       btn.style.setProperty('--ready',((1-ally.specialCooldown/(type==='healer'?24:18))*100)+'%');
     }
-    $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
+    $('support-status').textContent=''; // Companion icons convey the squad.
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · LV '+p.level+' · '+(game.campaign.night===100?'🔥 THE FINAL HORDE':BIOMES[game.world.epoch%4].name);
+    $('night-status').textContent=game.campaign.night>=99?(game.campaign.night===100?'THE CATASTROPHE':'THE FINAL NIGHT APPROACHES'):'';
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
-    $('encounter-status').textContent=game.labWave?
-      'MONSTER R'+game.labWave.rank+' · CREDITS '+game.labWave.budget+
-      ' · SPENT '+game.labWave.spent+' · BANK '+game.labWave.bankAfter+
-      ' · ARRIVALS '+game.labQueue.length+
-      (game.campaign.night===100?' · FINAL '+game.labFinalSpawned+'/'+game.labFinalTotal:''):'CAMPAIGN READY';
+    $('encounter-status').textContent=''; // Credits remain available in diagnostics, not the player HUD.
     renderMajorBuffs();
-    $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
+    $('buff-status').textContent=''; // Compact icons avoid duplicated status text.
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
     tactic.disabled=game.mode!=='running'||game.squadTacticCooldown>0;
     tactic.textContent=game.squadTacticDuration>0?game.squadTactic.toUpperCase()+' '+Math.ceil(game.squadTacticDuration)+'s':game.squadTacticCooldown>0?'Tactic '+Math.ceil(game.squadTacticCooldown)+'s':'Tactic: '+names[game.nextTactic];
