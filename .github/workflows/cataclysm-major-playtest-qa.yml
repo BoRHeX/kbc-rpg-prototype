@@ -52,6 +52,8 @@ jobs:
         run: node game_factory/cataclysm_next/tests/browser-horde.cjs
       - name: Check one-shot magnet, unobstructed UI and two 13-second pulses in Chrome
         run: node game_factory/cataclysm_next/tests/browser-polish.cjs
+      - name: Verify both builds use same revisioned painted PNGs and animate real pixel poses
+        run: node game_factory/cataclysm_next/tests/browser-art.cjs
       - name: Preserve test screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
