@@ -45,10 +45,10 @@
     const boss=n%9===0&&n<100,elite=n%6===0&&n<100;
     const eliteCategory=elite?((n/6)%2===1?'elite':'superElite'):null;
     return Object.freeze({number:n,start:(n-1)*NIGHT_SECONDS,end:n*NIGHT_SECONDS,
-      boss,bossIndex:boss?(n/9-1)%bosses.length:-1,
+      boss,bossIndex:boss?(n===99?8:(n/9-1)%bosses.length):-1,
       elite,eliteCategory,eliteIndex:elite?Math.floor(n/12)%((eliteCategory==='elite'?elites:superElites).length):-1,
       final:n===100,
-      events:Object.freeze([...(boss?['boss']:[]),...(elite?[eliteCategory]:[]),...(n===100?['elite','superElite','finale']:[])])
+      events:Object.freeze([...(boss?['boss']:[]),...(elite?[eliteCategory]:[]),...(n===100?['finale']:[])])
     });
   }
   const schedule=Object.freeze(Array.from({length:100},(_,i)=>getNight(i+1)));
@@ -59,8 +59,7 @@
     ledger.credited.push(id);ledger[kind]++;return true;
   }
   function won(ledger,alive) {
-    return !!(alive&&ledger.night>=100&&ledger.finaleCleared&&
-      ledger.boss>=9&&ledger.elite>=9&&ledger.superElite>=9);
+    return !!(alive&&ledger.night===100&&ledger.finaleCleared);
   }
   const songs={
     ironmarch:{id:'ironmarch',name:'Iron March',bpm:156,roots:[82.41,73.42,65.41,61.74],mode:'minor',
