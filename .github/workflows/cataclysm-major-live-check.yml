@@ -1,4 +1,4 @@
-name: Verify Cataclysm major live game assets
+name: Verify Cataclysm 1.0 and Night 99 lab live assets
 on:
   push:
     branches: [main]
@@ -10,7 +10,7 @@ permissions:
 jobs:
   verify-live:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -18,28 +18,30 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify every published Catastrophe asset matches the merged game source
+      - name: Compare published assets with repository source across both playable instances
         run: |
           python - <<'PY'
-          import urllib.request,urllib.error,hashlib,time
+          import urllib.request,hashlib,time
           from pathlib import Path
-          root=Path('docs/cataclysm-1-0-major')
-          base='https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/'
-          names=['index.html','game.js','game.css','campaign.js','animation.js','visuals.js','game-config.json']
-          for name in names:
-              expected=hashlib.sha256((root/name).read_bytes()).hexdigest()
-              for attempt in range(12):
-                  try:
-                      req=urllib.request.Request(base+name+'?verify='+str(attempt),
-                          headers={'Cache-Control':'no-cache','User-Agent':'BoRHeZ-live-check/1.0'})
-                      with urllib.request.urlopen(req,timeout=15) as response:
-                          if response.status!=200:raise RuntimeError(str(response.status))
-                          observed=hashlib.sha256(response.read()).hexdigest()
-                      if expected!=observed:raise RuntimeError('source SHA mismatch')
-                      print('LIVE VERIFIED: '+name+' SHA256 '+expected[:16])
-                      break
-                  except Exception as e:
-                      if attempt==11:raise RuntimeError('PUBLIC GAME NOT VERIFIED: '+name+' '+str(e))
-                      time.sleep(5)
-          print('LIVE VERIFIED: CATACLYSM 1.0 THE CATASTROPHE · '+base)
+          names=['index.html','game.js','game.css','campaign.js','animation.js',
+                 'visuals.js','game-config.json','director.js','firestorm.js','hazards.js']
+          for directory in ['cataclysm-1-0-major','cataclysm-100-lab']:
+              root=Path('docs')/directory
+              base='https://borhex.github.io/kbc-rpg-prototype/'+directory+'/'
+              for name in names:
+                  expected=hashlib.sha256((root/name).read_bytes()).hexdigest()
+                  for attempt in range(18):
+                      try:
+                          req=urllib.request.Request(base+name+'?check='+str(attempt),
+                              headers={'Cache-Control':'no-cache','User-Agent':'BoRHeZ-live-check/2.0'})
+                          with urllib.request.urlopen(req,timeout=15) as response:
+                              if response.status!=200:raise RuntimeError(str(response.status))
+                              observed=hashlib.sha256(response.read()).hexdigest()
+                          if expected!=observed:raise RuntimeError('source SHA mismatch')
+                          print('LIVE VERIFIED: '+directory+'/'+name+' SHA256 '+expected[:16])
+                          break
+                      except Exception as exc:
+                          if attempt==17:raise RuntimeError('PUBLIC GAME NOT VERIFIED '+directory+'/'+name+': '+str(exc))
+                          time.sleep(5)
+          print('SUCCESS: all twenty Cataclysm playable source assets verified live')
           PY
