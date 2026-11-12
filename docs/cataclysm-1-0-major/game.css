@@ -136,3 +136,17 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
  #upgrade-overlay .upgrade{min-height:40px}
  .actions{top:35px}.companion-abilities{bottom:4px}
 }
+
+/* Night 100 finale treatment for the released campaign. */
+.arena.lab-inferno #night-status{
+  color:#ffe2b7;
+  border-color:#e77745a8;
+  background:linear-gradient(90deg,#4f161ad9,#30111ba9);
+  box-shadow:0 0 18px #e94b305e, inset 0 0 15px #fc813c2a;
+  letter-spacing:.08em;
+}
+.arena.lab-inferno #encounter-status{
+  color:#fff0c7;
+  text-shadow:0 0 8px #ea5b40a6;
+}
+#encounter-status{font-variant-numeric:tabular-nums;}
