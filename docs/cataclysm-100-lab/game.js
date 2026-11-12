@@ -1986,7 +1986,8 @@
     ctx.restore();
   }
   function drawRage(g,aim,front=false){
-    if(g.buffs.rage<=0)return;
+    // Imported orange feral animation carries the effect on the character itself.
+    if(g.buffs.rage<=0||ART.hasReferenceAnimation('hero','feral'))return;
     const fade=Math.min(1,g.buffs.rage/1.2),t=reducedMotion?0:g.t;
     ctx.save();ctx.globalAlpha=fade;
     if(!front){
@@ -2025,14 +2026,18 @@
     }
     ctx.restore();
   }
-  function catSprite(type,r,time,hurt=false,aim=0){
+  function catSprite(type,r,time,hurt=false,aim=0,requestedState='run'){
+    // A new character-reference atlas can be shipped by manifest alone.
+    // State requests come from actual game behavior, not a static animation preview.
     const state=type==='hero'&&game?
       game.player.animation.state==='hit'?'hit':
-      game.feralInstinct.active?'feral':
-      game.buffs.survivalInstinct>0||game.feralInstinctOverdrive>0?'adrenaline':
+      game.feralInstinctOverdrive>0?'adrenaline':
+      game.buffs.rage>0||game.feralInstinct.active?'feral':
+      game.buffs.survivalInstinct>0?'adrenaline':
       game.player.animation.state==='attack'?'attack':
-      game.player.animation.moving?'run':'idle':'run';
-    VIS.aura(ctx,type,r,time,state,reducedMotion);
+      game.player.animation.moving?'run':'idle':requestedState;
+    if(!(ART.hasReferenceAnimation(type,state)&&type==='hero'))
+      VIS.aura(ctx,type,r,time,state,reducedMotion);
     return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion);
     // Original fallback below is retained as inert reference during migration.
     const hero=type==='hero',ally=roleNames.includes(type);
@@ -2143,7 +2148,7 @@
       if(pet.turret){const t=pet.turret;inkBox(t.x-13,t.y-10,26,20,'#d1ae64');inkBox(t.x-4,t.y-23,8,22,'#aec9c5');}
       drawCompanionEffect(pet);
       ctx.save();ctx.translate(pet.x,pet.y);
-      catSprite(pet.type,18,g.t, false,Math.atan2(verticalDelta(pet.y,p.y),wrappedDelta(pet.x,p.x)));
+      catSprite(pet.type,18,g.t,false,Math.atan2(verticalDelta(pet.y,p.y),wrappedDelta(pet.x,p.x)),pet.specialDuration>0?'special':pet.flash>0?'attack':'run');
       if(pet.flash>0)outline(0,0,19,'#ffe7ab',3);
       ctx.fillStyle='#ffddaa';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(pet.type[0].toUpperCase()+' R'+pet.rank,0,30);ctx.textAlign='left';ctx.restore();
     }
@@ -2200,7 +2205,7 @@
         // Mutation symbols removed; keep meaningful attack telegraphs.
       }
       drawAnatomy(e);
-      if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt);
+      if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt,0,e.hurt?'hit':e.windup>0?'attack':'run');
       if(e.hurt){
         VIS.impact(ctx,e.r,e.phase,false,reducedMotion);
          outline(0,0,e.r+5,'#fff5db',2);
