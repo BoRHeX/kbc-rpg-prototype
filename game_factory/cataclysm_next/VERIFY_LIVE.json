@@ -2,8 +2,8 @@
   "game": "CATACLYSM 1.0 THE CATASTROPHE",
   "candidate": "docs/cataclysm-1-0-major/",
   "stress_test": "docs/cataclysm-100-lab/",
-  "accepted_browser_run": 43189983118,
-  "pages_run": 43189983122,
-  "requested": "verify all 20 live assets across full Level0 Night1 run and Level100 Night99 stress test after 18-major finale and hazard pass",
-  "merged_sha": "b747327e16c99895c4feac389999564d53e4b31b"
+  "accepted_browser_run": 43209792174,
+  "pages_run": 43209792178,
+  "requested": "verify identical published source bytes for all 20 full-run and Night99 stress assets after one-shot magnet, 13-second night pulse, HUD and final-boss effects",
+  "merged_sha": "51373a387b170218f0a99af103812a6f32756908"
 }
