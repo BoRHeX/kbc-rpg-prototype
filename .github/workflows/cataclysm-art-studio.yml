@@ -35,6 +35,12 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pillow cairosvg openai
           npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
           google-chrome --version
+      - name: Validate painter module and existing gameplay before API spend
+        run: |
+          python -m py_compile game_factory/cataclysm_painted_cast.py
+          python -m py_compile game_factory/reference_animator.py
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
       - name: Five autonomous artists and technical roles review the same fixed brief
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
