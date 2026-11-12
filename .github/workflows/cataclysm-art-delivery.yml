@@ -1,0 +1,141 @@
+name: Deliver accepted Cataclysm art from studio
+on:
+  workflow_run:
+    workflows: ["BoRHeZ Cataclysm Art Studio · playable asset integration"]
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+jobs:
+  publish-art:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve the exact successful studio candidate PR
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STUDIO_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          branch="studio/cataclysm-10-art-${STUDIO_RUN_ID}"
+          number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$branch" --base main --json number --jq '.[0].number // empty')"
+          if [ -z "$number" ]; then
+            echo "::error::Successful studio run has no exact art PR; no deployment."
+            exit 1
+          fi
+          echo "pr=$number" >> "$GITHUB_OUTPUT"
+          gh pr diff "$number" --repo "$GITHUB_REPOSITORY" --name-only > /tmp/cataclysm-art-changes.txt
+          python - <<'PY'
+          from pathlib import Path
+          files=Path('/tmp/cataclysm-art-changes.txt').read_text().splitlines()
+          assert files,'PR has no files'
+          for name in files:
+              parts=Path(name).parts
+              if len(parts)<3 or parts[0]!='docs' or parts[1] not in ('cataclysm-1-0-major','cataclysm-100-lab'):
+                  raise SystemExit('Unexpected PR file: '+name)
+              if parts[2] in ('animation.js','visuals.js') and len(parts)==3:continue
+              if parts[2]=='art' and len(parts)>=4 and Path(name).suffix.lower() in ('.png','.svg','.webp','.py','.md'):continue
+              raise SystemExit('Unapproved PR file: '+name)
+          assert any(x.startswith('docs/cataclysm-1-0-major/art/') and x.endswith('.png') for x in files)
+          assert 'docs/cataclysm-1-0-major/animation.js' in files
+          print('Candidate source scope verified for',len(files),'art files')
+          PY
+      - name: Independently recheck the complete sprite inventory before merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.candidate.outputs.pr }}
+        run: |
+          set -euo pipefail
+          gh pr checkout "$PR_NUMBER" --repo "$GITHUB_REPOSITORY"
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node --check docs/cataclysm-1-0-major/animation.js
+          node --check docs/cataclysm-1-0-major/visuals.js
+      - name: Accept studio artwork, preserve the 1.0 gameplay contract
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.candidate.outputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-art-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy accepted source with game and stress test
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-art-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Avoid colliding Pages deployment
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry same Pages archive
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-art-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Verify both LIVE game instances use the actual painted asset bytes
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib,os,time,urllib.request
+          from pathlib import Path
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          names=['animation.js','visuals.js','art/hero-run.png','art/hero-feral.png',
+                 'art/shambler-run.png','art/the-catastrophe-run.png']
+          for directory in ('cataclysm-1-0-major','cataclysm-100-lab'):
+              for name in names:
+                  file=Path('docs')/directory/name
+                  expected=hashlib.sha256(file.read_bytes()).hexdigest()
+                  for attempt in range(12):
+                      try:
+                          url=base+directory+'/'+name+'?sha='+os.environ['GITHUB_RUN_ID']+'&check='+str(attempt)
+                          req=urllib.request.Request(url,headers={'Cache-Control':'no-cache'})
+                          with urllib.request.urlopen(req,timeout=20) as response:
+                              if hashlib.sha256(response.read()).hexdigest()!=expected:
+                                  raise RuntimeError('Hash mismatch')
+                          print('LIVE:',directory,name)
+                          break
+                      except Exception as error:
+                          if attempt==11:raise RuntimeError('Asset not deployed '+directory+'/'+name+': '+str(error))
+                          time.sleep(5)
+          PY
+      - name: Publish production game links
+        run: |
+          echo "Art PASS released: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Night 99 test: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/" >> "$GITHUB_STEP_SUMMARY"
