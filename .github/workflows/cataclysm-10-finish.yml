@@ -6,6 +6,7 @@ on:
     paths:
       - game_factory/requests/cataclysm_10_finish_LAUNCH.md
       - game_factory/requests/cataclysm_10_finish_RESUME.md
+      - game_factory/requests/cataclysm_10_finish_RESUME2.md
 permissions:
   contents: read
   actions: read
@@ -74,6 +75,7 @@ jobs:
     with:
       stage: animation
       previous: followers
+      art_cache_run: 43319559952
     secrets: inherit
   presentation:
     needs: animation
