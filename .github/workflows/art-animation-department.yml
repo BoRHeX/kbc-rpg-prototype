@@ -73,10 +73,73 @@ jobs:
         run: |
           node game_factory/art_department/browser-review.cjs
           python -m game_factory.art_department.run_checks browser
-      - name: Independent multimodal art director — fail below threshold
+      - name: Independent art director — assess first candidate
+        id: review1
+        continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '1'
         run: python -m game_factory.art_department.pipeline review
+      - name: Animator fixes specific visual failures — correction one
+        if: steps.review1.outcome == 'failure'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/art_department/REVISION_PROMPT.md
+      - name: Recheck corrected character and gameplay — correction one
+        if: steps.review1.outcome == 'failure'
+        run: |
+          python -m game_factory.art_department.pipeline gate
+          git diff --check
+          python -m game_factory.art_department.run_checks unit
+          node game_factory/art_department/browser-review.cjs
+          python -m game_factory.art_department.run_checks browser
+      - name: Independent art director — assess correction one
+        if: steps.review1.outcome == 'failure'
+        id: review2
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '2'
+        run: python -m game_factory.art_department.pipeline review
+      - name: Animator fixes remaining visual failures — correction two
+        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/art_department/REVISION_PROMPT.md
+      - name: Recheck corrected character and gameplay — correction two
+        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
+        run: |
+          python -m game_factory.art_department.pipeline gate
+          git diff --check
+          python -m game_factory.art_department.run_checks unit
+          node game_factory/art_department/browser-review.cjs
+          python -m game_factory.art_department.run_checks browser
+      - name: Independent art director — final assessment, reject if still poor
+        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
+        id: review3
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '3'
+        run: python -m game_factory.art_department.pipeline review
+      - name: Enforce independent approval, not just pixel-test completion
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('artifacts/art-department/accepted.json')
+          if not path.is_file():
+              raise SystemExit('Visual QA never accepted character: do not publish')
+          result=json.loads(path.read_text())
+          assert result['verdict']['pass'] is True, 'Visual review did not pass'
+          print('ART APPROVED after visual attempt',result['attempt'])
+          PY
       - name: Commit only validated character art and open integration PR
         id: candidate
         shell: bash
