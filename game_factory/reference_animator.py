@@ -226,7 +226,7 @@ def inspect_animation(client, reference: bytes, frames: list[Image.Image], state
         "idle": "calm planted-foot idle with readable life cues: blink, tail swish, scarf motion or subtle breathing; do NOT require a walk, exaggerated torso articulation or pose changes incompatible with idle",
         "hit": "recognizable impact, stagger or fall-back, and recovery",
         "feral": "aggressive gait and body language with crimson eyes, beyond hue shifts",
-        "adrenaline": "faster run-and-gun with differentiated energetic posture and weapon action",
+        "adrenaline": "a fast athletic sprint loop with alternating airborne and planted feet, torso drive, visible scarf/tail follow-through, and expressive intense eyes. It is an acceleration MOVEMENT state, not a shooting effect: existing gameplay renders projectiles and flashes separately. The weapon props may remain stable in the hands",
     }.get(state, "distinct natural movement matching the state")
     result = model_json(client, (
         "You are independent game-animation visual QA. Image 1 shows the authorized reference character; "
@@ -241,6 +241,7 @@ def inspect_animation(client, reference: bytes, frames: list[Image.Image], state
         "two visibly genuine subtle cues among eye blink, moving tail, scarf "
         "lag and breathing occur. Do not demand locomotion or large knee bends "
         "in idle. For ATTACK, inspect actual elbow, shoulder, torso and recovery poses; do not require muzzle flashes, projectiles or targets in an isolated sprite atlas. "
+        "For ADRENALINE, judge meaningful sprint leg and hip articulation, energy, tail/scarf motion and visible variation; do not demand a separate muzzle-flash or firing gesture during a movement sprint state. "
         "For RUN and ATTACK, require large-scale anatomical key poses "
         "and distinct action phases; never apply the idle exception to them. "
         "Be strict about unrelated characters and "
