@@ -307,11 +307,11 @@ def inspect_visual_anchor(client, source: bytes, anchor: bytes, actor: str) -> d
     return result
 
 
-def generate_animation(client, reference: bytes, identity: dict, actor: str, state: str, notes: str, texture_first: bool = False) -> bytes:
+def generate_animation(client, reference: bytes, identity: dict, actor: str, state: str, notes: str, texture_first: bool = False, feedback: str = "") -> bytes:
     # One model call per motion state, with a hard max set by the job validator.
     from io import BytesIO
     motion = {
-      "idle":"gentle breathing, blinking and subtle tail motion while standing ready",
+      "idle":"pronounced visible chest expansion and contraction, clear delayed tail arcs, scarf cloth swaying and an eye blink in a grounded living idle pose",
       "walk":"looping alternating leg walk cycle, clear foot plants, tail counterbalance",
       "run":"looping fast run cycle, powerful alternating leg strides and scarf/tail flutter",
       "attack":"weapon firing or claw-strike cycle, recoil and recovery, distinct action frames",
@@ -347,8 +347,13 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
             "in EVERY frame, no gradients or shadows cast on background. "
             "Produce actual 2D hand-painted sequential animation as a GIF "
             "with stable proportions and recognizable cat in every frame. "
+            "IDLE specifically: make breathing visible via chest and shoulder volume, "
+            "move scarf ends through an arc, and give tail two clearly different "
+            "curled positions while the feet remain planted. Do not animate only "
+            "eye blinks. Every state must have deliberate readable pose changes. "
             "Identity: " + json.dumps(identity, ensure_ascii=False)[:1000]
             + ". Notes: " + notes[:350]
+            + ". INDEPENDENT ANIMATION DIRECTOR FIX REQUEST: " + feedback[:420]
         )
     else:
         number = 6
@@ -431,9 +436,17 @@ def run(argv=None):
     parser.add_argument("--max-generations",type=int,default=6)
     parser.add_argument("--texture-first",action="store_true",help="Paint an original anchor (one additional image call) then produce raster GIF animations")
     parser.add_argument("--work-dir",default="artifacts/character-animation")
+    parser.add_argument("--reuse-painted-anchor",action="store_true",
+                        help="Reuse the exact previously vision-approved painted anchor in work-dir")
+    parser.add_argument("--max-visual-retries",type=int,default=0,
+                        help="Global budget of image-model corrective calls, 0–2")
     args=parser.parse_args(argv)
     if len(args.notes)>700 or not 1<=args.max_generations<=6:
         raise ValueError("Notes/max image generation requests exceed hard limit")
+    if not 0 <= args.max_visual_retries <= 2:
+        raise ValueError("Corrective image generation budget must be between 0 and 2")
+    if (args.reuse_painted_anchor or args.max_visual_retries) and not args.texture_first:
+        raise ValueError("Painted anchor reuse and visual retries require texture-first mode")
     states=validate_job(args.actor,args.states,args.reference,args.drive_file_id)
     if len(states)>args.max_generations:
         raise ValueError("States exceed the explicitly approved API generation limit")
@@ -449,23 +462,63 @@ def run(argv=None):
     anchor = None
     art_reference = reference
     if args.texture_first:
-        # One independent high-quality painted anchor, then one actual GIF model
-        # call per state. Total upper bound: 1+len(states) image calls, never unbounded.
-        anchor = generate_visual_anchor(client, reference, args.actor, identity, args.notes)
-        (work/"painted-hero-anchor.png").write_bytes(anchor)
+        # One source paint + six GIF states, with at most two extra GIF revisions.
+        # A previously accepted painted anchor may be reused from a specific
+        # GitHub Actions artifact, but gets a fresh independent review.
+        anchor_path = work/"painted-hero-anchor.png"
+        if args.reuse_painted_anchor:
+            if not anchor_path.is_file():
+                raise ValueError("Requested painted anchor artifact is missing")
+            previous = work/"anchor-review.json"
+            if not previous.is_file():
+                raise ValueError("No previous independent approval for painted anchor")
+            verdict = json.loads(previous.read_text())
+            required = ("same_character", "illustrated_not_procedural",
+                        "readable_at_mobile_scale", "one_full_character")
+            if not all(verdict.get(key) is True for key in required):
+                raise ValueError("Prior painted anchor was never approved")
+            anchor = _verify_image(anchor_path.read_bytes())
+            print("Reuse one independently approved painted anchor",flush=True)
+        else:
+            anchor = generate_visual_anchor(client,reference,args.actor,identity,args.notes)
+            anchor_path.write_bytes(anchor)
         (work/"anchor-review.json").write_text(json.dumps(
-            inspect_visual_anchor(client, reference, anchor, args.actor), indent=2))
+            inspect_visual_anchor(client,reference,anchor,args.actor),indent=2))
         art_reference = anchor
     sprites={};reviews={}
+    remaining_retries=args.max_visual_retries
     for state in states:
-        generated=generate_animation(client,art_reference,identity,args.actor,state,args.notes,args.texture_first)
-        # Raw model GIF is saved only inside the Actions artifact workspace.
-        (work/(state+".gif")).write_bytes(generated)
-        frames=normalize_frames(generated)
-        reviews[state]=inspect_animation(client,art_reference,frames,state,args.actor,args.texture_first)
-        sprites[state]=atlas(frames)
-        (work/(state+"-contact.png")).write_bytes(contact_sheet(frames))
-        print("Validated image-derived motion:",args.actor,state,len(frames),flush=True)
+        feedback=""
+        attempt=0
+        while True:
+            attempt+=1
+            generated=generate_animation(client,art_reference,identity,args.actor,
+                                         state,args.notes,args.texture_first,feedback)
+            # Preserve every original AI-drawn motion candidate, including failures.
+            (work/f"{state}-attempt-{attempt}.gif").write_bytes(generated)
+            try:
+                frames=normalize_frames(generated)
+                (work/f"{state}-attempt-{attempt}-contact.png").write_bytes(contact_sheet(frames))
+                review=inspect_animation(client,art_reference,frames,state,args.actor,args.texture_first)
+            except ValueError as exc:
+                (work/f"{state}-attempt-{attempt}-rejection.txt").write_text(str(exc))
+                if not args.texture_first or remaining_retries<=0:
+                    raise
+                remaining_retries-=1
+                feedback=("Prior REAL independently reviewed animation was rejected: "
+                          +str(exc)[:340]+". Produce larger anatomically distinct painted "
+                          "key poses and clearly readable motion, not eye blinking alone.")
+                print("VISUAL REPAIR",state,"candidate",attempt,
+                      "remaining corrective calls",remaining_retries,
+                      "critic:",str(exc)[:240],flush=True)
+                continue
+            (work/(state+".gif")).write_bytes(generated)
+            (work/(state+"-contact.png")).write_bytes(contact_sheet(frames))
+            reviews[state]=review
+            sprites[state]=atlas(frames)
+            print("Validated PAINTED motion:",args.actor,state,len(frames),
+                  "candidate",attempt,flush=True)
+            break
     report=write_result(args.actor,sprites,reference,reviews,anchor=anchor)
     (work/"report.json").write_text(json.dumps(report,indent=2))
     print(json.dumps({key:value for key,value in report.items() if key!="frames"},indent=2))
