@@ -1,0 +1,127 @@
+name: BoRHeZ Cataclysm Art Studio · playable asset integration
+run-name: Cataclysm Art Pass 01 · draw, animate, integrate, verify
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm_art_pass_01.md
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+concurrency:
+  group: borhez-cataclysm-art-studio
+  cancel-in-progress: false
+
+jobs:
+  art-studio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install production graphics and browser tools before Codex sandbox
+        run: |
+          python -m pip install --disable-pip-version-check --quiet pillow cairosvg
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Five autonomous artists and technical roles review the same fixed brief
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COUNCIL_MODEL: gpt-4.1-mini
+        run: |
+          test -n "$OPENAI_API_KEY"
+          python -m game_factory.art_studio_council
+      - name: Start actual game server for renderer and code integration
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-art-server.log 2>&1 &
+      - name: Game artist and animation engineer integrate new assets into 1.0
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm_art_pass_01.md
+      - name: Verify exact source allowlist and synchronize shared art with stress test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess,shutil
+          from pathlib import Path
+          allowed_root=Path('docs/cataclysm-1-0-major')
+          permitted={'animation.js','visuals.js'}
+          tracked=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          changes=set(filter(None,tracked+untracked))
+          bad=[]
+          for file in changes:
+              p=Path(file)
+              if p.parent==allowed_root and p.name in permitted:continue
+              if p.is_relative_to(allowed_root/'art') and p.suffix.lower() in ('.png','.svg','.webp'):continue
+              bad.append(file)
+          if bad:raise SystemExit('Unauthorized art-agent edits: '+str(sorted(bad)))
+          if not any(file.startswith(str(allowed_root/'art')+'/') for file in changes):
+              raise SystemExit('NO ART FILES CREATED: concept-only output rejected')
+          if 'docs/cataclysm-1-0-major/animation.js' not in changes:
+              raise SystemExit('NO ART INTEGRATION: animation renderer untouched')
+          lab=Path('docs/cataclysm-100-lab')
+          for file in permitted:
+              shutil.copy2(allowed_root/file,lab/file)
+          src=allowed_root/'art'
+          dst=lab/'art'
+          if dst.exists():shutil.rmtree(dst)
+          shutil.copytree(src,dst)
+          print('Accepted scope and synchronized rendered art for both Cataclysm instances')
+          PY
+          git diff --check
+      - name: Independent art inventory, alpha, animation and runtime binding gate
+        run: |
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          for script in docs/cataclysm-1-0-major/*.js docs/cataclysm-100-lab/*.js; do node --check "$script"; done
+      - name: Eight-view browser QA on complete 1.0 campaign
+        run: node game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Independent loaded-sprites Chrome QA in real game and stress test
+        run: node game_factory/cataclysm_next/tests/browser-art.cjs
+      - name: Open reviewable integrated game-art PR only after all gates pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="studio/cataclysm-10-art-${GITHUB_RUN_ID}"
+          git config user.name "BoRHeZ Art Studio"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add docs/cataclysm-1-0-major/animation.js docs/cataclysm-1-0-major/visuals.js docs/cataclysm-1-0-major/art/
+          git add docs/cataclysm-100-lab/animation.js docs/cataclysm-100-lab/visuals.js docs/cataclysm-100-lab/art/
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "No art integrated"; exit 1; fi
+          git commit -m "Art Studio: playable sprite assets and scene art for Cataclysm 1.0"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Cataclysm 1.0 Art Pass 01 · playable character and environment artwork" \
+            --body "Studio created actual game artwork, wired it into the live Canvas renderer and mirrored the art to the Night 99 stress lab. Five independent council roles informed the design. Source-only art edits; no balance or gameplay mechanic edits. Art inventory, full 100-night director contracts, eight viewport gameplay QA, and loaded-sprite checks passed. Human aesthetic review remains required."
+      - name: Save art council, screenshots and candidate files for visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-art-pass-01-evidence
+          path: |
+            artifacts/cataclysm-art/
+            artifacts/cataclysm-major/
+          if-no-files-found: ignore
+          retention-days: 30
