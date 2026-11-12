@@ -391,7 +391,12 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
         if state == "attack":
             # Avoid embedding a prior critique that includes violent words or
             # references to firing; the movement is a neutral animation study.
-            feedback = ""
+            # Keep corrective intent, not safety-triggering words from a
+            # free-text critique. This remains a benign acting demonstration.
+            feedback = ("Prior sequence looked too static. Change elbow bend, "
+                        "shoulder height, body lean and arm extension far more "
+                        "between frames, then return to the neutral stance."
+                        if feedback else "")
             identity_for_motion = {key:identity.get(key) for key in (
                 "subject","silhouette","palette","outfit","face",
                 "camera_angle","artistic_style") if identity.get(key)}
