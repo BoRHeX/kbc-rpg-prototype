@@ -286,7 +286,7 @@ def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dic
     manifest_path.write_text(encoded,encoding="utf-8")
     (mirror/MANIFEST).write_text(encoded,encoding="utf-8")
     return {"actor":actor,"states":list(sprites),"frames":{s:Image.open(BytesIO(x)).width//CELL_SIZE for s,x in sprites.items()},
-            "manifest":str(manifest_path.relative_to(ROOT)),
+            "manifest":str(manifest_path.relative_to(ROOT) if manifest_path.is_relative_to(ROOT) else manifest_path),
             "reference_sha256":hashlib.sha256(reference).hexdigest(),"visual_checks":qa}
 
 
