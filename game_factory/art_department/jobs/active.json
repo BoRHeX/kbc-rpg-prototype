@@ -24,5 +24,6 @@
     "game_factory/cataclysm_next/tests/major-systems.cjs",
     "game_factory/cataclysm_next/tests/browser-art.cjs"
   ],
-  "publish": true
+  "publish": true,
+  "browser_adapter": "game_factory/art_department/adapters/cataclysm.cjs"
 }
