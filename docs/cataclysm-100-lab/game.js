@@ -1230,18 +1230,15 @@
   function finalizeMajorVictory(){
     const g=game;
     if(!g||g.victory||g.mode!=='running'||!g.majorFinalSpawned)return;
-    if(g.enemies.some(e=>e.finalWave&&!e.consumed&&e.hp>0))return;
+    if(g.labFinalSpawned!==g.labFinalTotal||g.labQueue.length>0)return;
+    if(g.enemies.some(e=>(e.finalWave||e.majorId===g.labFinalBossId)&&!e.consumed&&e.hp>0))return;
     g.campaign.finaleCleared=true;
     if(!MAJOR.won(g.campaign,g.player.hp>0))return;
     g.victory=true;g.mode='won';g.campaign.won=true;
     clearInput();stopVoices('music');stopVoices('fx');
-    try{const last=Number(localStorage.getItem('cataclysm-best')||0);
-      localStorage.setItem('cataclysm-best',String(Math.max(last,MAJOR.VICTORY_SCORE)));
-      localStorage.setItem('cataclysm-major-win',JSON.stringify({score:MAJOR.VICTORY_SCORE,night:100,credited:g.campaign.credited.length}));
-    }catch(e){}
+    try{localStorage.setItem('cataclysm-night100-lab-win',JSON.stringify({score:MAJOR.VICTORY_SCORE,night:100,finalWave:g.labFinalTotal,seed:g.labEconomy.snapshot().seed}));}catch(e){}
     $('overlay-title').textContent='THE CATASTROPHE · DEFEATED';
-    $('overlay-copy').textContent='NIGHT 100 CLEAR! '+g.campaign.boss+' BOSSES · '+g.campaign.elite+' ELITES · '+g.campaign.superElite+
-      ' SUPER-ELITES · 999,999,999 POINTS. THE CITY BELONGS TO THE SURVIVORS.';
+    $('overlay-copy').textContent='NIGHT 100 CLEAR · EVERY FINAL ENEMY DEFEATED · 999,999,999 POINTS. Balance lab victory confirmed.';
     $('play').textContent='↻ NEW RUN';$('start-overlay').hidden=false;
     $('pause').hidden=true;$('stick').hidden=true;updateHud();
     playSfx('victory');
@@ -1434,8 +1431,11 @@
     g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
     if(e.creditCategory){
       MAJOR.kill(g.campaign,e.majorId,e.creditCategory);
-      notify(e.creditCategory.toUpperCase()+' CLEARED · B'+g.campaign.boss+
-        ' E'+g.campaign.elite+' S'+g.campaign.superElite,2,'major-kill-'+e.majorId);
+      const fish=e.creditCategory==='boss'?9:e.creditCategory==='superElite'?6:3;
+      addFish(e.x,e.y,fish);
+      // All three high-rank categories drop a tangible magnet, not a random chance.
+      g.powerups.push({...nearestSafeSpace(e.x+32,e.y,24),kind:'magnet',expires:g.t+90,source:e.creditCategory});
+      notify(e.name.toUpperCase()+' DEFEATED · +'+fish+' FISH + MAGNET',2,'major-kill-'+e.majorId);
     }
     if(e.creditCategory||e.elite){
       const amount=e.creditCategory==='boss'?2:e.creditCategory==='superElite'?3:1;
@@ -1448,10 +1448,10 @@
       notify('CROWN '+g.endgame.victories+'/9 CLAIMED · Recovery 8s',4);
       if(g.endgame.victories===9){g.endgame.complete=true;g.endgame.reward='Ninefold Dawn';g.fish+=999;g.enemies.splice(i,1);end();
         $('overlay-title').textContent='NINEFOLD DAWN · VICTORY';$('overlay-copy').textContent='All nine Catastrophe crowns claimed. Reward: 999 fish and the Ninefold Dawn title. The city is free.';return;}
-    }else if(e.variant==='boss'){
-      addFish(e.x,e.y,12);g.player.hp=Math.min(g.player.maxHp,g.player.hp+1);g.director.recovery=Math.max(g.director.recovery,6);pardonShadow();
+    }else if(e.variant==='boss'&&!e.creditCategory){
+      addFish(e.x,e.y,9);g.player.hp=Math.min(g.player.maxHp,g.player.hp+1);g.director.recovery=Math.max(g.director.recovery,6);pardonShadow();
       notify('ALLEY KING DEFEATED · +20 KILLS',3);
-    }else if(e.rewardValue)addFish(e.x,e.y,e.rewardValue);else if(rand()<cfg.fishDropChance)addFish(e.x,e.y);
+    }else if(!e.creditCategory&&e.rewardValue)addFish(e.x,e.y,e.rewardValue);else if(!e.creditCategory&&rand()<cfg.fishDropChance)addFish(e.x,e.y);
     g.enemies.splice(i,1);sound(620,.06,'triangle',.02);
   }
   function spawnCityEncounter(kind){
@@ -1573,7 +1573,7 @@
     const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
     g.wave=nextNight;g.nightCycle.waveCount=nextNight;
     if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
-    if(g.t>1325&&!g.victory){end();$('overlay-title').textContent='THE CATASTROPHE ENDURES';$('overlay-copy').textContent='Run limit reached. The final tally: '+g.campaign.boss+' bosses · '+g.campaign.elite+' elites · '+g.campaign.superElite+' super-elites. Need 9 of each and the Night100 final clear.';return;}
+    if(!LAB_MODE&&g.t>1325&&!g.victory){end();$('overlay-title').textContent='THE CATASTROPHE ENDURES';$('overlay-copy').textContent='Run limit reached. The final tally: '+g.campaign.boss+' bosses · '+g.campaign.elite+' elites · '+g.campaign.superElite+' super-elites. Need 9 of each and the Night100 final clear.';return;}
     updateFoundation(dt);if(g.mode!=='running')return;
     for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
     if(g.t>=g.nextPower){
@@ -1584,9 +1584,8 @@
     updateCityEncounter(dt);if(g.mode!=='running')return;
     updateEvolution(dt);updateDirector(dt);
     g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
-    if(g.spawn<=0){
-      spawnEnemy();g.spawn=g.director.spawnDelay;
-    }
+    if(LAB_MODE)releaseLabSpawn();
+    else if(g.spawn<=0){spawnEnemy();g.spawn=g.director.spawnDelay;}
     if(g.buffs.survivalInstinct===0){
       g.survivalTimer+=dt;
       if(g.survivalTimer>=10){g.survivalTimer=0;g.buffs.survivalInstinct=8;notify('ADRENALINE SURGE · 8s',2,'adrenaline');sound(1200,.18,'sine');}
@@ -1799,11 +1798,14 @@
     }
     $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · '+BIOMES[game.world.epoch%4].name+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
+    $('night-status').textContent='BALANCE LAB · NIGHT '+game.campaign.night+'/100 · LV '+p.level+' · '+(game.campaign.night===100?'FIRESTORM':'PRELUDE');
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
-    $('encounter-status').textContent='BOSSES '+game.campaign.boss+'/9 · ELITES '+game.campaign.elite+'/9 · SUPER '+game.campaign.superElite+'/9'+
-      (game.campaign.night===100?' · FINAL CLEAR':'');
+    $('encounter-status').textContent=game.labWave?
+      'DIRECTOR R'+game.labWave.rank+' · CREDITS '+game.labWave.budget+
+      ' · SPENT '+game.labWave.spent+' · BANK '+game.labWave.bankAfter+
+      ' · ARRIVALS '+game.labQueue.length+
+      (game.campaign.night===100?' · FINAL '+game.labFinalSpawned+'/'+game.labFinalTotal:''):'LAB LOADING';
     renderMajorBuffs();
     $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
@@ -2414,7 +2416,10 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,worldScrollY:WORLD_SCROLL_Y},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
+      lab:game?{enabled:true,source:'night100-lab',economy:game.labEconomy?.snapshot(),wave:game.labWave,
+        pending:game.labQueue?.length||0,finalSpawned:game.labFinalSpawned,finalTotal:game.labFinalTotal,
+        finalBossId:game.labFinalBossId}:null,
       music:{volume,voices:audioVoices.size,scheduledAhead:audio?Math.max(0,musicNext-audio.currentTime):0,arrangement:{...arrangement},mode:musicMode,enabled:!muted,active:!!(audio&&audio.state==='running'&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'),beat:musicBeat,...scoreCounts,pass:AUDIO_PASS_ID,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
       pendingUpgrade:!!(game&&game.pendingUpgrade),
       fishItems:game?game.fishItems.map(f=>({...f})):[],
