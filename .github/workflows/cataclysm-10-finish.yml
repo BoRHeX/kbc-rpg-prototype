@@ -8,6 +8,7 @@ on:
       - game_factory/requests/cataclysm_10_finish_RESUME.md
       - game_factory/requests/cataclysm_10_finish_RESUME2.md
       - game_factory/requests/cataclysm_10_finish_RESUME3.md
+      - game_factory/requests/cataclysm_10_finish_RESUME4.md
 permissions:
   contents: read
   actions: read
