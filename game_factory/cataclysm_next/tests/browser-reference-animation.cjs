@@ -55,6 +55,19 @@ assert.ok(states.length>0 && states.length<=6);
     assert.ok(result.motion[state]>=3,'Reference sprite visually static in '+dir+': '+state);
    assert.deepEqual(errors,[],'JavaScript failures in '+dir);
    assert.deepEqual(network,[],'Missing assets in '+dir);
+   // LITE MOBILE: character art is baked into small PNG atlases. Rendering
+   // remains inexpensive: no runtime skeleton, mesh, or per-limb paint calls.
+   const atlasBytes=states.reduce((n,state)=>n+fs.statSync(
+    path.resolve(__dirname,'../../../docs',dir,'art','characters',actor,state+'.png')).size,0);
+   assert.ok(atlasBytes<4*1024*1024,'Drawn character atlases exceed 4 MiB mobile budget: '+atlasBytes);
+   const paintMs=await page.evaluate(({actor})=>{
+    const ctx=document.createElement('canvas').getContext('2d');
+    ctx.canvas.width=128;ctx.canvas.height=128;ctx.translate(64,64);
+    const start=performance.now();
+    for(let i=0;i<600;i++)CATA_ART.draw(ctx,actor,24,i/12,'run',0,false,false);
+    return performance.now()-start;
+   },{actor});
+   assert.ok(paintMs<400,'Sprite playback CPU budget exceeded in browser: '+paintMs.toFixed(1)+'ms/600 draws');
    await page.locator('#play').click({force:true});
    await page.waitForTimeout(700);
    const snap=await page.evaluate(()=>CATACLYSM_DIAGNOSTICS.snapshot());
@@ -63,7 +76,8 @@ assert.ok(states.length>0 && states.length<=6);
    const out='artifacts/cataclysm-major';
    fs.mkdirSync(out,{recursive:true});
    await page.screenshot({path:path.join(out,'reference-animation-'+dir+'.png')});
-   console.log('PASS reference animation:',dir,actor,states,'motion frames',result.motion);
+   console.log('PASS LITE MOBILE texture playback:',dir,actor,states,
+    'motion',result.motion,'atlas bytes',atlasBytes,'600 draws ms',paintMs.toFixed(1));
    await page.close();
   }
  }finally{await browser.close();}

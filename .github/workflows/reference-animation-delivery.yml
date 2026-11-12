@@ -52,19 +52,26 @@ jobs:
           from pathlib import Path
           files=Path('/tmp/animation-diff.txt').read_text().splitlines()
           if not files:raise SystemExit('Empty animation PR')
-          pattern=re.compile(r'^docs/(cataclysm-1-0-major|cataclysm-100-lab)/art/characters/([a-z][a-z0-9-]+)/([a-z]+)\\.png$')
-          states=set();actors=set()
+          pattern=re.compile(r'^docs/(cataclysm-1-0-major|cataclysm-100-lab)/art/characters/([a-z][a-z0-9-]+)/([a-z]+)[.]png$')
+          states=set();actors=set();anchors=set()
           for file in files:
               if file in ('docs/cataclysm-1-0-major/art/character-animations.json','docs/cataclysm-100-lab/art/character-animations.json'):continue
               m=pattern.fullmatch(file)
               if not m:raise SystemExit('Unapproved PR file: '+file)
-              actors.add(m[2]);states.add(m[3])
+              actors.add(m[2])
+              if m[3]=='anchor': anchors.add(m[2])
+              else: states.add(m[3])
           if len(actors)!=1 or not states:raise SystemExit('Animation PR contains no unique actor and state set')
           for dir in ('cataclysm-1-0-major','cataclysm-100-lab'):
               for state in states:
                   if f'docs/{dir}/art/characters/{next(iter(actors))}/{state}.png' not in files:
                       raise SystemExit('Missing mirrored animation state '+state)
           actor=next(iter(actors))
+          if anchors:
+              if anchors!={actor}:raise SystemExit('Painted reference anchor has wrong actor')
+              for directory in ('cataclysm-1-0-major','cataclysm-100-lab'):
+                  if f'docs/{directory}/art/characters/{actor}/anchor.png' not in files:
+                      raise SystemExit('Missing mirrored painted texture anchor')
           with open(os.environ['GITHUB_ENV'],'a') as out:
               out.write('ART_ACTOR='+actor+'\n')
               out.write('ART_STATES='+','.join(sorted(states))+'\n')
@@ -121,7 +128,8 @@ jobs:
           base=os.environ['PAGE_URL'].rstrip('/')+'/'
           actor=os.environ['ART_ACTOR'];states=os.environ['ART_STATES'].split(',')
           for game in ('cataclysm-1-0-major','cataclysm-100-lab'):
-              for asset in ['character-animations.json']+['characters/'+actor+'/'+s+'.png' for s in states]:
+              extra=['characters/'+actor+'/anchor.png'] if (Path('docs')/game/'art'/'characters'/actor/'anchor.png').is_file() else []
+              for asset in ['character-animations.json']+extra+['characters/'+actor+'/'+s+'.png' for s in states]:
                   path=Path('docs')/game/'art'/asset
                   expected=hashlib.sha256(path.read_bytes()).hexdigest()
                   for n in range(12):
