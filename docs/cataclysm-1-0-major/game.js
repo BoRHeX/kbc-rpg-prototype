@@ -552,6 +552,7 @@
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     game.campaign=MAJOR.newLedger();game.rerollTokens=0;game.rerollDrops=[];game.enemyShots=[];game.majorEncounterSerial=0;
     game.majorFinalSpawned=false;game.victory=false;
+    game.wavePulse=0;game.bossFlash=0;game.magnetFlash=0;game.magnetSweepCount=0;game.magnetSweepFish=0;
     game.equipment={lens:0,coil:0,capacitor:0};game.buildEffects={conducted:0,recharged:0,slowed:0};game.exploration={attempts:0,spawned:0,lastSpawn:-150};
     game.encore={charge:0,window:0,cooldown:0,wave:null,activations:0,hits:0};
     game.director={budget:12,aliveThreat:0,nearby:0,kills:0,dps:0,pendingKills:0,pendingDamage:0,blocked:false,recovery:0,mutationCooldown:0,spawnDelay:1.65,spawns:0,suppressed:0,mutations:0,criticalShots:0,fusionCooldown:12,fusions:0,emerged:0,cocoonsDestroyed:0,serial:0,frameMs:16.7,framePressure:false};
@@ -1192,6 +1193,7 @@
       spawnEnemy(item.id,{labPurchase:true});
     if(!e)return;
     g.labQueue.shift();g.labSpawned++;
+    if(isMajor&&item.id==='boss'&&g.campaign.night>=99){g.bossFlash=Math.max(g.bossFlash,.65);g.shake=Math.max(g.shake,.23);}
     e.labRank=item.rank;e.labCost=item.cost;e.threatCost=item.cost;e.night=g.campaign.night;
     if(g.campaign.night===100){
       const order=g.labFinalSpawned,angle=-Math.PI/2+order*2*Math.PI/9;
@@ -1212,6 +1214,8 @@
     const g=game,key='night-'+n;
     if(g.campaign.events.includes(key))return;
     g.campaign.events.push(key);g.campaign.night=n;
+    g.wavePulse=1; // One visual dim/expanding shock ring per actual 13-second night release.
+    if(n===100)g.bossFlash=1;
     const wave=g.labEconomy.plan(n);
     g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;
     if(n===100){
@@ -1434,6 +1438,7 @@
     g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
     if(e.creditCategory){
       MAJOR.kill(g.campaign,e.majorId,e.creditCategory);
+      if(e.creditCategory==='boss'&&g.campaign.night>=99){g.bossFlash=1;g.shake=Math.max(g.shake,.55);}
       const fish=e.creditCategory==='boss'?9:e.creditCategory==='superElite'?6:3;
       addFish(e.x,e.y,fish);
       // All three high-rank categories drop a tangible magnet, not a random chance.
@@ -1569,6 +1574,9 @@
     if(!g.squadTacticDuration)g.squadTactic='default';
     updateEncore(dt);
     g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
+    g.wavePulse=Math.max(0,g.wavePulse-dt*.76);
+    g.bossFlash=Math.max(0,g.bossFlash-dt*.7);
+    g.magnetFlash=Math.max(0,g.magnetFlash-dt);
     const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
     g.wave=nextNight;g.nightCycle.waveCount=nextNight;
     if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
@@ -2151,6 +2159,7 @@
       if(e.x+e.r+230<cameraX||e.x-e.r-230>cameraX+W||e.y+e.r+230<cameraY||e.y-e.r-230>cameraY+H)continue;
       ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
+      if(e.creditCategory==='boss'&&source.campaign.night>=99)FIRE.bossAura(ctx,e.r,g.t,!!e.finalWave,reducedMotion);
       if(e.encoreSlow>0){outline(0,0,e.r+6,'#ffcf80',2);ctx.fillStyle='#fff0c6';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText(e.variant==='boss'?'RESIST':'SLOWED',0,e.r+24);ctx.textAlign='left';}
       if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(e.huntAge%5<1.5?'HUNT · SIDESTEP':'HUNT · STRIKE',0,-e.r-22);ctx.textAlign='left';
         if(e.huntAge%5<1.5){ctx.strokeStyle='#f1c3ff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.huntX*210,e.huntY*210);ctx.stroke();}}
@@ -2229,7 +2238,11 @@
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
-    if(source.campaign.night>=99)FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
+    if(source.campaign.night>=99){
+      FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
+      FIRE.finale(ctx,W,H,source.t,source.campaign.night,source.bossFlash,reducedMotion);
+    }
+    FIRE.wave(ctx,W,H,source.wavePulse,source.campaign.night,reducedMotion);
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
@@ -2428,7 +2441,7 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,wavePulse:game?game.wavePulse:0,bossFlash:game?game.bossFlash:0,magnetSweepCount:game?game.magnetSweepCount:0,magnetSweepFish:game?game.magnetSweepFish:0,firestorm:!!(game&&game.campaign.night===100)},
       lab:game?{enabled:true,source:'full-campaign',economy:game.labEconomy?.snapshot(),wave:game.labWave,
         pending:game.labQueue?.length||0,finalSpawned:game.labFinalSpawned,finalTotal:game.labFinalTotal,
         finalBossId:game.labFinalBossId}:null,
