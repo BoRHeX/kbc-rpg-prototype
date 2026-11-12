@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-01",
+  "actor": "hero",
+  "states": "idle,run,attack,hit,feral,adrenaline",
+  "reference_path": "docs/cataclysm-1-0-major/art/hero-idle.png",
+  "drive_file_id": "",
+  "texture_first": true,
+  "max_generations": 6,
+  "notes": "Cataclysm 1.0 LITE MOBILE: real hand-painted 2D game art, white cat, coral scarf, two pistols, expressive eyes. Textured fur, cloth, metal and painted shading; never vector polygons or stitched limbs. Drawn key poses with contact/down/passing/up for run, distinct attack anticipation/recoil/recovery, idle, hit, red-eye feral and adrenaline. Sharp silhouettes at phone size. Keep version 1.0, gameplay, allies, enemies, maps, UI and audio unchanged. No runtime procedural skeleton; baked 96px PNG frames only."
+}
