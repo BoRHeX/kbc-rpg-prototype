@@ -38,3 +38,6 @@ permanent squad, world, HUD, weapons and audio. Only the protagonist's authored
 texture atlases and their declarative manifest may change at release. No
 procedural per-frame character rig is introduced. Avoid claiming physical
 Samsung device performance from Chromium mobile emulation.
+
+## Visual critique and bounded regeneration
+If a GIF fails independent visual review, **keep the painting** and regenerate only the rejected state with the actual critique. Two additional image-generated GIF calls are available across the entire job, never unbounded; each must be independently reviewed again. Reuse a previously vision-approved anchor from a specific GitHub Actions run artifact, reverify it in the new run and avoid repeating an expensive identical image call. Once all six states pass, integration and publication proceed unchanged. An unapproved animation cannot enter main.
