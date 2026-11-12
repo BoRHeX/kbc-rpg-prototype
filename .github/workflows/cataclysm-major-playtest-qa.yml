@@ -2,7 +2,7 @@ name: Cataclysm major · independent gameplay QA
 run-name: The Catastrophe · real 8-viewport gameplay and 100-night contract
 on:
   push:
-    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll, feature/cataclysm-10-full-run-100-final-horde-and-hazards]
+    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll, feature/cataclysm-10-full-run-100-final-horde-and-hazards, feature/cataclysm-10-final-polish-magnet-hud-wave-finale]
     paths:
       - docs/cataclysm-1-0-major/**
       - game_factory/cataclysm_next/tests/**
@@ -33,6 +33,7 @@ jobs:
           node --check game_factory/cataclysm_next/tests/visuals-scroll.cjs
           node --check game_factory/cataclysm_next/tests/spawn-economy.cjs
           node --check game_factory/cataclysm_next/tests/browser-horde.cjs
+          node --check game_factory/cataclysm_next/tests/browser-polish.cjs
       - name: Verify real campaign scheduling and animation contract
         run: node game_factory/cataclysm_next/tests/major-systems.cjs
       - name: Verify new visual renderer and reverse-scroll contracts
@@ -49,6 +50,8 @@ jobs:
         run: node game_factory/cataclysm_next/tests/browser-major.cjs
       - name: Run real Chrome Night 99 and full 18-enemy Night 100 cinematic stress test
         run: node game_factory/cataclysm_next/tests/browser-horde.cjs
+      - name: Check one-shot magnet, unobstructed UI and two 13-second pulses in Chrome
+        run: node game_factory/cataclysm_next/tests/browser-polish.cjs
       - name: Preserve test screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
