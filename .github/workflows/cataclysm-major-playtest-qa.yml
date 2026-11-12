@@ -2,7 +2,7 @@ name: Cataclysm major · independent gameplay QA
 run-name: The Catastrophe · real 8-viewport gameplay and 100-night contract
 on:
   push:
-    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll]
+    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll, test/cataclysm-night-99-balance-lab]
     paths:
       - docs/cataclysm-1-0-major/**
       - game_factory/cataclysm_next/tests/**
