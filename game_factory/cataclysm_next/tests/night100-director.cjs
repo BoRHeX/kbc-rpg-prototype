@@ -47,6 +47,8 @@ for(const seed of seeds){
    assert.ok(a.reserved>=0&&a.bankAfter>=0,'savings nonnegative');
    assert.ok(a.queue.length>0,'night '+n+' has actual enemies');
    assert.equal(a.queue.reduce((s,x)=>s+x.cost,0),a.spent);
+   if(n%9===0&&n<100)assert.ok(a.queue.some(x=>x.id==='boss'),'scheduled boss is funded on night '+n);
+   if(n%6===0&&n<100)assert.ok(a.queue.some(x=>x.id===((n/6)%2===1?'elite':'superElite')),'scheduled elite is funded on night '+n);
    for(const enemy of a.queue){
      assert.equal(enemy.cost,director.costs[enemy.id]);
      assert.ok(enemy.rank>=1&&enemy.rank<=11);
