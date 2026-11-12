@@ -3,15 +3,19 @@ run-name: Cataclysm 1.0 · score → followers → artwork → presentation → 
 on:
   push:
     branches: [main]
-    paths: [game_factory/requests/cataclysm_10_finish_LAUNCH.md]
+    paths:
+      - game_factory/requests/cataclysm_10_finish_LAUNCH.md
+      - game_factory/requests/cataclysm_10_finish_RESUME.md
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: borhez-cataclysm-10-finish-production
   cancel-in-progress: false
 
 jobs:
   scoring:
+    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: score
@@ -24,8 +28,48 @@ jobs:
       stage: followers
       previous: score
     secrets: inherit
+  recover:
+    if: ${{ contains(github.event.head_commit.message, '[resume-followers-43317139783]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Restore the EXACT previously accepted scoring + followers source
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43317139783
+          github-token: ${{ github.token }}
+          name: cataclysm-10-finish-followers
+          path: docs/
+      - name: Verify previously approved source before new spending
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-0-major/score.js
+          test -s docs/cataclysm-1-0-major/follower-behavior.js
+          test -s docs/cataclysm-100-lab/score.js
+          test -s docs/cataclysm-100-lab/follower-behavior.js
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs followers
+          echo 'Restored the complete exact predecessor checkpoint; scoring and AI will not be regenerated'
+      - name: Re-publish accepted predecessor as this run's first stage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-finish-followers
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
   animation:
-    needs: followers
+    needs: [followers, recover]
+    if: ${{ always() && (needs.followers.result == 'success' || needs.recover.result == 'success') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: animation
