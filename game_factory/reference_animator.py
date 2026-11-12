@@ -273,6 +273,9 @@ def generate_visual_anchor(client, reference: bytes, actor: str, identity: dict,
         + notes[:400]
     )
     with BytesIO(reference) as image:
+        # OpenAI image edits require the uploaded file's image/png MIME type.
+        # A nameless BytesIO is transmitted as application/octet-stream.
+        image.name = "painted-hero-reference.png"
         response = client.images.edit(
             model=os.environ.get("STUDIO_ANCHOR_MODEL", ANCHOR_MODEL),
             image=image, prompt=prompt, output_format="png",
@@ -361,6 +364,8 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
         "Character role: "+actor+". Additional action: "+notes[:400]
     )
     with BytesIO(reference) as image:
+        # Preserve explicit image/png media type for the generated painted anchor.
+        image.name = "painted-character-anchor.png"
         result = client.images.edit(
             model=os.environ.get("STUDIO_IMAGE_MODEL",IMAGE_MODEL),
             image=image,
