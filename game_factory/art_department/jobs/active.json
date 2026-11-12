@@ -1,5 +1,5 @@
 {
-  "request_id": "cataclysm-hero-infrastructure-acceptance-01",
+  "request_id": "cataclysm-1.0-hero-character-motion-upgrade-02",
   "game": "cataclysm",
   "character": "hero",
   "reference": "docs/cataclysm-1-0-major/art/hero-idle.png",
@@ -16,8 +16,8 @@
     "adrenaline",
     "attack"
   ],
-  "visual_direction": "White cat protagonist with coral scarf, two pistols, unmistakable readable head/torso/arm/leg/tail articulation, distinct idle/run/fire/damaged/feral/adrenaline silhouettes at game scale. Maintain consistent identity, no shallow palette swaps.",
-  "minimum_visual_score": 3,
+  "visual_direction": "Cataclysm 1.0 CHARACTER-ONLY VISUAL UPGRADE. Preserve white cat identity, coral scarf, dual hand-held pistols and existing gameplay. Replace the visually two-pose mirrored walking cycle with a genuine fluid 24-pose run, including distinct contact/down/passing/up phases, alternating planted feet and knee bend, identifiable overlapping arm/pistol actions, weight transfer, natural head counter-motion, tail and scarf follow-through. Run must have >=8 non-mirrored silhouette families. Attack has anticipation, alternating recoil, muzzle flashes and recovery, not a static shooting pose. Idle breath/blink/tail, hit recoil/stagger/recover, feral aggressive silhouette and adrenaline fast run-and-gun need visibly different pose choreography, NOT merely recolors or phase shifts. At native mobile game size visually compelling, high-contrast, legible, polished intentional game pixel-art with real volumes and shading. Draw 24 meaningfully interpolated frames per state without repeating two flips or palette-only effects; retain version 1.0.",
+  "minimum_visual_score": 4,
   "allowed_generator": "hero_generate.py",
   "publish": true,
   "browser_adapter": "game_factory/art_department/adapters/cataclysm.cjs",
