@@ -1378,6 +1378,7 @@
     return !g.endgame.active&&(!sh.active||(sh.warning===0&&g.player.y-sh.y>=H*.65));
   }
   function citySpawnBlocked(){
+    if(LAB_MODE)return false; // Disabled legacy city encounter cannot suppress paid lab spawns.
     const m=game.cityEvents;
     return game.t<m.recoveryUntil||m.active?.kind==='elite'||
       (!m.active&&cityApproachSafe()&&game.director.recovery===0&&(game.player.level>=3||game.t>=180)&&game.player.hp>=1.5&&
