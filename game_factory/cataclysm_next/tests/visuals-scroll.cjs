@@ -24,7 +24,7 @@ assert.ok(html.includes('src="./hazards.js?build=CATASTROPHE-HORDE-03"'));
 assert.ok(html.includes('src="./firestorm.js?build=CATASTROPHE-HORDE-03"'));
 const hazard=require(path.join(root,'hazards.js'));
 assert.equal(hazard.pass,'catastrophe-hazards-03');
-assert.ok(src.includes('const WORLD_SCROLL_Y=-28'));
+assert.ok(src.includes('const WORLD_SCROLL_Y=-45'));
 assert.ok(src.includes("scrollDirection:'north'"));
 assert.ok(src.includes('VIS.atmosphere(ctx,W,H'));
 assert.ok(src.includes('VIS.ground(ctx,'));
