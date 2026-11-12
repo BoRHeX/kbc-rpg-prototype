@@ -1,0 +1,70 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../../../docs/cataclysm-100-lab');
+const director=require(path.join(root,'director.js'));
+const campaign=require(path.join(root,'campaign.js'));
+const fire=require(path.join(root,'firestorm.js'));
+const gameSrc=fs.readFileSync(path.join(root,'game.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+assert.equal(campaign.VICTORY_SCORE,999999999);
+assert.equal(campaign.getNight(99).bossIndex,8,'Catastrophe boss arrives on Night 99');
+assert.deepEqual(campaign.getNight(100).events,['finale']);
+const empty=campaign.newLedger();
+empty.night=100;empty.finaleCleared=true;
+assert.equal(campaign.won(empty,true),true,'no 9/9/9 quota to deny final clear');
+empty.finaleCleared=false;
+assert.equal(campaign.won(empty,true),false);
+empty.finaleCleared=true;
+assert.equal(campaign.won(empty,false),false);
+assert.equal(director.normal.length,9);
+assert.equal(director.costs.boss,34);
+assert.equal(director.costs.superElite,26);
+assert.equal(director.costs.elite,18);
+assert.equal(director.rankOf('blight'),8);
+assert.equal(fire.pass,'night100-firestorm-01');
+assert.ok(html.includes('director.js?build=NIGHT100-LAB-01'));
+assert.ok(html.includes('firestorm.js?build=NIGHT100-LAB-01'));
+assert.ok(html.includes('▶ TEST NIGHT 99'));
+assert.ok(!html.includes('9 boss'));
+assert.ok(gameSrc.includes('setupNight100Lab();startMajorNight(99)'));
+assert.ok(gameSrc.includes('p.level=100'));
+assert.ok(gameSrc.includes("if(LAB_MODE)releaseLabSpawn();"));
+assert.ok(gameSrc.includes('g.labFinalSpawned!==g.labFinalTotal||g.labQueue.length>0'));
+assert.ok(gameSrc.includes('g.enemies.some(e=>(e.finalWave||e.majorId===g.labFinalBossId)'));
+assert.ok(gameSrc.includes("e.creditCategory==='boss'?9:e.creditCategory==='superElite'?6:3"));
+assert.ok(gameSrc.includes("kind:'magnet',expires:g.t+90"));
+assert.ok(!gameSrc.includes("'BOSSES '+game.campaign.boss"));
+const seeds=[990100,1,444,98765,4294967295];
+for(const seed of seeds){
+ const A=director.create(seed),B=director.create(seed);
+ const plans=[],copy=[];
+ for(let n=1;n<=100;n++){
+   const a=A.plan(n),b=B.plan(n);
+   plans.push(a);copy.push(b);
+   assert.deepEqual(a,b,'seed '+seed+' night '+n+' must repeat');
+   assert.ok(a.spent<=a.budget,'no creation of monster credits');
+   assert.ok(a.reserved>=0&&a.bankAfter>=0,'savings nonnegative');
+   assert.ok(a.queue.length>0,'night '+n+' has actual enemies');
+   assert.equal(a.queue.reduce((s,x)=>s+x.cost,0),a.spent);
+   for(const enemy of a.queue){
+     assert.equal(enemy.cost,director.costs[enemy.id]);
+     assert.ok(enemy.rank>=1&&enemy.rank<=11);
+   }
+ }
+ assert.equal(A.snapshot().lastNight,100);
+ const n99=plans[98],n100=plans[99];
+ assert.ok(n99.queue[0].id==='boss','Night 99 final boss first');
+ assert.ok(n99.interval<=.5,'Night 99 queue fits into 13 seconds');
+ assert.equal(n100.interval,1,'Night 100 units exactly one second apart');
+ for(const m of director.normal)assert.ok(n100.queue.some(x=>x.id===m.id),'all 9 normals present '+m.id);
+ assert.ok(n100.queue.some(x=>x.id==='elite'));
+ assert.ok(n100.queue.some(x=>x.id==='superElite'));
+ assert.ok(n100.budget>n99.budget,'stored credits amplify final horde');
+ assert.ok(plans.slice(94,99).every(x=>x.reserved>0),'five-night finale saving');
+ assert.ok(plans.slice(94,99).every(x=>x.bankAfter>0),'bank grows before finale');
+ assert.ok(n100.released>0,'finale uses earned bank');
+ assert.ok(n100.queue.length<=33,'bounded final horde');
+}
+assert.throws(()=>director.create(1).plan(99),/sequential/);
+console.log('PASS Night 100: deterministic five-seed economy, ranked costs, savings, one-second finale, Level 100 start and final clear without quotas');
