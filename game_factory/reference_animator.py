@@ -223,7 +223,7 @@ def inspect_animation(client, reference: bytes, frames: list[Image.Image], state
     phase = {
         "run": "contact, compression, passing, up, alternating leg cycle with real weight transfer",
         "attack": "anticipation, weapon fire, recoil, recovery with distinct pistol/arm positions",
-        "idle": "breathing, blinking and secondary tail/scarf motion while feet stay grounded",
+        "idle": "calm planted-foot idle with readable life cues: blink, tail swish, scarf motion or subtle breathing; do NOT require a walk, exaggerated torso articulation or pose changes incompatible with idle",
         "hit": "recognizable impact, stagger or fall-back, and recovery",
         "feral": "aggressive gait and body language with crimson eyes, beyond hue shifts",
         "adrenaline": "faster run-and-gun with differentiated energetic posture and weapon action",
@@ -233,16 +233,28 @@ def inspect_animation(client, reference: bytes, frames: list[Image.Image], state
         "image 2 shows sequential frames drawn from the generated " + state + " motion. "
         "Required action phases for THIS state: " + phase + ". "
         "Return JSON with booleans same_character, visible_motion, usable_in_game and "
-        "booleans painted_texture, articulated_key_poses, distinct_motion_phases and "
-        "a short concern string. Evaluate subject identity (fur/face/outfit/equipment), "
+        "booleans painted_texture, articulated_key_poses, distinct_motion_phases, "
+        "idle_life and a short concern string. Evaluate subject identity (fur/face/outfit/equipment), "
         "visibly PAINTED RASTER TEXTURE, limbs and joints, real contact-to-passing foot "
         "motion or recoil phase, not merely palette changes or mirrored frames. "
+        "For IDLE, steady body/feet are CORRECT: mark idle_life=true if at least "
+        "two visibly genuine subtle cues among eye blink, moving tail, scarf "
+        "lag and breathing occur. Do not demand locomotion or large knee bends "
+        "in idle. For RUN and ATTACK, require large-scale anatomical key poses "
+        "and distinct action phases; never apply the idle exception to them. "
         "Be strict about unrelated characters and "
         "severe silhouette distortion. No extra text. Character id: " + actor
     ), [reference, contact_sheet(frames)])
     required = ["same_character", "visible_motion", "usable_in_game"]
     if texture_first:
-        required += ["painted_texture", "articulated_key_poses", "distinct_motion_phases"]
+        required.append("painted_texture")
+        if state == "idle":
+            # Animators need a subtle living idle, not eight fake walking poses.
+            # Preserve the actual motion requirement (blink + tail/scarf etc).
+            required.append("idle_life")
+        else:
+            # Combat, running, damage and power states do require real joints.
+            required += ["articulated_key_poses", "distinct_motion_phases"]
     if not all(result.get(key) is True for key in required):
         raise ValueError("Independent visual review rejected generated " + state
                          + ": " + str(result.get("concern", ""))[:250])
