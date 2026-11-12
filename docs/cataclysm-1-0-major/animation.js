@@ -39,6 +39,50 @@ for(const state of ['idle','run','hit','feral','adrenaline','attack'])loadAtlas(
 for(const id of allyIds)loadAtlas(id+'-run',12);
 for(const id of enemyIds)loadAtlas(id+'-run',6);
 function assetStatus(){return {loaded,failed,total};}
+// Optional, data-only animations produced from an artist's visual reference.
+// New characters/states load without further game-source edits.
+const overrides=Object.create(null);
+const overrideMetrics={loaded:0,failed:0,total:0,manifestReady:false};
+function overrideStatus(){
+ return {...overrideMetrics,characters:Object.keys(overrides).filter(k=>overrides[k].ready)};
+}
+function hasReferenceAnimation(id,state){return !!overrides[id+'-'+state]?.ready;}
+function loadReferenceAnimations(){
+ if(typeof root.fetch!=='function'||typeof root.Image!=='function')return;
+ root.fetch(assetBase+'character-animations.json',{cache:'no-cache'}).then(response=>{
+  if(!response.ok)throw Error('Character manifest HTTP '+response.status);
+  return response.json();
+ }).then(data=>{
+  if(data.version!==1||!data.characters||typeof data.characters!=='object')
+   throw Error('Invalid character animation manifest');
+  for(const [id,states] of Object.entries(data.characters)){
+   if(!Object.prototype.hasOwnProperty.call(PALETTES,id)||!states||typeof states!=='object')continue;
+   for(const [state,info] of Object.entries(states)){
+    if(!/^(idle|walk|run|attack|aim|hit|feral|adrenaline|special)$/.test(state))continue;
+    if(!info||!Number.isInteger(info.frames)||info.frames<2||info.frames>16||
+      !Number.isFinite(info.fps)||info.fps<2||info.fps>30)continue;
+    const key=id+'-'+state,entry={image:null,ready:false,count:info.frames,fps:info.fps,
+      embeddedWeapon:info.embedded_weapon!==false,scale:Math.min(1.35,Math.max(.75,Number(info.scale)||1))};
+    overrides[key]=entry;overrideMetrics.total++;
+    const img=new root.Image();entry.image=img;
+    let settled=false;
+    const fail=()=>{if(!settled){settled=true;overrideMetrics.failed++;}};
+    img.onerror=fail;
+    img.onload=()=>{
+     if(img.naturalWidth!==entry.count*96||img.naturalHeight!==96){fail();return;}
+     const ready=()=>{if(!settled){settled=true;entry.ready=true;overrideMetrics.loaded++;}};
+     if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
+    };
+    img.src=assetBase+'characters/'+encodeURIComponent(id)+'/'+encodeURIComponent(state)+'.png';
+   }
+  }
+  overrideMetrics.manifestReady=true;
+ }).catch(err=>{overrideMetrics.failed++;overrideMetrics.manifestReady=false;
+  if(root.console&&root.console.warn)root.console.warn('Reference animation manifest unavailable',err.message);
+ });
+}
+loadReferenceAnimations();
+
 // A separate metal gun layer pivots at the hands, keeping aim continuous between atlas frames.
 function paintedGun(ctx,id,aim,recoil){
  const long=id==='sniper'||id==='echo-reaper'||id==='ghost';
@@ -91,11 +135,15 @@ function oval(ctx,x,y,rx,ry,color){
 }
 function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   if(!PALETTES[id])id='shambler';
-  const count=frameCount(id,state),frame=reduced?0:Math.floor(Math.max(0,time)*(id==='hero'?24:allyIds.includes(id)?12:6))%count;
-  const sheet=atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-run'];
+  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:
+    (state!=='run'&&overrides[id+'-run']?.ready?overrides[id+'-run']:null);
+  const count=override?override.count:frameCount(id,state);
+  const fps=override?override.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
+  const frame=reduced?0:Math.floor(Math.max(0,time)*fps)%count;
+  const sheet=override||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-run'];
   if(sheet&&sheet.ready){
     // Atlas feet sit at y=82; entity origin at (48,58), matching the fallback footprint.
-    const unit=r/23,recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
+    const unit=r/23*(override?override.scale:1),recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
     ctx.save();ctx.scale(unit,unit);
     ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);
     if(damaged){
@@ -103,7 +151,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
       ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
       ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
     }
-    if(id==='hero'||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost')paintedGun(ctx,id,aim,recoil);
+    if((!override||!override.embeddedWeapon)&&(id==='hero'||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
     if(state==='feral'||state==='adrenaline'){
       ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=1.5;ctx.globalAlpha=.65;
       ctx.beginPath();ctx.ellipse(0,24,26,6,0,0,TWO);ctx.stroke();
@@ -201,7 +249,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
