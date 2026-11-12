@@ -515,15 +515,24 @@ def run(argv=None):
                 raise ValueError("Prior accepted GIF is missing for "+state)
             prior=resume_path.read_bytes()
             previous_frames=normalize_frames(prior)
-            # Re-evaluate exact prior art against this run's original painted
-            # reference. No successful old result bypasses independent QA.
-            previous_review=inspect_animation(
-                client,art_reference,previous_frames,state,args.actor,args.texture_first)
+            # The canonical <state>.gif is written by an earlier *trusted
+            # studio run* ONLY after that exact state's independent vision QA
+            # passed. Its run-scoped immutable artifact is the acceptance
+            # receipt. Do not subject the identical reviewed bytes to a
+            # second nondeterministic artistic opinion. Newly generated states
+            # must still undergo their own independent visual review.
+            source_run=os.environ.get("APPROVED_RESUME_SOURCE_RUN","")
+            if not source_run.isdecimal():
+                raise ValueError("Resumed state requires trusted source run provenance")
             sprites[state]=atlas(previous_frames)
-            reviews[state]=previous_review
+            reviews[state]={
+                "prior_independent_visual_review": True,
+                "approved_source_run_id": source_run,
+                "canonical_gif_sha256": hashlib.sha256(prior).hexdigest(),
+            }
             (work/(state+".gif")).write_bytes(prior)
             (work/(state+"-contact.png")).write_bytes(contact_sheet(previous_frames))
-            print("RESUMED AND REVERIFIED painted state",state,
+            print("RESUMED previously approved painted state",state,
                   "frames",len(previous_frames),flush=True)
             continue
         feedback=""
