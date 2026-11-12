@@ -35,7 +35,7 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.deepEqual(snapshot.major.songs,['ironmarch','afterlight']);
       assert.equal(snapshot.world.size,4200);
       assert.equal(snapshot.world.scrollDirection,'north');
-      assert.equal(snapshot.presentation.worldScrollY,-28);
+      assert.equal(snapshot.presentation.worldScrollY,-45);
       assert.equal(snapshot.presentation.visualPass,'catastrophe-neon-noir-02');
       assert.equal(snapshot.major.campaign.night,1);
       assert.equal(snapshot.player.level,0,'full campaign must start at level zero');

@@ -43,8 +43,7 @@ function crane(ctx,e,time,reduced){
    for(let i=0;i<8;i++){const a=i*TAU/8+t;line(ctx,{x:d.x,y:d.y},{x:d.x+Math.cos(a)*d.r*.85,y:d.y+Math.sin(a)*d.r*.85},'#ffd29888',2);}
   }
  }
- ctx.fillStyle='#ffe6c8';ctx.font='bold 15px system-ui';ctx.textAlign='center';
- ctx.fillText('CRANE STRIKE · CLEAR THE MARKERS',e.x,e.y-151);
+ // Hazard shape, warning ring and animation carry the message; no text drawn.
  ctx.restore();
 }
 function gas(ctx,c,t,r,warning,reduced){
@@ -66,8 +65,7 @@ function gas(ctx,c,t,r,warning,reduced){
   cloud.addColorStop(1,'rgba(89,156,43,0)');
   ctx.fillStyle=cloud;ctx.fillRect(x-rr,y-rr,rr*2,rr*2);
  }
- ctx.textAlign='center';ctx.font='bold 14px system-ui';ctx.fillStyle='#e3ffa9';
- ctx.fillText(warning?'☣ GAS VENT · EVACUATE':'☣ TOXIC · LEAVE THE ZONE',c.x,c.y-7);
+ // Hazard shape, warning ring and animation carry the message; no text drawn.
  ctx.restore();
 }
 function electric(ctx,e,t,reduced){
@@ -95,8 +93,7 @@ function electric(ctx,e,t,reduced){
  }else{
   ctx.setLineDash([9,8]);line(ctx,a,b,'#ffe4af',3);ctx.setLineDash([]);
  }
- ctx.textAlign='center';ctx.font='bold 15px system-ui';ctx.fillStyle=active?'#c4faff':'#ffda9c';
- ctx.fillText(active?'⚡ LIVE GATE · AVOID THE BEAM':'⚡ GATE CHARGING · '+Math.ceil(e.warning-e.age)+'s',(a.x+b.x)/2,(a.y+b.y)/2-36);
+ // Hazard shape, warning ring and animation carry the message; no text drawn.
  ctx.restore();
 }
 const api=Object.freeze({crane,gas,electric,pass:'catastrophe-hazards-03'});

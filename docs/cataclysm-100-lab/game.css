@@ -150,3 +150,53 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
   text-shadow:0 0 8px #ea5b40a6;
 }
 #encounter-status{font-variant-numeric:tabular-nums;}
+
+
+/* Cataclysm 1.0 final gameplay pass: deliberate HUD hierarchy and zero hazard narration.
+   Keep readable mobile hit targets for active settings; auto abilities are passive indicators. */
+#city-notice,#encounter-status,#support-status,#buff-status{display:none!important}
+#night-status:empty{display:none}
+.hud{gap:4px}
+.hud-block{background:#071421da;border-color:#476b76aa;border-radius:6px;padding:3px 6px}
+.hud-block small{font-size:8px;letter-spacing:.04em;color:#aac4c4}
+.hud-block b{font-size:13px}
+#night-status{top:92px;max-width:300px;font-size:10px;letter-spacing:.1em;color:#ffd3a1;text-shadow:0 2px 8px #000}
+#boss-status{top:115px;z-index:5;width:min(215px,43vw);padding:4px 8px;background:#090f1cba;border-left:2px solid #d87f69;border-radius:4px}
+#major-buff-icons{top:104px;left:12px;right:136px;flex-wrap:nowrap;gap:4px}
+.major-buff{padding:2px 5px;min-height:20px;gap:2px;background:#081a25d1;font-size:9px;border-radius:10px}
+.major-buff strong{font-size:12px}
+.companion-abilities{bottom:max(7px,env(safe-area-inset-bottom));left:max(9px,env(safe-area-inset-left));right:132px;justify-content:flex-start;gap:4px}
+.companion-abilities button{min-width:0;width:47px;max-width:52px;min-height:30px;max-height:34px;flex:0 1 48px;font-size:13px;font-variant-numeric:tabular-nums;padding:3px;border-radius:8px;pointer-events:none;background:linear-gradient(to top,#21534b var(--ready,100%),#152736 var(--ready,100%))}
+.notice{bottom:auto;top:30%;left:50%;right:auto;transform:translateX(-50%);max-width:min(310px,68vw);width:max-content;margin:0;padding:5px 10px;font-size:11px;letter-spacing:.035em;line-height:1.25;color:#f9e9cb;background:#0b1726cf;border:1px solid #89685183;border-radius:6px;white-space:normal;text-align:center;text-shadow:0 1px 2px #000;z-index:5}
+@media(max-width:680px) and (orientation:landscape){
+  .hud{gap:2px;right:121px}.hud-block{padding:2px 3px}.hud-block small{font-size:7px}.hud-block b{font-size:11px}
+  #major-buff-icons{top:101px;right:123px}
+  #boss-status{top:123px}
+  .companion-abilities{right:120px}.companion-abilities button{width:39px;min-height:28px;max-height:30px;flex-basis:39px;font-size:12px}
+}
+@media(orientation:portrait){
+  .hud{top:48px;right:8px;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+  #night-status{top:139px;right:8px}
+  #boss-status{top:159px;width:160px}
+  #major-buff-icons{top:191px;left:8px;right:8px}
+  .companion-abilities{bottom:110px;left:8px;right:8px}
+  .companion-abilities button{min-height:30px;max-height:34px;flex:0 1 46px}
+  .notice{top:39%;max-width:75vw}
+}
+@media(max-height:350px) and (orientation:landscape){
+ #major-buff-icons{top:95px}
+ #boss-status{top:117px}
+ .notice{top:38%}
+}
+
+/* Final collision-free position overrides for narrow touch viewports. */
+#boss-status{top:135px}
+.notice{top:auto;bottom:52px;left:max(10px,env(safe-area-inset-left));right:auto;transform:none;max-width:min(300px,60vw)}
+@media(max-width:680px) and (orientation:landscape){
+  #boss-status{top:132px}
+  .notice{bottom:49px;max-width:58vw}
+}
+@media(orientation:portrait){
+  #boss-status{top:164px}
+  .notice{top:auto;bottom:158px;left:9px;max-width:75vw}
+}

@@ -6,8 +6,8 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-full-campaign-horde-hazards-03';
-  const WORLD_SCROLL_Y=-28; // Northbound, so the environment scrolls down.
+  const PATCH_ID = 'cataclysm-10-final-polish-magnet-wave-04';
+  const WORLD_SCROLL_Y=-45; // Faster northbound travel; wave timing is unchanged.
   const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR, HAZ = globalThis.CATA_HAZARDS;
   const LAB_MODE=true, FIRE=globalThis.CATA_LAB_FIRE;
   if(!LAB||!FIRE||!HAZ)throw Error('Director, firestorm or hazard animation module failed to load');
@@ -265,7 +265,7 @@
   const commonIds = ['damage','fire-rate','speed','xp-gain'];
   const squadIds = ['squad-damage','squad-rate','squad-count','squad-spread','squad-bounce'];
   const equipmentIds=['equip-lens','equip-coil','equip-capacitor'];
-  const EXPLORATION=Object.freeze({first:150,intervalMin:120,intervalMax:180,chance:.18,cap:2,magnetDuration:60});
+  const EXPLORATION=Object.freeze({first:150,intervalMin:120,intervalMax:180,chance:.18,cap:2,magnetSweep:true});
   const majorUpgradeIds=['armor','critical','shield-pulse','area-burst','focus','squad-range','tactical-momentum'];
   const upgradeIds = [...equipmentIds,...commonIds,'recover','multi-shot','ricochet','fish-magnet',...majorUpgradeIds,...roleNames.map(r=>'companion-'+r),...squadIds];
   function upgradeAvailable(type) {
@@ -530,7 +530,10 @@
     }
   }
   function notify(message,duration=1.5,id=message) {
-    if(noticeTTL>0){if(noticeQueue.length<4&&!noticeQueue.some(n=>n.id===id))noticeQueue.push({message,duration,id});return;}
+    // Rare story beats only. Environmental warnings, ability triggers and ordinary loot are visual.
+    if(!/^(NIGHT 99|NIGHT 100|BOSS|SUPER-ELITE|ELITE|LEVEL [369]|THE CATASTROPHE|CROWN)/.test(message))return;
+    duration=Math.min(duration,2.2);
+    if(noticeTTL>0){if(noticeQueue.length<2&&!noticeQueue.some(n=>n.id===id))noticeQueue.push({message,duration,id});return;}
     if(game){game.lastNotice={id,message,time:game.t};}
     $('notice').textContent=message; $('notice').hidden=false; noticeTTL=duration;
   }
@@ -549,6 +552,7 @@
       escape:0,escapeCooldown:0,escapeArmed:true,edgeWarning:false,kills:0,fish:0,xp:0,upgrades:[],pendingUpgrade:false,wave:1,spawn:0,shake:0,now:0};
     game.campaign=MAJOR.newLedger();game.rerollTokens=0;game.rerollDrops=[];game.enemyShots=[];game.majorEncounterSerial=0;
     game.majorFinalSpawned=false;game.victory=false;
+    game.wavePulse=0;game.bossFlash=0;game.magnetFlash=0;game.magnetSweepCount=0;game.magnetSweepFish=0;
     game.equipment={lens:0,coil:0,capacitor:0};game.buildEffects={conducted:0,recharged:0,slowed:0};game.exploration={attempts:0,spawned:0,lastSpawn:-150};
     game.encore={charge:0,window:0,cooldown:0,wave:null,activations:0,hits:0};
     game.director={budget:12,aliveThreat:0,nearby:0,kills:0,dps:0,pendingKills:0,pendingDamage:0,blocked:false,recovery:0,mutationCooldown:0,spawnDelay:1.65,spawns:0,suppressed:0,mutations:0,criticalShots:0,fusionCooldown:12,fusions:0,emerged:0,cocoonsDestroyed:0,serial:0,frameMs:16.7,framePressure:false};
@@ -1123,7 +1127,7 @@
     h.spawnTimer-=dt;
     if(h.spawnTimer<=0){
       const cloud=gasSpawn();
-      if(cloud){h.toxicGasClouds.push(cloud);notify('TOXIC GAS · Clear the green ring',2.5);sound(340,.3,'triangle',.025);}
+      if(cloud){h.toxicGasClouds.push(cloud);sound(340,.3,'triangle',.025);}
       h.spawnTimer=cloud?30:1;
     }
     let exposed=false;
@@ -1136,7 +1140,7 @@
     h.exposure=exposed?(h.exposure||0)+dt:0;
     if(h.exposure>=1){h.exposure-=1;
       if(p.inv===0&&!(g.runicRelic.active==='shield'&&g.runicRelic.duration>0)){damageTaken();p.hp=Math.max(0,p.hp-(1-g.effectiveBuffs.mitigation));p.inv=.35;g.shake=.3;
-        burst(p.x,p.y,'#b6ee75',10);notify('TOXIC GAS · Move out!');sound(170,.1);
+        burst(p.x,p.y,'#b6ee75',10);sound(170,.1);
         if(p.hp<=0){updateHud();end();}}
     }
   }
@@ -1189,6 +1193,7 @@
       spawnEnemy(item.id,{labPurchase:true});
     if(!e)return;
     g.labQueue.shift();g.labSpawned++;
+    if(isMajor&&item.id==='boss'&&g.campaign.night>=99){g.bossFlash=Math.max(g.bossFlash,.65);g.shake=Math.max(g.shake,.23);}
     e.labRank=item.rank;e.labCost=item.cost;e.threatCost=item.cost;e.night=g.campaign.night;
     if(g.campaign.night===100){
       const order=g.labFinalSpawned,angle=-Math.PI/2+order*2*Math.PI/9;
@@ -1209,6 +1214,8 @@
     const g=game,key='night-'+n;
     if(g.campaign.events.includes(key))return;
     g.campaign.events.push(key);g.campaign.night=n;
+    g.wavePulse=1; // One visual dim/expanding shock ring per actual 13-second night release.
+    if(n===100)g.bossFlash=1;
     const wave=g.labEconomy.plan(n);
     g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;
     if(n===100){
@@ -1431,6 +1438,7 @@
     g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
     if(e.creditCategory){
       MAJOR.kill(g.campaign,e.majorId,e.creditCategory);
+      if(e.creditCategory==='boss'&&g.campaign.night>=99){g.bossFlash=1;g.shake=Math.max(g.shake,.55);}
       const fish=e.creditCategory==='boss'?9:e.creditCategory==='superElite'?6:3;
       addFish(e.x,e.y,fish);
       // All three high-rank categories drop a tangible magnet, not a random chance.
@@ -1548,12 +1556,8 @@
     if(e.age>=e.duration)finishCityEncounter(e.kind!=='elite');
   }
   function updateCityNotice(){
-    const m=game.cityEvents,e=m.active,node=$('city-notice');node.hidden=!e;
-    if(!e)return;
-    const label={crane:'CRANE · Dodge orange targets',street:'LIVE STREET · Use the open gap',elite:'ELITE HUNT · Sidestep, then strike'}[e.kind];
-    const text=(e.age<e.warning?'WARNING · ':'')+label+' · '+Math.ceil((e.age<e.warning?e.warning:e.duration)-e.age)+'s';
-    // Update the live region once per displayed second, not every animation frame.
-    if(node.textContent!==text)node.textContent=text;
+    // Environmental hazards retain visual and audible telegraphs, never text announcements.
+    $('city-notice').hidden=true;
   }
   function renderCityEncounter(){
     const m=game.cityEvents,e=m.active;
@@ -1570,6 +1574,9 @@
     if(!g.squadTacticDuration)g.squadTactic='default';
     updateEncore(dt);
     g.t+=dt;g.shake=Math.max(0,g.shake-dt*5);
+    g.wavePulse=Math.max(0,g.wavePulse-dt*.76);
+    g.bossFlash=Math.max(0,g.bossFlash-dt*.7);
+    g.magnetFlash=Math.max(0,g.magnetFlash-dt);
     const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
     g.wave=nextNight;g.nightCycle.waveCount=nextNight;
     if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
@@ -1676,7 +1683,7 @@
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
         const hitDamage=raw*(e.squadSlow>0&&g.equipment.lens&&g.equipment.coil?1+.25*Math.sqrt(g.equipment.lens*g.equipment.coil):1)*(e.squadMark>0?1.2:1)*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
-        g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,age:0});
+        if(s.critical||e.creditCategory)g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,major:!!e.creditCategory,age:0});
         if(g.damagePopups.length>80)g.damagePopups.shift();
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
         if(g.equipment.coil){e.squadSlow=Math.max(e.squadSlow||0,1+Math.log1p(g.equipment.coil));g.buildEffects.slowed++;if(g.equipment.lens)g.buildEffects.conducted++;}
@@ -1696,8 +1703,8 @@
     for(let i=g.fishItems.length-1;i>=0;i--){
       const f=g.fishItems[i];f.phase+=dt*4;
       const d=dist(f.x,f.y,p.x,p.y);
-      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet||g.buffs.magnet>0)f.attracted=true;
-      if(f.attracted){const route=navigationDelta(f,p.x,p.y),length=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(length,(p.speed+240)*dt);
+      if(d<135+p.magnet*65+(p.speed-cfg.speed)*2/3+g.effectiveBuffs.magnet)f.attracted=true;
+      if(f.attracted){const route=navigationDelta(f,p.x,p.y),length=Math.max(1,Math.hypot(route.x,route.y)),step=Math.min(length,(f.swept?Math.max(950,p.speed*3):p.speed+240)*dt);
         moveWithCollision(f,route.x/length*step,route.y/length*step);}
       if(d<28){
         g.fish+=f.value;g.xp+=f.value*p.xpGain;g.fishItems.splice(i,1);burst(f.x,f.y,'#f5cf75',7);
@@ -1713,7 +1720,7 @@
       const token=g.rerollDrops[i];token.age+=dt;
       if(token.expires<=g.t){g.rerollDrops.splice(i,1);continue;}
       const d=dist(p.x,p.y,token.x,token.y);
-      if(d<165+p.magnet*45+g.effectiveBuffs.magnet||g.buffs.magnet>0){
+      if(d<165+p.magnet*45+g.effectiveBuffs.magnet){
         const length=Math.max(1,d),speed=Math.min(length,(p.speed+240)*dt);
         moveWithCollision(token,wrappedDelta(token.x,p.x)/length*speed,(p.y-token.y)/length*speed);
       }
@@ -1727,9 +1734,14 @@
       if(dist(item.x,item.y,p.x,p.y)<p.r+23){
         if(item.kind==='relay'){g.cityEvents.relayUnlocked=true;for(const pet of g.companionSquad)pet.specialCooldown=Math.max(0,pet.specialCooldown-4);}
         else if(item.kind==='heal')p.hp=Math.min(p.maxHp,p.hp+1);
-        else g.buffs[item.kind]=item.kind==='magnet'?EXPLORATION.magnetDuration:12;
+        else if(item.kind==='magnet'){
+          // One sweep of all fish currently on the board, never an ongoing pickup aura.
+          for(const fish of g.fishItems){fish.attracted=true;fish.swept=true;}
+          g.buffs.magnet=0;g.magnetSweepCount=(g.magnetSweepCount||0)+1;
+          g.magnetSweepFish=g.fishItems.length;g.magnetFlash=.9;
+        }else g.buffs[item.kind]=12;
         g.powerups.splice(i,1);burst(item.x,item.y,'#c2a4ff',12);playSfx(item.kind==='heal'?'heal':'power');
-        notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · ALL FISH 60s',2);
+        notify(item.kind==='relay'?'RALLY RELAY · Specials / runes leave a safe slowing field':item.kind==='heal'?'HEART · +1 HP':item.kind==='rage'?'RAGE · DOUBLE DAMAGE 12s':'MAGNET · FISH SWEEP',2);
       }
     }
     // A merged fish cache can earn several levels; resolve one choice at a time.
@@ -1751,15 +1763,15 @@
     const active=[
       ['⚡','ADRENALINE',g.buffs.survivalInstinct],
       ['♨','FERAL',g.feralInstinct.active?g.feralInstinct.timer:0],
-      ['✦','RAGE',g.buffs.rage],['◎','MAGNET',g.buffs.magnet],
+      ['✦','RAGE',g.buffs.rage],
       ['✚','INVULNERABLE',p.inv],['⬟','SHIELD',g.runicRelic.duration],
       ['⟳','REROLL',g.rerollTokens]
-    ].filter(item=>item[2]>0).slice(0,7);
+    ].filter(item=>item[2]>0 && item[1]!=='REROLL').slice(0,3);
     const icon=$('major-buff-icons');icon.replaceChildren();
     for(const [glyph,title,duration] of active){
       const chip=document.createElement('span');chip.className='major-buff active';
       const symbol=document.createElement('strong');symbol.textContent=glyph;
-      const text=document.createElement('span');text.textContent=title+' '+(title==='REROLL'?duration:Math.ceil(duration)+'s');
+      const text=document.createElement('span');text.textContent=Math.ceil(duration)+'s';chip.title=title;
       chip.append(symbol,text);icon.append(chip);
     }
   }
@@ -1795,22 +1807,18 @@
       btn.disabled=true; // Read-only status: gameplay abilities automatically activate on valid cooldown.
       const name=specialNames[type];
       const icons={shooter:'✹',healer:'✚',tank:'⬟',brawler:'⚔',sniper:'◎',engineer:'⚙',trapper:'⌁',bard:'♫'};
-      btn.textContent=icons[type]+' '+name+' '+(ally.specialDuration>0?'● '+Math.ceil(ally.specialDuration)+'s':ally.specialCooldown>0?'◔ '+Math.ceil(ally.specialCooldown)+'s':'✓ AUTO');
+      btn.textContent=icons[type]+(ally.specialDuration>0?' '+Math.ceil(ally.specialDuration):ally.specialCooldown>0?' '+Math.ceil(ally.specialCooldown):'');
       btn.setAttribute('aria-label',type+' special: '+btn.textContent);
       btn.style.setProperty('--ready',((1-ally.specialCooldown/(type==='healer'?24:18))*100)+'%');
     }
-    $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
+    $('support-status').textContent=''; // Companion icons convey the squad.
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · LV '+p.level+' · '+(game.campaign.night===100?'🔥 THE FINAL HORDE':BIOMES[game.world.epoch%4].name);
+    $('night-status').textContent=game.campaign.night>=99?(game.campaign.night===100?'THE CATASTROPHE':'THE FINAL NIGHT APPROACHES'):'';
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
-    $('encounter-status').textContent=game.labWave?
-      'MONSTER R'+game.labWave.rank+' · CREDITS '+game.labWave.budget+
-      ' · SPENT '+game.labWave.spent+' · BANK '+game.labWave.bankAfter+
-      ' · ARRIVALS '+game.labQueue.length+
-      (game.campaign.night===100?' · FINAL '+game.labFinalSpawned+'/'+game.labFinalTotal:''):'CAMPAIGN READY';
+    $('encounter-status').textContent=''; // Credits remain available in diagnostics, not the player HUD.
     renderMajorBuffs();
-    $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
+    $('buff-status').textContent=''; // Compact icons avoid duplicated status text.
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
     tactic.disabled=game.mode!=='running'||game.squadTacticCooldown>0;
     tactic.textContent=game.squadTacticDuration>0?game.squadTactic.toUpperCase()+' '+Math.ceil(game.squadTacticDuration)+'s':game.squadTacticCooldown>0?'Tactic '+Math.ceil(game.squadTacticCooldown)+'s':'Tactic: '+names[game.nextTactic];
@@ -2151,8 +2159,9 @@
       if(e.x+e.r+230<cameraX||e.x-e.r-230>cameraX+W||e.y+e.r+230<cameraY||e.y-e.r-230>cameraY+H)continue;
       ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
-      if(e.encoreSlow>0){outline(0,0,e.r+6,'#ffcf80',2);ctx.fillStyle='#fff0c6';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText(e.variant==='boss'?'RESIST':'SLOWED',0,e.r+24);ctx.textAlign='left';}
-      if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(e.huntAge%5<1.5?'HUNT · SIDESTEP':'HUNT · STRIKE',0,-e.r-22);ctx.textAlign='left';
+      if(e.creditCategory==='boss'&&source.campaign.night>=99)FIRE.bossAura(ctx,e.r,g.t,!!e.finalWave,reducedMotion);
+      if(e.encoreSlow>0)outline(0,0,e.r+6,'#ffcf80',2);
+      if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);
         if(e.huntAge%5<1.5){ctx.strokeStyle='#f1c3ff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.huntX*210,e.huntY*210);ctx.stroke();}}
 
       if(e.windup>0){
@@ -2168,8 +2177,7 @@
       if(e.mutation){
         const color=e.mutation==='burst'?'#ffb45f':e.mutation==='shield'?'#84dbff':'#eea4ff';
         outline(0,0,e.r+12,color,e.mutationAge<1?4:2);
-        ctx.fillStyle=color;ctx.font='bold 15px system-ui';ctx.textAlign='center';
-        ctx.fillText(e.mutation==='burst'?(e.mutationAge<1?'RUSH!':'»'):e.mutation==='shield'?'◇':'≈',0,-e.r-18);ctx.textAlign='left';
+        // Mutation glyphs and directional cues remain; the player discovers their meaning.
       }
       drawAnatomy(e);
       if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt);
@@ -2180,17 +2188,17 @@
         for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*TWO/4+.4);
           polygon(e.r+3,0,[[0,-2],[9,0],[0,2]],'#ffd48a');ctx.restore();}
       }
-      const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
-      ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-21,barW,5);
-      ctx.fillStyle=e.creditCategory?'#ffbd76':'#fa7e85';ctx.fillRect(-e.r,-e.r-21,barW*pct,5);
-      ctx.fillStyle=e.creditCategory?'#ffeacb':'#e5f8f2';ctx.font='bold 10px system-ui';ctx.textAlign='center';
-      ctx.fillText('HP '+Math.max(0,Math.ceil(e.hp))+'/'+Math.ceil(e.max)+'  DMG '+(e.damage||1).toFixed(1),0,-e.r-26);
-      ctx.textAlign='left';
+      // Regular zombies: silhouette and hit reaction only. Major enemies: slim bar when injured.
+      if(e.creditCategory&&e.hp<e.max){
+        const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
+        ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-19,barW,4);
+        ctx.fillStyle=e.creditCategory==='boss'?'#ffc477':'#d99ac5';ctx.fillRect(-e.r,-e.r-19,barW*pct,4);
+      }
       ctx.restore();
     }
     if(visible(p,300)){
     ctx.save();ctx.translate(p.x,p.y);
-    if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
+    if(p.autoFireDisabled)outline(0,0,39,'#c7adff',3);
     if(g.buffs.survivalInstinct>0)outline(0,0,48+(reducedMotion?0:Math.sin(g.t*4)*2),'#ffe79c',3);
     if(g.feralInstinctOverdrive>0)outline(0,0,53,'#ff7fad',4);
     if(g.runicRelic.active)outline(0,0,g.runicRelic.active==='slow'?260:38,'#94cfff',3);
@@ -2209,6 +2217,7 @@
     ctx.restore();
     }
     for(const hit of g.damagePopups){
+      if(!hit.critical&&!hit.major)continue;
       ctx.save();ctx.globalAlpha=Math.max(0,1-hit.age/.9);ctx.font=hit.critical?'bold 19px system-ui':'bold 15px system-ui';
       ctx.textAlign='center';ctx.fillStyle=hit.critical?'#ffe38a':'#ffffff';
       ctx.fillText('-'+hit.amount,hit.x,hit.y-hit.age*40);ctx.restore();
@@ -2228,7 +2237,11 @@
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
-    if(source.campaign.night>=99)FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
+    if(source.campaign.night>=99){
+      FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
+      FIRE.finale(ctx,W,H,source.t,source.campaign.night,source.bossFlash,reducedMotion);
+    }
+    FIRE.wave(ctx,W,H,source.wavePulse,source.campaign.night,reducedMotion);
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
@@ -2427,7 +2440,7 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,wavePulse:game?game.wavePulse:0,bossFlash:game?game.bossFlash:0,magnetSweepCount:game?game.magnetSweepCount:0,magnetSweepFish:game?game.magnetSweepFish:0,firestorm:!!(game&&game.campaign.night===100)},
       lab:game?{enabled:true,source:'full-campaign',economy:game.labEconomy?.snapshot(),wave:game.labWave,
         pending:game.labQueue?.length||0,finalSpawned:game.labFinalSpawned,finalTotal:game.labFinalTotal,
         finalBossId:game.labFinalBossId}:null,
