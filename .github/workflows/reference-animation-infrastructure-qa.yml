@@ -1,0 +1,61 @@
+name: Reference Animation Department · infrastructure QA
+on:
+  push:
+    branches: [main, feature/studio-reference-image-to-animation]
+    paths:
+      - game_factory/reference_animator.py
+      - game_factory/reference_animator_tests.py
+      - game_factory/art_references/**
+      - docs/cataclysm-1-0-major/animation.js
+      - docs/cataclysm-1-0-major/game.js
+      - docs/cataclysm-1-0-major/art/character-animations.json
+      - docs/cataclysm-100-lab/animation.js
+      - docs/cataclysm-100-lab/game.js
+      - docs/cataclysm-100-lab/art/character-animations.json
+      - game_factory/cataclysm_next/tests/browser-reference-animation.cjs
+      - .github/workflows/reference-animation-*.yml
+  pull_request:
+    paths:
+      - game_factory/reference_animator.py
+      - game_factory/reference_animator_tests.py
+      - docs/cataclysm-1-0-major/animation.js
+      - docs/cataclysm-1-0-major/game.js
+      - docs/cataclysm-100-lab/animation.js
+      - docs/cataclysm-100-lab/game.js
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install only offline contract dependencies
+        run: python -m pip install --quiet --disable-pip-version-check pillow
+      - name: Ensure image pipeline compiles and yields genuine motion sprites
+        run: |
+          python -m py_compile game_factory/reference_animator.py
+          python -m unittest game_factory.reference_animator_tests -v
+      - name: Existing game contracts, no changes to spawning or balance
+        run: |
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node --check docs/cataclysm-1-0-major/animation.js
+          node --check docs/cataclysm-1-0-major/game.js
+          node --check docs/cataclysm-100-lab/animation.js
+          node --check docs/cataclysm-100-lab/game.js
+          node --check game_factory/cataclysm_next/tests/browser-reference-animation.cjs
+      - name: Run real startup and atlas loading in Chrome
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          nohup python -m http.server 8765 --directory docs >/tmp/animation-department-http.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-art.cjs
+          node game_factory/cataclysm_next/tests/browser-major.cjs
