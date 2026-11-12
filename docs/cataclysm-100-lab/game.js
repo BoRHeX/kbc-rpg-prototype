@@ -1634,7 +1634,8 @@
     const anim=p.animation;
     anim.clock+=dt;anim.attack=Math.max(0,anim.attack-dt);anim.hit=Math.max(0,anim.hit-dt);
     if(g.shots.some(s=>s.kind==='normal'&&dist(s.x,s.y,p.x,p.y)<65))anim.attack=.14;
-    anim.moving=Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-WORLD_SCROLL_Y*dt)>.1;
+    anim.moveSpeed=dt>0?Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-WORLD_SCROLL_Y*dt)/dt:0;
+    anim.moving=anim.moveSpeed>6;
     anim.state=anim.hit>0?'hit':anim.attack>0?'attack':anim.moving?'run':'idle';
     anim.frame=Math.floor(anim.clock*12)%12;
     for(const enemy of g.enemies){
@@ -2035,7 +2036,9 @@
       game.buffs.rage>0||game.feralInstinct.active?'feral':
       game.buffs.survivalInstinct>0?'adrenaline':
       game.player.animation.state==='attack'?'attack':
-      game.player.animation.moving?'run':'idle':requestedState;
+      game.player.animation.moving?
+        (ART.hasReferenceAnimation('hero','walk')&&game.player.animation.moveSpeed<game.player.speed*.65?'walk':'run'):
+        (ART.hasReferenceAnimation('hero','aim')&&game.enemies.length>0?'aim':'idle'):requestedState;
     if(!(ART.hasReferenceAnimation(type,state)&&type==='hero'))
       VIS.aura(ctx,type,r,time,state,reducedMotion);
     return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion);
