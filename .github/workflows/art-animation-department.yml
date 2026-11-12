@@ -61,22 +61,18 @@ jobs:
         run: |
           python -m game_factory.art_department.pipeline gate
           git diff --check
-          node game_factory/cataclysm_next/tests/art-integration.cjs
-          node game_factory/cataclysm_next/tests/major-systems.cjs
-          node game_factory/cataclysm_next/tests/spawn-economy.cjs
-          node --check docs/cataclysm-1-0-major/animation.js
-          node --check docs/cataclysm-100-lab/animation.js
+          python -m game_factory.art_department.run_checks unit
       - name: Launch a genuine web game, not a mockup
         shell: bash
         run: |
           nohup python -m http.server 8765 --directory docs >/tmp/borhez-art-server.log 2>&1 &
           sleep 2
-          curl --fail http://127.0.0.1:8765/cataclysm-1-0-major/ >/dev/null
+          target="$(python -c 'import json;print(json.load(open("game_factory/art_department/jobs/active.json"))["play_url_path"])')"
+          curl --fail "http://127.0.0.1:8765/$target/" >/dev/null
       - name: Inspect running game, motion states and stress scene in Chrome
         run: |
           node game_factory/art_department/browser-review.cjs
-          node game_factory/cataclysm_next/tests/browser-art.cjs
-          node game_factory/cataclysm_next/tests/browser-major.cjs
+          python -m game_factory.art_department.run_checks browser
       - name: Independent multimodal art director — fail below threshold
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -143,6 +139,12 @@ jobs:
           ref: main
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Merge exact gated artwork PR, not an unrelated candidate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -158,7 +160,7 @@ jobs:
           git fetch origin main
           git checkout main
           git reset --hard origin/main
-          node game_factory/cataclysm_next/tests/art-integration.cjs
+          python -m game_factory.art_department.run_checks unit
       - name: Upload all playable games with newly accepted character
         uses: actions/upload-pages-artifact@v3
         with:
@@ -209,5 +211,10 @@ jobs:
           PY
       - name: Publish verified playtest link to workflow summary
         run: |
-          echo "Art Department ACCEPTED and LIVE: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/" >> "$GITHUB_STEP_SUMMARY"
-          echo "Stress build: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/" >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          j=json.load(open('game_factory/art_department/jobs/active.json'))
+          base='https://borhex.github.io/kbc-rpg-prototype/'
+          print('Art Department ACCEPTED and LIVE: '+base+j['play_url_path']+'/')
+          print('Mirror: '+base+j['mirror_dir'].removeprefix('docs/')+'/')
+          PY
