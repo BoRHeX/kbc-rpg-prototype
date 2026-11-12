@@ -1,0 +1,192 @@
+name: BoRHeZ Reference-to-Animation Studio
+run-name: Animate character from reference image
+on:
+  workflow_dispatch:
+    inputs:
+      actor:
+        description: "Existing Cataclysm character ID, e.g. trapper or hero"
+        required: true
+        type: string
+      states:
+        description: "Comma-separated motion states (run,attack,special), up to 6"
+        default: run
+        required: true
+        type: string
+      drive_file_id:
+        description: "Private Google Drive reference image ID (use this OR reference_path)"
+        required: false
+        type: string
+      reference_path:
+        description: "Repo reference image under game_factory/art_references/"
+        required: false
+        type: string
+      notes:
+        description: "Optional character identity and animation notes"
+        required: false
+        type: string
+      max_generations:
+        description: "Maximum charged image generation calls, 1–6"
+        required: false
+        default: "3"
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/reference_animation.json
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+concurrency:
+  group: borhez-reference-animations
+  cancel-in-progress: false
+jobs:
+  animate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install visual models and independent test dependencies
+        run: |
+          python -m pip install --quiet --disable-pip-version-check --upgrade openai pillow requests
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Resolve explicitly authorized character and reference; reject unsafe inputs BEFORE API costs
+        id: request
+        env:
+          INPUT_ACTOR: ${{ inputs.actor || '' }}
+          INPUT_STATES: ${{ inputs.states || '' }}
+          INPUT_DRIVE_FILE_ID: ${{ inputs.drive_file_id || '' }}
+          INPUT_REFERENCE_PATH: ${{ inputs.reference_path || '' }}
+          INPUT_NOTES: ${{ inputs.notes || '' }}
+          INPUT_MAX_GENERATIONS: ${{ inputs.max_generations || '3' }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from game_factory.reference_animator import validate_job
+          if os.environ.get('GITHUB_EVENT_NAME')=='push':
+              job=json.loads(Path('game_factory/requests/reference_animation.json').read_text())
+              if job.get('enabled') is not True:
+                  with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('active=false\n')
+                  raise SystemExit(0)
+          else:
+              job=dict(actor=os.environ['INPUT_ACTOR'],states=os.environ['INPUT_STATES'],
+                       drive_file_id=os.environ['INPUT_DRIVE_FILE_ID'],
+                       reference_path=os.environ['INPUT_REFERENCE_PATH'],
+                       notes=os.environ['INPUT_NOTES'],
+                       max_generations=os.environ['INPUT_MAX_GENERATIONS'])
+          if len(str(job.get('notes','')))>700:
+              raise SystemExit('Creator notes exceed 700 characters')
+          states=validate_job(job['actor'],job.get('states','run'),
+                     job.get('reference_path',''),job.get('drive_file_id',''))
+          maximum=int(job.get('max_generations',3))
+          if not 1<=maximum<=6 or len(states)>maximum:
+              raise SystemExit('Image requests exceed user-approved maximum (1-6)')
+          job['max_generations']=maximum
+          out=Path('artifacts/character-animation');out.mkdir(parents=True,exist_ok=True)
+          (out/'job.json').write_text(json.dumps(job,indent=2))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as fd:
+              fd.write('active=true\nactor='+job['actor']+'\nstates='+','.join(states)+'\n')
+          print('Validated reference animation request',job['actor'],states,maximum)
+          PY
+      - name: Offline pipeline tests and existing game contracts (no API charges)
+        if: steps.request.outputs.active == 'true'
+        run: |
+          python -m unittest game_factory.reference_animator_tests -v
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+      - name: Inspect reference pixels, animate requested poses with image model, then run independent vision review
+        if: steps.request.outputs.active == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          ART_REFERENCE_FOLDER_ID: ${{ secrets.ART_REFERENCE_FOLDER_ID }}
+          STUDIO_IMAGE_MODEL: gpt-image-2.6-flare
+          STUDIO_VISION_MODEL: gpt-6.1-terra
+        run: |
+          test -n "$OPENAI_API_KEY"
+          python - <<'PY'
+          import json
+          from game_factory.reference_animator import run
+          job=json.load(open('artifacts/character-animation/job.json'))
+          args=['--actor',job['actor'],'--states',job.get('states','run'),
+                '--max-generations',str(job['max_generations']),
+                '--notes',job.get('notes','')]
+          if job.get('reference_path'):args+=['--reference',job['reference_path']]
+          else:args+=['--drive-file-id',job['drive_file_id']]
+          run(args)
+          PY
+      - name: Validate only the character's PNG atlases and two mirrored manifests were edited
+        if: steps.request.outputs.active == 'true'
+        env:
+          ACTOR: ${{ steps.request.outputs.actor }}
+          STATES: ${{ steps.request.outputs.states }}
+        run: |
+          python - <<'PY'
+          import os,subprocess
+          from pathlib import Path
+          actor=os.environ['ACTOR'];states=set(os.environ['STATES'].split(','))
+          tracked=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          extra=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          changed={p for p in tracked+extra if p and not p.startswith('artifacts/')}
+          expected={f'docs/{dir}/art/characters/{actor}/{state}.png' for dir in ('cataclysm-1-0-major','cataclysm-100-lab') for state in states}
+          manifests={f'docs/{dir}/art/character-animations.json' for dir in ('cataclysm-1-0-major','cataclysm-100-lab')}
+          if not expected.issubset(changed) or not changed.issubset(expected|manifests):
+              raise SystemExit('Unexpected or missing generated source files: '+repr(sorted(changed)))
+          if not manifests.issubset(changed):raise SystemExit('Manifest not updated in both releases')
+          print('Verified',len(changed),'exact art and manifest changes; no gameplay changes')
+          PY
+          git diff --check
+      - name: Browser test verifies animation actually decodes, changes pose and renders in gameplay
+        if: steps.request.outputs.active == 'true'
+        env:
+          ART_ACTOR: ${{ steps.request.outputs.actor }}
+          ART_STATES: ${{ steps.request.outputs.states }}
+        run: |
+          nohup python -m http.server 8765 --directory docs >/tmp/borhez-visual-server.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-reference-animation.cjs
+          node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-horde.cjs
+      - name: Open reviewable production candidate; no unreviewed animation reaches main
+        if: steps.request.outputs.active == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ART_ACTOR: ${{ steps.request.outputs.actor }}
+          ART_STATES: ${{ steps.request.outputs.states }}
+        run: |
+          set -euo pipefail
+          branch="studio/character-reference-${GITHUB_RUN_ID}"
+          git config user.name "BoRHeZ Character Animator"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add docs/cataclysm-1-0-major/art/characters/ docs/cataclysm-1-0-major/art/character-animations.json
+          git add docs/cataclysm-100-lab/art/characters/ docs/cataclysm-100-lab/art/character-animations.json
+          git diff --cached --check
+          git commit -m "Art Studio: reference-derived animations for ${ART_ACTOR}"
+          gh auth setup-git
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Reference Animator: ${ART_ACTOR} · ${ART_STATES}" \
+            --body "Generated from an authorized image reference using a vision identity brief and animated image edits. Each animation state is independently reviewed for motion and character consistency. Atlas dimensions, transparency and real-browser sprite decoding passed. Core gameplay, enemy balance and other games unchanged. This PR will be automatically rechecked before publishing."
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: character-animation-visual-review
+          path: |
+            artifacts/character-animation/report.json
+            artifacts/character-animation/vision-identity.json
+            artifacts/character-animation/*-contact.png
+            artifacts/cataclysm-major/
+          if-no-files-found: ignore
+          retention-days: 20
