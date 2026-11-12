@@ -1,7 +1,8 @@
 {
   "game": "CATACLYSM 1.0 THE CATASTROPHE",
   "candidate": "docs/cataclysm-1-0-major/",
-  "accepted_browser_run": 43122335294,
-  "pages_run": 43122523102,
-  "requested": "verify all six public assets source hashes"
+  "accepted_browser_run": 43127212093,
+  "pages_run": 43127212136,
+  "requested": "verify all seven public assets source hashes after neon-noir graphics and reversed scrolling",
+  "merged_sha": "c535a7b327f3a88b81fcecf2b485597728557fd8"
 }
