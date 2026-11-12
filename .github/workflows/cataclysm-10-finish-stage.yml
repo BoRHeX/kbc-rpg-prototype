@@ -8,8 +8,13 @@ on:
       previous:
         required: true
         type: string
+      art_cache_run:
+        required: false
+        type: number
+        default: 0
 permissions:
   contents: read
+  actions: read
 
 jobs:
   build:
@@ -59,6 +64,57 @@ jobs:
           permission-profile: ':workspace'
           allow-bots: true
           prompt-file: game_factory/requests/cataclysm_10_finish_${{ inputs.stage }}.md
+      - name: Restore already painted character art from previous FAILED QA run
+        if: inputs.stage == 'animation' && inputs.art_cache_run > 0
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: ${{ inputs.art_cache_run }}
+          github-token: ${{ github.token }}
+          name: cataclysm-10-evidence-animation
+          path: artifacts/art-recovered
+      - name: Recover ONLY completed and dimension-validated painted image frames
+        if: inputs.stage == 'animation' && inputs.art_cache_run > 0
+        run: |
+          python - <<'PY'
+          import shutil
+          from pathlib import Path
+          from PIL import Image
+          # The prior run generated all 24 role frames, eight hero bearings and seven textures,
+          # then a stale *test version literal* failed. Do not pay to paint them again.
+          root=Path('artifacts/art-recovered')
+          output=Path('artifacts/cataclysm-10-finish/art/rendered')
+          expected=set()
+          for role in ('shooter','healer','tank','brawler','sniper','engineer','trapper','bard'):
+            for state in ('attack','special','hit'):
+              expected.add(role+'-'+state+'.png')
+          expected.add('hero-aim.png')
+          expected.update('ground-'+str(i)+'.png' for i in range(4))
+          expected.update(('prop-car.png','prop-dumpster.png','prop-building.png'))
+          found={}
+          for file in root.rglob('*.png'):
+            if file.name not in expected:continue
+            if file.name in found:continue
+            try:
+              with Image.open(file) as image:
+                image.verify()
+              with Image.open(file) as image:
+                dims=image.size
+              want=(768,96) if file.name.startswith('hero-') or
+                 any(file.name.startswith(role+'-') for role in ('shooter','healer','tank','brawler','sniper','engineer','trapper','bard')) else
+                 ((300,300) if file.name.startswith('ground-') else (288,288))
+              if dims!=want:
+                print('Skipping unexpected asset dimensions',file.name,dims,want)
+                continue
+            except Exception as error:
+              print('Skipping corrupt cached PNG:',file.name,str(error)[:160])
+              continue
+            found[file.name]=file
+          output.mkdir(parents=True,exist_ok=True)
+          for name,file in found.items():shutil.copy2(file,output/name)
+          print('Recovered',len(found),'of',len(expected),'trusted image-model PNGs:',sorted(found))
+          if len(found)<28:raise SystemExit('Incomplete recovered artwork cache; refuse unnecessary expensive regeneration')
+          PY
       - name: Animation-source preflight before making expensive image calls
         if: inputs.stage == 'animation'
         run: |
@@ -67,6 +123,7 @@ jobs:
           node game_factory/cataclysm_finish_score_contract.cjs
           node game_factory/cataclysm_next/tests/major-systems.cjs
           node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
       - name: Trusted image studio paints REAL follower behavior states and coherent city textures
         if: inputs.stage == 'animation'
         env:
@@ -128,6 +185,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-10-finish-${{ inputs.stage }}
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve unaccepted game candidate source for targeted recovery, even if QA fails
+        if: failure() && inputs.stage == 'animation'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-unaccepted-animation-source
           path: |
             docs/cataclysm-1-0-major/
             docs/cataclysm-100-lab/
