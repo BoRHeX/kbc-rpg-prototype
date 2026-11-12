@@ -1424,7 +1424,7 @@
   function defeatEnemy(e){
     const g=game,i=g.enemies.indexOf(e);if(i<0)return;
     if(e.consumed)return;
-    if(e.finalShield&&g.labFinalSpawned<g.labFinalTotal){e.hp=Math.max(1,e.max*.1);return;}
+    if(e.finalShield&&(g.labFinalSpawned<g.labFinalTotal||g.t<MAJOR.getNight(100).start+17)){e.hp=Math.max(1,e.max*.1);return;}
     e.consumed=true;
     if(e.cocoon){g.director.cocoonsDestroyed++;notify('COCOON BROKEN · Evolution stopped',2);}
     if(g.equipment.capacitor&&g.equipment.coil&&e.squadSlow>0){const refund=.3*g.equipment.capacitor;g.runicRelic.cooldown=Math.max(0,g.runicRelic.cooldown-refund);for(const ally of g.companionSquad)ally.specialCooldown=Math.max(0,ally.specialCooldown-refund);g.buildEffects.recharged++;}
