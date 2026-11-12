@@ -306,7 +306,7 @@
     } catch (err) { /* keep this session's best when storage is disabled */ }
   }
   function renderBest() {
-    $('best').textContent = personalBest.toLocaleString();
+    if($('best'))$('best').textContent = personalBest.toLocaleString();
   }
   readBest();
   function saveBest() {
