@@ -1,0 +1,28 @@
+{
+  "request_id": "cataclysm-hero-infrastructure-acceptance-01",
+  "game": "cataclysm",
+  "character": "hero",
+  "reference": "docs/cataclysm-1-0-major/art/hero-idle.png",
+  "source_dir": "docs/cataclysm-1-0-major",
+  "mirror_dir": "docs/cataclysm-100-lab",
+  "play_url_path": "cataclysm-1-0-major",
+  "frames_per_state": 24,
+  "frame_size": 96,
+  "states": [
+    "idle",
+    "run",
+    "hit",
+    "feral",
+    "adrenaline",
+    "attack"
+  ],
+  "visual_direction": "White cat protagonist with coral scarf, two pistols, unmistakable readable head/torso/arm/leg/tail articulation, distinct idle/run/fire/damaged/feral/adrenaline silhouettes at game scale. Maintain consistent identity, no shallow palette swaps.",
+  "minimum_visual_score": 3,
+  "allowed_generator": "hero_generate.py",
+  "acceptance_tests": [
+    "game_factory/cataclysm_next/tests/art-integration.cjs",
+    "game_factory/cataclysm_next/tests/major-systems.cjs",
+    "game_factory/cataclysm_next/tests/browser-art.cjs"
+  ],
+  "publish": true
+}
