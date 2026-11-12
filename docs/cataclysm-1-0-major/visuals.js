@@ -4,6 +4,7 @@
 const TAU=Math.PI*2;
 const artBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
+const assetRelease='cataclysm-10-painted42-cachefix-01';
 const paintings=Object.create(null);
 for(const name of ['ground-0','ground-1','ground-2','ground-3','prop-building','prop-car','prop-dumpster']){
  const asset={image:null,ready:false};paintings[name]=asset;
@@ -14,7 +15,7 @@ for(const name of ['ground-0','ground-1','ground-2','ground-3','prop-building','
   if(typeof image.decode==='function')image.decode().then(()=>{asset.ready=true;},()=>{asset.ready=false;});
   else asset.ready=true;
  };
- image.src=artBase+name+'.png';
+ image.src=artBase+name+'.png?art='+assetRelease;
 }
 const COLORS=[
  {road:'#202d39',glow:'#45dccc',accent:'#f9bd76',wet:'#74e8eb'},
@@ -197,7 +198,7 @@ function atmosphere(ctx,W,H,time=0,night=1,reduced=false){
  ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
  ctx.restore();
 }
-const API=Object.freeze({ground,prop,aura,shot,impact,atmosphere,palette:COLORS,pass:'catastrophe-neon-noir-02',hash});
+const API=Object.freeze({ground,prop,aura,shot,impact,atmosphere,palette:COLORS,pass:'catastrophe-neon-noir-02',artVersion:assetRelease,hash});
 root.CATA_VISUALS=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);

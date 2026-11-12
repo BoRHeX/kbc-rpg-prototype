@@ -18,6 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
+const assetRelease='cataclysm-10-painted42-cachefix-01';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
@@ -33,7 +34,7 @@ function loadAtlas(key,count){
   const ready=()=>{if(!settled){settled=true;entry.ready=true;loaded++;}};
   if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
  };
- img.src=assetBase+key+'.png';
+ img.src=assetBase+key+'.png?art='+assetRelease;
 }
 for(const state of ['idle','run','hit','feral','adrenaline','attack'])loadAtlas('hero-'+state,24);
 for(const id of allyIds)loadAtlas(id+'-run',12);
@@ -49,7 +50,7 @@ function overrideStatus(){
 function hasReferenceAnimation(id,state){return !!overrides[id+'-'+state]?.ready;}
 function loadReferenceAnimations(){
  if(typeof root.fetch!=='function'||typeof root.Image!=='function')return;
- root.fetch(assetBase+'character-animations.json',{cache:'no-cache'}).then(response=>{
+ root.fetch(assetBase+'character-animations.json?art='+assetRelease,{cache:'no-store'}).then(response=>{
   if(!response.ok)throw Error('Character manifest HTTP '+response.status);
   return response.json();
  }).then(data=>{
@@ -73,7 +74,7 @@ function loadReferenceAnimations(){
      const ready=()=>{if(!settled){settled=true;entry.ready=true;overrideMetrics.loaded++;}};
      if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
     };
-    img.src=assetBase+'characters/'+encodeURIComponent(id)+'/'+encodeURIComponent(state)+'.png';
+    img.src=assetBase+'characters/'+encodeURIComponent(id)+'/'+encodeURIComponent(state)+'.png?art='+assetRelease;
    }
   }
   overrideMetrics.manifestReady=true;
@@ -250,7 +251,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,assetVersion:assetRelease,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);

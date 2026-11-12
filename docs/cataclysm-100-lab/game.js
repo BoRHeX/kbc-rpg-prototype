@@ -4,7 +4,7 @@
   const BUILD = '1.0';
   const $ = id => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches && new URLSearchParams(location.search).get('motion')!=='full';
   const MIN_SHOT_INTERVAL = .04;
   const PATCH_ID = 'cataclysm-10-night99-polish-magnet-wave-04';
   const WORLD_SCROLL_Y=-45; // Faster northbound travel; wave timing is unchanged.
