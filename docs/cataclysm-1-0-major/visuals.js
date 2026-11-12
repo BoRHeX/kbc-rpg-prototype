@@ -2,6 +2,20 @@
 (function(root){
 'use strict';
 const TAU=Math.PI*2;
+const artBase=typeof document!=='undefined'&&document.currentScript
+ ?new URL('art/',document.currentScript.src).href:'./art/';
+const paintings=Object.create(null);
+for(const name of ['ground-0','ground-1','ground-2','ground-3','prop-building','prop-car','prop-dumpster']){
+ const asset={image:null,ready:false};paintings[name]=asset;
+ if(typeof root.Image!=='function')continue;
+ const image=new root.Image();asset.image=image;
+ image.onerror=()=>{asset.ready=false;};
+ image.onload=()=>{
+  if(typeof image.decode==='function')image.decode().then(()=>{asset.ready=true;},()=>{asset.ready=false;});
+  else asset.ready=true;
+ };
+ image.src=artBase+name+'.png';
+}
 const COLORS=[
  {road:'#202d39',glow:'#45dccc',accent:'#f9bd76',wet:'#74e8eb'},
  {road:'#1d3738',glow:'#6be4b6',accent:'#f3d68c',wet:'#93e2c9'},
@@ -15,9 +29,11 @@ function ellipse(ctx,x,y,rx,ry,color){ctx.beginPath();ctx.ellipse(x,y,Math.max(.
 function ground(ctx,bounds,biome=0,t=0,reduced=false){
  const {left,top,right,bottom}=bounds,p=COLORS[((biome%4)+4)%4],size=300;
  ctx.save();
+ const tile=paintings['ground-'+(((biome%4)+4)%4)];
  for(let row=Math.floor(top/size);row<=Math.ceil(bottom/size);row++)
   for(let col=Math.floor(left/size);col<=Math.ceil(right/size);col++){
    const x=col*size,y=row*size,n=hash(col,row),x2=x+size,y2=y+size;
+   if(tile.ready)ctx.drawImage(tile.image,x,y,size,size);
    ctx.fillStyle=p.road;ctx.globalAlpha=.23;ctx.fillRect(x+7,y+7,286,286);ctx.globalAlpha=1;
    // Pavement seams, raised curbs and narrow road channels.
    line(ctx,x+7,y+7,x2-7,y+7,'#73818c3a',2);
@@ -61,6 +77,13 @@ function ground(ctx,bounds,biome=0,t=0,reduced=false){
 function prop(ctx,c,biome=0,t=0,reduced=false){
  const p=COLORS[((biome%4)+4)%4],{x,y,w,h}=c,n=hash(x,y);
  ctx.save();
+ const painting=paintings['prop-'+c.kind];
+ if(painting&&painting.ready){
+  ctx.drawImage(painting.image,x,y,w,h);
+  // Thin wet sill reflections stay subordinate to bullets and danger telegraphs.
+  ctx.globalAlpha=.16;ctx.fillStyle=p.glow;ctx.fillRect(x+w*.14,y+h+2,w*.6,2);
+  ctx.restore();return;
+ }
  if(c.kind==='building'){
    // Layered roof edge, architectural shadow, HVAC and illuminated entrances.
    ctx.fillStyle='#070f1aa8';ctx.fillRect(x+16,y+18,w,h);
