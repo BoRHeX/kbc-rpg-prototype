@@ -25,6 +25,7 @@ jobs:
       actions: read
     outputs:
       pr: ${{ steps.candidate.outputs.pr }}
+      review_outcome: ${{ steps.review1.outcome }}
     env:
       ART_JOB: game_factory/art_department/jobs/active.json
       BORHEZ_BROWSER_CHANNEL: chrome
@@ -80,97 +81,24 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ART_REVIEW_ATTEMPT: '1'
         run: python -m game_factory.art_department.pipeline review
-      - name: Animator fixes specific visual failures — correction one
+      - name: Snapshot rejected source and independent visual evidence
         if: steps.review1.outcome == 'failure'
-        uses: openai/codex-action@v1
+        run: python game_factory/art_department/snapshot_candidate.py
+      - name: Transfer rejected candidate to a fresh secured runner
+        if: steps.review1.outcome == 'failure'
+        uses: actions/upload-artifact@v4
         with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          permission-profile: ':workspace'
-          allow-bots: true
-          prompt-file: game_factory/art_department/REVISION_PROMPT.md
-      - name: Recheck corrected character and gameplay — correction one
-        if: steps.review1.outcome == 'failure'
-        run: |
-          python -m game_factory.art_department.pipeline gate
-          git diff --check
-          python -m game_factory.art_department.run_checks unit
-          node game_factory/art_department/browser-review.cjs
-          python -m game_factory.art_department.run_checks browser
-      - name: Independent art director — assess correction one
-        if: steps.review1.outcome == 'failure'
-        id: review2
-        continue-on-error: true
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ART_REVIEW_ATTEMPT: '2'
-        run: python -m game_factory.art_department.pipeline review
-      - name: Animator fixes remaining visual failures — correction two
-        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
-        uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          permission-profile: ':workspace'
-          allow-bots: true
-          prompt-file: game_factory/art_department/REVISION_PROMPT.md
-      - name: Recheck corrected character and gameplay — correction two
-        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
-        run: |
-          python -m game_factory.art_department.pipeline gate
-          git diff --check
-          python -m game_factory.art_department.run_checks unit
-          node game_factory/art_department/browser-review.cjs
-          python -m game_factory.art_department.run_checks browser
-      - name: Independent art director — final assessment, reject if still poor
-        if: steps.review1.outcome == 'failure' && steps.review2.outcome == 'failure'
-        id: review3
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ART_REVIEW_ATTEMPT: '3'
-        run: python -m game_factory.art_department.pipeline review
-      - name: Enforce independent approval, not just pixel-test completion
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          path=Path('artifacts/art-department/accepted.json')
-          if not path.is_file():
-              raise SystemExit('Visual QA never accepted character: do not publish')
-          result=json.loads(path.read_text())
-          assert result['verdict']['pass'] is True, 'Visual review did not pass'
-          print('ART APPROVED after visual attempt',result['attempt'])
-          PY
-      - name: Commit only validated character art and open integration PR
+          name: rejected-art-stage1
+          path: artifacts/art-department/
+          if-no-files-found: error
+          retention-days: 10
+      - name: Commit only independently accepted candidate
+        if: steps.review1.outcome == 'success'
         id: candidate
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          branch="studio/art-department-${GITHUB_RUN_ID}"
-          git config user.name "BoRHeZ Art Department"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          python - <<'PY'
-          import json,subprocess
-          from pathlib import Path
-          j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
-          src=Path(j['source_dir']); mirror=Path(j['mirror_dir'])
-          paths=[src/'art'/f"{j['character']}-{s}.png" for s in j['states']]
-          paths += [src/'art'/j['allowed_generator'],src/'animation.js']
-          paths += [mirror/'art'/f"{j['character']}-{s}.png" for s in j['states']]
-          subprocess.run(['git','add',*[str(p) for p in paths]],check=True)
-          PY
-          git diff --cached --check
-          git diff --cached --quiet && { echo "::error::Art Department made no game changes"; exit 1; }
-          git commit -m "Art Department: verified animated character integrated in playable game"
-          gh auth setup-git
-          git push --set-upstream origin "$branch"
-          pr="$(gh pr create --base main --head "$branch" --title "Art Department acceptance: Cataclysm hero fully animated in-game" --body "Reusable Art & Animation Department acceptance candidate. Reference image was inspected by multimodal scout. Reproducible generated character atlas frames passed independent pixel/alpha checks, existing campaign contracts, actual browser rendering + gameplay, multimodal visual critique and stress mirror. No unrelated game pass or modifications. Evidence is attached to source workflow run. If the independent gates succeeded, publish automatically.")"
-          echo "PR: $pr"
-          number="${pr##*/}"
-          echo "pr=$number" >> "$GITHUB_OUTPUT"
-          echo "Validated character PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+        run: bash game_factory/art_department/commit_accepted.sh
       - name: Publish reproducible art, actual screenshots and critical review as run evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -180,9 +108,197 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
-  publish-accepted-character:
+  repair-one:
     needs: produce-and-review
-    if: needs.produce-and-review.result == 'success'
+    if: needs.produce-and-review.outputs.review_outcome == 'failure'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    outputs:
+      pr: ${{ steps.candidate.outputs.pr }}
+      review_outcome: ${{ steps.review2.outcome }}
+    env:
+      ART_JOB: game_factory/art_department/jobs/active.json
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - name: Fresh protected runner — resume rejected art source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install production and browser tools before revoking privileges
+        run: |
+          python -m pip install --disable-pip-version-check --quiet pillow cairosvg
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Restore prior candidate, visual QA and browser screenshots
+        uses: actions/download-artifact@v4
+        with:
+          name: rejected-art-stage1
+          path: artifacts/art-department/
+      - name: Apply source-only candidate patch — do not smuggle unreviewed assets
+        run: |
+          test -s artifacts/art-department/candidate.patch
+          test -s artifacts/art-department/revision-brief.md
+          git apply --binary --check artifacts/art-department/candidate.patch
+          git apply --binary artifacts/art-department/candidate.patch
+          git diff --check
+      - name: Autonomous character animator — actual rejected poses corrected
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/art_department/REVISION_PROMPT.md
+      - name: Source, frame, silhouette and gameplay contracts
+        run: |
+          python -m game_factory.art_department.pipeline gate
+          git diff --check
+          python -m game_factory.art_department.run_checks unit
+      - name: Serve the actual Cataclysm game and stress lab
+        shell: bash
+        run: |
+          nohup python -m http.server 8765 --directory docs >/tmp/borhez-art-server.log 2>&1 &
+          sleep 2
+          target="$(python -c 'import json;print(json.load(open("game_factory/art_department/jobs/active.json"))["play_url_path"])')"
+          curl --fail "http://127.0.0.1:8765/$target/" >/dev/null
+      - name: Re-render all 24 real-browser run and attack frames
+        run: |
+          node game_factory/art_department/browser-review.cjs
+          python -m game_factory.art_department.run_checks browser
+      - name: Independent visual art director — attempt two
+        id: review2
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '2'
+        run: python -m game_factory.art_department.pipeline review
+      - name: Snapshot independently rejected corrected artwork
+        if: steps.review2.outcome == 'failure'
+        run: python game_factory/art_department/snapshot_candidate.py
+      - name: Transfer correction to final isolated runner
+        if: steps.review2.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rejected-art-stage2
+          path: artifacts/art-department/
+          if-no-files-found: error
+          retention-days: 10
+      - name: Commit only independently accepted character candidate
+        if: steps.review2.outcome == 'success'
+        id: candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash game_factory/art_department/commit_accepted.sh
+      - name: Retain critic verdict, contact frames and actual mobile gameplay
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: art-department-review-review2
+          path: artifacts/art-department/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  repair-two:
+    needs: repair-one
+    if: needs.repair-one.outputs.review_outcome == 'failure'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    outputs:
+      pr: ${{ steps.candidate.outputs.pr }}
+      review_outcome: ${{ steps.review3.outcome }}
+    env:
+      ART_JOB: game_factory/art_department/jobs/active.json
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - name: Fresh protected runner — resume rejected art source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install production and browser tools before revoking privileges
+        run: |
+          python -m pip install --disable-pip-version-check --quiet pillow cairosvg
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Restore prior candidate, visual QA and browser screenshots
+        uses: actions/download-artifact@v4
+        with:
+          name: rejected-art-stage2
+          path: artifacts/art-department/
+      - name: Apply source-only candidate patch — do not smuggle unreviewed assets
+        run: |
+          test -s artifacts/art-department/candidate.patch
+          test -s artifacts/art-department/revision-brief.md
+          git apply --binary --check artifacts/art-department/candidate.patch
+          git apply --binary artifacts/art-department/candidate.patch
+          git diff --check
+      - name: Autonomous character animator — actual rejected poses corrected
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/art_department/REVISION_PROMPT.md
+      - name: Source, frame, silhouette and gameplay contracts
+        run: |
+          python -m game_factory.art_department.pipeline gate
+          git diff --check
+          python -m game_factory.art_department.run_checks unit
+      - name: Serve the actual Cataclysm game and stress lab
+        shell: bash
+        run: |
+          nohup python -m http.server 8765 --directory docs >/tmp/borhez-art-server.log 2>&1 &
+          sleep 2
+          target="$(python -c 'import json;print(json.load(open("game_factory/art_department/jobs/active.json"))["play_url_path"])')"
+          curl --fail "http://127.0.0.1:8765/$target/" >/dev/null
+      - name: Re-render all 24 real-browser run and attack frames
+        run: |
+          node game_factory/art_department/browser-review.cjs
+          python -m game_factory.art_department.run_checks browser
+      - name: Independent visual art director — attempt three
+        id: review3
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '3'
+        run: python -m game_factory.art_department.pipeline review
+      - name: Commit only independently accepted character candidate
+        if: steps.review3.outcome == 'success'
+        id: candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash game_factory/art_department/commit_accepted.sh
+      - name: Retain critic verdict, contact frames and actual mobile gameplay
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: art-department-review-review3
+          path: artifacts/art-department/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  publish-accepted-character:
+    needs: [produce-and-review, repair-one, repair-two]
+    if: ${{ always() && (needs.produce-and-review.outputs.pr != '' || needs.repair-one.outputs.pr != '' || needs.repair-two.outputs.pr != '') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     concurrency:
@@ -211,7 +327,7 @@ jobs:
       - name: Merge exact gated artwork PR, not an unrelated candidate
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ needs.produce-and-review.outputs.pr }}
+          PR_NUMBER: ${{ needs.repair-two.outputs.pr || needs.repair-one.outputs.pr || needs.produce-and-review.outputs.pr }}
         shell: bash
         run: |
           set -euo pipefail
