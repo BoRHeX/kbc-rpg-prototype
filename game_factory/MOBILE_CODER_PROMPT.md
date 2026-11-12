@@ -15,6 +15,24 @@ Do not modify job metadata, tests, workflows, dependencies, other games, or
 publishing code. No network services, external assets, dependency installs,
 trackers, credentials, logins or payments are needed for these small games.
 
+## LITE MOBILE is a runtime target, not a visual ceiling
+
+**Do not interpret the word 'small', 'simple' or 'minigame' as permission
+to make unconvincing artwork.** The production vocabulary is **LITE MOBILE**:
+
+- LITE = bounded CPU/GPU/memory, short readable functions, responsive gameplay,
+  small batched image assets and efficient Canvas draw calls.
+- MOBILE = touch ergonomics and fluid phone play; no large per-frame calculations.
+- Visual ambition is unrestricted by the LITE designation. Professional,
+  illustrated, textured, original character art is preferable to code-stitched
+  polygons or 2-frame mirrored silhouettes.
+- Art and animation are produced **offline** by BoRHeZ Art Department, delivered
+  as baked PNG atlases and texture assets. At runtime, load and draw the frames.
+  Coordinate with that department instead of writing procedural limbs as the
+  final art. Don't invent asset filenames that do not exist.
+- Respect the existing job's allowed source paths and acceptance gates; this
+  is artistic direction, not authorization to modify unrelated games.
+
 ## Version 1 game contract
 
 Create original, self-contained, one-finger arcade minigames. Use a responsive
