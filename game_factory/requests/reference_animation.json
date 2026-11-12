@@ -1,13 +1,13 @@
 {
   "enabled": true,
-  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-05",
+  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-06",
   "actor": "hero",
   "states": "idle,run,attack,hit,feral,adrenaline",
   "reference_path": "docs/cataclysm-1-0-major/art/hero-idle.png",
   "drive_file_id": "",
   "texture_first": true,
   "max_generations": 6,
-  "notes": "Cataclysm 1.0 LITE MOBILE painted game art, same white cat, red scarf, two pistols. USE PAINTED ANCHOR. Every IDLE frame must visibly breathe: expand/compress upper chest and shoulders, sweep tail through different curved silhouettes and move loose scarf end; eye blink alone FAILS. Real run contact/down/passing/up, separate arms/recoil in attack, hit stagger/recover, feral red eyes + aggressive posture, adrenaline run-and-gun. Real illustrated textures, no polygon-stitched look; bake to 96px atlases. No mechanics, squad, map, audio, UI or version changes.",
+  "notes": "Cataclysm 1.0 LITE MOBILE painted art. Reuse accepted painted white-cat dual-pistol red-scarf anchor. IDLE is a subtle living grounded pose: blink + tail swish + scarf sway are valid; breathing desirable, not mandatory. RUN must show distinct alternating foot contact/compression/passing/recovery and weight transfer. ATTACK must show aim/anticipation/real recoil/recovery, not hue shifts. HIT, FERAL red eyes and ADRENALINE need visible state-specific choreography. Baked textured 96px atlases, light runtime, preserve gameplay, world and version 1.0.",
   "reuse_anchor_run_id": 43274545354,
   "max_visual_retries": 2
 }
