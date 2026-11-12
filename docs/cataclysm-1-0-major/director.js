@@ -26,7 +26,7 @@ const FINAL_HORDE=Object.freeze([
 ]);
 function isPeak(n){return n%9===0||n%6===0||SURPRISE_NIGHTS.includes(n)||n===100;}
 function reserveShare(n){
- if(n>=95&&n<100)return [0,.08,.14,.21,.29,.38][n-94];
+ if(n>=95&&n<100)return [0,.08,.14,.21,.23,.20][n-94];
  for(let gap=1;gap<=5;gap++)if(isPeak(n+gap))return [0,.38,.29,.21,.14,.08][gap];
  return 0;
 }
@@ -74,7 +74,7 @@ function create(seed=990100){
   const total=spent(),unspent=Math.round((budget-total)*10)/10;
   lastNight=n;totalSpent+=total;totalEarned+=income;
   return Object.freeze({night:n,income,reserved,released:release,bankAfter:bank,budget,spent:total,unspent,
-   isPeak:peak,isSurprise:SURPRISE_NIGHTS.includes(n),rank:tier,interval:n>=95?.45:.9,scripted:false,
+   isPeak:peak,isSurprise:SURPRISE_NIGHTS.includes(n),rank:tier,interval:Math.min(.9,12.3/Math.max(1,queue.length)),scripted:false,
    queue:Object.freeze(queue.map(e=>Object.freeze({...e}))),
    counts:Object.freeze(queue.reduce((counts,e)=>(counts[e.id]=(counts[e.id]||0)+1,counts),{}))});
  }
