@@ -151,13 +151,14 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
       ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
       ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
     }
-    if((!override||!override.embeddedWeapon)&&(id==='hero'||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
+    // Hero atlases contain both pistols attached to their animated hands.
+    if(id!=='hero'&&(!override||!override.embeddedWeapon)&&(id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
     if(state==='feral'||state==='adrenaline'){
       ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=1.5;ctx.globalAlpha=.65;
       ctx.beginPath();ctx.ellipse(0,24,26,6,0,0,TWO);ctx.stroke();
       if(!reduced)for(let k=0;k<3;k++)rect(ctx,-34-k*4,-8+k*12,7+Math.sin(time*9+k)*3,1,ctx.strokeStyle);
     }
-    if(state==='attack'&&!reduced&&recoil>.15){
+    if(id!=='hero'&&state==='attack'&&!reduced&&recoil>.15){
       ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
       poly(ctx,[[29,0],[35,-5],[34,-1],[43,0],[34,2],[36,5]],'#ffe8a2',null);ctx.restore();
     }
