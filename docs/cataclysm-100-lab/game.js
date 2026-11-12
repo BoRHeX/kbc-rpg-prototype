@@ -6,7 +6,7 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-night99-stress-horde-hazards-03';
+  const PATCH_ID = 'cataclysm-10-night99-polish-magnet-wave-04';
   const WORLD_SCROLL_Y=-45; // Faster northbound travel; wave timing is unchanged.
   const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR, HAZ = globalThis.CATA_HAZARDS;
   const LAB_MODE=true, FIRE=globalThis.CATA_LAB_FIRE;
@@ -2180,8 +2180,8 @@
       ctx.save();if(e.variant==='ghost')ctx.globalAlpha=.62;ctx.translate(e.x,e.y);ctx.rotate(reducedMotion?0:Math.sin(e.phase)*.08);
       circle(0,9,e.r*1.04,'#070d15a0');
       if(e.creditCategory==='boss'&&source.campaign.night>=99)FIRE.bossAura(ctx,e.r,g.t,!!e.finalWave,reducedMotion);
-      if(e.encoreSlow>0){outline(0,0,e.r+6,'#ffcf80',2);ctx.fillStyle='#fff0c6';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText(e.variant==='boss'?'RESIST':'SLOWED',0,e.r+24);ctx.textAlign='left';}
-      if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(e.huntAge%5<1.5?'HUNT · SIDESTEP':'HUNT · STRIKE',0,-e.r-22);ctx.textAlign='left';
+      if(e.encoreSlow>0)outline(0,0,e.r+6,'#ffcf80',2);
+      if(e.elite){outline(0,0,e.r+12,'#f1c3ff',4);
         if(e.huntAge%5<1.5){ctx.strokeStyle='#f1c3ff';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.huntX*210,e.huntY*210);ctx.stroke();}}
 
       if(e.windup>0){
@@ -2197,8 +2197,7 @@
       if(e.mutation){
         const color=e.mutation==='burst'?'#ffb45f':e.mutation==='shield'?'#84dbff':'#eea4ff';
         outline(0,0,e.r+12,color,e.mutationAge<1?4:2);
-        ctx.fillStyle=color;ctx.font='bold 15px system-ui';ctx.textAlign='center';
-        ctx.fillText(e.mutation==='burst'?(e.mutationAge<1?'RUSH!':'»'):e.mutation==='shield'?'◇':'≈',0,-e.r-18);ctx.textAlign='left';
+        // Mutation symbols removed; keep meaningful attack telegraphs.
       }
       drawAnatomy(e);
       if(!e.cocoon)catSprite(e.bossKind||e.eliteKind||e.variant,e.r,e.phase,e.hurt);
@@ -2219,7 +2218,7 @@
     }
     if(visible(p,300)){
     ctx.save();ctx.translate(p.x,p.y);
-    if(p.autoFireDisabled){outline(0,0,39,'#c7adff',3);ctx.fillStyle='#e1d4ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.fillText('FIRE SEALED',0,-49);ctx.textAlign='left';}
+    if(p.autoFireDisabled)outline(0,0,39,'#c7adff',3);
     if(g.buffs.survivalInstinct>0)outline(0,0,48+(reducedMotion?0:Math.sin(g.t*4)*2),'#ffe79c',3);
     if(g.feralInstinctOverdrive>0)outline(0,0,53,'#ff7fad',4);
     if(g.runicRelic.active)outline(0,0,g.runicRelic.active==='slow'?260:38,'#94cfff',3);
