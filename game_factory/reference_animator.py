@@ -220,9 +220,18 @@ def contact_sheet(frames: list[Image.Image]) -> bytes:
 
 
 def inspect_animation(client, reference: bytes, frames: list[Image.Image], state: str, actor: str, texture_first: bool = False) -> dict:
+    phase = {
+        "run": "contact, compression, passing, up, alternating leg cycle with real weight transfer",
+        "attack": "anticipation, weapon fire, recoil, recovery with distinct pistol/arm positions",
+        "idle": "breathing, blinking and secondary tail/scarf motion while feet stay grounded",
+        "hit": "recognizable impact, stagger or fall-back, and recovery",
+        "feral": "aggressive gait and body language with crimson eyes, beyond hue shifts",
+        "adrenaline": "faster run-and-gun with differentiated energetic posture and weapon action",
+    }.get(state, "distinct natural movement matching the state")
     result = model_json(client, (
         "You are independent game-animation visual QA. Image 1 shows the authorized reference character; "
         "image 2 shows sequential frames drawn from the generated " + state + " motion. "
+        "Required action phases for THIS state: " + phase + ". "
         "Return JSON with booleans same_character, visible_motion, usable_in_game and "
         "booleans painted_texture, articulated_key_poses, distinct_motion_phases and "
         "a short concern string. Evaluate subject identity (fur/face/outfit/equipment), "
@@ -360,7 +369,7 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
             frame_count=number,
             frame_duration_ms=timing,
             size="512x512",
-            quality="medium",
+            quality="high" if texture_first else "medium",
         )
     if not result.data or not result.data[0].b64_json:
         raise RuntimeError("Image model returned no animation")
@@ -393,7 +402,7 @@ def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dic
     for state,data in sprites.items():
         with Image.open(BytesIO(data)) as img:
             frame_count=img.width//96
-        mapping[state]={"frames":frame_count,"fps":10 if state in ("idle","walk","aim") else 12,
+        mapping[state]={"frames":frame_count,"fps":(6 if state in ("idle","hit") else 8) if anchor is not None else (10 if state in ("idle","walk","aim") else 12),
                         "embedded_weapon":True,"scale":1.08 if state=="feral" else 1.14 if state=="adrenaline" else 1.0,
                         "reference_sha256":hashlib.sha256(reference).hexdigest()[:20],
                         **({"art_direction":"LITE_MOBILE_TEXTURE_FIRST"} if anchor is not None else {})}
