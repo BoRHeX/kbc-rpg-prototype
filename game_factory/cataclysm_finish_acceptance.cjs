@@ -38,6 +38,13 @@ console.log('PASS 8 role-specific follower speeds, formation positions, interrup
 if(stage==='followers')process.exit(0);
 for(let i=0;i<2;i++){
  const manifest=JSON.parse(read(i,'art/character-animations.json'));
+ const heroAim=manifest.characters?.hero?.aim;
+ assert.ok(heroAim&&heroAim.frames===8,'Hero requires eight real painted gun-direction poses');
+ const heroFile=path.join(dirs[i],'art','characters','hero','aim.png');
+ assert.ok(fs.existsSync(heroFile),'Hero directional artwork missing');
+ const heroPng=fs.readFileSync(heroFile);
+ assert.equal(heroPng.readUInt32BE(16),8*96,'Hero gun bearing sprite dimensions incorrect');
+ assert.equal(heroPng.readUInt32BE(20),96);
  for(const role of roles){
    for(const state of ['attack','special','hit']){
       const entry=manifest.characters?.[role]?.[state];
