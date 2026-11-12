@@ -753,7 +753,7 @@
     const e={...safeSpawn(rnd(560,730)),variant,dash:0,r:variant==='weaver'?15:extra===2?25:18,
       hp,max:hp,damage:1+Math.floor((scale-1)/1.5),speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
       phase:rnd(0,TWO),weight:extra,hurt:0,mutation:null,mutationTime:0,applyMutation};
-    installTraits(e,traits);e.id=++d.serial;e.threatCost=bought?LAB.costs[variant]:cost;
+    installTraits(e,traits);e.id=++d.serial;e.threatCost=bought?LAB.priceFor(variant,game.campaign.night):cost;
     const spec=MAJOR.catalog.normal.find(a=>a.id===variant);
     if(spec){e.role=spec.role;e.attackKind=spec.attack;e.attackCooldown=1.2+rand()*1.5;e.windup=0;
       e.hp*=spec.hp;e.max=e.hp;e.speed*=spec.speed;e.r=spec.role==='caster'?21:e.r;}
@@ -1189,7 +1189,7 @@
       spawnEnemy(item.id,{labPurchase:true});
     if(!e)return;
     g.labQueue.shift();g.labSpawned++;
-    e.labRank=item.rank;e.labCost=item.cost;e.night=g.campaign.night;
+    e.labRank=item.rank;e.labCost=item.cost;e.threatCost=item.cost;e.night=g.campaign.night;
     if(g.campaign.night===100){
       const order=g.labFinalSpawned,angle=-Math.PI/2+order*2*Math.PI/9;
       const radius=Math.min(W,H)*(order<9?.35:.245);
@@ -1212,6 +1212,8 @@
     const wave=g.labEconomy.plan(n);
     g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;
     if(n===100){
+      // Protect the player and champions while the 16-second cinematic formation assembles.
+      g.player.inv=Math.max(g.player.inv,17);
       // No ordinary enemies or environmental hazards interfere with the eighteen arrivals.
       g.enemies=[];g.enemyShots=[];g.hazards.toxicGasClouds=[];g.cityEvents.active=null;
       g.majorFinalSpawned=true;g.labFinalTotal=g.labQueue.length;g.labFinalSpawned=0;
@@ -1248,7 +1250,7 @@
       shockwave:[-1.5,-1,-.5,0,.5,1,1.5],chain:[-.4,-.2,0,.2,.4],
       nova:[-2.4,-1.8,-1.2,-.6,0,.6,1.2,1.8,2.4]} ;
     if(kind==='summon'&&g.enemies.length<liveCap()-3){
-      for(let i=0;i<2;i++)spawnEnemy('shambler');
+      if(g.campaign.night!==100)for(let i=0;i<2;i++)spawnEnemy('shambler');
     }
     for(const a of patterns[kind]||[0]){
       if(g.enemyShots.length>=90)break;
