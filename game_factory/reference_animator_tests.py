@@ -40,6 +40,28 @@ class ReferenceAnimatorTests(unittest.TestCase):
         self.assertEqual(mod.FRAME_TARGET["run"],8)
         self.assertEqual(mod.FRAME_TARGET["attack"],8)
 
+    def test_lite_mobile_idle_review_is_state_aware(self):
+        # A convincing idle can be subtle and grounded. A run cannot bypass
+        # required joint articulation and distinct action phases.
+        verdict = {
+            "same_character": True, "visible_motion": True,
+            "usable_in_game": True, "painted_texture": True,
+            "idle_life": True, "articulated_key_poses": False,
+            "distinct_motion_phases": False, "concern": "",
+        }
+        original = mod.model_json
+        mod.model_json = lambda _client, _prompt, _images: verdict
+        frames = [Image.new("RGBA", (96, 96), (0, 0, 0, 0)) for _ in range(6)]
+        try:
+            accepted = mod.inspect_animation(
+                None, b"reference", frames, "idle", "hero", texture_first=True)
+            self.assertTrue(accepted["idle_life"])
+            with self.assertRaises(ValueError):
+                mod.inspect_animation(
+                    None, b"reference", frames, "run", "hero", texture_first=True)
+        finally:
+            mod.model_json = original
+
     def test_synthetic_gif_becomes_real_transparent_motion_atlas(self):
         frames = []
         for x in (22, 29, 36, 43, 50, 57):
