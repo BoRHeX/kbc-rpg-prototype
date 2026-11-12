@@ -23,5 +23,5 @@ For another game: supply a corresponding character manifest and integration/acce
 
 ## When the art director rejects
 - The first rejection is recorded as `artifacts/art-department/visual-review-attempt-1.json` and distilled into `revision-brief.md`, so the next artist pass has precise evidence rather than a generic 'try again' prompt.
-- Each repair re-renders the entire 24-frame running and attack cycles **in the actual browser Canvas**. It cannot claim completion from pixel hashes or mechanical alpha silhouette counts.
+- Each repair runs in a **fresh GitHub-hosted job/runner** (necessary because Codex's secure `drop-sudo` privilege reduction is irreversible in one job). The prior rejected candidate's **source-only Git binary patch** and the actual browser screenshots/visual-critic JSON are carried through GitHub Actions artifacts; the mirror is rebuilt under scope gates. Each repair re-renders the entire 24-frame running and attack cycles **in the actual browser Canvas**. It cannot claim completion from pixel hashes or mechanical alpha silhouette counts.
 - At most two repairs; pass only with `artifacts/art-department/accepted.json` produced by independent visual approval. The visual thresholds are not reduced to make publishing easier. If all attempts fail, leave Cataclysm 1.0 unchanged and retain evidence.
