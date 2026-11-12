@@ -77,9 +77,8 @@ jobs:
         if: inputs.stage == 'animation' && inputs.art_cache_run > 0
         run: |
           python - <<'PY'
-          import shutil
+          import shutil,struct
           from pathlib import Path
-          from PIL import Image
           # The prior run generated all 24 role frames, eight hero bearings and seven textures,
           # then a stale *test version literal* failed. Do not pay to paint them again.
           root=Path('artifacts/art-recovered')
@@ -96,13 +95,15 @@ jobs:
             if file.name not in expected:continue
             if file.name in found:continue
             try:
-              with Image.open(file) as image:
-                image.verify()
-              with Image.open(file) as image:
-                dims=image.size
-              want=(768,96) if file.name.startswith('hero-') or
-                 any(file.name.startswith(role+'-') for role in ('shooter','healer','tank','brawler','sniper','engineer','trapper','bard')) else
-                 ((300,300) if file.name.startswith('ground-') else (288,288))
+              data=file.read_bytes()
+              if not data.startswith(bytes.fromhex('89504e470d0a1a0a')) or len(data)<32:
+                raise ValueError('Not a PNG file')
+              dims=struct.unpack('>II',data[16:24])
+              animated=(file.name=='hero-aim.png' or any(
+                file.name.startswith(role+'-') for role in
+                ('shooter','healer','tank','brawler','sniper','engineer','trapper','bard')))
+              want=(768,96) if animated else (
+                (300,300) if file.name.startswith('ground-') else (288,288))
               if dims!=want:
                 print('Skipping unexpected asset dimensions',file.name,dims,want)
                 continue
