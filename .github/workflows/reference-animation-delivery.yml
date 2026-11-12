@@ -52,7 +52,8 @@ jobs:
           from pathlib import Path
           files=Path('/tmp/animation-diff.txt').read_text().splitlines()
           if not files:raise SystemExit('Empty animation PR')
-          pattern=re.compile(r'^docs/(cataclysm-1-0-major|cataclysm-100-lab)/art/characters/([a-z][a-z0-9-]+)/([a-z]+)[.]png
+          pattern=re.compile(r'^docs/(cataclysm-1-0-major|cataclysm-100-lab)/art/characters/([a-z][a-z0-9-]+)/([a-z]+)[.]png$')
+          states=set();actors=set();anchors=set()
           for file in files:
               if file in ('docs/cataclysm-1-0-major/art/character-animations.json','docs/cataclysm-100-lab/art/character-animations.json'):continue
               m=pattern.fullmatch(file)
