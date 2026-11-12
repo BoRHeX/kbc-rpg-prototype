@@ -732,7 +732,7 @@
   }
   function spawnEnemy(type,mutationFlags){
     const d=game.director;
-    if(citySpawnBlocked()||game.mode!=='running'||game.enemies.length>=liveCap()||d.blocked||(d.recovery>0&&game.enemies.length>0)||d.framePressure)return null;
+    if(citySpawnBlocked()||game.mode!=='running'||game.enemies.length>=liveCap()||(!game.lab.enabled&&d.blocked)||(!game.lab.enabled&&d.recovery>0&&game.enemies.length>0)||d.framePressure)return null;
     const unlocked=availableThreats(game.t).filter(k=>k!=='gas');
     const variant=unlocked.includes(type)?type:unlocked[(game.spawnCount+1)%unlocked.length];
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
@@ -1180,7 +1180,7 @@
     if(entry.elite)spawnMajorEncounter(entry.eliteCategory,n);
     if(entry.final){
       g.majorFinalSpawned=true;
-      if(g.lab.enabled){g.lab.finalScheduled=true;g.lab.queued=Array.from({length:24},(_,i)=>({at:g.t+i+1,kind:i===0?'elite':i===6?'superElite':i===12?'boss':i%5===0?'elite':'normal'}));notify('NIGHT 100 · CITY IN FLAMES · FINAL WAVE',5,'finale');}
+      if(g.lab.enabled){g.lab.finalScheduled=true;g.lab.bank=500;g.lab.queued=Array.from({length:24},(_,i)=>({at:g.t+i+1,kind:i===0?'elite':i===6?'superElite':i===12?'boss':i%5===0?'elite':'normal'}));notify('NIGHT 100 · CITY IN FLAMES · FINAL WAVE',5,'finale');}
       else {spawnMajorEncounter('elite',100,true);spawnMajorEncounter('superElite',100,true);notify('NIGHT 100 · THE CATASTROPHE · FINAL CLEAR',5,'finale');}
     }else if(n%3===1)notify('NIGHT '+n+' / 100 · THE CITY NEVER SLEEPS',1.4,'night-'+n);
   }
@@ -1771,7 +1771,7 @@
     }
     $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · '+BIOMES[game.world.epoch%4].name+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
+    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · '+(game.lab.enabled&&game.campaign.night===100?'🔥 CITY BURNING 🔥':BIOMES[game.world.epoch%4].name)+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
     $('encounter-status').textContent=game.lab.enabled?'BALANCE LAB · BANK '+Math.floor(game.lab.bank)+' · SPENT '+game.lab.spent+' · WAVE '+game.lab.spawned+'/24':game.campaign.night===100?'FINAL WAVE · DEFEAT ALL':'THE CITY NEVER SLEEPS';
