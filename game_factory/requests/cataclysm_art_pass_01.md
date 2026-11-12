@@ -1,7 +1,7 @@
 # BO RHEZ GAMES STUDIO — EXECUTE CATACLYSM 1.0 GRAPHICS UPDATE
-## The Catastrophe · character and world visual-quality pass · 2026-11-12
+## The Catastrophe · character and world visual-quality pass · 2026-11-12 (trusted image-model production retry)
 
-This is ONE autonomous IMPLEMENTATION order, not a planning exercise, image gallery, or version bump. Deliver an actual materially improved PLAYABLE Cataclysm 1.0. Use the existing five-role art council, actual source/gameplay, current art assets and established quality gates. No new schedule or per-step human approvals. The version stays **1.0**.
+RECOVERY ORDER: Previous run 43295943794 ended with zero images because the Codex sandbox could neither generate images nor run Chrome. Use the installed trusted Python image-model producer outside that sandbox, generate the actual 42 images, then validate on the separate normal GitHub runner. This is ONE autonomous IMPLEMENTATION order, not a planning exercise, image gallery, or version bump. Deliver an actual materially improved PLAYABLE Cataclysm 1.0. Use the existing five-role art council, actual source/gameplay, current art assets and established quality gates. No new schedule or per-step human approvals. The version stays **1.0**.
 
 ### Authoritative baselines and strict preservation
 - Main playable 1.0: `docs/cataclysm-1-0-major/`; Night 99/100 stress build: `docs/cataclysm-100-lab/`. Both already run. Never target the old `docs/preview` archive or `docs/cataclysm` 0.9 as the release.
