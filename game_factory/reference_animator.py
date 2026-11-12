@@ -31,6 +31,10 @@ CELL_SIZE = 96
 MAX_REFERENCE_BYTES = 8 * 1024 * 1024
 IMAGE_MODEL = "gpt-image-2.6-flare"
 VISION_MODEL = "gpt-6.1-terra"
+ANCHOR_MODEL = "gpt-image-2.6-sunburst"
+HERO_REFERENCE = ROOT / "docs/cataclysm-1-0-major/art/hero-idle.png"
+FRAME_TARGET = {"idle":6,"run":8,"attack":8,"hit":6,"feral":8,"adrenaline":8}
+ART_DIRECTION = "LITE MOBILE — texture-first, hand-illustrated 2D game character"
 ALLOWED_REPO_DIR = ROOT / "game_factory/art_references"
 CATALOG_PATH = ROOT / "docs/cataclysm-1-0-major/campaign.js"
 ROLES = ("shooter", "healer", "tank", "brawler", "sniper", "engineer", "trapper", "bard")
@@ -48,8 +52,10 @@ def validate_job(actor: str, states: str, reference_path: str = "", drive_file_i
         raise ValueError("Supply exactly one repository image path or one authenticated Drive image ID")
     if reference_path:
         path = (ROOT / reference_path).resolve()
-        if not path.is_relative_to(ALLOWED_REPO_DIR.resolve()) or path.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
-            raise ValueError("Reference files must be inside game_factory/art_references/")
+        approved_folder = path.is_relative_to(ALLOWED_REPO_DIR.resolve())
+        approved_hero = actor == "hero" and path == HERO_REFERENCE.resolve()
+        if not (approved_folder or approved_hero) or path.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+            raise ValueError("Reference outside authorized artist directory / trusted hero source")
     elif not DRIVE_PATTERN.fullmatch(drive_file_id):
         raise ValueError("Malformed authenticated Drive image ID")
     return parsed
@@ -76,11 +82,22 @@ def _verify_image(data: bytes) -> bytes:
     return buf.getvalue()
 
 
-def load_reference(reference_path: str = "", drive_file_id: str = "") -> bytes:
+def load_reference(reference_path: str = "", drive_file_id: str = "", actor: str = "") -> bytes:
     if reference_path:
         path = (ROOT / reference_path).resolve()
-        if not path.is_relative_to(ALLOWED_REPO_DIR.resolve()) or not path.is_file():
+        approved = path.is_relative_to(ALLOWED_REPO_DIR.resolve())
+        hero = actor == "hero" and path == HERO_REFERENCE.resolve()
+        if not (approved or hero) or not path.is_file():
             raise ValueError("Reference not found in approved art folder")
+        if hero:
+            # Existing source is a 24-frame PNG atlas. The visual artist should
+            # see ONE isolated character, not 24 copies on a horizontal strip.
+            with Image.open(path) as image:
+                pose = image.convert("RGBA").crop((0, 0, 96, 96))
+                pose = pose.resize((384, 384), Image.Resampling.NEAREST)
+                buffer = BytesIO()
+                pose.save(buffer, "PNG")
+                return _verify_image(buffer.getvalue())
         return _verify_image(path.read_bytes())
     import requests
     from game_factory.private_playback import get_access_token
@@ -202,21 +219,81 @@ def contact_sheet(frames: list[Image.Image]) -> bytes:
     return buf.getvalue()
 
 
-def inspect_animation(client, reference: bytes, frames: list[Image.Image], state: str, actor: str) -> dict:
+def inspect_animation(client, reference: bytes, frames: list[Image.Image], state: str, actor: str, texture_first: bool = False) -> dict:
     result = model_json(client, (
         "You are independent game-animation visual QA. Image 1 shows the authorized reference character; "
         "image 2 shows sequential frames drawn from the generated " + state + " motion. "
         "Return JSON with booleans same_character, visible_motion, usable_in_game and "
-        "a short concern string. Evaluate subject identity (fur/face/outfit/equipment) and "
-        "real motion, not merely palette changes. Be strict about unrelated characters and "
+        "booleans painted_texture, articulated_key_poses, distinct_motion_phases and "
+        "a short concern string. Evaluate subject identity (fur/face/outfit/equipment), "
+        "visibly PAINTED RASTER TEXTURE, limbs and joints, real contact-to-passing foot "
+        "motion or recoil phase, not merely palette changes or mirrored frames. "
+        "Be strict about unrelated characters and "
         "severe silhouette distortion. No extra text. Character id: " + actor
     ), [reference, contact_sheet(frames)])
-    if result.get("same_character") is not True or result.get("visible_motion") is not True or result.get("usable_in_game") is not True:
-        raise ValueError("Independent visual review rejected generated " + state + ": " + str(result.get("concern", ""))[:220])
+    required = ["same_character", "visible_motion", "usable_in_game"]
+    if texture_first:
+        required += ["painted_texture", "articulated_key_poses", "distinct_motion_phases"]
+    if not all(result.get(key) is True for key in required):
+        raise ValueError("Independent visual review rejected generated " + state
+                         + ": " + str(result.get("concern", ""))[:250])
     return result
 
 
-def generate_animation(client, reference: bytes, identity: dict, actor: str, state: str, notes: str) -> bytes:
+def generate_visual_anchor(client, reference: bytes, actor: str, identity: dict, notes: str) -> bytes:
+    """Real image-model painting, not Pillow-drawn limbs, gradients or geometry."""
+    prompt = (
+        "Create ONE production-quality 2D illustrated GAME CHARACTER TEXTURE, not "
+        "a sprite sheet or diagram. Use the attached existing sprite image ONLY "
+        "as character identity reference. Repaint the same character entirely "
+        "as convincing premium hand-painted raster game art with subtle real "
+        "fur texture, layered fabric folds, metal pistol material, intentional "
+        "shaded volumes, clean high-contrast silhouette and expressive eyes. "
+        "The Cataclysm hero is an expressive WHITE CAT with CORAL/RED scarf, "
+        "TWO distinct hand-held pistols, pointed ears, feline muzzle, tail. "
+        "Keep costume and facial identity, avoid new accessories and humans. "
+        "Show ONE complete full-body 3/4 side action-ready pose (head to planted "
+        "feet fully inside canvas). Character should occupy ~75% of image height, "
+        "centered in a 512x512 square. Plain neutral background, no environment, "
+        "text, captions, logo, panels, sprite grids, vector stick-figure, "
+        "procedural polygon look or seams between assembled shapes. "
+        "Style: illustrated indie-game character texture with readable "
+        "detail when eventually reduced to a ~64px mobile sprite, not a photorealistic "
+        "render and not super-detailed mush. ANIMATION IDENTITY: "
+        + json.dumps(identity, ensure_ascii=False)[:1000] + ". "
+        + notes[:400]
+    )
+    with BytesIO(reference) as image:
+        response = client.images.edit(
+            model=os.environ.get("STUDIO_ANCHOR_MODEL", ANCHOR_MODEL),
+            image=image, prompt=prompt, output_format="png",
+            size="512x512", quality="high"
+        )
+    if not response.data or not response.data[0].b64_json:
+        raise RuntimeError("Texture artist produced no painted visual anchor")
+    anchor = _verify_image(base64.b64decode(response.data[0].b64_json))
+    # Model-produced anchor is kept as real raster art, not recreated with primitives.
+    return anchor
+
+
+def inspect_visual_anchor(client, source: bytes, anchor: bytes, actor: str) -> dict:
+    result = model_json(client, (
+        "Independent character-art director. Compare supplied ORIGINAL reference "
+        "(first image) and newly PAINTED texture-first visual anchor (second). "
+        "Return JSON keys same_character (bool), illustrated_not_procedural (bool), "
+        "readable_at_mobile_scale (bool), one_full_character (bool), concern (string). "
+        "Reject altered species, missing red/coral scarf, missing dual pistols, "
+        "two or more characters, vector-like stitched limbs, unreadable silhouette. "
+        "Character: " + actor
+    ), [source, anchor])
+    if not all(result.get(key) is True for key in (
+            "same_character", "illustrated_not_procedural",
+            "readable_at_mobile_scale", "one_full_character")):
+        raise ValueError("Painted visual anchor rejected: " + str(result.get("concern", ""))[:250])
+    return result
+
+
+def generate_animation(client, reference: bytes, identity: dict, actor: str, state: str, notes: str, texture_first: bool = False) -> bytes:
     # One model call per motion state, with a hard max set by the job validator.
     from io import BytesIO
     motion = {
@@ -230,7 +307,39 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
       "adrenaline":"crimson-red overdrive run-and-gun, fierce expression and rapid motion",
       "special":"character's role-specific signature skill, visually animated and readable"
     }[state]
-    prompt = (
+    if texture_first:
+        number = FRAME_TARGET.get(state, 6)
+        timing = 125 if state in ("run", "attack", "feral", "adrenaline") else 180
+        prompt = (
+            "This is a professional 2D drawn-animation assignment. ANIMATE THE "
+            "ACTUAL PAINTED CHARACTER in the supplied image without changing its "
+            "face, species, white fur, red/coral scarf, two pistols or illustration "
+            "style. Generate a seamless loop of exactly " + str(number) + " DISTINCT "
+            "HAND-ILLUSTRATED FRAMES for: " + motion + ". "
+            "Each frame must contain the WHOLE SINGLE CHARACTER, never multiple "
+            "characters in one frame, at identical camera angle, scale and feet origin. "
+            "Preserve real painted raster textures and colored shading from the anchor "
+            "across ALL frames. For RUN: explicitly animate two alternating contact, "
+            "down/compression, passing/raised-foot and up/recovery poses with real "
+            "joint bending, visible planted feet and torso weight transfer. "
+            "For ATTACK: distinct anticipation, firing, alternating gun recoil and "
+            "recovery, NOT one firing pose with flickering flashes. For HIT: clear "
+            "impact recoil and regain balance. For FERAL: crimson glowing eyes and "
+            "aggressive body language; for ADRENALINE: fast controlled run-and-gun. "
+            "Any tiny mirrored shift, hue change, full-body wobble or reusing a frame "
+            "is NOT counted as animation. Tail and scarf follow motion with delayed "
+            "secondary action. No scenery, ground plane, camera movement, text, "
+            "frame borders or collage. Solid pure flat #00FF00 chroma-green canvas "
+            "in EVERY frame, no gradients or shadows cast on background. "
+            "Produce actual 2D hand-painted sequential animation as a GIF "
+            "with stable proportions and recognizable cat in every frame. "
+            "Identity: " + json.dumps(identity, ensure_ascii=False)[:1000]
+            + ". Notes: " + notes[:350]
+        )
+    else:
+        number = 6
+        timing = 140
+        prompt = (
         "Animate the SINGLE game character shown in the supplied reference PNG. "
         "Generate one seamless loop with exactly six distinct frames for the motion: "+motion+". "
         "Keep same identifiable face, fur, costume, accessories, weapon, proportions and camera angle "
@@ -248,8 +357,8 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
             image=image,
             prompt=prompt,
             output_format="gif",
-            frame_count=6,
-            frame_duration_ms=140,
+            frame_count=number,
+            frame_duration_ms=timing,
             size="512x512",
             quality="medium",
         )
@@ -259,7 +368,7 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
 
 
 def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dict[str,dict],
-                 output: Path=GAME_DIR, mirror: Path=LAB_DIR) -> dict:
+                 output: Path=GAME_DIR, mirror: Path=LAB_DIR, anchor: bytes | None = None) -> dict:
     # Manifest update only after every requested state passed local and vision QA.
     manifest_path=output/MANIFEST
     document=json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -275,13 +384,19 @@ def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dic
         dest=mirror/"characters"/actor/(state+".png")
         dest.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(asset,dest)
+    if anchor is not None:
+        for folder in (output, mirror):
+            p = folder / "characters" / actor / "anchor.png"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(anchor)
     mapping=document["characters"].setdefault(actor,{})
     for state,data in sprites.items():
         with Image.open(BytesIO(data)) as img:
             frame_count=img.width//96
         mapping[state]={"frames":frame_count,"fps":10 if state in ("idle","walk","aim") else 12,
                         "embedded_weapon":True,"scale":1.08 if state=="feral" else 1.14 if state=="adrenaline" else 1.0,
-                        "reference_sha256":hashlib.sha256(reference).hexdigest()[:20]}
+                        "reference_sha256":hashlib.sha256(reference).hexdigest()[:20],
+                        **({"art_direction":"LITE_MOBILE_TEXTURE_FIRST"} if anchor is not None else {})}
     encoded=json.dumps(document,indent=2,sort_keys=True)+"\n"
     manifest_path.write_text(encoded,encoding="utf-8")
     (mirror/MANIFEST).write_text(encoded,encoding="utf-8")
@@ -298,6 +413,7 @@ def run(argv=None):
     parser.add_argument("--drive-file-id",default="")
     parser.add_argument("--notes",default="")
     parser.add_argument("--max-generations",type=int,default=6)
+    parser.add_argument("--texture-first",action="store_true",help="Paint an original anchor (one additional image call) then produce raster GIF animations")
     parser.add_argument("--work-dir",default="artifacts/character-animation")
     args=parser.parse_args(argv)
     if len(args.notes)>700 or not 1<=args.max_generations<=6:
@@ -310,21 +426,31 @@ def run(argv=None):
     if not work.is_relative_to((ROOT/"artifacts").resolve()):
         raise ValueError("Work directory must stay under ignored Actions artifacts")
     work.mkdir(parents=True,exist_ok=True)
-    reference=load_reference(args.reference,args.drive_file_id)
+    reference=load_reference(args.reference,args.drive_file_id,args.actor)
     client=OpenAI()
     identity=analyze_reference(client,reference,args.actor,args.notes)
     (work/"vision-identity.json").write_text(json.dumps(identity,indent=2))
+    anchor = None
+    art_reference = reference
+    if args.texture_first:
+        # One independent high-quality painted anchor, then one actual GIF model
+        # call per state. Total upper bound: 1+len(states) image calls, never unbounded.
+        anchor = generate_visual_anchor(client, reference, args.actor, identity, args.notes)
+        (work/"painted-hero-anchor.png").write_bytes(anchor)
+        (work/"anchor-review.json").write_text(json.dumps(
+            inspect_visual_anchor(client, reference, anchor, args.actor), indent=2))
+        art_reference = anchor
     sprites={};reviews={}
     for state in states:
-        generated=generate_animation(client,reference,identity,args.actor,state,args.notes)
+        generated=generate_animation(client,art_reference,identity,args.actor,state,args.notes,args.texture_first)
         # Raw model GIF is saved only inside the Actions artifact workspace.
         (work/(state+".gif")).write_bytes(generated)
         frames=normalize_frames(generated)
-        reviews[state]=inspect_animation(client,reference,frames,state,args.actor)
+        reviews[state]=inspect_animation(client,art_reference,frames,state,args.actor,args.texture_first)
         sprites[state]=atlas(frames)
         (work/(state+"-contact.png")).write_bytes(contact_sheet(frames))
         print("Validated image-derived motion:",args.actor,state,len(frames),flush=True)
-    report=write_result(args.actor,sprites,reference,reviews)
+    report=write_result(args.actor,sprites,reference,reviews,anchor=anchor)
     (work/"report.json").write_text(json.dumps(report,indent=2))
     print(json.dumps({key:value for key,value in report.items() if key!="frames"},indent=2))
 
