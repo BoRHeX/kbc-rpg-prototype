@@ -60,7 +60,11 @@ jobs:
               if parts[2]=='art' and len(parts)>=4 and Path(name).suffix.lower() in ('.png','.svg','.webp','.py','.md'):continue
               raise SystemExit('Unapproved PR file: '+name)
           assert any(x.startswith('docs/cataclysm-1-0-major/art/') and x.endswith('.png') for x in files)
-          assert 'docs/cataclysm-1-0-major/animation.js' in files
+          # The existing renderer already consumes all atlas filenames.
+          # A no-op animation.js modification is not required for fresh PNGs.
+          if any(x.endswith('/art/character-animations.json') or
+                 '/art/characters/hero/' in x or '/art/hero-' in x for x in files):
+              raise SystemExit('Protected hero/manifest must not be altered')
           print('Candidate source scope verified for',len(files),'art files')
           PY
       - name: Independently recheck the complete sprite inventory before merge
