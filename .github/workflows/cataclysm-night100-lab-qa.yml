@@ -1,0 +1,47 @@
+name: Night 100 isolated balance lab QA
+on:
+  push:
+    branches: [experiment/cataclysm-night100-balance-lab]
+    paths:
+      - 'docs/cataclysm-100-lab/**'
+      - 'game_factory/cataclysm_next/tests/*night100*'
+      - '.github/workflows/cataclysm-night100-lab-qa.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  director-and-playtest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate runtime and tests
+        run: |
+          set -euo pipefail
+          for src in docs/cataclysm-100-lab/*.js; do node --check "$src"; done
+          node --check game_factory/cataclysm_next/tests/night100-director.cjs
+          node --check game_factory/cataclysm_next/tests/browser-night100.cjs
+      - name: Run independent director and finale contracts
+        run: node game_factory/cataclysm_next/tests/night100-director.cjs
+      - name: Install browser test harness
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Serve isolated lab only as a path in the Pages tree
+        run: nohup python -m http.server 8765 --directory docs >/tmp/night100-server.log 2>&1 &
+      - name: Play actual last-two-night encounter in mobile Chrome
+        run: node game_factory/cataclysm_next/tests/browser-night100.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: night100-lab-playtest-captures
+          path: artifacts/night100-lab/
+          retention-days: 30
+          if-no-files-found: ignore
