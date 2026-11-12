@@ -2,7 +2,7 @@ name: Publish BoRHeZ Games Hub
 on:
   push:
     branches: [main]
-    paths: ['docs/games/index.html']
+    paths: ['docs/games/index.html', 'docs/cataclysm-1-0-major/**']
   workflow_dispatch:
 
 # Serialize with accepted game deliveries so Pages deployments don't collide.
