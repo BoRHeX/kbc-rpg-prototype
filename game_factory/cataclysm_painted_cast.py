@@ -138,7 +138,8 @@ def generate_environment(name: str, description: str, size: int, ground: bool) -
            "no perspective horizon, restrained contrast for character visibility. "
            if ground else
            "Exactly ONE complete isolated environmental PROP viewed from above "
-           "in 3/4 view, centered, dark simple neutral studio background, no labels. ")
+           "in 3/4 view, centered against ONE flat PURE CHROMA GREEN #00FF00 background "
+           "so the green can be deleted to transparent alpha; no labels. ")
         + "Original unlicensed indie-game illustration, no text, letters or logos."
     )
     source = ART / name
@@ -157,6 +158,8 @@ def generate_environment(name: str, description: str, size: int, ground: bool) -
         # new geometry proxy. Background removal uses edge-connected color only.
         from game_factory.reference_animator import remove_uniform_background
         img=remove_uniform_background(img)
+        if img.getchannel("A").getextrema()[0] >= 245:
+            raise ValueError("Environmental prop has an opaque unremovable background: "+name)
     out=BytesIO();img.save(out,"PNG",optimize=True)
     return name,out.getvalue()
 
@@ -198,7 +201,9 @@ def main() -> None:
             try:
                 key,png,tier=job.result()
                 staged[key+"-run.png"]=png
-                (EVIDENCE/"log.txt").open("a").write(key+" "+tier+" generated\n")
+                (EVIDENCE/("candidate-"+key+".png")).write_bytes(png)
+                with (EVIDENCE/"log.txt").open("a") as log:
+                    log.write(key+" "+tier+" generated\n")
                 print("Painted:",key,tier,flush=True)
             except Exception as exc:
                 failures[name]=str(exc)[:350]
@@ -209,9 +214,11 @@ def main() -> None:
     for name,idx in [("ground-"+str(i)+".png",i) for i in range(4)]:
         key,png=generate_environment(name,GROUND[idx],300,True)
         staged[key]=png
+        (EVIDENCE/("candidate-"+key)).write_bytes(png)
     for key,description in PROPS.items():
         name="prop-"+key+".png"
         staged[name]=generate_environment(name,description,288,False)[1]
+        (EVIDENCE/("candidate-"+name)).write_bytes(staged[name])
     # The painter wrote all 42 new images. Validate against source and commit
     # atomically only after each generated image exists.
     for name,png in staged.items():
