@@ -1,0 +1,137 @@
+name: Cataclysm 1.0 finishing stage
+on:
+  workflow_call:
+    inputs:
+      stage:
+        required: true
+        type: string
+      previous:
+        required: true
+        type: string
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      STAGE: ${{ inputs.stage }}
+      PREVIOUS: ${{ inputs.previous }}
+      BORHEZ_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install independent browser and canvas QA outside the Codex sandbox
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Restore the previous completed stage, never an unrelated release
+        if: inputs.previous != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-10-finish-${{ inputs.previous }}
+          path: docs/
+      - name: Validate exact source inventory and take per-stage immutable baseline
+        run: |
+          set -euo pipefail
+          node --check docs/cataclysm-1-0-major/game.js
+          node --check docs/cataclysm-100-lab/game.js
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          folders=[Path('docs/cataclysm-1-0-major'),Path('docs/cataclysm-100-lab')]
+          files={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for root in folders for p in root.rglob('*') if p.is_file()}
+          Path('/tmp/cataclysm-stage-before.json').write_text(json.dumps(files))
+          print('Stage baseline:',len(files),'game files')
+          PY
+      - name: AI team implements its complete bounded stage from the executive order
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm_10_finish_${{ inputs.stage }}.md
+      - name: Trusted image studio paints REAL follower behavior states and coherent city textures
+        if: inputs.stage == 'animation'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STUDIO_IMAGE_MODEL: gpt-image-2.6-flare
+          STUDIO_ANCHOR_MODEL: gpt-image-2.6-sunburst
+        run: |
+          test -n "$OPENAI_API_KEY"
+          python -m pip install --disable-pip-version-check --quiet openai pillow
+          python -m py_compile game_factory/cataclysm_finish_art.py
+          python -m game_factory.cataclysm_finish_art
+      - name: Reject empty stages, unauthorized edits and any protected character changes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          old=json.loads(Path('/tmp/cataclysm-stage-before.json').read_text())
+          roots=[Path('docs/cataclysm-1-0-major'),Path('docs/cataclysm-100-lab')]
+          after={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for root in roots for p in root.rglob('*') if p.is_file()}
+          modified={name for name in set(old)|set(after) if old.get(name)!=after.get(name)}
+          if not modified:raise SystemExit('Empty stage: no playable changes')
+          if not any(name.startswith('docs/cataclysm-1-0-major/') for name in modified):
+            raise SystemExit('Stage changed no main game assets')
+          if not any(name.startswith('docs/cataclysm-100-lab/') for name in modified):
+            raise SystemExit('Stage failed to update Night 99 test parity')
+          tracked=subprocess.check_output(['git','diff','--name-only','-z','HEAD']).decode().split('\0')
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard','-z']).decode().split('\0')
+          for name in filter(None,tracked+untracked):
+            if name.startswith('artifacts/'):continue
+            if not any(name.startswith(str(root)+'/') for root in roots):
+              raise SystemExit('Agent touched unauthorized source: '+name)
+          for name in old:
+            if '/art/characters/hero/' in name and not name.endswith('/aim.png'):
+              if after.get(name)!=old[name]:raise SystemExit('Approved hero art overwritten: '+name)
+          print('PASS scoped stage',os.environ['STAGE'],len(modified),'changed game files')
+          PY
+          git diff --check
+      - name: Verify gameplay, schedule, art, scoring and synchronized source copies
+        run: |
+          set -euo pipefail
+          for file in docs/cataclysm-1-0-major/*.js docs/cataclysm-100-lab/*.js; do node --check "$file"; done
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_finish_score_contract.cjs
+      - name: Start game server for browser tests outside AI sandbox
+        run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-10-finish-http.log 2>&1 &
+      - name: Independently play all eight mobile and desktop viewports
+        run: node game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Verify night 99/100 battle and final wave stress
+        run: node game_factory/cataclysm_next/tests/browser-horde.cjs
+      - name: Compare painted asset revision and actual animation frames in both games
+        run: node game_factory/cataclysm_next/tests/browser-art.cjs
+      - name: Enforce stage-specific motion, score and follower acceptance
+        run: node game_factory/cataclysm_finish_acceptance.cjs "$STAGE"
+      - name: Save exact source for next stage recovery
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-finish-${{ inputs.stage }}
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Save screenshots and model failures for art review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-evidence-${{ inputs.stage }}
+          path: |
+            artifacts/cataclysm-major/
+            artifacts/cataclysm-10-finish/
+          if-no-files-found: ignore
+          retention-days: 30
