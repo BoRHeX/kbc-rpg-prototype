@@ -43,8 +43,7 @@ assert.ok(states.length>0 && states.length<=6);
       const ctx=canvas.getContext('2d');
       ctx.translate(72,76);
       art.draw(ctx,actor,25,t,state,0,false,false);
-      const raw=ctx.getImageData(-0,-0,0,0); // Browser API availability
-      hashes.push(canvas.toDataURL('image/png').slice(-2300));
+      hashes.push(canvas.toDataURL('image/png'));
      }
      motion[state]=new Set(hashes).size;
     }
