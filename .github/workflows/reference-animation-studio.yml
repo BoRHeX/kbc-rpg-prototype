@@ -206,6 +206,7 @@ jobs:
           STUDIO_IMAGE_MODEL: gpt-image-2.6-flare
           STUDIO_ANCHOR_MODEL: gpt-image-2.6-sunburst
           STUDIO_VISION_MODEL: gpt-6.1-terra
+          APPROVED_RESUME_SOURCE_RUN: ${{ steps.request.outputs.resume_source_run }}
         run: |
           test -n "$OPENAI_API_KEY"
           python - <<'PY'
