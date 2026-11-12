@@ -6,12 +6,14 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-major-neon-noir-02';
+  const PATCH_ID = 'cataclysm-10-full-campaign-horde-hazards-03';
   const WORLD_SCROLL_Y=-28; // Northbound, so the environment scrolls down.
-  const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS;
+  const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR, HAZ = globalThis.CATA_HAZARDS;
+  const LAB_MODE=true, FIRE=globalThis.CATA_LAB_FIRE;
+  if(!LAB||!FIRE||!HAZ)throw Error('Director, firestorm or hazard animation module failed to load');
   if(!MAJOR||!ART||!VIS)throw Error('Catastrophe visual/campaign/animation modules did not load');
   const AUDIO_PASS_ID = 'catastrophe-adaptive-02';
-  const UNLOCKS = {shambler:0,weaver:40,dasher:50,orbiter:70,stalker:85,hexer:95,ghost:140,summoner:160,blight:190,gas:1200};
+  const UNLOCKS = {shambler:0,weaver:40,dasher:50,orbiter:70,stalker:85,hexer:95,ghost:140,summoner:160,blight:190,gas:240};
   const availableThreats = t => Object.keys(UNLOCKS).filter(k=>t>=UNLOCKS[k]);
   let W = 1280, H = 720;
   const TWO = Math.PI * 2;
@@ -304,7 +306,7 @@
     } catch (err) { /* keep this session's best when storage is disabled */ }
   }
   function renderBest() {
-    $('best').textContent = personalBest.toLocaleString();
+    if($('best'))$('best').textContent = personalBest.toLocaleString();
   }
   readBest();
   function saveBest() {
@@ -539,7 +541,7 @@
     seeded=(Date.now()^0xD00DCA7)>>>0;
     initMap();
     const player={x:2100,y:2100,r:21,hp:3,maxHp:3,inv:0,speed:cfg.speed,armor:0,criticalBoost:0,focus:0,areaBurst:0,tacticalMomentum:0,
-      animation:{state:'idle',clock:0,frame:0,attack:0,hit:0,moving:false},survivalTimer:0,survivalInstinctBuff:0,xpGain:1,autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:1,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
+      animation:{state:'idle',clock:0,frame:0,attack:0,hit:0,moving:false},survivalTimer:0,survivalInstinctBuff:0,xpGain:1,autoFireDisabled:false,silence:0,phaseCooldown:0,petPicks:0,shots:0,aim:0,level:0,damage:1,multishot:0,ricochet:0,magnet:0,shotInterval:Math.max(MIN_SHOT_INTERVAL,cfg.shotInterval)};
     game={mode:'running',t:0,run:completedRuns+1,runScale:1+Math.log2(1+completedRuns)*.18,runRecorded:false,bossEncounters:0,player,enemies:[],shots:[],fishItems:[],particles:[],pickupEffects:[],spawnCount:0,
       squadTactic:'default',squadTacticDuration:0,squadTacticCooldown:0,nextTactic:0,nightCycle:{waveCount:1},companionSquad:[],squadStats:{damage:.5,rate:1,count:1,spread:0,bounce:0},offerSeed:(new URLSearchParams(location.search).has('seed')?Number(new URLSearchParams(location.search).get('seed')):crypto.getRandomValues(new Uint32Array(1))[0])>>>0,offerState:0,companionRanks:Object.fromEntries(roleNames.map(r=>[r,0])),
       feralInstinct:{active:false,timer:0,duration:6,armed:true},effectiveBuffs:{speed:1,damage:1,fire:1,magnet:0,healing:0,mitigation:0},
@@ -560,7 +562,17 @@
     clearInput(); noticeTTL=0;noticeQueue=[];$('notice').hidden=true;$('upgrade-overlay').hidden=true;
     pointer=null; $('start-overlay').hidden=true; $('pause').hidden=false;
     $('pause').textContent='Ⅱ';$('stick').hidden=true;
-    musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();startMajorNight(1);updateHud();
+    musicBeat=0;musicNext=audio?audio.currentTime:0;sound(700,.12);last=performance.now();
+    setupCreditCampaign();startMajorNight(1);updateHud();
+  }
+  // One-button late-game test; normal 1.0 score and run history are not touched.
+  function setupCreditCampaign(){
+    const g=game;
+    const param=Number(new URLSearchParams(location.search).get('directorSeed'));
+    const seed=Number.isFinite(param)&&param>0?param>>>0:g.offerSeed;
+    g.labEconomy=LAB.create(seed);g.labQueue=[];g.labWave=null;g.labNextSpawn=0;
+    g.labFinalTotal=0;g.labFinalSpawned=0;g.labSpawned=0;g.labFinalBossId=null;
+    g.damagePopups=[];$('arena').classList.remove('lab-inferno');
   }
   function end() {
     if(!game || game.mode==='dead')return;
@@ -678,7 +690,7 @@
     const mag=Math.hypot(vx,vy); return mag>0?{x:vx/Math.max(1,mag),y:vy/Math.max(1,mag)}:{x:0,y:0};
   }
   const threatWeights={shambler:1,weaver:1.4,dasher:2,orbiter:2.2,stalker:2.6,ghost:3,hexer:2.5,summoner:3,blight:2.8,boss:12};
-  const liveCap=()=>Math.min(72,Math.max(1,Math.floor(cfg.maxEnemies)));
+  const liveCap=()=>LAB_MODE?72:Math.min(72,Math.max(1,Math.floor(cfg.maxEnemies)));
   const enemyThreat=e=>e.threatCost??(e.elite?6:(threatWeights[e.variant]||1)*(e.weight===2?1.5:1)+(e.mutation?1:0));
   const ThreatDirector=Object.freeze({getThreatBudget:()=>game?game.director.budget:12});
   function updateDirector(dt){
@@ -691,7 +703,7 @@
     for(const e of g.enemies){d.aliveThreat+=enemyThreat(e);if(dist(e.x,e.y,p.x,p.y)<200)d.nearby++;}
     d.recovery=Math.max(0,d.recovery-dt);d.mutationCooldown=Math.max(0,d.mutationCooldown-dt);
     // Strong builds earn clearance, never retaliatory threat.
-    const target=clamp(12+Math.min(22,g.t/60),12,38);
+    const target=LAB_MODE?240:clamp(12+Math.min(22,g.t/60),12,38);
     // Slow upward response; health loss and nearby crowding open a recovery window.
     d.budget+=(target-d.budget)*(1-Math.exp(-dt/20));
     if(d.aliveThreat>=d.budget||d.nearby>=9||g.enemies.length>=liveCap())d.blocked=true;
@@ -727,25 +739,26 @@
     return {vx,vy,pace};
   }
   function spawnEnemy(type,mutationFlags){
-    const d=game.director;
-    if(citySpawnBlocked()||game.mode!=='running'||game.enemies.length>=liveCap()||d.blocked||(d.recovery>0&&game.enemies.length>0)||d.framePressure)return null;
+    const d=game.director,bought=!!(mutationFlags&&mutationFlags.labPurchase);
+    if(citySpawnBlocked()||game.mode!=='running'||game.enemies.length>=liveCap()||
+       (!bought&&(d.blocked||(d.recovery>0&&game.enemies.length>0)||d.framePressure)))return null;
     const unlocked=availableThreats(game.t).filter(k=>k!=='gas');
     const variant=unlocked.includes(type)?type:unlocked[(game.spawnCount+1)%unlocked.length];
     const extra=(game.t>70&&rand()<.17&&variant==='shambler')?2:1;
     const traits=makeTraits(variant,game.spawnCount,game.t);
     const cost=(threatWeights[variant]||1)*(extra===2?1.5:1)+traitCost(traits);
     d.aliveThreat=cityThreat()+game.enemies.reduce((n,e)=>n+enemyThreat(e),0);
-    if(d.aliveThreat+cost>d.budget){d.blocked=true;d.suppressed++;return null;}
-    const scale=difficulty(),hp=(cfg.enemyHp+(extra-1)*3)*scale;
+    if(!bought&&d.aliveThreat+cost>d.budget){d.blocked=true;d.suppressed++;return null;}
+    const scale=bought?LAB.healthScale(game.campaign.night):difficulty(),hp=(cfg.enemyHp+(extra-1)*3)*scale;
     const e={...safeSpawn(rnd(560,730)),variant,dash:0,r:variant==='weaver'?15:extra===2?25:18,
       hp,max:hp,damage:1+Math.floor((scale-1)/1.5),speed:cfg.enemySpeed*(.85+rand()*.5)*(1+Math.min(.45,game.t/400)),
       phase:rnd(0,TWO),weight:extra,hurt:0,mutation:null,mutationTime:0,applyMutation};
-    installTraits(e,traits);e.id=++d.serial;e.threatCost=cost;
+    installTraits(e,traits);e.id=++d.serial;e.threatCost=bought?LAB.priceFor(variant,game.campaign.night):cost;
     const spec=MAJOR.catalog.normal.find(a=>a.id===variant);
     if(spec){e.role=spec.role;e.attackKind=spec.attack;e.attackCooldown=1.2+rand()*1.5;e.windup=0;
       e.hp*=spec.hp;e.max=e.hp;e.speed*=spec.speed;e.r=spec.role==='caster'?21:e.r;}
 
-    if(game.t>=360&&d.mutationCooldown===0&&d.aliveThreat+cost+1<=d.budget&&
+    if(!bought&&game.t>=360&&d.mutationCooldown===0&&d.aliveThreat+cost+1<=d.budget&&
       game.enemies.filter(n=>n.mutation).length<2&&rand()<.18){
       const requested=mutationFlags&&mutationFlags.type;
       e.applyMutation(['burst','shield','weave'].includes(requested)?requested:['burst','shield','weave'][Math.floor(rand()*3)],8);
@@ -812,7 +825,7 @@
     notify('FUSION · Break the cocoon before it hatches!',3);burst(c.x,c.y,'#e7a4fa',12);return c;
   }
   function updateEvolution(dt){
-    if(!game||game.mode!=='running')return;
+    if(LAB_MODE||!game||game.mode!=='running')return;
     const g=game,d=g.director;d.fusionCooldown=Math.max(0,d.fusionCooldown-dt);
     for(const c of [...g.enemies])if(c.cocoon&&!c.consumed){
       c.age+=dt;c.phase+=dt;c.hurt=Math.max(0,c.hurt-dt);c.incubation=Math.max(0,c.incubation-dt);
@@ -1104,7 +1117,7 @@
     return null;
   }
   function updateGas(dt) {
-    if(!game||game.mode!=='running')return;
+    if(!game||game.mode!=='running'||game.campaign.night===100)return;
     const g=game,p=g.player,h=g.hazards;
     if(g.t<UNLOCKS.gas)return;
     h.spawnTimer-=dt;
@@ -1145,10 +1158,10 @@
     game.powerups.push({...safeSpawn(600,24),kind,expires:game.t+120});return true;
   }
   // The 100-night encounter director owns its event ledger; never infer credit from a despawn.
-  function spawnMajorEncounter(kind,night,finalWave=false){
+  function spawnMajorEncounter(kind,night,finalWave=false,rosterIndex=null){
     const g=game,roster=kind==='boss'?MAJOR.catalog.bosses:kind==='elite'?MAJOR.catalog.elites:MAJOR.catalog.superElites;
     const event=MAJOR.getNight(Math.min(100,night));
-    const index=kind==='boss'?event.bossIndex>=0?event.bossIndex:8:
+    const index=rosterIndex!==null?rosterIndex:kind==='boss'?event.bossIndex>=0?event.bossIndex:8:
       kind==='elite'?Math.floor(night/12)%roster.length:Math.floor(night/12)%roster.length;
     const spec=roster[index%roster.length],boss=kind==='boss';
     const baseHp=boss?21:kind==='superElite'?21:13;
@@ -1167,34 +1180,63 @@
     playSfx(boss?'boss-spawn':kind==='superElite'?'super-elite':'elite-spawn');
     return e;
   }
+  function releaseLabSpawn(){
+    const g=game;
+    if(!g||!g.labQueue?.length||g.t+1e-6<g.labNextSpawn)return;
+    if(g.enemies.length>=liveCap())return;
+    const item=g.labQueue[0],isMajor=['boss','elite','superElite'].includes(item.id);
+    const e=isMajor?spawnMajorEncounter(item.id,g.campaign.night,g.campaign.night===100,item.index??null):
+      spawnEnemy(item.id,{labPurchase:true});
+    if(!e)return;
+    g.labQueue.shift();g.labSpawned++;
+    e.labRank=item.rank;e.labCost=item.cost;e.threatCost=item.cost;e.night=g.campaign.night;
+    if(g.campaign.night===100){
+      const order=g.labFinalSpawned,angle=-Math.PI/2+order*2*Math.PI/9;
+      const radius=Math.min(W,H)*(order<9?.35:.245);
+      const spot=nearestSafeSpace(g.player.x+Math.cos(angle)*radius,g.player.y+Math.sin(angle)*radius,e.r+6);
+      e.x=spot.x;e.y=spot.y;e.finalShield=true;
+    }
+    if(g.campaign.night===99&&item.id==='boss'){
+      g.labFinalBossId=e.majorId;e.name='THE CATASTROPHE';
+    }
+    if(g.campaign.night===100){e.finalWave=true;g.labFinalSpawned++;}
+    const scale=1+Math.max(0,item.rank-3)*.09+(item.index==null?0:item.index*.08);
+    e.hp*=scale;e.max=e.hp;
+    g.labNextSpawn=g.t+g.labWave.interval;
+    if(g.campaign.night===100)notify('FINAL HORDE · '+g.labFinalSpawned+'/'+g.labFinalTotal,1,'lab-spawn-'+g.labFinalSpawned);
+  }
   function startMajorNight(n){
-    const g=game,entry=MAJOR.getNight(n),key='night-'+n;
+    const g=game,key='night-'+n;
     if(g.campaign.events.includes(key))return;
     g.campaign.events.push(key);g.campaign.night=n;
-    if(entry.boss)spawnMajorEncounter('boss',n);
-    if(entry.elite)spawnMajorEncounter(entry.eliteCategory,n);
-    if(entry.final){
-      g.majorFinalSpawned=true;
-      spawnMajorEncounter('elite',100,true);
-      spawnMajorEncounter('superElite',100,true);
-      notify('NIGHT 100 · THE CATASTROPHE · FINAL CLEAR',5,'finale');
-    }else if(n%3===1)notify('NIGHT '+n+' / 100 · THE CITY NEVER SLEEPS',1.4,'night-'+n);
+    const wave=g.labEconomy.plan(n);
+    g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;
+    if(n===100){
+      // Protect the player and champions while the 16-second cinematic formation assembles.
+      g.player.inv=Math.max(g.player.inv,17);
+      // No ordinary enemies or environmental hazards interfere with the eighteen arrivals.
+      g.enemies=[];g.enemyShots=[];g.hazards.toxicGasClouds=[];g.cityEvents.active=null;
+      g.majorFinalSpawned=true;g.labFinalTotal=g.labQueue.length;g.labFinalSpawned=0;
+      $('arena').classList.add('lab-inferno');
+      notify('NIGHT 100 · FIRESTORM · FINAL HORDE',5,'finale');
+    }else{
+      $('arena').classList.remove('lab-inferno');
+      if(n===99)notify('NIGHT 99 · THE CATASTROPHE APPROACHES',4,'prelude');
+      else if(n%5===1)notify('NIGHT '+n+'/100 · SURVIVE THE CITY',1.6,'night-'+n);
+    }
   }
   function finalizeMajorVictory(){
     const g=game;
     if(!g||g.victory||g.mode!=='running'||!g.majorFinalSpawned)return;
+    if(g.labFinalSpawned!==g.labFinalTotal||g.labQueue.length>0)return;
     if(g.enemies.some(e=>e.finalWave&&!e.consumed&&e.hp>0))return;
     g.campaign.finaleCleared=true;
     if(!MAJOR.won(g.campaign,g.player.hp>0))return;
     g.victory=true;g.mode='won';g.campaign.won=true;
     clearInput();stopVoices('music');stopVoices('fx');
-    try{const last=Number(localStorage.getItem('cataclysm-best')||0);
-      localStorage.setItem('cataclysm-best',String(Math.max(last,MAJOR.VICTORY_SCORE)));
-      localStorage.setItem('cataclysm-major-win',JSON.stringify({score:MAJOR.VICTORY_SCORE,night:100,credited:g.campaign.credited.length}));
-    }catch(e){}
+    try{localStorage.setItem('cataclysm-major-win',JSON.stringify({score:MAJOR.VICTORY_SCORE,night:100,finalWave:g.labFinalTotal,seed:g.labEconomy.snapshot().seed}));}catch(e){}
     $('overlay-title').textContent='THE CATASTROPHE · DEFEATED';
-    $('overlay-copy').textContent='NIGHT 100 CLEAR! '+g.campaign.boss+' BOSSES · '+g.campaign.elite+' ELITES · '+g.campaign.superElite+
-      ' SUPER-ELITES · 999,999,999 POINTS. THE CITY BELONGS TO THE SURVIVORS.';
+    $('overlay-copy').textContent='NIGHT 100 CLEAR · ALL 18 FINAL ENEMIES DEFEATED · 999,999,999 POINTS.';
     $('play').textContent='↻ NEW RUN';$('start-overlay').hidden=false;
     $('pause').hidden=true;$('stick').hidden=true;updateHud();
     playSfx('victory');
@@ -1208,7 +1250,7 @@
       shockwave:[-1.5,-1,-.5,0,.5,1,1.5],chain:[-.4,-.2,0,.2,.4],
       nova:[-2.4,-1.8,-1.2,-.6,0,.6,1.2,1.8,2.4]} ;
     if(kind==='summon'&&g.enemies.length<liveCap()-3){
-      for(let i=0;i<2;i++)spawnEnemy('shambler');
+      if(g.campaign.night!==100)for(let i=0;i<2;i++)spawnEnemy('shambler');
     }
     for(const a of patterns[kind]||[0]){
       if(g.enemyShots.length>=90)break;
@@ -1333,6 +1375,7 @@
     return !g.endgame.active&&(!sh.active||(sh.warning===0&&g.player.y-sh.y>=H*.65));
   }
   function citySpawnBlocked(){
+    if(LAB_MODE)return false; // Disabled legacy city encounter cannot suppress paid lab spawns.
     const m=game.cityEvents;
     return game.t<m.recoveryUntil||m.active?.kind==='elite'||
       (!m.active&&cityApproachSafe()&&game.director.recovery===0&&(game.player.level>=3||game.t>=180)&&game.player.hp>=1.5&&
@@ -1381,14 +1424,18 @@
   function defeatEnemy(e){
     const g=game,i=g.enemies.indexOf(e);if(i<0)return;
     if(e.consumed)return;
+    if(e.finalShield&&(g.labFinalSpawned<g.labFinalTotal||g.t<MAJOR.getNight(100).start+17)){e.hp=Math.max(1,e.max*.1);return;}
     e.consumed=true;
     if(e.cocoon){g.director.cocoonsDestroyed++;notify('COCOON BROKEN · Evolution stopped',2);}
     if(g.equipment.capacitor&&g.equipment.coil&&e.squadSlow>0){const refund=.3*g.equipment.capacitor;g.runicRelic.cooldown=Math.max(0,g.runicRelic.cooldown-refund);for(const ally of g.companionSquad)ally.specialCooldown=Math.max(0,ally.specialCooldown-refund);g.buildEffects.recharged++;}
     g.director.pendingKills++;g.kills+=e.weight;burst(e.x,e.y,'#93eaac',14);
     if(e.creditCategory){
       MAJOR.kill(g.campaign,e.majorId,e.creditCategory);
-      notify(e.creditCategory.toUpperCase()+' CLEARED · B'+g.campaign.boss+
-        ' E'+g.campaign.elite+' S'+g.campaign.superElite,2,'major-kill-'+e.majorId);
+      const fish=e.creditCategory==='boss'?9:e.creditCategory==='superElite'?6:3;
+      addFish(e.x,e.y,fish);
+      // All three high-rank categories drop a tangible magnet, not a random chance.
+      g.powerups.push({...nearestSafeSpace(e.x+32,e.y,24),kind:'magnet',expires:g.t+90,source:e.creditCategory});
+      notify(e.name.toUpperCase()+' DEFEATED · +'+fish+' FISH + MAGNET',2,'major-kill-'+e.majorId);
     }
     if(e.creditCategory||e.elite){
       const amount=e.creditCategory==='boss'?2:e.creditCategory==='superElite'?3:1;
@@ -1401,10 +1448,10 @@
       notify('CROWN '+g.endgame.victories+'/9 CLAIMED · Recovery 8s',4);
       if(g.endgame.victories===9){g.endgame.complete=true;g.endgame.reward='Ninefold Dawn';g.fish+=999;g.enemies.splice(i,1);end();
         $('overlay-title').textContent='NINEFOLD DAWN · VICTORY';$('overlay-copy').textContent='All nine Catastrophe crowns claimed. Reward: 999 fish and the Ninefold Dawn title. The city is free.';return;}
-    }else if(e.variant==='boss'){
-      addFish(e.x,e.y,12);g.player.hp=Math.min(g.player.maxHp,g.player.hp+1);g.director.recovery=Math.max(g.director.recovery,6);pardonShadow();
+    }else if(e.variant==='boss'&&!e.creditCategory){
+      addFish(e.x,e.y,9);g.player.hp=Math.min(g.player.maxHp,g.player.hp+1);g.director.recovery=Math.max(g.director.recovery,6);pardonShadow();
       notify('ALLEY KING DEFEATED · +20 KILLS',3);
-    }else if(e.rewardValue)addFish(e.x,e.y,e.rewardValue);else if(rand()<cfg.fishDropChance)addFish(e.x,e.y);
+    }else if(!e.creditCategory&&e.rewardValue)addFish(e.x,e.y,e.rewardValue);else if(!e.creditCategory&&rand()<cfg.fishDropChance)addFish(e.x,e.y);
     g.enemies.splice(i,1);sound(620,.06,'triangle',.02);
   }
   function spawnCityEncounter(kind){
@@ -1420,7 +1467,7 @@
     if(threat+cost>g.director.budget||g.enemies.length>=liveCap())return false;
     const {x,y}=nearestSafeSpace(p.x+80,p.y,60);
     m.active={kind,id:++m.serial,age:0,x,y,duration:kind==='elite'?21:11,warning:3,
-      zones:kind==='street'?[-1,1].map(side=>({...nearestSafeSpace(x+side*100,y+side*55,52),r:52})):[],
+      zones:kind==='street'?[-1,1].map(side=>({...nearestSafeSpace(x+side*115,y,30),r:30})):[],
       debris:[],nextDrop:3,pulses:0,eliteSpawned:false};
     m.counts[kind]++;g.director.recovery=Math.max(g.director.recovery,3);
     // Fixed schedule anchor prevents countdown drift; crane cadence 45–75 seconds.
@@ -1451,14 +1498,29 @@
     e.debris.push({...nearestSafeSpace(e.x+o[0],e.y+o[1],38),r:38,age:0,hit:false});
     game.cityEvents.maxDebris=Math.max(game.cityEvents.maxDebris,e.debris.length);
   }
+  function damageElectricGate(e,amount){
+    if(e.zones.length<2)return;
+    const [a,b]=e.zones,dx=wrappedDelta(a.x,b.x),dy=b.y-a.y,denom=dx*dx+dy*dy||1;
+    const closest=(x,y)=>{const q=clamp((wrappedDelta(a.x,x)*dx+(y-a.y)*dy)/denom,0,1);return {x:wrapCoord(a.x+dx*q),y:a.y+dy*q};};
+    const g=game,p=g.player,m=g.cityEvents,pt=closest(p.x,p.y);
+    if(dist(p.x,p.y,pt.x,pt.y)<24+p.r&&!p.inv&&!relayProtects(p.x,p.y)&&g.runicRelic.active!=='shield'){
+      damageTaken();p.hp=Math.max(0,p.hp-amount*(1-g.effectiveBuffs.mitigation));p.inv=1.3;m.playerHits++;
+      burst(p.x,p.y,'#8ceeff',14);playSfx('danger');if(p.hp<=0){updateHud();end();return;}
+    }
+    for(const enemy of [...g.enemies]){const target=closest(enemy.x,enemy.y);
+      if(enemy.hp>0&&dist(enemy.x,enemy.y,target.x,target.y)<24+enemy.r){
+        enemy.hp-=amount*4;enemy.hurt=.15;m.enemyHits++;if(enemy.hp<=0)defeatEnemy(enemy);
+      }
+    }
+  }
   function updateCityEncounter(dt){
-    if(!game||game.mode!=='running')return;
+    if(!game||game.mode!=='running'||game.campaign.night===100)return;
     const g=game,m=g.cityEvents;
     if(m.active&&(g.enemies.some(e=>e.variant==='boss')||g.endgame.active||(g.risingShadow.active&&g.risingShadow.warning===0&&g.risingShadow.y-g.player.y<H*.65))){finishCityEncounter(false);return;}
     if(m.relay){m.relay.life-=dt;if(m.relay.life<=0)m.relay=null;}
     if(!m.active){
       if(g.t>=90&&(g.player.level>=3||g.t>=180)&&g.t>=m.recoveryUntil){
-        const kind=m.nextCrane<=m.nextCity?'crane':m.cityIndex%2?'elite':'street';
+        const kind=m.nextCrane<=m.nextCity?'crane':'street';
         if(g.t>=Math.min(m.nextCrane,m.nextCity))spawnCityEncounter(kind);
       }
       return;
@@ -1481,7 +1543,7 @@
     }else if(e.kind==='street'&&e.age>=e.warning){
       // Telegraphs become two separated electric pools; the middle street stays open.
       const pulse=Math.floor((e.age-e.warning)/1.5)+1;
-      if(pulse>e.pulses){e.pulses=pulse;for(const z of e.zones){cityDamage(z.x,z.y,z.r,.45);if(g.mode!=='running')return;}}
+      if(pulse>e.pulses){e.pulses=pulse;damageElectricGate(e,.45);if(g.mode!=='running')return;}
     }
     if(e.age>=e.duration)finishCityEncounter(e.kind!=='elite');
   }
@@ -1497,24 +1559,9 @@
     const m=game.cityEvents,e=m.active;
     if(m.relay){circle(m.relay.x,m.relay.y,m.relay.r,'#87ffdc22');outline(m.relay.x,m.relay.y,m.relay.r,'#87ffdc',3);}
     if(!e)return;
-    ctx.save();ctx.textAlign='center';ctx.font='bold 15px system-ui';
-    if(e.kind==='elite'&&e.age<3){outline(e.x,e.y,48,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.fillText('HUNT IN '+Math.ceil(3-e.age),e.x,e.y-55);}
-    if(e.kind==='street')for(const z of e.zones){
-      circle(z.x,z.y,z.r,e.age<3?'#dca5ff18':'#dca5ff55');outline(z.x,z.y,z.r,'#dca5ff',3);
-      ctx.fillStyle='#f1d2ff';ctx.fillText(e.age<3?'⚡ IN '+Math.ceil(3-e.age):'⚡ LIVE',z.x,z.y+5);
-    }
-    if(e.kind==='crane'){
-      if(e.age<3){outline(e.x,e.y,140,'#ffbd78',3);ctx.fillStyle='#ffbd78';ctx.fillText('CRANE · MOVE OUT',e.x,e.y-100);}
-      for(const d of e.debris){
-        circle(d.x,d.y,d.r,d.hit?'#ff884466':'#ffbd7822');outline(d.x,d.y,d.r,'#ffbd78',3);
-        if(!d.hit){ctx.fillStyle='#ffba75';ctx.fillText('×',d.x,d.y+6);}
-        drawCraneCargo(d);
-        if(d.hit){ctx.fillStyle='#ffd09a';ctx.fillText('IMPACT',d.x,d.y+d.r+16);}
-      }
-    }
-    ctx.restore();
+    if(e.kind==='street')HAZ.electric(ctx,e,game.t,reducedMotion);
+    else if(e.kind==='crane')HAZ.crane(ctx,e,game.t,reducedMotion);
   }
-
   function tick(dt) {
     if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
@@ -1526,7 +1573,7 @@
     const nextNight=MAJOR.nightAt(g.t),previousNight=g.campaign.night;
     g.wave=nextNight;g.nightCycle.waveCount=nextNight;
     if(nextNight>previousNight)for(let n=previousNight+1;n<=nextNight;n++)startMajorNight(n);
-    if(g.t>1325&&!g.victory){end();$('overlay-title').textContent='THE CATASTROPHE ENDURES';$('overlay-copy').textContent='Run limit reached. The final tally: '+g.campaign.boss+' bosses · '+g.campaign.elite+' elites · '+g.campaign.superElite+' super-elites. Need 9 of each and the Night100 final clear.';return;}
+    if(g.t>1330&&!g.victory&&g.campaign.night<100){end();$('overlay-title').textContent='THE CATASTROPHE ENDURES';$('overlay-copy').textContent='Run limit reached. The final tally: '+g.campaign.boss+' bosses · '+g.campaign.elite+' elites · '+g.campaign.superElite+' super-elites. Need 9 of each and the Night100 final clear.';return;}
     updateFoundation(dt);if(g.mode!=='running')return;
     for(const key of Object.keys(g.buffs))g.buffs[key]=Math.max(0,g.buffs[key]-dt);
     if(g.t>=g.nextPower){
@@ -1537,9 +1584,9 @@
     updateCityEncounter(dt);if(g.mode!=='running')return;
     updateEvolution(dt);updateDirector(dt);
     g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
-    if(g.spawn<=0){
-      spawnEnemy();g.spawn=g.director.spawnDelay;
-    }
+    for(let i=g.damagePopups.length-1;i>=0;i--){g.damagePopups[i].age+=dt;if(g.damagePopups[i].age>=.9)g.damagePopups.splice(i,1);}
+    if(LAB_MODE)releaseLabSpawn();
+    else if(g.spawn<=0){spawnEnemy();g.spawn=g.director.spawnDelay;}
     if(g.buffs.survivalInstinct===0){
       g.survivalTimer+=dt;
       if(g.survivalTimer>=10){g.survivalTimer=0;g.buffs.survivalInstinct=8;notify('ADRENALINE SURGE · 8s',2,'adrenaline');sound(1200,.18,'sine');}
@@ -1629,6 +1676,8 @@
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
         const hitDamage=raw*(e.squadSlow>0&&g.equipment.lens&&g.equipment.coil?1+.25*Math.sqrt(g.equipment.lens*g.equipment.coil):1)*(e.squadMark>0?1.2:1)*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
+        g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,age:0});
+        if(g.damagePopups.length>80)g.damagePopups.shift();
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
         if(g.equipment.coil){e.squadSlow=Math.max(e.squadSlow||0,1+Math.log1p(g.equipment.coil));g.buildEffects.slowed++;if(g.equipment.lens)g.buildEffects.conducted++;}
         s.hit.push(e);if(s.mark)e.squadMark=4;
@@ -1752,11 +1801,14 @@
     }
     $('support-status').textContent='SQUAD '+game.companionSquad.length+'/'+MAX_COMPANIONS+' · '+(game.companionSquad.map(c=>c.type.slice(0,3).toUpperCase()+' R'+c.rank).join(' · ')||'—')+' · ×'+game.squadStats.count;
     $('xp-level').textContent=game.xp.toFixed(0)+' / '+(7+p.level*3)+' · L'+p.level;
-    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · '+BIOMES[game.world.epoch%4].name+' · '+(game.endgame.active?'CROWNS '+game.endgame.victories+'/9':game.risingShadow.active?'↓ SHADOW '+(game.risingShadow.warning>0?Math.ceil(game.risingShadow.warning)+'s':Math.max(0,Math.floor(p.y-game.risingShadow.y))+'m'):'DOWN ↓');
+    $('night-status').textContent='NIGHT '+game.campaign.night+'/100 · LV '+p.level+' · '+(game.campaign.night===100?'🔥 THE FINAL HORDE':BIOMES[game.world.epoch%4].name);
     const boss=game.enemies.find(e=>e.variant==='boss');$('boss-status').hidden=!boss;
     if(boss){$('boss-status').querySelector('span').textContent=(boss.name||'BOSS').toUpperCase();$('boss-status').setAttribute('aria-label',boss.name||'Boss');$('boss-health').value=boss.hp/boss.max;$('boss-health').setAttribute('aria-label',(boss.name||'Boss')+' '+Math.ceil(boss.hp)+' / '+Math.ceil(boss.max)+' HP');}
-    $('encounter-status').textContent='BOSSES '+game.campaign.boss+'/9 · ELITES '+game.campaign.elite+'/9 · SUPER '+game.campaign.superElite+'/9'+
-      (game.campaign.night===100?' · FINAL CLEAR':'');
+    $('encounter-status').textContent=game.labWave?
+      'MONSTER R'+game.labWave.rank+' · CREDITS '+game.labWave.budget+
+      ' · SPENT '+game.labWave.spent+' · BANK '+game.labWave.bankAfter+
+      ' · ARRIVALS '+game.labQueue.length+
+      (game.campaign.night===100?' · FINAL '+game.labFinalSpawned+'/'+game.labFinalTotal:''):'CAMPAIGN READY';
     renderMajorBuffs();
     $('buff-status').textContent=[game.buffs.survivalInstinct>0?'SURVIVAL '+Math.ceil(game.buffs.survivalInstinct)+'s':'',game.feralInstinct.active?'FERAL '+Math.ceil(game.feralInstinct.timer)+'s':'',game.buffs.rage>0?'RAGE '+Math.ceil(game.buffs.rage)+'s':'',game.feralInstinctOverdrive>0?'OVERDRIVE':'',game.cityEvents.relayUnlocked?'RELAY ◇':''].filter(Boolean).join(' · ');
     const tactic=$('squad-tactic'),names=['ATK','GUARD','HEAL'];
@@ -1809,6 +1861,7 @@
         ctx.fillStyle='#f88f7a';ctx.fillRect(c.x+2,c.y+18,8,14);
         ctx.fillStyle='#172b32';ctx.fillRect(c.x+23,c.y+4,24,7);ctx.fillRect(c.x+c.w-49,c.y+c.h-11,24,7);
         VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+        if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
         continue;
       }
       if(c.kind==='dumpster'){
@@ -1818,6 +1871,7 @@
         for(let i=12;i<c.w-5;i+=16){ctx.fillStyle='#244d48';ctx.fillRect(c.x+i,c.y+21,4,c.h-30);}
         for(const x of [12,c.w-12]){circle(c.x+x,c.y+c.h-2,8,'#152832');circle(c.x+x,c.y+c.h-2,3,'#b8b89b');}
         VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+        if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
         continue;
       }
       ctx.fillStyle='#060f16aa';ctx.fillRect(c.x+13,c.y+17,c.w,c.h);
@@ -1835,6 +1889,7 @@
       ctx.fillStyle='#0a171f';ctx.fillRect(c.x+c.w-31,c.y+c.h-29,17,24);
       if(n>.5){ctx.fillStyle='#70c4b3';ctx.fillRect(c.x+c.w-36,c.y+c.h-36,27,5);}
       VIS.prop(ctx,c,renderBiome,game?game.t:0,reducedMotion);
+      if(game&&game.campaign.night>=99)FIRE.world(ctx,c,game.t,game.campaign.night===100?1:.32,reducedMotion);
       // One bounded pool of lamplight per facade, under all actors.
       const lx=c.x+c.w+9,ly=c.y+c.h;
       const light=ctx.createRadialGradient(lx,ly,1,lx,ly,44);light.addColorStop(0,'#f3bb6430');light.addColorStop(1,'#f3bb6400');ctx.fillStyle=light;ctx.fillRect(lx-44,ly-44,88,88);
@@ -2054,13 +2109,7 @@
       ctx.fillText('+'+f.value+' FISH',f.x,f.y-(reducedMotion?26:26+(1-f.life/.9)*24));ctx.restore();
     }
     for(const item of g.powerups)drawSupply(item,g.t);
-    for(const c of g.hazards.toxicGasClouds){
-      const warning=c.age<1,r=warning?110:gasRadius(c);
-      circle(c.x,c.y,r,'#91d75730');
-      outline(c.x,c.y,r,'#b6ee75',warning?3:2);
-      if(!reducedMotion&&!warning)outline(c.x,c.y,r*.75+Math.sin(c.age*5)*3,'#95d66b66',2);
-      if(warning){ctx.fillStyle='#d4ffac';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('GAS!',c.x,c.y);ctx.textAlign='left';}
-    }
+    for(const c of g.hazards.toxicGasClouds)HAZ.gas(ctx,c,g.t,c.age<1?110:gasRadius(c),c.age<1,reducedMotion);
     for(const pet of g.companionSquad){
       for(const t of pet.traps||[]){circle(t.x,t.y,t.r,'#87c9d122');outline(t.x,t.y,t.r,'#87c9d1',2);outline(t.x,t.y,12,'#d7f5e5',3);}
       if(pet.turret){const t=pet.turret;inkBox(t.x-13,t.y-10,26,20,'#d1ae64');inkBox(t.x-4,t.y-23,8,22,'#aec9c5');}
@@ -2131,7 +2180,12 @@
         for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*TWO/4+.4);
           polygon(e.r+3,0,[[0,-2],[9,0],[0,2]],'#ffd48a');ctx.restore();}
       }
-      if(e.hp<e.max){ctx.fillStyle='#fa7e85';ctx.fillRect(-e.r,-e.r-14,e.r*2*(e.hp/e.max),4);}
+      const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
+      ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-21,barW,5);
+      ctx.fillStyle=e.creditCategory?'#ffbd76':'#fa7e85';ctx.fillRect(-e.r,-e.r-21,barW*pct,5);
+      ctx.fillStyle=e.creditCategory?'#ffeacb':'#e5f8f2';ctx.font='bold 10px system-ui';ctx.textAlign='center';
+      ctx.fillText('HP '+Math.max(0,Math.ceil(e.hp))+'/'+Math.ceil(e.max)+'  DMG '+(e.damage||1).toFixed(1),0,-e.r-26);
+      ctx.textAlign='left';
       ctx.restore();
     }
     if(visible(p,300)){
@@ -2154,6 +2208,11 @@
       polygon(26,0,[[0,-3],[12,-5],[18,0],[12,5],[0,3]],'#fff4c3');ctx.restore();}
     ctx.restore();
     }
+    for(const hit of g.damagePopups){
+      ctx.save();ctx.globalAlpha=Math.max(0,1-hit.age/.9);ctx.font=hit.critical?'bold 19px system-ui':'bold 15px system-ui';
+      ctx.textAlign='center';ctx.fillStyle=hit.critical?'#ffe38a':'#ffffff';
+      ctx.fillText('-'+hit.amount,hit.x,hit.y-hit.age*40);ctx.restore();
+    }
     for(const e of g.particles){
       if(e.x<cameraX-10||e.x>cameraX+W+10||e.y<cameraY-10||e.y>cameraY+H+10)continue;
       ctx.globalAlpha=clamp(e.life/e.ttl,0,1);
@@ -2169,6 +2228,7 @@
     grad.addColorStop(0,'#06132100');grad.addColorStop(1,'#030c1c99');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     VIS.atmosphere(ctx,W,H,source.t,source.campaign.night,reducedMotion);
+    if(source.campaign.night>=99)FIRE.sky(ctx,W,H,source.t,source.campaign.night===100?1:.25,reducedMotion);
     if(source.world.transition>0){
       ctx.save();ctx.globalAlpha=(source.world.transition/2.5)*.12;
       ctx.fillStyle=BIOMES[source.world.epoch%4].floor;ctx.fillRect(0,0,W,H);ctx.restore();
@@ -2367,7 +2427,10 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,worldScrollY:WORLD_SCROLL_Y},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
+      lab:game?{enabled:true,source:'full-campaign',economy:game.labEconomy?.snapshot(),wave:game.labWave,
+        pending:game.labQueue?.length||0,finalSpawned:game.labFinalSpawned,finalTotal:game.labFinalTotal,
+        finalBossId:game.labFinalBossId}:null,
       music:{volume,voices:audioVoices.size,scheduledAhead:audio?Math.max(0,musicNext-audio.currentTime):0,arrangement:{...arrangement},mode:musicMode,enabled:!muted,active:!!(audio&&audio.state==='running'&&musicBus&&!muted&&!document.hidden&&game&&game.mode==='running'),beat:musicBeat,...scoreCounts,pass:AUDIO_PASS_ID,boss:!!(game&&game.enemies.some(e=>e.variant==='boss'))},
       pendingUpgrade:!!(game&&game.pendingUpgrade),
       fishItems:game?game.fishItems.map(f=>({...f})):[],
@@ -2382,7 +2445,7 @@
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({id:e.id,traits:e.traits?{...e.traits}:null,traitAge:e.traitAge||0,terrain:ignoresTerrain(e)?'bypass':'solid',contact:canEnemyContact(e),cocoon:!!e.cocoon,incubation:e.incubation||0,mutant:!!e.mutant,parentIds:e.parentIds?[...e.parentIds]:[],rewardValue:e.rewardValue||0,x:e.x,y:e.y,r:e.r,hp:e.hp,variant:e.variant,finalBoss:!!e.finalBoss,round:e.round||0,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,encoreSlow:e.encoreSlow||0,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
+      enemies:game?game.enemies.map(e=>({id:e.id,traits:e.traits?{...e.traits}:null,traitAge:e.traitAge||0,terrain:ignoresTerrain(e)?'bypass':'solid',contact:canEnemyContact(e),cocoon:!!e.cocoon,incubation:e.incubation||0,mutant:!!e.mutant,parentIds:e.parentIds?[...e.parentIds]:[],rewardValue:e.rewardValue||0,x:e.x,y:e.y,r:e.r,hp:e.hp,variant:e.variant,name:e.name||'',majorId:e.majorId||null,bossKind:e.bossKind||null,eliteKind:e.eliteKind||null,creditCategory:e.creditCategory||null,labCost:e.labCost||0,labRank:e.labRank||0,finalWave:!!e.finalWave,finalBoss:!!e.finalBoss,round:e.round||0,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,encoreSlow:e.encoreSlow||0,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
       shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage,critical:!!s.critical,hitDamage:s.calculateDamage?s.calculateDamage():s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,r:game.player.r,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,

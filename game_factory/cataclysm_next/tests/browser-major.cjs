@@ -38,6 +38,9 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.presentation.worldScrollY,-28);
       assert.equal(snapshot.presentation.visualPass,'catastrophe-neon-noir-02');
       assert.equal(snapshot.major.campaign.night,1);
+      assert.equal(snapshot.player.level,0,'full campaign must start at level zero');
+      assert.equal(snapshot.lab.source,'full-campaign');
+      assert.equal(snapshot.lab.wave.night,1);
       assert.equal(snapshot.major.victory,false);
       assert.equal(snapshot.major.rerollTokens,0);
       assert.ok(snapshot.time>=0);

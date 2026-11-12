@@ -26,7 +26,7 @@ assert.deepEqual(elites.map(x=>x.number),Array.from({length:16},(_,i)=>6*(i+1)))
 assert.deepEqual(overlaps.map(x=>x.number),[18,36,54,72,90]);
 assert.equal(campaign.schedule.filter(n=>n.eliteCategory==='elite').length,8);
 assert.equal(campaign.schedule.filter(n=>n.eliteCategory==='superElite').length,8);
-assert.deepEqual(campaign.getNight(100).events,['elite','superElite','finale']);
+assert.deepEqual(campaign.getNight(100).events,['finale']);
 assert.equal(new Set(bosses.map(x=>x.bossIndex)).size,9);
 assert.equal(catalog.normal.length,9);
 assert.equal(catalog.bosses.length,9);
@@ -86,4 +86,5 @@ assert.equal(campaign.won(ledger,false),false,'player must live');
 assert.equal(campaign.won(ledger,true),true);
 ledger.night=99;
 assert.equal(campaign.won(ledger,true),false,'cannot win before Night100');
-console.log('PASS Cataclysm major: 100 nights, 11 bosses, 16 elites, 27 distinct archetypes, 378 animated poses, two new songs, idempotent 9+9+9 victory');
+assert.equal(campaign.won({...campaign.newLedger(),night:100,finaleCleared:true},true),true,'only Night 100 final horde should gate victory');
+console.log('PASS Cataclysm major: 100 nights, 27 archetypes, 378 animated poses, two songs, final-horde victory');

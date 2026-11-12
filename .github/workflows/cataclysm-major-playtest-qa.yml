@@ -2,7 +2,7 @@ name: Cataclysm major · independent gameplay QA
 run-name: The Catastrophe · real 8-viewport gameplay and 100-night contract
 on:
   push:
-    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll]
+    branches: [main, production/cataclysm-1-0-catastrophe-major-20261111, feature/cataclysm-10-neon-visuals-reverse-scroll, feature/cataclysm-10-full-run-100-final-horde-and-hazards]
     paths:
       - docs/cataclysm-1-0-major/**
       - game_factory/cataclysm_next/tests/**
@@ -31,10 +31,14 @@ jobs:
           node --check game_factory/cataclysm_next/tests/major-systems.cjs
           node --check game_factory/cataclysm_next/tests/browser-major.cjs
           node --check game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node --check game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node --check game_factory/cataclysm_next/tests/browser-horde.cjs
       - name: Verify real campaign scheduling and animation contract
         run: node game_factory/cataclysm_next/tests/major-systems.cjs
       - name: Verify new visual renderer and reverse-scroll contracts
         run: node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+      - name: Verify 100-night monster economy, fixed finale and scaling
+        run: node game_factory/cataclysm_next/tests/spawn-economy.cjs
       - name: Install independent browser test library
         run: |
           npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
@@ -43,6 +47,8 @@ jobs:
         run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-major-http.log 2>&1 &
       - name: Run eight real mobile/desktop Chrome playtests, touch input and JS exceptions
         run: node game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Run real Chrome Night 99 and full 18-enemy Night 100 cinematic stress test
+        run: node game_factory/cataclysm_next/tests/browser-horde.cjs
       - name: Preserve test screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
