@@ -43,6 +43,8 @@ jobs:
         run: nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-major-http.log 2>&1 &
       - name: Run eight real mobile/desktop Chrome playtests, touch input and JS exceptions
         run: node game_factory/cataclysm_next/tests/browser-major.cjs
+      - name: Test isolated level-100 night-99 final wave in Chrome
+        run: node game_factory/cataclysm_next/tests/night99-lab.cjs
       - name: Preserve test screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
