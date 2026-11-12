@@ -279,7 +279,9 @@ def generate_visual_anchor(client, reference: bytes, actor: str, identity: dict,
         response = client.images.edit(
             model=os.environ.get("STUDIO_ANCHOR_MODEL", ANCHOR_MODEL),
             image=image, prompt=prompt, output_format="png",
-            size="512x512", quality="high"
+            # Static image outputs require >=655,360 pixels; 512x512 is invalid.
+            # GIF generation has a separate multi-frame pixel budget.
+            size="1024x1024", quality="high"
         )
     if not response.data or not response.data[0].b64_json:
         raise RuntimeError("Texture artist produced no painted visual anchor")
