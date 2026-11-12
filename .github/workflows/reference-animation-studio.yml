@@ -119,6 +119,18 @@ jobs:
               raise SystemExit('Resume states require exact source run and unique requested state names')
           job['resume_art_run_id']=resume_id
           job['resume_states']=','.join(resume_names)
+          candidate_run=str(job.get('review_candidate_run_id','')).strip()
+          candidate_state=str(job.get('review_candidate_state','')).strip()
+          candidate_attempt=int(job.get('review_candidate_attempt',0))
+          if candidate_run or candidate_state or candidate_attempt:
+              if (not candidate_run.isdecimal() or len(candidate_run)>16
+                  or candidate_state not in states or candidate_state in resume_names
+                  or candidate_attempt not in (1,2,3)
+                  or not job['texture_first']):
+                  raise SystemExit('Candidate review must target one previously unapproved drawn hero state')
+          job['review_candidate_run_id']=candidate_run
+          job['review_candidate_state']=candidate_state
+          job['review_candidate_attempt']=candidate_attempt
           if job['texture_first'] and job['actor'] != 'hero':
               raise SystemExit('This first texture-first release is scoped to Cataclysm hero only')
           if job['texture_first'] and len(states) != 6:
@@ -131,6 +143,7 @@ jobs:
               fd.write('anchor_source_run='+reuse+'\n')
               fd.write('max_visual_retries='+str(retries)+'\n')
               fd.write('resume_source_run='+resume_id+'\n')
+              fd.write('candidate_run='+candidate_run+'\n')
           print('Validated reference animation request',job['actor'],states,maximum)
           PY
       - name: Offline pipeline tests and existing game contracts (no API charges)
@@ -195,6 +208,35 @@ jobs:
           print('Resumed approved reference GIF states',job['resume_states'],
                 'from',job['resume_art_run_id'])
           PY
+      - name: Restore exactly one previous painted GIF candidate for FRESH review
+        if: steps.request.outputs.candidate_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ steps.request.outputs.candidate_run }}
+          name: character-animation-visual-review
+          github-token: ${{ github.token }}
+          path: artifacts/unapproved-illustrated-candidate/
+      - name: Isolate a specific unapproved candidate; never copy a verdict
+        if: steps.request.outputs.candidate_run != ''
+        run: |
+          python - <<'PY'
+          import json,shutil,hashlib
+          from pathlib import Path
+          job=json.loads(Path('artifacts/character-animation/job.json').read_text())
+          state=job['review_candidate_state']
+          attempt=job['review_candidate_attempt']
+          source=Path('artifacts/unapproved-illustrated-candidate')
+          matches=list(source.rglob(f'{state}-attempt-{attempt}.gif'))
+          if len(matches)!=1:
+              raise SystemExit('No uniquely identified saved candidate GIF')
+          dest=Path('artifacts/character-animation/candidates')
+          dest.mkdir(parents=True,exist_ok=True)
+          final=dest/(state+'.gif')
+          shutil.copyfile(matches[0],final)
+          print('Reviewing UNAPPROVED prior candidate',state,
+                'run',job['review_candidate_run_id'],'attempt',attempt,
+                'sha256',hashlib.sha256(final.read_bytes()).hexdigest())
+          PY
       - name: Inspect reference pixels, animate requested poses with image model, then run independent vision review
         if: steps.request.outputs.active == 'true'
         env:
@@ -207,6 +249,7 @@ jobs:
           STUDIO_ANCHOR_MODEL: gpt-image-2.6-sunburst
           STUDIO_VISION_MODEL: gpt-6.1-terra
           APPROVED_RESUME_SOURCE_RUN: ${{ steps.request.outputs.resume_source_run }}
+          REVIEW_CANDIDATE_RUN: ${{ steps.request.outputs.candidate_run }}
         run: |
           test -n "$OPENAI_API_KEY"
           python - <<'PY'
@@ -221,6 +264,8 @@ jobs:
           if job.get('texture_first'):args.append('--texture-first')
           if job.get('reuse_anchor_run_id'):args.append('--reuse-painted-anchor')
           if job.get('resume_states'):args+=['--reuse-states',job['resume_states']]
+          if job.get('review_candidate_state'):
+              args+=['--review-candidate-state',job['review_candidate_state']]
           if job.get('max_visual_retries'):
               args+=['--max-visual-retries',str(job['max_visual_retries'])]
           run(args)

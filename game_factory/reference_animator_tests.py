@@ -88,6 +88,17 @@ class ReferenceAnimatorTests(unittest.TestCase):
             self.assertEqual(output.size, (576,96))
             self.assertEqual(output.mode, "RGBA")
 
+    def test_illustrated_contact_sheet_shows_complete_eight_pose_cycle(self):
+        # Critic must see frame 7/8, where the return-to-ready portion lives.
+        images=[]
+        for index in range(8):
+            frame=Image.new("RGBA",(96,96),(0,0,0,0))
+            ImageDraw.Draw(frame).ellipse((10+index*3,20,40+index*3,80),
+                                          fill=(240,240,225,255))
+            images.append(frame)
+        review=Image.open(BytesIO(mod.contact_sheet(images)))
+        self.assertEqual(review.size,(8*128,128))
+
     def test_manifest_update_is_data_driven_and_mirrored(self):
         frame = Image.new("RGBA", (96,96), (255,255,255,0))
         ImageDraw.Draw(frame).ellipse((38,18,58,80),fill=(250,140,50,255))

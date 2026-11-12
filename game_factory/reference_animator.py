@@ -211,7 +211,7 @@ def atlas(frames: list[Image.Image]) -> bytes:
 
 
 def contact_sheet(frames: list[Image.Image]) -> bytes:
-    count=min(6,len(frames))
+    count=min(12,len(frames))
     sheet=Image.new("RGBA",(count*128,128),(24,31,45,255))
     for i in range(count):
         sheet.alpha_composite(frames[i].resize((112,112),Image.Resampling.NEAREST),(i*128+8,8))
@@ -222,7 +222,7 @@ def contact_sheet(frames: list[Image.Image]) -> bytes:
 def inspect_animation(client, reference: bytes, frames: list[Image.Image], state: str, actor: str, texture_first: bool = False) -> dict:
     phase = {
         "run": "contact, compression, passing, up, alternating leg cycle with real weight transfer",
-        "attack": "anticipation, weapon fire, recoil, recovery with distinct pistol/arm positions",
+        "attack": "crouched preparation, distinct raised and extended arms, torso lean, theatrical kickback and return to ready. Projectiles and light effects are rendered by the game separately and need not appear in a character sprite atlas",
         "idle": "calm planted-foot idle with readable life cues: blink, tail swish, scarf motion or subtle breathing; do NOT require a walk, exaggerated torso articulation or pose changes incompatible with idle",
         "hit": "recognizable impact, stagger or fall-back, and recovery",
         "feral": "aggressive gait and body language with crimson eyes, beyond hue shifts",
@@ -240,7 +240,8 @@ def inspect_animation(client, reference: bytes, frames: list[Image.Image], state
         "For IDLE, steady body/feet are CORRECT: mark idle_life=true if at least "
         "two visibly genuine subtle cues among eye blink, moving tail, scarf "
         "lag and breathing occur. Do not demand locomotion or large knee bends "
-        "in idle. For RUN and ATTACK, require large-scale anatomical key poses "
+        "in idle. For ATTACK, inspect actual elbow, shoulder, torso and recovery poses; do not require muzzle flashes, projectiles or targets in an isolated sprite atlas. "
+        "For RUN and ATTACK, require large-scale anatomical key poses "
         "and distinct action phases; never apply the idle exception to them. "
         "Be strict about unrelated characters and "
         "severe silhouette distortion. No extra text. Character id: " + actor
@@ -512,6 +513,8 @@ def run(argv=None):
     parser.add_argument("--work-dir",default="artifacts/character-animation")
     parser.add_argument("--reuse-painted-anchor",action="store_true",
                         help="Reuse the exact previously vision-approved painted anchor in work-dir")
+    parser.add_argument("--review-candidate-state",default="",
+                        help="Independently review a prior art candidate without calling it preapproved")
     parser.add_argument("--reuse-states",default="",
                         help="Comma-separated already-reviewed GIF state names restored from a specified prior workflow run")
     parser.add_argument("--max-visual-retries",type=int,default=0,
@@ -529,6 +532,10 @@ def run(argv=None):
         raise ValueError("Only unique requested states may be resumed")
     if resume_states and not args.texture_first:
         raise ValueError("Resume of image-generated artwork requires texture-first mode")
+    if args.review_candidate_state and (not args.texture_first or
+                                        args.review_candidate_state not in states or
+                                        args.review_candidate_state in resume_states):
+        raise ValueError("Review candidate must be an unapproved requested texture-first state")
     if len(states)>args.max_generations:
         raise ValueError("States exceed the explicitly approved API generation limit")
     from openai import OpenAI
@@ -596,6 +603,34 @@ def run(argv=None):
                   "frames",len(previous_frames),flush=True)
             continue
         feedback=""
+        if state == args.review_candidate_state:
+            # The prior candidate was NOT approved. Judge all its painted frames
+            # afresh against the actual animation/visual-effects separation.
+            candidate = work/"candidates"/(state+".gif")
+            if not candidate.is_file():
+                raise ValueError("Missing saved source animation candidate")
+            candidate_bytes = candidate.read_bytes()
+            try:
+                frames = normalize_frames(candidate_bytes)
+                (work/(state+"-candidate-contact.png")).write_bytes(contact_sheet(frames))
+                judgment = inspect_animation(client, art_reference, frames, state,
+                                             args.actor, args.texture_first)
+            except ValueError as exc:
+                feedback = ("Prior illustrated sequence needs stronger torso "
+                            "and elbow choreography: " + str(exc)[:170])
+                print("Saved illustrated candidate still rejected",state,feedback,flush=True)
+            else:
+                reviews[state] = {
+                    **judgment, "fresh_independent_review": True,
+                    "source_artifact_run": os.environ.get("REVIEW_CANDIDATE_RUN",""),
+                    "saved_gif_sha256": hashlib.sha256(candidate_bytes).hexdigest(),
+                }
+                sprites[state] = atlas(frames)
+                (work/(state+".gif")).write_bytes(candidate_bytes)
+                (work/(state+"-contact.png")).write_bytes(contact_sheet(frames))
+                print("FRESH QA PASS saved illustrated candidate",state,
+                      "frames",len(frames),flush=True)
+                continue
         attempt=0
         while True:
             attempt+=1

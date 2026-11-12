@@ -1,15 +1,18 @@
 {
   "enabled": true,
-  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-09",
+  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-10",
   "actor": "hero",
   "states": "idle,run,attack,hit,feral,adrenaline",
   "reference_path": "docs/cataclysm-1-0-major/art/hero-idle.png",
   "drive_file_id": "",
   "texture_first": true,
   "max_generations": 6,
-  "notes": "Illustrated Cataclysm 1.0 LITE MOBILE hero, one white feline with coral scarf and unchanged pair of metallic costume props. Preserve the independently approved painted anchor, six-frame idle, eight-frame run. Finish theatrical eight-pose arm movement, six-frame harmless stumble/rebalance, eight-frame red-eyed energized sprint, eight-frame high-speed sprint. Art must look hand-painted and textured, not procedural. Use only baked PNG atlases with original gameplay, squad, map, UI and music unchanged. No interactions with other characters.",
+  "notes": "Illustrated Cataclysm 1.0 LITE MOBILE hero. Preserve approved painted anchor and idle/run GIFs. First submit exact eight-pose drawn theatrical arm-action sequence from source run for a NEW independent character-art review: elbow bends, raised and extended arms, full body lean and recovery, with game projectile/lighting handled separately. Then create six-frame stumble/rebalance, eight-frame red-eyed feral sprint and eight-frame energetic acceleration cycle. Keep hand-painted textures, full hero silhouette, lightweight baked atlases. Gameplay, squad, world, UI, sounds and 1.0 version are unchanged.",
   "reuse_anchor_run_id": 43274545354,
   "max_visual_retries": 2,
   "resume_art_run_id": 43277765916,
-  "resume_states": "idle,run"
+  "resume_states": "idle,run",
+  "review_candidate_run_id": 43283778561,
+  "review_candidate_state": "attack",
+  "review_candidate_attempt": 2
 }
