@@ -228,11 +228,42 @@ def review():
         raise RuntimeError("Visual reviewer must return valid JSON") from exc
     scores = ("identity", "motion", "quality", "integration")
     minimum = int(j["minimum_visual_score"])
-    assert verdict.get("pass") is True and all(
-        isinstance(verdict.get(x), int) and verdict[x] >= minimum for x in scores
-    ), "Image review REJECTED candidate: " + json.dumps(verdict)
+    attempt = int(os.environ.get("ART_REVIEW_ATTEMPT", "1"))
+    assert 1 <= attempt <= 3, "Visual-review attempt must be bounded"
     (OUT / "visual-review.json").write_text(json.dumps(verdict, indent=2))
-    print("PASS independent image-based assessment:", verdict)
+    (OUT / f"visual-review-attempt-{attempt}.json").write_text(json.dumps(verdict, indent=2))
+    approved = verdict.get("pass") is True and all(
+        isinstance(verdict.get(x), int) and verdict[x] >= minimum for x in scores
+    )
+    if not approved:
+        concerns = verdict.get("concerns", [])
+        if not isinstance(concerns, list):
+            concerns = [str(concerns)]
+        brief = [
+            "# Mandatory art revision — rejected visual attempt " + str(attempt),
+            "",
+            "This is an independent evaluation of the real browser-rendered character.",
+            "Do not modify or bypass the scoring. Change the ART AND ANIMATION.",
+            "Required minimum for each category: " + str(minimum) + "/5",
+            "Observed scores: " + json.dumps({key: verdict.get(key) for key in scores}),
+            "",
+            "## Specific actionable failures",
+        ]
+        brief += ["- " + str(c) for c in concerns]
+        brief += [
+            "",
+            "Fix pose choreography and anatomical articulation in the actual generator.",
+            "A 24-frame atlas with 2-3 readable poses is a failure even if alpha",
+            "silhouette counts and image hashes look sufficiently different.",
+            "Review all 24 run/attack browser frames and keep version 1.0.",
+        ]
+        (OUT / "revision-brief.md").write_text("\\n".join(brief) + "\\n")
+        print("REJECTED visual attempt", attempt, json.dumps(verdict), flush=True)
+        raise AssertionError("Image review REJECTED candidate: " + json.dumps(verdict))
+    (OUT / "accepted.json").write_text(json.dumps({
+        "attempt": attempt, "verdict": verdict, "request_id": j.get("request_id")
+    }, indent=2))
+    print("PASS independent image-based assessment on attempt", attempt, verdict)
 
 
 if __name__ == "__main__":
