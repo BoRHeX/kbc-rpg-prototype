@@ -326,7 +326,7 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
       "idle":"pronounced visible chest expansion and contraction, clear delayed tail arcs, scarf cloth swaying and an eye blink in a grounded living idle pose",
       "walk":"looping alternating leg walk cycle, clear foot plants, tail counterbalance",
       "run":"looping fast run cycle, powerful alternating leg strides and scarf/tail flutter",
-      "attack":"weapon firing or claw-strike cycle, recoil and recovery, distinct action frames",
+      "attack":"isolated non-graphic cartoon character action study with preparation, dual-arm extension, stylized kickback and recovery; no target or victim",
       "aim":"steady tracking aim, upper body rotates slightly while feet stay grounded",
       "hit":"brief damage recoil and recover to ready stance",
       "feral":"orange spiky larger aggressive run with visible energized fur transformation",
@@ -348,8 +348,10 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
             "across ALL frames. For RUN: explicitly animate two alternating contact, "
             "down/compression, passing/raised-foot and up/recovery poses with real "
             "joint bending, visible planted feet and torso weight transfer. "
-            "For ATTACK: distinct anticipation, firing, alternating gun recoil and "
-            "recovery, NOT one firing pose with flickering flashes. For HIT: clear "
+            "For ATTACK: distinct anticipation, arm extension, alternating recoil "
+            "and recovery, not a static arms-forward pose. This is an isolated "
+            "non-graphic animation study with NO enemies, targets, impacts, "
+            "injuries or victims anywhere. For HIT: clear "
             "impact recoil and regain balance. For FERAL: crimson glowing eyes and "
             "aggressive body language; for ADRENALINE: fast controlled run-and-gun. "
             "Any tiny mirrored shift, hue change, full-body wobble or reusing a frame "
@@ -450,6 +452,8 @@ def run(argv=None):
     parser.add_argument("--work-dir",default="artifacts/character-animation")
     parser.add_argument("--reuse-painted-anchor",action="store_true",
                         help="Reuse the exact previously vision-approved painted anchor in work-dir")
+    parser.add_argument("--reuse-states",default="",
+                        help="Comma-separated already-reviewed GIF state names restored from a specified prior workflow run")
     parser.add_argument("--max-visual-retries",type=int,default=0,
                         help="Global budget of image-model corrective calls, 0–2")
     args=parser.parse_args(argv)
@@ -460,6 +464,11 @@ def run(argv=None):
     if (args.reuse_painted_anchor or args.max_visual_retries) and not args.texture_first:
         raise ValueError("Painted anchor reuse and visual retries require texture-first mode")
     states=validate_job(args.actor,args.states,args.reference,args.drive_file_id)
+    resume_states=[part.strip() for part in args.reuse_states.split(",") if part.strip()]
+    if len(resume_states)!=len(set(resume_states)) or not set(resume_states).issubset(states):
+        raise ValueError("Only unique requested states may be resumed")
+    if resume_states and not args.texture_first:
+        raise ValueError("Resume of image-generated artwork requires texture-first mode")
     if len(states)>args.max_generations:
         raise ValueError("States exceed the explicitly approved API generation limit")
     from openai import OpenAI
@@ -500,6 +509,23 @@ def run(argv=None):
     sprites={};reviews={}
     remaining_retries=args.max_visual_retries
     for state in states:
+        resume_path=work/"resume"/(state+".gif")
+        if state in resume_states:
+            if not resume_path.is_file():
+                raise ValueError("Prior accepted GIF is missing for "+state)
+            prior=resume_path.read_bytes()
+            previous_frames=normalize_frames(prior)
+            # Re-evaluate exact prior art against this run's original painted
+            # reference. No successful old result bypasses independent QA.
+            previous_review=inspect_animation(
+                client,art_reference,previous_frames,state,args.actor,args.texture_first)
+            sprites[state]=atlas(previous_frames)
+            reviews[state]=previous_review
+            (work/(state+".gif")).write_bytes(prior)
+            (work/(state+"-contact.png")).write_bytes(contact_sheet(previous_frames))
+            print("RESUMED AND REVERIFIED painted state",state,
+                  "frames",len(previous_frames),flush=True)
+            continue
         feedback=""
         attempt=0
         while True:
