@@ -1465,7 +1465,7 @@
     if(threat+cost>g.director.budget||g.enemies.length>=liveCap())return false;
     const {x,y}=nearestSafeSpace(p.x+80,p.y,60);
     m.active={kind,id:++m.serial,age:0,x,y,duration:kind==='elite'?21:11,warning:3,
-      zones:kind==='street'?[-1,1].map(side=>({...nearestSafeSpace(x+side*100,y+side*55,52),r:52})):[],
+      zones:kind==='street'?[-1,1].map(side=>({...nearestSafeSpace(x+side*115,y,30),r:30})):[],
       debris:[],nextDrop:3,pulses:0,eliteSpawned:false};
     m.counts[kind]++;g.director.recovery=Math.max(g.director.recovery,3);
     // Fixed schedule anchor prevents countdown drift; crane cadence 45–75 seconds.
@@ -1495,6 +1495,21 @@
     const o=offsets[i%offsets.length];
     e.debris.push({...nearestSafeSpace(e.x+o[0],e.y+o[1],38),r:38,age:0,hit:false});
     game.cityEvents.maxDebris=Math.max(game.cityEvents.maxDebris,e.debris.length);
+  }
+  function damageElectricGate(e,amount){
+    if(e.zones.length<2)return;
+    const [a,b]=e.zones,dx=wrappedDelta(a.x,b.x),dy=b.y-a.y,denom=dx*dx+dy*dy||1;
+    const closest=(x,y)=>{const q=clamp((wrappedDelta(a.x,x)*dx+(y-a.y)*dy)/denom,0,1);return {x:wrapCoord(a.x+dx*q),y:a.y+dy*q};};
+    const g=game,p=g.player,m=g.cityEvents,pt=closest(p.x,p.y);
+    if(dist(p.x,p.y,pt.x,pt.y)<24+p.r&&!p.inv&&!relayProtects(p.x,p.y)&&g.runicRelic.active!=='shield'){
+      damageTaken();p.hp=Math.max(0,p.hp-amount*(1-g.effectiveBuffs.mitigation));p.inv=1.3;m.playerHits++;
+      burst(p.x,p.y,'#8ceeff',14);playSfx('danger');if(p.hp<=0){updateHud();end();return;}
+    }
+    for(const enemy of [...g.enemies]){const target=closest(enemy.x,enemy.y);
+      if(enemy.hp>0&&dist(enemy.x,enemy.y,target.x,target.y)<24+enemy.r){
+        enemy.hp-=amount*4;enemy.hurt=.15;m.enemyHits++;if(enemy.hp<=0)defeatEnemy(enemy);
+      }
+    }
   }
   function updateCityEncounter(dt){
     if(!game||game.mode!=='running'||game.campaign.night===100)return;
@@ -1526,7 +1541,7 @@
     }else if(e.kind==='street'&&e.age>=e.warning){
       // Telegraphs become two separated electric pools; the middle street stays open.
       const pulse=Math.floor((e.age-e.warning)/1.5)+1;
-      if(pulse>e.pulses){e.pulses=pulse;for(const z of e.zones){cityDamage(z.x,z.y,z.r,.45);if(g.mode!=='running')return;}}
+      if(pulse>e.pulses){e.pulses=pulse;damageElectricGate(e,.45);if(g.mode!=='running')return;}
     }
     if(e.age>=e.duration)finishCityEncounter(e.kind!=='elite');
   }
@@ -1542,24 +1557,9 @@
     const m=game.cityEvents,e=m.active;
     if(m.relay){circle(m.relay.x,m.relay.y,m.relay.r,'#87ffdc22');outline(m.relay.x,m.relay.y,m.relay.r,'#87ffdc',3);}
     if(!e)return;
-    ctx.save();ctx.textAlign='center';ctx.font='bold 15px system-ui';
-    if(e.kind==='elite'&&e.age<3){outline(e.x,e.y,48,'#f1c3ff',4);ctx.fillStyle='#f1c3ff';ctx.fillText('HUNT IN '+Math.ceil(3-e.age),e.x,e.y-55);}
-    if(e.kind==='street')for(const z of e.zones){
-      circle(z.x,z.y,z.r,e.age<3?'#dca5ff18':'#dca5ff55');outline(z.x,z.y,z.r,'#dca5ff',3);
-      ctx.fillStyle='#f1d2ff';ctx.fillText(e.age<3?'⚡ IN '+Math.ceil(3-e.age):'⚡ LIVE',z.x,z.y+5);
-    }
-    if(e.kind==='crane'){
-      if(e.age<3){outline(e.x,e.y,140,'#ffbd78',3);ctx.fillStyle='#ffbd78';ctx.fillText('CRANE · MOVE OUT',e.x,e.y-100);}
-      for(const d of e.debris){
-        circle(d.x,d.y,d.r,d.hit?'#ff884466':'#ffbd7822');outline(d.x,d.y,d.r,'#ffbd78',3);
-        if(!d.hit){ctx.fillStyle='#ffba75';ctx.fillText('×',d.x,d.y+6);}
-        drawCraneCargo(d);
-        if(d.hit){ctx.fillStyle='#ffd09a';ctx.fillText('IMPACT',d.x,d.y+d.r+16);}
-      }
-    }
-    ctx.restore();
+    if(e.kind==='street')HAZ.electric(ctx,e,game.t,reducedMotion);
+    else if(e.kind==='crane')HAZ.crane(ctx,e,game.t,reducedMotion);
   }
-
   function tick(dt) {
     if(!game||game.mode!=='running')return;
     const g=game,p=g.player;
@@ -1582,6 +1582,7 @@
     updateCityEncounter(dt);if(g.mode!=='running')return;
     updateEvolution(dt);updateDirector(dt);
     g.spawn-=dt;p.inv=Math.max(0,p.inv-dt);
+    for(let i=g.damagePopups.length-1;i>=0;i--){g.damagePopups[i].age+=dt;if(g.damagePopups[i].age>=.9)g.damagePopups.splice(i,1);}
     if(LAB_MODE)releaseLabSpawn();
     else if(g.spawn<=0){spawnEnemy();g.spawn=g.director.spawnDelay;}
     if(g.buffs.survivalInstinct===0){
@@ -1673,6 +1674,8 @@
         const e=g.enemies[idx],raw=s.calculateDamage?s.calculateDamage():s.damage;
         const hitDamage=raw*(e.squadSlow>0&&g.equipment.lens&&g.equipment.coil?1+.25*Math.sqrt(g.equipment.lens*g.equipment.coil):1)*(e.squadMark>0?1.2:1)*(e.elite&&e.huntAge%5<1.5?.35:e.mutation==='shield'&&e.mutationAge>=1?.5:1);
         g.director.pendingDamage+=Math.min(e.hp,hitDamage);e.hp-=hitDamage;e.hurt=.12;
+        g.damagePopups.push({x:e.x,y:e.y-e.r-24,amount:Math.round(hitDamage*10)/10,critical:s.critical,age:0});
+        if(g.damagePopups.length>80)g.damagePopups.shift();
         burst(s.x,s.y,s.critical?'#fff09a':'#a5f8ff',s.critical?7:4);playSfx(s.critical?'critical':'hit');
         if(g.equipment.coil){e.squadSlow=Math.max(e.squadSlow||0,1+Math.log1p(g.equipment.coil));g.buildEffects.slowed++;if(g.equipment.lens)g.buildEffects.conducted++;}
         s.hit.push(e);if(s.mark)e.squadMark=4;
@@ -2104,13 +2107,7 @@
       ctx.fillText('+'+f.value+' FISH',f.x,f.y-(reducedMotion?26:26+(1-f.life/.9)*24));ctx.restore();
     }
     for(const item of g.powerups)drawSupply(item,g.t);
-    for(const c of g.hazards.toxicGasClouds){
-      const warning=c.age<1,r=warning?110:gasRadius(c);
-      circle(c.x,c.y,r,'#91d75730');
-      outline(c.x,c.y,r,'#b6ee75',warning?3:2);
-      if(!reducedMotion&&!warning)outline(c.x,c.y,r*.75+Math.sin(c.age*5)*3,'#95d66b66',2);
-      if(warning){ctx.fillStyle='#d4ffac';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('GAS!',c.x,c.y);ctx.textAlign='left';}
-    }
+    for(const c of g.hazards.toxicGasClouds)HAZ.gas(ctx,c,g.t,c.age<1?110:gasRadius(c),c.age<1,reducedMotion);
     for(const pet of g.companionSquad){
       for(const t of pet.traps||[]){circle(t.x,t.y,t.r,'#87c9d122');outline(t.x,t.y,t.r,'#87c9d1',2);outline(t.x,t.y,12,'#d7f5e5',3);}
       if(pet.turret){const t=pet.turret;inkBox(t.x-13,t.y-10,26,20,'#d1ae64');inkBox(t.x-4,t.y-23,8,22,'#aec9c5');}
@@ -2181,7 +2178,12 @@
         for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*TWO/4+.4);
           polygon(e.r+3,0,[[0,-2],[9,0],[0,2]],'#ffd48a');ctx.restore();}
       }
-      if(e.hp<e.max){ctx.fillStyle='#fa7e85';ctx.fillRect(-e.r,-e.r-14,e.r*2*(e.hp/e.max),4);}
+      const pct=clamp(e.hp/e.max,0,1),barW=e.r*2;
+      ctx.fillStyle='#14212dcc';ctx.fillRect(-e.r,-e.r-21,barW,5);
+      ctx.fillStyle=e.creditCategory?'#ffbd76':'#fa7e85';ctx.fillRect(-e.r,-e.r-21,barW*pct,5);
+      ctx.fillStyle=e.creditCategory?'#ffeacb':'#e5f8f2';ctx.font='bold 10px system-ui';ctx.textAlign='center';
+      ctx.fillText('HP '+Math.max(0,Math.ceil(e.hp))+'/'+Math.ceil(e.max)+'  DMG '+(e.damage||1).toFixed(1),0,-e.r-26);
+      ctx.textAlign='left';
       ctx.restore();
     }
     if(visible(p,300)){
@@ -2203,6 +2205,11 @@
       polygon(26,0,[[0,-4],[8,-12],[12,-5],[24,0],[12,5],[8,12],[0,4]],'#ff9e45aa');
       polygon(26,0,[[0,-3],[12,-5],[18,0],[12,5],[0,3]],'#fff4c3');ctx.restore();}
     ctx.restore();
+    }
+    for(const hit of g.damagePopups){
+      ctx.save();ctx.globalAlpha=Math.max(0,1-hit.age/.9);ctx.font=hit.critical?'bold 19px system-ui':'bold 15px system-ui';
+      ctx.textAlign='center';ctx.fillStyle=hit.critical?'#ffe38a':'#ffffff';
+      ctx.fillText('-'+hit.amount,hit.x,hit.y-hit.age*40);ctx.restore();
     }
     for(const e of g.particles){
       if(e.x<cameraX-10||e.x>cameraX+W+10||e.y<cameraY-10||e.y>cameraY+H+10)continue;
@@ -2418,7 +2425,7 @@
       score:game?(game.victory?MAJOR.VICTORY_SCORE:Math.floor(game.t*2+game.kills*7+game.fish*9)):0,
       kills:game?game.kills:0,fish:game?game.fish:0,xp:game?game.xp:0,wave:game?game.wave:1,
       escape:game?game.escape:0,escapeCooldown:game?game.escapeCooldown:0,edgeWarning:!!(game&&game.edgeWarning),
-      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
+      presentation:{reducedMotion,poseHz:12,animation:game?{...game.player.animation}:null,particles:game?game.particles.length:0,visualPass:VIS.pass,hazardPass:HAZ.pass,worldScrollY:WORLD_SCROLL_Y,firestorm:!!(game&&game.campaign.night===100)},
       lab:game?{enabled:true,source:'full-campaign',economy:game.labEconomy?.snapshot(),wave:game.labWave,
         pending:game.labQueue?.length||0,finalSpawned:game.labFinalSpawned,finalTotal:game.labFinalTotal,
         finalBossId:game.labFinalBossId}:null,
@@ -2436,7 +2443,7 @@
       gasSpawnTimer:game?game.hazards.spawnTimer:0,
       pickupEffects:game?game.pickupEffects.map(f=>({...f})):[],
       upgrades:game?game.upgrades.map(u=>({...u})):[],
-      enemies:game?game.enemies.map(e=>({id:e.id,traits:e.traits?{...e.traits}:null,traitAge:e.traitAge||0,terrain:ignoresTerrain(e)?'bypass':'solid',contact:canEnemyContact(e),cocoon:!!e.cocoon,incubation:e.incubation||0,mutant:!!e.mutant,parentIds:e.parentIds?[...e.parentIds]:[],rewardValue:e.rewardValue||0,x:e.x,y:e.y,r:e.r,hp:e.hp,variant:e.variant,finalBoss:!!e.finalBoss,round:e.round||0,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,encoreSlow:e.encoreSlow||0,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
+      enemies:game?game.enemies.map(e=>({id:e.id,traits:e.traits?{...e.traits}:null,traitAge:e.traitAge||0,terrain:ignoresTerrain(e)?'bypass':'solid',contact:canEnemyContact(e),cocoon:!!e.cocoon,incubation:e.incubation||0,mutant:!!e.mutant,parentIds:e.parentIds?[...e.parentIds]:[],rewardValue:e.rewardValue||0,x:e.x,y:e.y,r:e.r,hp:e.hp,variant:e.variant,labCost:e.labCost||0,labRank:e.labRank||0,finalWave:!!e.finalWave,finalBoss:!!e.finalBoss,round:e.round||0,phase:e.phase,speed:e.speed,max:e.max,damage:e.damage,encoreSlow:e.encoreSlow||0,elite:!!e.elite,huntAge:e.huntAge||0,encounterId:e.encounterId||null,threat:enemyThreat(e),mutation:e.mutation||null,mutationTime:e.mutationTime||0,mutationAge:e.mutationAge||0})):[],
       shots:game?game.shots.map(s=>({x:s.x,y:s.y,life:s.life,kind:s.kind,bounces:s.bounces,damage:s.damage,critical:!!s.critical,hitDamage:s.calculateDamage?s.calculateDamage():s.damage})):[],
       input: pointer?{vx:pointer.vx,vy:pointer.vy}:null,
       player: game ? {x: game.player.x, y: game.player.y,r:game.player.r,survivalTimer:game.player.survivalTimer,survivalInstinctBuff:game.player.survivalInstinctBuff,hp:game.player.hp,maxHp:game.player.maxHp,
