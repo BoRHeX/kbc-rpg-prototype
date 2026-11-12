@@ -27,7 +27,7 @@ MODEL=os.environ.get("STUDIO_IMAGE_MODEL","gpt-image-2.6-flare")
 STATIC=os.environ.get("STUDIO_ANCHOR_MODEL","gpt-image-2.6-sunburst")
 ROLES={
  "shooter":{"attack":"dual-hand aiming recoil with coherent barrel direction",
-   "special":"reload a magazine with two hands, unmistakable empty magazine and new magazine",
+   "special":"pause, check an equipment pouch at the waist, adjust utility gear with both paws, then return to an alert ready stance, no firing or mechanical instructions",
    "hit":"flinch and lose ammunition grip, recover to readiness"},
  "healer":{"attack":"light defensive gesture and urgent glance toward player",
    "special":"kneel and perform medical treatment at arm's length, reach toward player",
@@ -73,6 +73,24 @@ def png_ref(role):
 
 def image_bytes(img):
     buf=BytesIO();img.save(buf,"PNG",optimize=True);return buf.getvalue()
+
+def checked_cache(path: Path, width: int, height: int) -> bytes | None:
+    """Reuse only dimensionally valid, complete images saved by a previous attempt."""
+    if not path.is_file():
+        return None
+    try:
+        data=path.read_bytes()
+        with Image.open(BytesIO(data)) as im:
+            im.verify()
+        with Image.open(BytesIO(data)) as im:
+            if im.format!="PNG" or im.width!=width or im.height!=height:
+                raise ValueError("Unexpected cached frame size")
+        return data
+    except Exception as exc:
+        print("INVALID CACHED FRAME",path,str(exc)[:120],flush=True)
+        path.unlink(missing_ok=True)
+        return None
+
 
 def perform_role(role,state,task):
     reference=png_ref(role)
@@ -197,26 +215,51 @@ def main():
                for p in (GAME/"characters/hero").rglob("*") if p.is_file()}
     tasks=[(name,state,detail) for name,actions in ROLES.items() for state,detail in actions.items()]
     generated={}; failures={}
+    painted=EVIDENCE/"rendered"
+    painted.mkdir(parents=True,exist_ok=True)
+    todo=[]
+    for role,state,detail in tasks:
+      cached=checked_cache(painted/(role+"-"+state+".png"),8*96,96)
+      if cached is not None:
+        generated[(role,state)]=cached
+        print("RESUMED APPROVED ART",role,state,flush=True)
+      else:
+        todo.append((role,state,detail))
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-      jobs={executor.submit(perform_role,*task):task for task in tasks}
+      jobs={executor.submit(perform_role,*task):task for task in todo}
       for job in concurrent.futures.as_completed(jobs):
         task=jobs[job]
         try:
           role,state,data=job.result()
           generated[(role,state)]=data
-          print("SUCCESS",role,state,len(data),flush=True)
+          (painted/(role+"-"+state+".png")).write_bytes(data)
+          print("SAVED PAINTED FRAME",role,state,len(data),flush=True)
         except Exception as exc:
           failures["/".join(task[:2])]=str(exc)[:350]
     if failures:
       (EVIDENCE/"failures.json").write_text(json.dumps(failures,indent=2))
       raise RuntimeError("Character animation job incomplete; nothing published")
-    hero_aim=generate_hero_aim()
+    hero_path=painted/"hero-aim.png"
+    hero_aim=checked_cache(hero_path,8*96,96)
+    if hero_aim is None:
+      hero_aim=generate_hero_aim()
+      hero_path.write_bytes(hero_aim)
     scenes={}
     for i,description in enumerate(GROUNDS):
       key="ground-"+str(i)+".png"
-      scenes[key]=scene_image(key,description,True)[1]
+      cache=painted/key
+      data=checked_cache(cache,300,300)
+      if data is None:
+        data=scene_image(key,description,True)[1]
+        cache.write_bytes(data)
+      scenes[key]=data
     for key,description in PROPS.items():
-      scenes[key]=scene_image(key,description,False)[1]
+      cache=painted/key
+      data=checked_cache(cache,288,288)
+      if data is None:
+        data=scene_image(key,description,False)[1]
+        cache.write_bytes(data)
+      scenes[key]=data
     # All assets generated before anything is touched. Existing hero unchanged.
     for (role,state),data in generated.items():
       path=GAME/"characters"/role/(state+".png")
