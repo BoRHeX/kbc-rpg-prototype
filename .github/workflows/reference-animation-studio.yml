@@ -202,9 +202,13 @@ jobs:
           dest.mkdir(parents=True,exist_ok=True)
           for state in job['resume_states'].split(','):
               if not state:continue
-              matches=list(source.rglob(state+'.gif'))
-              if len(matches)!=1:raise SystemExit('Missing approved source GIF '+state)
-              shutil.copy2(matches[0],dest/(state+'.gif'))
+              # Previous runs can contain both the accepted canonical GIF and
+              # a historical resume/ copy. Use ONLY the canonical file that was
+              # written after that run's own state-specific independent QA.
+              canonical=source/'character-animation'/(state+'.gif')
+              if not canonical.is_file():
+                  raise SystemExit('Missing canonical approved source GIF '+state)
+              shutil.copy2(canonical,dest/(state+'.gif'))
           print('Resumed approved reference GIF states',job['resume_states'],
                 'from',job['resume_art_run_id'])
           PY

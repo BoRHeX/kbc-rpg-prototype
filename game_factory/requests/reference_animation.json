@@ -1,18 +1,18 @@
 {
   "enabled": true,
-  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-10",
+  "request_id": "cataclysm-1-0-lite-mobile-illustrated-hero-final-11",
   "actor": "hero",
   "states": "idle,run,attack,hit,feral,adrenaline",
   "reference_path": "docs/cataclysm-1-0-major/art/hero-idle.png",
   "drive_file_id": "",
   "texture_first": true,
   "max_generations": 6,
-  "notes": "Illustrated Cataclysm 1.0 LITE MOBILE hero. Preserve approved painted anchor and idle/run GIFs. First submit exact eight-pose drawn theatrical arm-action sequence from source run for a NEW independent character-art review: elbow bends, raised and extended arms, full body lean and recovery, with game projectile/lighting handled separately. Then create six-frame stumble/rebalance, eight-frame red-eyed feral sprint and eight-frame energetic acceleration cycle. Keep hand-painted textures, full hero silhouette, lightweight baked atlases. Gameplay, squad, world, UI, sounds and 1.0 version are unchanged.",
+  "notes": "Cataclysm 1.0 LITE MOBILE: preserve the actual independently accepted painted hero anchor and five approved character GIFs (idle, run, arm-action, hit/recovery, feral). For the final acceleration movement state freshly review the saved hand-painted eight-frame airborne sprint cycle from the prior run. The adrenaline state is an athletic high-energy sprint with alternating feet, torso movement and trailing coral scarf, not a firing effect. Existing gameplay draws projectiles separately. Preserve painted fur, red scarf, dual props and original identity. Publish only after all six states, mobile-browser QA and exact released-byte verification pass. No version bump or gameplay changes.",
   "reuse_anchor_run_id": 43274545354,
   "max_visual_retries": 2,
-  "resume_art_run_id": 43277765916,
-  "resume_states": "idle,run",
-  "review_candidate_run_id": 43283778561,
-  "review_candidate_state": "attack",
-  "review_candidate_attempt": 2
+  "resume_art_run_id": 43285675356,
+  "resume_states": "idle,run,attack,hit,feral",
+  "review_candidate_run_id": 43285675356,
+  "review_candidate_state": "adrenaline",
+  "review_candidate_attempt": 3
 }
