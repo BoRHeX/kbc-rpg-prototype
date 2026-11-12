@@ -46,6 +46,7 @@ const overrideMetrics={loaded:0,failed:0,total:0,manifestReady:false};
 function overrideStatus(){
  return {...overrideMetrics,characters:Object.keys(overrides).filter(k=>overrides[k].ready)};
 }
+function hasReferenceAnimation(id,state){return !!overrides[id+'-'+state]?.ready;}
 function loadReferenceAnimations(){
  if(typeof root.fetch!=='function'||typeof root.Image!=='function')return;
  root.fetch(assetBase+'character-animations.json',{cache:'no-cache'}).then(response=>{
@@ -248,7 +249,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
