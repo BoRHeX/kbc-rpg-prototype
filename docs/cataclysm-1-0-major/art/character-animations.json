@@ -1,4 +1,55 @@
 {
-  "version": 1,
-  "characters": {}
+  "characters": {
+    "hero": {
+      "adrenaline": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.14
+      },
+      "attack": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "feral": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.08
+      },
+      "hit": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 6,
+        "frames": 6,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "idle": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 6,
+        "frames": 6,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "run": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      }
+    }
+  },
+  "version": 1
 }
