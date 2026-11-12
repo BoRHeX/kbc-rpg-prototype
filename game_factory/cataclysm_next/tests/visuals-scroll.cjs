@@ -17,11 +17,19 @@ assert.equal(art.frameCount('shambler','run'),6);
 assert.notDeepEqual(art.pose('hero','attack',6),art.pose('hero','idle',6));
 assert.ok(art.pose('hero','attack',3).recoil>0);
 assert.ok(art.pose('hero','run',3).effort>art.pose('hero','idle',3).effort);
-assert.ok(html.includes('src="./visuals.js?build=CATASTROPHE-ART42-CACHEFIX-01"'));
+// Feature integration changes script cache revisions; assert that dependent
+// visual modules use ONE safe, versioned release rather than a stale literal.
+const buildOf=(module)=>{
+ const match=html.match(new RegExp('src="\\./'+module.replace('.','\\.')+'\\?build=([a-zA-Z0-9._-]+)"'));
+ assert.ok(match,'Missing versioned '+module+' script');
+ return match[1];
+};
+const visualBuild=buildOf('visuals.js');
+assert.ok(visualBuild.length>=8,'Build ID must be specific enough for cache rotation');
 assert.ok(html.indexOf('src="./visuals.js')<html.indexOf('src="./director.js'));
 assert.ok(html.indexOf('src="./director.js')<html.indexOf('src="./game.js'));
-assert.ok(html.includes('src="./hazards.js?build=CATASTROPHE-ART42-CACHEFIX-01"'));
-assert.ok(html.includes('src="./firestorm.js?build=CATASTROPHE-ART42-CACHEFIX-01"'));
+assert.equal(buildOf('hazards.js'),visualBuild,'World and hazards must use same release build');
+assert.equal(buildOf('firestorm.js'),visualBuild,'World and firestorm must use same release build');
 const hazard=require(path.join(root,'hazards.js'));
 assert.equal(hazard.pass,'catastrophe-hazards-03');
 assert.ok(src.includes('const WORLD_SCROLL_Y=-45'));
