@@ -260,7 +260,7 @@ def generate_animation(client, reference: bytes, identity: dict, actor: str, sta
 
 def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dict[str,dict],
                  output: Path=GAME_DIR, mirror: Path=LAB_DIR) -> dict:
-    # Atomic manifest update only after all states have passed local and vision QA.
+    # Manifest update only after every requested state passed local and vision QA.
     manifest_path=output/MANIFEST
     document=json.loads(manifest_path.read_text(encoding="utf-8"))
     if document.get("version")!=1 or not isinstance(document.get("characters"),dict):
@@ -285,7 +285,7 @@ def write_result(actor: str, sprites: dict[str,bytes], reference: bytes, qa: dic
     encoded=json.dumps(document,indent=2,sort_keys=True)+"\n"
     manifest_path.write_text(encoded,encoding="utf-8")
     (mirror/MANIFEST).write_text(encoded,encoding="utf-8")
-    return {"actor":actor,"states":list(sprites),"frames":{s:len(x)//1 for s,x in sprites.items()},
+    return {"actor":actor,"states":list(sprites),"frames":{s:Image.open(BytesIO(x)).width//CELL_SIZE for s,x in sprites.items()},
             "manifest":str(manifest_path.relative_to(ROOT)),
             "reference_sha256":hashlib.sha256(reference).hexdigest(),"visual_checks":qa}
 
