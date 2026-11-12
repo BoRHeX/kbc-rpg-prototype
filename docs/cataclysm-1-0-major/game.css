@@ -188,3 +188,15 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
  #boss-status{top:117px}
  .notice{top:38%}
 }
+
+/* Final collision-free position overrides for narrow touch viewports. */
+#boss-status{top:135px}
+.notice{top:auto;bottom:52px;left:max(10px,env(safe-area-inset-left));right:auto;transform:none;max-width:min(300px,60vw)}
+@media(max-width:680px) and (orientation:landscape){
+  #boss-status{top:132px}
+  .notice{bottom:49px;max-width:58vw}
+}
+@media(orientation:portrait){
+  #boss-status{top:164px}
+  .notice{top:auto;bottom:158px;left:9px;max-width:75vw}
+}
