@@ -10,7 +10,7 @@ const j=require('../../art_department/jobs/active.json');
    const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded',timeout:30000});
-   await page.waitForFunction(()=>CATACLYSM_READY===true,{timeout:20000});
+   await page.waitForFunction(()=>window.CATACLYSM_READY===true,{timeout:20000});
    await page.waitForFunction(()=>CATA_ART?.packInfo?.('hero')?.ready===true,{timeout:30000});
    const test=await page.evaluate(()=>{
     const K=CATA_HERO_KINEMATICS,A=CATA_ART,rig=K.create(),ctx=document.createElement('canvas').getContext('2d');
