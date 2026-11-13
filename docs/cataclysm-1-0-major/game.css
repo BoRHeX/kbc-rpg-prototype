@@ -288,3 +288,24 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 #boss-status,#city-notice,#night-status,#support-status,#buff-status,#encounter-status{pointer-events:none}#support-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d5e4d6;background:linear-gradient(90deg,#0b1826b0,transparent);max-width:95%}
 
 .cat-speech{display:grid}.speech-layout,.speech-ink{grid-area:1/1}.speech-layout{visibility:hidden}.speech-ink{text-align:center;white-space:pre-wrap}
+
+/* Protagonist directional animation pass — keep Android safe-area clear of HUD. */
+:root{--cat-top-inset:env(safe-area-inset-top,0px)}
+.identity,.quick-controls{top:var(--cat-top-inset)}
+.identity{right:calc(max(8px,env(safe-area-inset-right)) + 52px);padding-right:0;
+  min-width:0;gap:8px;white-space:nowrap;height:44px}
+.identity .back{flex:0 0 auto}
+.identity>span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.identity .fullscreen-toggle{flex:0 0 auto;width:clamp(62px,14vw,88px);min-width:0;
+  height:38px;min-height:38px;max-height:38px;margin-left:0;padding:5px 6px}
+.quick-controls{right:max(8px,env(safe-area-inset-right))}
+.hud{top:calc(var(--cat-top-inset) + 52px)}
+#night-status{top:calc(var(--cat-top-inset) + 99px)}
+#boss-status{top:calc(var(--cat-top-inset) + 125px)}
+#major-buff-icons{top:calc(var(--cat-top-inset) + 114px)}
+@media(orientation:portrait){
+  .hud{top:calc(var(--cat-top-inset) + 52px)}
+  #night-status{top:calc(var(--cat-top-inset) + 146px)}
+  #boss-status{top:calc(var(--cat-top-inset) + 171px)}
+  #major-buff-icons{top:calc(var(--cat-top-inset) + 197px)}
+}

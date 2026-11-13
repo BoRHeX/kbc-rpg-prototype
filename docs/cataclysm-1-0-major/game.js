@@ -973,7 +973,7 @@
         life:Math.min(2,.85+p.ricochet*.25),r:6,damage:p.damage*game.effectiveBuffs.damage*((1+Math.min(4,p.multishot)*.35)/(1+2*spread))*Math.max(1,MIN_SHOT_INTERVAL*game.effectiveBuffs.fire/p.shotInterval),bounces:Math.min(3,p.ricochet),hit:[],
         kind:p.multishot>0?'spread':'normal',trail:[],flash:0}));
     }
-    p.animation.attack=.14;p.lastShotAt=game.t;
+    p.animation.attack=.32;p.lastShotAt=game.t;
     playSfx('shot');
   }
   // Content updates use simulation seconds, so pause and upgrades freeze every timer.
@@ -1104,7 +1104,7 @@
         const t=pet.turret;t.life-=dt;t.timer-=dt;
         let target=null,range=520;
         for(const e of g.enemies){const r=dist(t.x,t.y,e.x,e.y);if(e.hp>0&&r<range){range=r;target=e;}}
-        if(target){pet.followerStats.turretUsefulSeconds=(pet.followerStats.turretUsefulSeconds||0)+dt;}
+        if(target){t.aim=Math.atan2(target.y-t.y,target.x-t.x);pet.followerStats.turretUsefulSeconds=(pet.followerStats.turretUsefulSeconds||0)+dt;}
         if(t.timer<=0&&target){squadShot(pet,target,damage*.65,0,t);t.timer=.35;}
         if(t.life<=0)pet.turret=null;
       }
@@ -1873,7 +1873,7 @@
     if(g.shots.some(s=>s.kind==='normal'&&dist(s.x,s.y,p.x,p.y)<65))anim.attack=.14;
     anim.moveSpeed=dt>0?Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-WORLD_SCROLL_Y*dt)/dt:0;
     anim.moving=anim.moveSpeed>6;
-    anim.state=anim.hit>0?'hit':anim.attack>0?'attack':anim.moving?'run':'idle';
+    anim.state=anim.hit>0?'hit':anim.moving?'run':anim.attack>0?'attack':'idle';
     anim.frame=Math.floor(anim.clock*12)%12;
     for(const enemy of g.enemies){
       if(enemy.cocoon||(enemy.arrivalUntil||0)>g.t)continue;
@@ -2208,6 +2208,31 @@
     }
     ctx.restore();
   }
+  function drawEngineerTurret(c,t,time){
+    c.save();c.translate(t.x,t.y);
+    c.fillStyle='#071b23a9';c.beginPath();c.ellipse(0,15,22,8,0,0,TWO);c.fill();
+    // Tripod base and hardened mount; unlike the old two golden rectangles.
+    c.lineJoin='round';c.lineCap='round';
+    for(const side of [-1,1]){
+      c.strokeStyle='#092632';c.lineWidth=8;c.beginPath();c.moveTo(side*4,7);c.lineTo(side*17,15);c.stroke();
+      c.strokeStyle='#b3a17d';c.lineWidth=4;c.stroke();
+    }
+    c.fillStyle='#344f5a';c.strokeStyle='#a7dac9';c.lineWidth=2;
+    c.beginPath();c.ellipse(0,7,13,9,0,0,TWO);c.fill();c.stroke();
+    c.fillStyle='#f1cf74';c.fillRect(-4,4,8,5);
+    c.save();c.translate(0,-3);c.rotate(Number.isFinite(t.aim)?t.aim:0);
+    c.fillStyle='#112d39';c.strokeStyle='#8dc5bb';c.lineWidth=2;
+    c.beginPath();c.roundRect(-12,-10,26,18,5);c.fill();c.stroke();
+    c.fillStyle='#c8b477';c.fillRect(-9,-8,6,4);c.fillRect(-9,1,6,4);
+    c.fillStyle='#a2d8ca';c.fillRect(10,-5,23,10);
+    c.fillStyle='#163946';c.fillRect(28,-5,6,10);
+    c.fillStyle='#ffd890';c.fillRect(32,-3,3,6);
+    if(t.timer>.28&&t.timer<=.35){
+      c.fillStyle='#fff3b7';c.beginPath();c.moveTo(35,0);c.lineTo(50,-7);
+      c.lineTo(45,0);c.lineTo(50,7);c.closePath();c.fill();
+    }
+    c.restore();c.restore();
+  }
   function drawCompanionEffect(pet){
     ctx.save();ctx.translate(pet.x,pet.y);
     if(pet.type==='tank'&&pet.state==='guarding'&&pet.specialDuration>0){
@@ -2236,10 +2261,9 @@
       game.feralInstinctOverdrive>0?'adrenaline':
       game.buffs.rage>0||game.feralInstinct.active?'feral':
       game.buffs.survivalInstinct>0?'adrenaline':
-      game.player.animation.state==='attack'?'attack':
       game.player.animation.moving?
         (ART.hasReferenceAnimation('hero','walk')&&game.player.animation.moveSpeed<game.player.speed*.65?'walk':'run'):
-        'idle':requestedState;
+      game.player.animation.state==='attack'?'attack':'idle':requestedState;
     if(!(ART.hasReferenceAnimation(type,state)&&type==='hero'))
       VIS.aura(ctx,type,r,time,state,reducedMotion);
     return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion,type==='hero'&&game?.player.animation.moving);
@@ -2355,7 +2379,7 @@
     for(const c of g.hazards.toxicGasClouds)HAZ.gas(ctx,c,g.t,c.age<1?110:gasRadius(c),c.age<1,reducedMotion);
     for(const pet of g.companionSquad){
       for(const t of pet.traps||[]){circle(t.x,t.y,t.r,'#87c9d10a');outline(t.x,t.y,t.r,'#87c9d15c',1);outline(t.x,t.y,12,'#d7f5e5',3);}
-      if(pet.turret){const t=pet.turret;inkBox(t.x-13,t.y-10,26,20,'#d1ae64');inkBox(t.x-4,t.y-23,8,22,'#aec9c5');}
+      if(pet.turret)drawEngineerTurret(ctx,pet.turret,g.t);
       drawCompanionEffect(pet);
       ctx.save();ctx.translate(pet.x,pet.y);
       catSprite(pet.type,18,pet.phase==='preparing'?Math.min(.125,pet.animationTime):['acting','interrupted'].includes(pet.phase)?pet.animationTime:g.t,false,pet.aim||0,pet.phase==='interrupted'?'hit':['preparing','acting'].includes(pet.phase)?pet.actionArt:pet.moving?'run':'idle');
