@@ -53,7 +53,7 @@ def validate():
     assert isinstance(parts,dict) and set(parts)==set(j["rig_parts"]),"Expected four independent painted rig parts"
     for part in j["rig_parts"]:
         info=parts[part]
-        assert info["url"]==str(pack_rel/(part+".png"))
+        assert info["url"]==str(Path("characters/hero")/j["family"]/(part+".png")), "Asset URLs are relative to the art/ loader, not repository root"
         width=info.get("frames",0)*96 if part=="torso" else info.get("width")
         height=info.get("bearings",0)*96 if part=="torso" else info.get("height")
         assert width and height and width<=1024 and height<=1024,(part,"invalid dimensions")
