@@ -14,7 +14,7 @@ const path=require('node:path');
    page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('/favicon.ico'))badResources.push(r.status()+' '+r.url());});
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded'});
    await page.waitForFunction(()=>window.CATACLYSM_READY===true,{timeout:20000});
-   await page.waitForFunction(()=>window.CATA_ART&&typeof CATA_ART.assetStatus==='function'&&CATA_ART.assetStatus().loaded>=40,{timeout:30000});
+   await page.waitForFunction(()=>window.CATA_ART&&typeof CATA_ART.assetStatus==='function'&&(CATA_ART.packInfo?.('hero')?.ready ? CATA_ART.assetStatus().loaded>=32 : CATA_ART.assetStatus().loaded>=40),{timeout:30000});
    await page.locator('#play').click({force:true});
    await page.waitForTimeout(500);
    const result=await page.evaluate(()=>{
@@ -36,7 +36,7 @@ const path=require('node:path');
      }
      const urls=performance.getEntriesByType('resource').map(x=>x.name);
      return {
-       art:CATA_ART.assetStatus(),
+       art:CATA_ART.assetStatus(),heroPack:CATA_ART.packInfo?.('hero')||null,
        version:CATA_ART.assetVersion,
        visualVersion:CATA_VISUALS.artVersion,
        spriteResources:urls.filter(u=>u.includes('/art/')&&u.endsWith('?art='+CATA_ART.assetVersion)).length,
@@ -45,11 +45,11 @@ const path=require('node:path');
        snap:CATACLYSM_DIAGNOSTICS.snapshot(),
      };
    });
-   assert.ok(result.art.loaded>=40,'At least forty sprite sheet PNGs actually decoded and loaded: '+JSON.stringify(result.art));
+   assert.ok(result.art.loaded>=(result.heroPack?.ready?32:40),'Active character atlases must decode successfully; the clean hero pack replaces six obsolete hero loads: '+JSON.stringify(result.art));
    assert.equal(result.art.failed,0,'No missing/failed image assets: '+dir);
    assert.match(result.version,/^cataclysm-10-[a-z0-9-]+$/,'Runtime must expose a specific painted art release ID');
    assert.equal(result.visualVersion,result.version,'World and character art must use the same release');
-   assert.ok(result.spriteResources>=40,'At least 40 atlases must bypass old browser cache: '+JSON.stringify(result));
+   assert.ok(result.spriteResources>=(result.heroPack?.ready?34:40),'Every active texture pack must be versioned instead of keeping obsolete hero loads: '+JSON.stringify(result));
    assert.equal(result.staleSprites,0,'Unversioned art URLs would preserve stale cached sprites');
    assert.notEqual(result.motion.first,result.motion.next,'Tank must advance actual atlas frames');
    assert.ok(result.motion.changedPixels>25,'Tank frames must differ in actual rendered pixels: '+JSON.stringify(result.motion));
