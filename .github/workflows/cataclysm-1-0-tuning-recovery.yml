@@ -37,6 +37,11 @@ jobs:
           github-token: ${{ github.token }}
           name: cataclysm-10-unaccepted-tuning-source
           path: docs/
+      - name: Finish small hero full-body run-animation selector correction without AI regeneration
+        run: |
+          python game_factory/cataclysm_next/qa/tuning_recovery_patch.py
+          node --check docs/cataclysm-1-0-major/animation.js
+          node --check docs/cataclysm-100-lab/animation.js
       - name: Verify full tuned game code and complete preserved assets
         run: |
           set -euo pipefail
