@@ -2,6 +2,28 @@
 
 Your job is to create **expressive, professional, moving character animation in the actual game**, not to maximize frame counters. Read `game_factory/art_department/jobs/active.json`, `artifacts/art-department/reference-analysis.md`, existing painted references, existing renderer and gameplay. The independent art director can reject the candidate and two automatic revisions can follow without human approvals. You must not touch reviewer scripts, tests, workflows, or anything outside the job scope.
 
+## ARTICULATED 2-BONE RIG (`atlas_layout: rigged-parts`) — current Cataclysm 1.0 assignment
+
+**This is an architectural change, NOT another run of the failed whole-body frame generator.** The Cataclysm protagonist has failed three visual reviews with leg-motion scores 2/5 even while the guns and face looked excellent. The current project now ships a deterministic, world-planted IK solver (`hero-kinematics.js`) and an independent original-texture limb renderer (`hero-rig-renderer.js`) in both playable versions. `game.js` supplies real player velocity and a gait pose each update; `animation.js` already recognizes an optional hero `rig.parts` manifest and sends that pose to the segmented renderer. DO NOT replace those tested systems with more static body sheets. Repair their behavior if essential, but never collapse the lower body back into painted stills.
+
+**Your task is to DRAW THE RIG SKIN AND MAKE IT BEAUTIFUL.** Preserve the white cat face, cyan eyes, red scarf, suit and dual-pistol directional upper-body aiming from the supplied modern `art/characters/hero/aim.png` reference. Create a new authoritatively selected hero texture family, with a reproducible generator `art/characters/hero/<family>/generate.py` and exactly four loadable, alpha-transparent, textured component PNGs:
+- `torso.png`: eight facing-direction rows, at least four original 96×96 frames per row, to make breathing, ear movement, scarf, shoulder, eyelids and recoil actually visible. Entire image **below y=76 must be transparent** because this is the UPPER-body ONLY. Keep meaningful 8-way dual-pistol aim. No old static legs embedded in this texture.
+- `thigh.png`: individually articulated, attractive original upper leg, **20×32 px** with alpha; vertical joint-to-joint source.
+- `calf.png`: separate lower leg with paw-shank silhouette, **18×34 px** with alpha; vertical joint-to-joint source.
+- `paw.png`: recognizable textured planted/airborne foot, **24×16 px** with alpha and visible toe/heel; do not draw a circle or featureless block.
+
+Add the matching `rig.parts` metadata to the existing `art/actor-packs.json` for hero only, with `family` set to the new family name, each URL pointing to `characters/hero/<family>/<part>.png`. For torso include `frames:4, bearings:8, fps:8`; other parts have `width,height` exactly as above. The other actors remain untouched. Mirror the textures and actor manifests into `docs/cataclysm-100-lab` without changing its distinct Night99 configuration. **The actual game must load your new family**, not merely contain your files.
+
+The IK solver is responsible for motion: planted feet remain in world position while the hips move, the opposite leg lifts through swing, knees bend by a two-bone triangle. The player speed actually determines cadence/stride, so moving, moving faster, very fast and extreme buffs are visibly different, not five unrelated looping frames. While stationary the upper texture and torso shift must breathe. Shielded/damaged pose and feral/adrenaline may tint, brace, recoil or change silhouette; use a single consistent cat, not a second full sprite underneath. Preserve original 8-way aim and engineer kneeling/turret behavior. If needed, improve joint lengths, elbow orientations, paw pivots or painted texture fit in the tested solver/renderer, but keep true world planting and retain independent upper aiming.
+
+**No extra gameplay logic, controls, XP, balancing, enemies, map, cards or new release version.** The artist should exercise judgment over style, anatomy and animation speed. Repaint as needed, but do not polish the wrong assets. New art and a real 60Hz skeletal rig are the deliverable, not a target number of 24/176/1000 frames.
+
+Independent checks in `game_factory/art_department/rigged.py` validate transparent leg-free upper art, four real painted body-part textures, mirrored pack metadata and game integration, and the solver's grounded foot physics. A separate Chrome test moves the ACTUAL player by WASD, requires the knees and ankles to change position, and proves the renderer uses one torso plus exactly two thigh/calf/paw texture draws. A separate visual reviewer must give at least 4/5 for **leg movement** at 48px phone scale. If the legs still appear frozen, revise the actual painted parts or joint rendering rather than gaming frame hashes or motion counters. Do not edit protected QA scripts or workflows.
+
+The existing autonomous three-stage art review will automatically revise a rejected candidate. Keep the whole task inside Cataclysm 1.0, protect the live published game until independent approval.
+
+---
+
 ## Modern canonical actor packs (`atlas_layout: directional-grid`)
 
 The currently active Cataclysm hero job uses `docs/cataclysm-1-0-major/art/actor-packs.json` with hero family `hero-articulated-v1`. **That is the ONLY renderer the player actually sees.** Earlier efforts painted `art/hero-run.png` sheets that the game no longer consumes. Do not repeat that failure.
