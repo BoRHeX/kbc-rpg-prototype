@@ -65,6 +65,9 @@ const {chromium}=require('playwright');
         'crossfaded directed-* sheets are retired; no blended two-pose ghost textures');
      }
      assert.notEqual(f.early.hash,f.later.hash,'hero must visibly animate at 390x844 scale in '+f.state);
+     const a=f.early.records[0],b=f.later.records[0];
+     assert.ok(a.sx!==b.sx||a.sy!==b.sy||a.url!==b.url,
+       'hero '+f.state+' must select actual distinct authored texture frames, not just translate a still image or emit particles');
    }
    for(const state of ['run','feral','adrenaline']){
      const arr=result.frames.filter(f=>f.state===state);
