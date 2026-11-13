@@ -139,6 +139,9 @@ def silhouette_families(atlas, frame_count, size, state):
 
 def validate():
     j = job()
+    if j.get('atlas_layout') == 'rigged-parts':
+        from .rigged import validate as validate_rigged
+        return validate_rigged()
     if j.get('atlas_layout') == 'directional-grid':
         from .modern import validate as validate_modern
         return validate_modern()
@@ -223,6 +226,22 @@ def review():
         "changes, missing body parts, inconsistent identity, or game screenshot is not "
         "proof of integration. Visual direction: " + j["visual_direction"]
     )
+    if j.get('atlas_layout') == 'rigged-parts':
+        instruction += (
+            " This is now a CONTINUOUS two-bone inverse-kinematics rig, NOT a "
+            "massive pre-baked whole-body atlas. A separate real browser review "
+            "provides 24 sequential ACTUAL gait samples, 12 mobile-size frames "
+            "for every state, and a real game screenshot. Judge the painted upper "
+            "body against the independent lower-leg textures. The CAT's face, "
+            "dual pistols, aiming, jacket and scarf must retain their approved "
+            "identity; the legs MUST plant, bend, lift and alternate at phone "
+            "scale. Do not approve on code/IK mathematics alone. "
+            "If the feet are apparently locked, detached, deformed or static, "
+            "give leg_motion at most 2 and set pass=false even if all tests pass. "
+            "Do not require exactly 24 prepainted whole-body images: the rig "
+            "constructs 60Hz unique poses from painted component textures. "
+            "Return separate leg_motion score 0-5 and approve only if >=4. "
+        )
     if j.get('atlas_layout') == 'directional-grid':
         instruction += (
             " CRITICAL EXTRA REQUIREMENT: score LEG MOTION separately. "
@@ -245,7 +264,7 @@ def review():
     except json.JSONDecodeError as exc:
         raise RuntimeError("Visual reviewer must return valid JSON") from exc
     scores = ("identity", "motion", "quality", "integration") + (
-        ("leg_motion",) if j.get('atlas_layout') == 'directional-grid' else ()
+        ("leg_motion",) if j.get('atlas_layout') in ('directional-grid','rigged-parts') else ()
     )
     minimum = int(j["minimum_visual_score"])
     attempt = int(os.environ.get("ART_REVIEW_ATTEMPT", "1"))
