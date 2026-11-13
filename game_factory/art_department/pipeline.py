@@ -139,6 +139,9 @@ def silhouette_families(atlas, frame_count, size, state):
 
 def validate():
     j = job()
+    if j.get('atlas_layout') == 'directional-grid':
+        from .modern import validate as validate_modern
+        return validate_modern()
     base = Path(j["source_dir"])
     mirror = Path(j["mirror_dir"])
     art = ROOT / base / "art"
