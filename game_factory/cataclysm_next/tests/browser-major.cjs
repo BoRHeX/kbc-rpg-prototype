@@ -39,7 +39,7 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.presentation.worldScrollY,0,'no imposed northbound drift');
       assert.equal(snapshot.presentation.visualPass,'catastrophe-neon-noir-02');
       assert.equal(snapshot.major.campaign.night,1);
-      assert.equal(snapshot.player.level,0,'full campaign must start at level zero');
+      assert.equal(snapshot.player.level,1,'full campaign starts at XP level one');
       assert.equal(snapshot.lab.source,'full-campaign');
       assert.equal(snapshot.lab.wave.night,1);
       assert.equal(snapshot.major.victory,false);
