@@ -10,3 +10,5 @@ Creator instruction, 13 November 2026:
 - Keep product title/version Cataclysm 1.0. The 100-night full-campaign finale is not certified by this release.
 
 Workflow should run recover_playable -> source checks -> browser smoke -> PR -> merge -> GitHub Pages deployment. If any basic play smoke check fails, retain evidence and stop without falsely claiming release.
+
+Second attempt: isolate the optional QA boss at the spawn function; retain all original assets and avoid finale stress test.
