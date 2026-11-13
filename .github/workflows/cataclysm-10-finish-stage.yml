@@ -197,6 +197,9 @@ jobs:
       - name: Prove visibly different engineer turret skins in real browser
         if: inputs.stage == 'alive'
         run: node game_factory/cataclysm_next/tests/browser-turret-skins.cjs
+      - name: Check one actual character texture source, no layered hero ghost and moving art in mobile Chrome
+        if: inputs.stage == 'cleanpack'
+        run: node game_factory/cataclysm_next/tests/browser-clean-character-pack.cjs
       - name: Enforce stage-specific motion, score and follower acceptance
         run: node game_factory/cataclysm_finish_acceptance.cjs "$STAGE"
       - name: Save exact source for next stage recovery
