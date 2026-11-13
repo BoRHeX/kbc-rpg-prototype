@@ -1,10 +1,10 @@
-name: Cataclysm 1.0 · One-shot articulated rig recovery
-run-name: Saved skin → minimal QA → visual review → publish only if approved
+name: Cataclysm 1.0 · final hero gait release
+run-name: Existing 1.0 + visibly animated hero → real Chrome → visual verdict → release
 on:
   push:
     branches: [main]
     paths:
-      - game_factory/requests/hero_rig_simple_recovery.md
+      - game_factory/requests/cataclysm_10_final_hero_release.md
 permissions:
   contents: read
   actions: read
@@ -51,6 +51,8 @@ jobs:
           set -euo pipefail
           git apply --binary --check artifacts/art-department/candidate.patch
           git apply --binary artifacts/art-department/candidate.patch
+          python game_factory/art_department/finish_hero_gait.py
+          node game_factory/art_department/tests/hero-kinematics.cjs
           python -m game_factory.art_department.pipeline gate
           python -m game_factory.cataclysm_asset_release --stage herorig --run-id "$GITHUB_RUN_ID"
           git diff --check
