@@ -222,7 +222,9 @@ def review():
         "two alternating or mirrored poses, or if primary joint articulation is invisible. "
         "Respond with ONLY valid JSON keys pass (boolean), identity (integer 0-5), "
         "motion (integer 0-5), quality (integer 0-5), integration (integer 0-5), "
-        "concerns (array of strings). Reject if indistinct shapes, few believable pose "
+        + ("leg_motion (integer 0-5, required even if identical to motion), "
+           if j.get('atlas_layout') in ('rigged-parts','directional-grid') else "")
+        + "concerns (array of strings). Reject if indistinct shapes, few believable pose "
         "changes, missing body parts, inconsistent identity, or game screenshot is not "
         "proof of integration. Visual direction: " + j["visual_direction"]
     )
@@ -263,6 +265,38 @@ def review():
         verdict = json.loads(answer.strip().removeprefix("```json").removesuffix("```").strip())
     except json.JSONDecodeError as exc:
         raise RuntimeError("Visual reviewer must return valid JSON") from exc
+    # A reviewer can give an overall motion score yet accidentally omit the
+    # additional independently mandated leg score. Never interpret missing
+    # evidence as approval OR a visual rejection. Ask a narrowly scoped reviewer
+    # again about actual leg frames, then enforce the SAME >=4 threshold.
+    if j.get('atlas_layout') in ('directional-grid','rigged-parts') and not isinstance(verdict.get('leg_motion'),int):
+        focus=(
+            "Independent SECOND visual inspection ONLY of the legs on this cat. "
+            "Examine the same real game and the 4x6 grid of consecutive rendered "
+            "run frames (do not judge the upper body or simply count files). "
+            "Are the hips, knees, ankles and paws clearly bending, planting, "
+            "pushing off, lifting and alternating at actual mobile game size? "
+            "A 5 means excellent convincing smooth gait; 4 means clearly readable "
+            "and attractive; 2 means little visible motion or disconnected feet. "
+            "Return ONLY valid JSON with numeric integer leg_motion (0-5), "
+            "boolean pass (true ONLY if leg_motion >=4), and concerns array. "
+            "Do not invent a score if the images are unreadable; give 0. "
+            "The first review had these other scores (not substitutes): "
+            +json.dumps({k:verdict.get(k) for k in ('identity','motion','quality','integration')})
+        )
+        raw=vision(focus,[OUT/"run-cycle.png",OUT/"animation-contact.png",OUT/"actual-game.png"])
+        (OUT/"leg-motion-review-raw.txt").write_text(raw)
+        try:
+            extra=json.loads(raw.strip().removeprefix("```json").removesuffix("```").strip())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Leg motion reviewer did not return valid JSON") from exc
+        if not isinstance(extra.get('leg_motion'),int) or not 0<=extra['leg_motion']<=5:
+            raise RuntimeError("Leg motion reviewer must provide an integer from 0 to 5")
+        verdict["leg_motion"]=extra["leg_motion"]
+        if extra["leg_motion"]<4 or extra.get("pass") is not True:
+            verdict["pass"]=False
+        if extra.get("concerns"):
+            verdict["concerns"]=list(verdict.get("concerns") or [])+list(extra["concerns"])
     scores = ("identity", "motion", "quality", "integration") + (
         ("leg_motion",) if j.get('atlas_layout') in ('directional-grid','rigged-parts') else ()
     )
