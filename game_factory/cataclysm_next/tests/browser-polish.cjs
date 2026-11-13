@@ -24,14 +24,14 @@ const {chromium}=require('playwright');
           p.maxHp=100;p.hp=100;p.inv=35;
           game.enemies=[];
           game.fishItems=Array.from({length:4},(_,i)=>({
-            x:wrapCoord(p.x+420+i*115),y:p.y+100+i*35,r:12,phase:0,value:1,attracted:false
+            x:p.x+420+i*115,y:p.y+100+i*35,r:12,phase:0,value:1,attracted:false
           }));
           game.powerups=[{x:p.x,y:p.y,kind:'magnet',expires:game.t+20}];
           return game.fishItems.length;
         },
         spawnFishAfterSweep(){
           const p=game.player;
-          const f={x:wrapCoord(p.x+1300),y:p.y+240,r:12,phase:0,value:1,attracted:false};
+          const f={x:p.x+1300,y:p.y+240,r:12,phase:0,value:1,attracted:false};
           game.fishItems.push(f);return f.x;
         },
         lateNightOne(){game.t=12.98;},
@@ -46,7 +46,7 @@ const {chromium}=require('playwright');
    await page.locator('#play').click({force:true});
    await page.waitForFunction(()=>window.__POLISH_QA&&CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',{timeout:5000});
    let s=await page.evaluate(()=>CATACLYSM_DIAGNOSTICS.snapshot());
-   assert.equal(s.presentation.worldScrollY,-45,'world must scroll faster');
+   assert.equal(s.presentation.worldScrollY,0,'world must never auto-scroll');
    assert.equal(s.major.campaign.night,build==='cataclysm-100-lab'?99:1);
    const ui=await page.evaluate(()=>({
      hidden:['city-notice','encounter-status','support-status','buff-status'].every(id=>getComputedStyle(document.getElementById(id)).display==='none'),
@@ -79,7 +79,7 @@ const {chromium}=require('playwright');
    const out=path.resolve('artifacts/cataclysm-major');fs.mkdirSync(out,{recursive:true});
    await page.screenshot({path:path.join(out,'polish-'+build+'.png')});
    await page.close();
-   console.log('PASS polish in',build,': one-shot magnet, clean HUD, faster scroll',build==='cataclysm-1-0-major'?', 13s wave pulse':'');
+   console.log('PASS polish in',build,': one-shot magnet, clean HUD, stationary world',build==='cataclysm-1-0-major'?', 13s wave pulse':'');
   }
  }finally{await browser.close();}
 })().catch(err=>{console.error(err.stack||err);process.exitCode=1;});
