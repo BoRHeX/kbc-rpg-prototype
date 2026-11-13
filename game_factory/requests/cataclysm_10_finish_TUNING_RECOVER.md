@@ -13,3 +13,5 @@ Recovery retry: previous browser run confirmed hero 24-frame run selection and r
 Retry: JavaScript parser confirmed corrected browser test syntax. Previous failed before game assertions due an overescaped test-only regex; replaced with simple source-path includes. Reuse original artifact and preserve completed game source; no new coding work.
 
 Diagnostic retest: source has translucent `#151c28c9` speech CSS, but browser assertion reported a mismatch. Re-run same preserved artifact with QA printing the actual computed color; do not infer or change code until observing browser output.
+
+Selector fix: Chrome reported transparent/gold text from the *hidden pause Guide's own* `[data-cat-speech]` element, not the actual dynamic bubble. The QA now targets `.cat-speech[data-cat-speech]:not([hidden])` only. Saved 1.0 source and its dark translucent style unchanged. Resume only this stored artifact, recheck real bubble and then publish.
