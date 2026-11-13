@@ -14,9 +14,9 @@ const {chromium}=require('playwright');
    const game=path.resolve(__dirname,'../../../docs',dir,'game.js');
    await page.route(new RegExp('/'+dir+'/game\\.js\\?build='),async route=>{
     let src=fs.readFileSync(game,'utf8');
-    const marker='  window.CATACLYSM_BOOT.ready(BUILD);';
-    assert.ok(src.includes(marker),'retain boot handshake');
-    src=src.replace(marker,`
+    const marker=src.lastIndexOf('})();');
+    assert.ok(marker>=0,'retain boot handshake');
+    src=src.slice(0,marker)+`
       // TEST-ONLY: expose actual local gameplay formulas; never shipped to production.
       window.__TUNE_QA=Object.freeze({
         xp:()=>Array.from({length:15},(_,i)=>xpRequired(i+1)),
@@ -27,7 +27,7 @@ const {chromium}=require('playwright');
           CATS.dispatch(s,['hero'],game.campaign.night);
         }
       });
-`+marker);
+`+src.slice(marker);
     await route.fulfill({status:200,contentType:'application/javascript',body:src});
    });
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded',timeout:30000});
