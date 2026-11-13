@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install image intake tools
-        run: python -m pip install --disable-pip-version-check --quiet pillow requests
+        run: python -m pip install --disable-pip-version-check --quiet pillow requests openai
       - name: Download actual owner-approved illustrated art from private Drive
         env:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
