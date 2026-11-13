@@ -9,3 +9,5 @@ An additional genuine animation UX issue remains in the preserved candidate: sta
 Download the saved source, apply the precisely scoped animation selector patch in both modes, run comprehensive browser regression including the tuning test, publish via PR→merge→Pages only if all pass. Preserve all original game/AI-written content and never regenerate art or repeat the expensive coding stage. No 18-boss stress test.
 
 Recovery retry: previous browser run confirmed hero 24-frame run selection and real cards/controls, but its new test only recognized `hero-run.png`; the game also has a valid authored `characters/hero/run.png` atlas. Corrected QA recognizes both and checks that the painted source frame changes. Reuse the SAME original saved tuning candidate, apply the same small safe selector repair; no AI/art regeneration.
+
+Retry: JavaScript parser confirmed corrected browser test syntax. Previous failed before game assertions due an overescaped test-only regex; replaced with simple source-path includes. Reuse original artifact and preserve completed game source; no new coding work.
