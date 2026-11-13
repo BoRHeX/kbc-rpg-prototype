@@ -32,8 +32,8 @@ assert.equal(buildOf('hazards.js'),visualBuild,'World and hazards must use same 
 assert.equal(buildOf('firestorm.js'),visualBuild,'World and firestorm must use same release build');
 const hazard=require(path.join(root,'hazards.js'));
 assert.equal(hazard.pass,'catastrophe-hazards-03');
-assert.ok(src.includes('const WORLD_SCROLL_Y=-45'));
-assert.ok(src.includes("scrollDirection:'north'"));
+assert.match(src,/const WORLD_SCROLL_Y\s*=\s*0\b/,'automatic camera/world scrolling must be disabled');
+assert.ok(src.includes("scrollDirection:'static'"),'static world must be visible in diagnostics');\nassert.ok(src.includes('wrap:false'),'world must not wrap horizontally');
 assert.ok(src.includes('VIS.atmosphere(ctx,W,H'));
 assert.ok(src.includes('VIS.ground(ctx,'));
 assert.ok(src.includes('VIS.impact(ctx,'));
@@ -58,4 +58,4 @@ vfx.shot(ctx,{x:100,y:100,kind:'pet',trail:[{x:77,y:85}]},2,false);
 vfx.impact(ctx,25,1,true,false);
 vfx.atmosphere(ctx,844,390,12,1,false);
 assert.ok(draws>200,'render methods issue real canvas commands');
-console.log('PASS Cataclysm visuals: biome scenery, three prop classes, hero states, impact/SFX cues, northbound drift and inverted shadow');
+console.log('PASS Cataclysm visuals: biome scenery, three prop classes, hero states, impact/SFX cues, fixed infinite world and inverted shadow');
