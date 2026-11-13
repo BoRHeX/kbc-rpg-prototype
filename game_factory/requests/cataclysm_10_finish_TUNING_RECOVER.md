@@ -11,3 +11,5 @@ Download the saved source, apply the precisely scoped animation selector patch i
 Recovery retry: previous browser run confirmed hero 24-frame run selection and real cards/controls, but its new test only recognized `hero-run.png`; the game also has a valid authored `characters/hero/run.png` atlas. Corrected QA recognizes both and checks that the painted source frame changes. Reuse the SAME original saved tuning candidate, apply the same small safe selector repair; no AI/art regeneration.
 
 Retry: JavaScript parser confirmed corrected browser test syntax. Previous failed before game assertions due an overescaped test-only regex; replaced with simple source-path includes. Reuse original artifact and preserve completed game source; no new coding work.
+
+Diagnostic retest: source has translucent `#151c28c9` speech CSS, but browser assertion reported a mismatch. Re-run same preserved artifact with QA printing the actual computed color; do not infer or change code until observing browser output.
