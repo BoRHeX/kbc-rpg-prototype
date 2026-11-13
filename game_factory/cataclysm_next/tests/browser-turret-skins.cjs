@@ -18,7 +18,7 @@ const {chromium}=require('playwright');
        'window.__CAT_TURRET_SKIN_TEST=()=>{',
        'const c=document.createElement("canvas");c.width=150;c.height=150;',
        'const x=c.getContext("2d",{willReadFrequently:true});',
-       'return [0,1,2].map(skin=>{',
+       'return ["brass","porcelain"].map(skin=>{',
        'x.clearRect(0,0,150,150);',
        'drawEngineerTurret(x,{x:75,y:75,timer:.15,aim:.3,skin,skinVariant:skin,life:7},1.4);',
        'const data=x.getImageData(0,0,150,150).data;',
