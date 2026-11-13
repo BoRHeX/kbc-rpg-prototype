@@ -50,17 +50,27 @@ module.exports.prove=async(page,job,out)=>{
   const output={};
   const rigState=()=>K.create();
   function makeFilm(state,speed,count=24,small=false){
-   const cell=small?70:112,can=document.createElement('canvas');
-   can.width=count*cell;can.height=cell;
-   const ctx=can.getContext('2d');ctx.fillStyle='#162737';ctx.fillRect(0,0,can.width,can.height);
+   // FOUR COLUMNS, SIX ROWS. The previous 2688x112 horizontal filmstrip
+   // made leg movement effectively invisible to the independent image
+   // reviewer after thumbnail downscaling, despite real IK joints moving.
+   // Display every original animation instant at 1.45x, ordered row-major.
+   // Art/frame data is NOT changed; this corrects review evidence only.
+   const columns=4,cellW=165,cellH=148;
+   const can=document.createElement('canvas');
+   can.width=columns*cellW;can.height=Math.ceil(count/columns)*cellH;
+   const ctx=can.getContext('2d');
+   ctx.fillStyle='#162737';ctx.fillRect(0,0,can.width,can.height);
    const rig=rigState(),dt=1/60;let x=0,time=0,p;
    for(let i=0;i<count;i++){
     for(let j=0;j<4;j++){x+=speed*dt;time+=dt;p=K.advance(rig,{x,y:0,vx:speed,vy:0,dt,baseSpeed:180,state});}
-    ctx.save();ctx.translate((i+.5)*cell,cell*.52);
-    if(small)ctx.scale(.64,.64);
+    const bx=(i%columns)*cellW,by=Math.floor(i/columns)*cellH;
+    ctx.save();ctx.translate(bx+cellW*.50,by+cellH*.55);
+    ctx.scale(1.45,1.45);
     ART.draw(ctx,'hero',23,time,state,0,false,false,speed>0,null,false,
       {kinematics:p,speedRatio:p.speedRatio});
     ctx.restore();
+    ctx.fillStyle='#bdcbd3';ctx.font='12px monospace';
+    ctx.fillText(state+' '+String(i+1).padStart(2,'0')+'/'+count,bx+6,by+cellH-8);
    }
    return can.toDataURL('image/png').split(',')[1];
   }
