@@ -79,7 +79,7 @@ const {chromium}=require('playwright');
       return {bg:cs.backgroundColor,text:cs.color,border:cs.borderColor,full:el.getAttribute('aria-label')||el.textContent};
    });
    const channels=bubble.bg.match(/[\d.]+/g)?.map(Number)||[];
-   assert.ok(channels.length===4&&channels[3]>0&&channels[3]<.9,'speech bubble must be translucent, not opaque');
+   assert.ok(channels.length===4&&channels[3]>0&&channels[3]<.9,'speech bubble must be translucent, not opaque: '+JSON.stringify({bubble,channels}));
    const foreground=bubble.text.match(/[\d.]+/g)?.map(Number)||[];
    assert.ok(foreground.length>=3&&foreground.slice(0,3).every(v=>v>185),'speech text must be white/high-contrast');
    const atStart=await page.locator('[data-cat-speech]:visible').first().textContent();
