@@ -1,6 +1,6 @@
 # CATACLYSM — ROADMAP FROM 1.1 TO 2.0
 ## 2.0 destination: THE CATACOMBS
-**Product vision approved for planning:** 13 November 2026. **Status:** design brief only, NOT permission to start development, modify 1.0, or trigger production runs.
+**Product vision approved for planning:** 13 November 2026. **1.1 scope approved:** 13 November 2026, [executive studio issue #82](https://github.com/BoRHeX/kbc-rpg-prototype/issues/82). **Status:** approved brief, not proof that 1.1 production ran or that a new release exists. Never modify frozen 1.0 or trigger legacy 1.0 pipelines.
 
 > Survive. Upgrade. Explore. Laugh. Run. Try again. Every run should give the player a different story — including surprising losses. One-handed movement remains the ONLY direct gameplay control.
 
@@ -26,46 +26,40 @@
 
 | Version | Name | Release-defining experience | Deliberately NOT in this release |
 |---|---|---|---|
-| **1.1** | **EVERYTHING DRAWN** | Replace code-assembled character presentation with coherent original illustrated art, expressive animations, hand-illustrated UI/VFX, first designed title-menu shell. Preserve every existing combat rule. | New companions, new weapon economy, new world systems, a 1000-night campaign. |
-| **1.2** | **NINE LIVES & THREE GUNS** | Separate nine lives from HP; three independently upgraded weapons including tail slot; perk-unlocked four/five-card choices. | New companion roster, biome simulation. |
+| **1.1** | **EVERYTHING DRAWN** | Original illustrated quadrupedal white cat with **independent auto-aiming tail gun** (no directional body frames); expressive idle/run/hurt/adrenaline/rage/shield; all companions shoot except melee Brawler; significantly denser weak-zombie waves; 6+ meaningful new upgrades; cohesive UI/VFX and lightweight title shell. | No three-gun slots, new companion roster, companion evolution, new world systems or 1000-night campaign. |
+| **1.2** | **NINE LIVES** | Nine lives separate from HP, fair revival and rare life rewards, stronger perk/card depth and survivability choices while retaining the 1.1 tail-gun combat layout. | The three-slot two-hand-plus-tail loadout (reserved for 2.0), new companion roster, biome simulation. |
 | **1.3** | **FELINE COMPANY** | 8 new companions (16 total), actual fish-eating autonomy, companion level progression/evolutions, first pair fusions; 4 active slots remain. | World-map overhaul, fishing economy. |
 | **1.4** | **THE UNSEEN CITY** | Known seeded districts, non-gameplay world map, in-run arrows to valuable items only, zone kill counters, provoked area bosses and rare extra lives, DPS-gate waves unlocking areas. | Full-length 1000-night final balancing. |
 | **1.5** | **HOOK, LINE & CATNIP** | Fishing rod, fishing spots, bait, fishing risks/rewards, special catches, jackpot counter and strategic resource scarcity. | Endless mode. |
 | **1.6** | **MUTATIONS AFTER MIDNIGHT** | More genuinely distinct enemies, elite/boss evolutions, biome hazards, combinations and counterplay; more voiced/lettered contextual dialogue and adaptive soundtrack. | Final three-hour endurance tuning. |
 | **1.7** | **THE LONG NIGHT** | 1000-night campaign structure, checkpoint/resume, three-hour-class runs, pacing and performance stabilization; unlock Endless Mode. | Claims of full 2.0 completion. |
-| **2.0** | **THE CATACOMBS** | Unified menu, discovered world map, deep underground biomes, companion fusion gallery, evolution codex, major endgame events and the Sphinx; polish every integrated system. | Unbounded scope creep or another engine rewrite. |
+| **2.0** | **THE CATACOMBS** | Full three-weapon loadout (two hands plus tail, separately upgradeable), unified menu, discovered world map, deep underground biomes, companion fusion gallery, evolution codex, major endgame events and the Sphinx; polish all integrated systems. | Unbounded scope creep or another engine rewrite. |
 
 These are outcome gates, not a promise of fixed dates or a mandate to write every subsystem before playable releases. Each version is a separate playable milestone and can be revised based on real test evidence.
 
-### 1.1 — EVERYTHING DRAWN (the next assignment)
+### 1.1 — EVERYTHING DRAWN (APPROVED; executive issue #82)
 
-**The brief is visual, not technical:** make Cataclysm look like one illustrated game rather than several graphics systems stitched together. Establish an art bible: white-cat silhouette and proportions, line weight, rendering and shading style, expression sheet, palette, lighting, outline thickness, actor-to-scenery scale and UI treatment. Use real original textured art and a single authoritative texture family per character. An asset compiler/rig is acceptable only if the *rendered animation* looks convincingly drawn; stop judging by atlas counts or kinematic equations.
+**Authoritative change dated 13 November 2026:** The owner replaced the previous eight-way directional hero with a **cute quadrupedal white cat** whose **drawn tail-mounted firearm alone rotates, tracks targets and shoots**. The body is no longer an eight-facing pistol-character. The original 1.1 visual overhaul remains important, but this approval also explicitly includes **seven shooting companions, denser zombie hordes and more upgrade choices**. This section and [issue #82](https://github.com/BoRHeX/kbc-rpg-prototype/issues/82) supersede the earlier hero animation instructions. Original 1.0 remains frozen.
 
-**Animation hierarchy (creator order):**
-1. Main white cat — by far the largest animation/illustration budget.
-2. Final boss / catastrophe-class encounter.
-3. Eight existing squad members.
-4. Other bosses.
-5. Super-elites.
-6. Elites.
-7. Mutants.
-8. Charging enemies.
-9. Ranged enemies.
-10. Small and large zombies.
+**Hero art direction:** establish a coherent real illustrated/painted asset family with one canonical body, an independently aimed jointed tail/gun and visible four-leg running gait; keep expression, blinks, reactive ears and a cute readable silhouette at gameplay scale. Avoid algorithmic placeholder shapes, duplicated hero bodies and eight-way directional body atlases. A reproducible texture-producing rig is acceptable **only if the visible result looks drawn and alive**. Tail aiming and recoil must not freeze leg animation or rotate the body to face enemies.
 
-**White-cat action sheet and performance:** breathing/idle, looking around, blinking, ears and tail reacting; starting to move, slow movement, normal running, fast sprint, absurdly fast overdrive; dual-pistol targeting in eight directions while walking or sprinting; firing, recoil and reload; shielded/defending, hit/staggered, recovering, feral/rage, adrenaline and death/extra-life return. At actual game size, these must look recognizably different, not simply change hue, bob the same body or accelerate two frames. Maintain the previously liked face, guns and aim behavior. Animation exaggeration, squash/stretch, motion smear and humorous timing are welcome. **Do not require feet to remain welded to the floor.**
+**Required protagonist states:** idle, run (slow-to-fast cadence), hurt with recovery, adrenaline, rage/feral, shield (idle and moving), plus existing death/restart behavior. Expressions, poses and timing must genuinely differ; tinting one still frame does not satisfy the brief. Existing automatic targeting/movement controls remain. Projectiles and muzzle flash originate at the moving tail gun, not invisible paw pistols. **One tail gun in 1.1; two hand weapons plus tail arrive at 2.0**, not 1.2.
 
-**All visible presentation drawn coherently:** illustrated health/lives/buff icons, encounter panels, upgrade cards, text frames, dialogue bubbles, menus, environment dressing, projectiles, muzzle flashes and hit effects. Replace obvious placeholder geometric characters and visibly mismatched texture generations, but physics and collision remain internal. Design a lightweight start/resume/settings title shell so UI art is not an afterthought. The richer geographical map comes later.
+**Companions:** the eight are Shooter, Healer, Tank, Brawler, Sniper, Engineer, Trapper and Bard. Every one **except Brawler** acquires targets and fires visible, effective ranged attacks; Brawler remains melee-only. Healing, tank protection, engineer turrets, trapper snares, bard support and all other defining specialties remain intact. Balance combined firepower so a four-member squad does not trivialize the horde. Four unique active companion slots and permanent allies remain.
 
-**1.1 release gate:** actual Samsung-size 10–20 second clips of every important protagonist state; recognizable motion *at 1× phone scale*, clean silhouette and readable firearms while moving; a living engineer deployment and existing squad animations still work; consistent drawn UI in portrait/landscape; no simultaneous obsolete full-body sprites; no broken music/input, no loss of existing game mechanics; reasonable memory and ≥30 sustained FPS on representative phone hardware (60 target when feasible). Visual art director assesses the real game; the creator decides artistic acceptance. If an art direction fails, change the art — not the whole engine.
+**Zombies and upgrades:** prioritize **many ordinary weak zombies over fewer inflated-health zombies**. Increase ordinary wave spawn/active density visibly versus frozen 1.0, with meaningful recovery rhythm, offscreen spawning, readable elite/boss tells and performance-bounded caps. Use a deterministic same-stage count comparison (target around 2× where device performance allows, not an unconditional unbounded spawn target). Add **at least six** real, eligible upgrades with observable effects on tail firing, mobility, shielding/recovery and squad synergy; preserve current choice logic and existing upgrade effects, never create impossible cards or extra direct combat controls. Three random choices remain the 1.1 baseline.
 
-### 1.2 — NINE LIVES & THREE GUNS
+**Drawn presentation:** keep the earlier aspiration for coherent original character/follower/enemy art, UI cards, encounter panels, muzzle flashes, dialogue, illustrated VFX, lightweight title/start/settings shell and visual hierarchy, without creating later-version map, fishing, fusion or weapon-economy features.
+
+**1.1 acceptance and delivery:** independent art review of **actual animated gameplay** at ~48px, genuine tail-muzzle targeting during motion, six visibly distinct states, 7/8 allies ranged and Brawler melee, stronger horde density with sensible weak-mob health, 6+ functioning upgrades, and unchanged 1.0 content. Run deterministic unit/mechanic checks, real-browser landscape/portrait mobile tests, source/live hash checks and hardware playtests. Aim for 60 FPS, target ≥30 sustained FPS on representative real Samsung hardware; Chrome alone cannot certify hardware FPS. Make `docs/cataclysm-1-1/` (plus versioned lab if needed) and do NOT edit either original 1.0 game directory or URL. No publish without independent QA and accepted candidate. The creator decides final artistic acceptance.
+
+**Studio preflight:** the old mobile route targets `docs/cataclysm/` with limited asset scope; the old autonomous route targets `docs/preview/`; the existing art workflow was designed for the historical 1.0 anatomy. Therefore, a **versioned artifact and orchestration route** must be established before issuing production triggers; do not pretend an issue alone starts code generation. Keep a single shared orchestrator, independent art specialist and one release chain; do not proliferate version-specific legacy workflows.
+
+### 1.2 — NINE LIVES
 
 **Nine lives are a separate pool from HP.** HP can be damaged/healed during a life. On zero HP, lose one of the nine lives and revive after a short safe reset; at zero remaining lives, the run ends. No infinite invulnerability chain or death that resets all XP. Make extra lives rare, valuable, visible, and cap/recovery rules explicit. Boss-earned +1 lives arrive with 1.4, not via ordinary mob farming.
 
-**Three weapon slots:** left paw, right paw and **tail**. Each independently chooses and levels a weapon, damage type, attack speed, range, pierce, bounce and specialized perks. All auto-aim; no extra combat buttons. Tail-only absurd weapons such as Fishbone Flail, Laser Pointer, Tail Turret, or Electrified Yarn Reel should be functional playstyles, not cosmetic jokes. Visually show all three simultaneously without burying the main cat.
-
-**Perks:** upgrade selections stay random; build-specific perks can unlock a fourth or fifth card, rerolls and unusual weapon/follower interactions. Do not make the best build always simply faster firing. Balanced solo-cat and companion-heavy strategies must survive.
+**Perks:** upgrade selections stay random; build-specific perks can unlock a fourth or fifth card, rerolls and unusual tail-weapon/follower interactions. Do not make the best build always simply faster firing. Balanced solo-cat and companion-heavy strategies must survive.
 
 ### 1.3 — FELINE COMPANY
 
@@ -112,6 +106,9 @@ Add contextual banter for player, companion personalities and fusions: arriving 
 **Endless Mode** unlocks after completing the designed 1000-night story. It is opt-in and may continue indefinitely with periodic new biome cycles, adaptive threat budgets, record tracking and fair performance caps. A phone restart must not erase three hours of progress. Test accelerated simulated runs and real 30-minute sessions; memory, audio nodes, active bullets, NPCs and effects must remain bounded.
 
 ### 2.0 — THE CATACOMBS
+
+**2.0 three-weapon system:** The cat gains **two independently equipped hand guns plus the existing tail gun**, each with independent upgrades (weapon type, damage, speed, pierce, bounce and special effects). All auto-aim; movement remains the only active combat control. This feature was moved from 1.2 to 2.0 by the owner's 13 November 2026 clarification. Preserve the expressive quadrupedal character identity while introducing all three visible weapons.
+
 
 Deliver the complete connected world, polished main menu, accessible world-map / district records, unshown active-play topology, illustrated codex of enemies and evolved companions, fusion journal, rare fish/bait collection, jackpot history, upgrade/weapon mastery, completed 1000-night chapters, nine-life scoreboards and Endless unlock. The city descends into underground catacombs as a final dramatic region, with its own ecology, fishing opportunities, bizarre boss mechanics and authored art. **The Sphinx** is the signature final boss, preceded by character-driven cataclysmic encounters. The final encounter should test curiosity, risky builds and squad cooperation, not only raw HP.
 
