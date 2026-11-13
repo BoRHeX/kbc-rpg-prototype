@@ -37,8 +37,8 @@ const {chromium}=require('playwright');
     },id);
     assert.equal(visible,false,'manual combat control still visible: '+id);
    }
-   await page.waitForFunction(()=>Array.from(document.querySelectorAll('[data-cat-speech]')).some(e=>e.textContent.trim().length>0),{timeout:9000});
-   const heroLine=await page.locator('[data-cat-speech]').first().textContent();
+   await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().catSpeech?.history?.length>0,null,{timeout:9000});
+   const heroLine=await page.evaluate(()=>CATACLYSM_DIAGNOSTICS.snapshot().catSpeech.history[0].text);
    assert.ok(heroLine.trim().length>2,'a real speech bubble appears on the live game');
    const pause=page.locator('#pause');
    await pause.click({force:true});
@@ -48,8 +48,10 @@ const {chromium}=require('playwright');
    assert.ok((await guide.textContent()).trim().length>80,'guide explains actual gameplay');
    assert.ok(await page.locator('#volume').count(),'volume belongs to pause menu');
    assert.ok(await page.locator('#fullscreen').count(),'fullscreen remains possible');
-   await pause.click({force:true});
-   await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',{timeout:5000});
+   // The redesigned pause panel owns Resume. The behind-the-modal Pause
+   // button must not be force-clicked to dismiss a visible dialog.
+   await page.locator('#resume').click();
+   await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',null,{timeout:5000});
 
    await page.evaluate(()=>window.__POLISH_CARD_QA());
    await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().pendingUpgrade,{timeout:5000});
