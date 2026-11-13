@@ -66,7 +66,7 @@ jobs:
           mkdir -p artifacts/art-department
           {
           python -m game_factory.art_department.pipeline gate
-          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout')=='directional-grid' else 1)"; then
+          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout') in ('directional-grid','rigged-parts') else 1)"; then
             python -m game_factory.cataclysm_asset_release --stage heroanimation --run-id "$GITHUB_RUN_ID"
           fi
           git diff --check
@@ -183,7 +183,7 @@ jobs:
           mkdir -p artifacts/art-department
           {
           python -m game_factory.art_department.pipeline gate
-          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout')=='directional-grid' else 1)"; then
+          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout') in ('directional-grid','rigged-parts') else 1)"; then
             python -m game_factory.cataclysm_asset_release --stage heroanimation --run-id "$GITHUB_RUN_ID"
           fi
           git diff --check
@@ -295,7 +295,7 @@ jobs:
       - name: Source, frame, silhouette and gameplay contracts
         run: |
           python -m game_factory.art_department.pipeline gate
-          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout')=='directional-grid' else 1)"; then
+          if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout') in ('directional-grid','rigged-parts') else 1)"; then
             python -m game_factory.cataclysm_asset_release --stage heroanimation --run-id "$GITHUB_RUN_ID"
           fi
           git diff --check
@@ -409,11 +409,15 @@ jobs:
           j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
           base=os.environ['PAGES_URL'].rstrip('/')+'/'
           paths=[j['source_dir'].removeprefix('docs/')+'/animation.js']
-          if j.get('atlas_layout')=='directional-grid':
+          if j.get('atlas_layout') in ('directional-grid','rigged-parts'):
               for directory in (j['source_dir'],j['mirror_dir']):
                   basepath=directory.removeprefix('docs/')+'/'
-                  paths += [basepath+'animation.js',basepath+'art/actor-packs.json',basepath+'index.html',basepath+'game.js']
-                  paths += [basepath+'art/characters/'+j['character']+'/'+j['family']+'/'+state+'.png' for state in j['states']]
+                  paths += [basepath+'animation.js',basepath+'art/actor-packs.json',basepath+'index.html',basepath+'game.js',
+                            basepath+'hero-kinematics.js',basepath+'hero-rig-renderer.js']
+                  if j.get('atlas_layout')=='rigged-parts':
+                      paths += [basepath+'art/characters/'+j['character']+'/'+j['family']+'/'+part+'.png' for part in j['rig_parts']]
+                  else:
+                      paths += [basepath+'art/characters/'+j['character']+'/'+j['family']+'/'+state+'.png' for state in j['states']]
           else:
               paths += [j['source_dir'].removeprefix('docs/')+'/art/'+j['character']+'-'+state+'.png' for state in j['states']]
               paths += [j['mirror_dir'].removeprefix('docs/')+'/art/'+j['character']+'-'+state+'.png' for state in j['states']]
