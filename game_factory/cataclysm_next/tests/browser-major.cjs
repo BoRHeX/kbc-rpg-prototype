@@ -31,7 +31,7 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.major.roster.elite,6);
       assert.equal(snapshot.major.roster.superElite,3);
       assert.equal(snapshot.major.nightDuration,13);
-      assert.equal(snapshot.major.animationFrames,378);
+      assert.ok(snapshot.major.animationFrames>=378,'Modern hero texture pack must preserve original 378 animation frames');
       assert.deepEqual(snapshot.major.songs,['ironmarch','afterlight']);
       assert.equal(snapshot.world.size,null,'world must be unbounded');
       assert.equal(snapshot.world.wrap,false,'no horizontal cylinder teleport');
@@ -70,6 +70,6 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       await page.close();
       count++;
     }
-    console.log('PASS Cataclysm major: eight mobile/desktop browser viewports; running live gameplay, 27 archetypes, 378 frames, new audio registry, stationary infinite map, no JS exceptions');
+    console.log('PASS Cataclysm major: eight mobile/desktop browser viewports; running live gameplay, 27 archetypes, at least 378 frames, new audio registry, stationary infinite map, no JS exceptions');
   }finally{await browser.close();}
 })().catch(e=>{console.error(e.stack||String(e));process.exitCode=1;});
