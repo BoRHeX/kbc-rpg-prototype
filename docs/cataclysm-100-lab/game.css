@@ -246,8 +246,8 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 
 /* Actor speech is fixed to the canvas camera; no pointer interception or animation clock. */
 .cat-speech-layer{position:fixed;inset:0;pointer-events:none;z-index:14;overflow:hidden}
-.cat-speech{position:fixed;width:max-content;max-width:min(188px,44vw);box-sizing:border-box;padding:7px 10px;border:2px solid #403844;border-radius:13px;background:#fff8df;color:#242334;font:600 13px/1.25 system-ui,sans-serif;box-shadow:0 2px 0 #0005;text-align:center;pointer-events:none}
-.cat-speech::after{content:'';position:absolute;left:var(--tail-x,50%);bottom:-8px;width:10px;height:10px;background:#fff8df;border-right:2px solid #403844;border-bottom:2px solid #403844;transform:translateX(-50%) rotate(45deg)}
+.cat-speech{position:fixed;width:max-content;max-width:min(168px,42vw);box-sizing:border-box;padding:5px 8px;border:1px solid #c4d3e466;border-radius:13px;background:#151c28c9;color:#fff;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 2px 0 #0005;text-align:center;pointer-events:none}
+.cat-speech::after{content:'';position:absolute;left:var(--tail-x,50%);bottom:-8px;width:10px;height:10px;background:#151c28c9;border-right:1px solid #c4d3e466;border-bottom:1px solid #c4d3e466;transform:translateX(-50%) rotate(45deg)}
 .cat-speech.tail-up::after{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
 .cat-speech[hidden]{display:none}
 
@@ -286,3 +286,5 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 .cat-portrait{display:block;position:absolute;top:0;bottom:0;left:50%;height:100%;aspect-ratio:1;transform:translateX(-50%);background-size:800% 100%;background-repeat:no-repeat;background-position:left center;filter:drop-shadow(0 6px 5px #0008)}
 
 #boss-status,#city-notice,#night-status,#support-status,#buff-status,#encounter-status{pointer-events:none}#support-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d5e4d6;background:linear-gradient(90deg,#0b1826b0,transparent);max-width:95%}
+
+.cat-speech{display:grid}.speech-layout,.speech-ink{grid-area:1/1}.speech-layout{visibility:hidden}.speech-ink{text-align:center;white-space:pre-wrap}

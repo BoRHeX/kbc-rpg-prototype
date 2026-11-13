@@ -18,7 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-polishui-43349018644';
+const assetRelease='cataclysm-10-tuning-43418796816';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
@@ -146,36 +146,33 @@ function heroBarrels(angle,r=27){
 function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false){
   if(!PALETTES[id])id='shambler';
   const requested=state;
-  // Missing action art holds this actor's idle/first painted pose, never a fake run cycle.
-  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
+  // Missing action sheets use the complete painted run cycle, including during telegraphs.
+  const paintedHeroAction=id==='hero'&&['attack','hit','feral','adrenaline'].includes(state)&&atlases[id+'-'+state]?.ready;
+  const override=!paintedHeroAction&&overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
   const count=override?override.count:frameCount(id,state);
   const fps=override?override.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
   const action=['attack','special','hit'].includes(state);
-  const frame=state==='aim'?aimFrame(aim):reduced&&!action?0:action?Math.min(count-1,Math.floor(Math.max(0,time)*fps)):Math.floor(Math.max(0,time)*fps)%count;
+  const frame=state==='aim'?aimFrame(aim):reduced&&!action?0:Math.floor(Math.max(0,time)*fps)%count;
   const sheet=override||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-idle']||atlases[id+'-run'];
-  const directional=id==='hero'&&overrides['hero-aim']?.ready&&state!=='hit';
+  const directional=id==='hero'&&overrides['hero-aim']?.ready&&['idle','aim'].includes(state);
   if(directional){
     const top=overrides['hero-aim'],f=aimFrame(aim),unit=r/23;
-    // Upper body includes the painted face, scarf, forearms and BOTH pistols.
-    // Keep the original moving feet below the authored waist seam (source y=70).
-    const seam=top.aim?.split_y||70;
+    // Draw the full authored directional pose; never stitch unrelated waist/leg sheets.
     ctx.save();ctx.scale(unit,unit);
-    const lower=atlases['hero-'+(['feral','adrenaline'].includes(state)?state:moving||state==='run'||state==='walk'?'run':'idle')];
-    if(lower?.ready){const lf=reduced?0:Math.floor(time*24)%lower.count;ctx.drawImage(lower.image,lf*96,seam,96,96-seam,-48,seam-58,96,96-seam);}
-    ctx.drawImage(top.image,f*96,0,96,seam,-48,-58,96,seam);
+    if(moving&&!reduced)ctx.translate(Math.sin(time*12)*.8,Math.cos(time*24)*1.5);
+    ctx.drawImage(top.image,f*96,0,96,96,-48,-58,96,96);
     ctx.restore();
-    if(['feral','adrenaline'].includes(state)){ctx.save();ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,r, r*1.15,r*.25,0,0,TWO);ctx.stroke();ctx.restore();}
     return f;
   }
   if(sheet&&sheet.ready){
     // Atlas feet sit at y=82; entity origin at (48,58), matching the fallback footprint.
     const unit=r/23*(override?override.scale:1),recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
     ctx.save();ctx.scale(unit,unit);
-    ctx.drawImage(sheet.image,(override||id==='hero'||state==='run'?frame%sheet.count:0)*96,0,96,96,-48,-58,96,96);
+    ctx.drawImage(sheet.image,(frame%sheet.count)*96,0,96,96,-48,-58,96,96);
     if(damaged){
       // Repaint only the sprite silhouette with a bright exposure; transparency remains intact.
       ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
-      ctx.drawImage(sheet.image,(override||id==='hero'||state==='run'?frame%sheet.count:0)*96,0,96,96,-48,-58,96,96);ctx.restore();
+      ctx.drawImage(sheet.image,(frame%sheet.count)*96,0,96,96,-48,-58,96,96);ctx.restore();
     }
     // Hero atlases contain both pistols attached to their animated hands.
     if(id!=='hero'&&(!override||!override.embeddedWeapon)&&(id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
