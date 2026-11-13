@@ -1,0 +1,165 @@
+name: Cataclysm 1.0 · Eight-Direction Protagonist Animation
+run-name: Reanimate hero → 8-way QA → verified game release
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm_10_HERO_REANIMATE_LAUNCH.md
+permissions:
+  contents: read
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+
+jobs:
+  reanimate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate full modern hero directional sprites, correct header spacing and turret renderer
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+          python game_factory/cataclysm_next/qa/reanimate_hero.py
+          python game_factory/cataclysm_asset_release.py --stage herodir --run-id "$GITHUB_RUN_ID"
+          git diff --check
+          node --check game_factory/cataclysm_next/tests/browser-hero-directional.cjs
+          for d in docs/cataclysm-1-0-major docs/cataclysm-100-lab; do
+            for js in "$d"/*.js; do node --check "$js"; done
+          done
+      - name: Verify original 1.0 gameplay, XP, map, score and painted sprites
+        run: |
+          set -euo pipefail
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs tuning
+      - name: Eight-direction art and eight-viewport Chrome gameplay acceptance
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          nohup python -m http.server 8765 --directory docs >/tmp/cata-hero-qa.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-hero-directional.cjs
+          node game_factory/cataclysm_next/tests/browser-art.cjs
+          node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-infinite.cjs
+          node game_factory/cataclysm_next/tests/browser-personality.cjs
+          node game_factory/cataclysm_next/tests/browser-tuning.cjs
+          node game_factory/cataclysm_next/tests/browser-one-boss.cjs
+          node game_factory/cataclysm_next/tests/browser-polish.cjs
+      - name: Preserve screenshot evidence even if QA fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-hero-directional-evidence
+          path: |
+            artifacts/cataclysm-hero-directional/
+            artifacts/cataclysm-major/
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Open PR with generated original-art frames and synchronized game code
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="studio/cataclysm-hero-8way-$GITHUB_RUN_ID"
+          git checkout -b "$branch"
+          git add docs/cataclysm-1-0-major/ docs/cataclysm-100-lab/
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::No changed source/artwork"; exit 1; }
+          python - <<'PY'
+          from pathlib import Path
+          for game in ('cataclysm-1-0-major','cataclysm-100-lab'):
+              for state,count in (('run',8),('idle',6),('attack',8)):
+                  source=Path('docs')/game/'art'/'characters'/'hero'/('directed-'+state+'.png')
+                  assert source.is_file() and source.stat().st_size>50000,source
+          PY
+          git commit -m "Reanimate Cataclysm hero with 8-way full-body motion and fix mobile controls/turret"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+          url="$(gh pr create --base main --head "$branch" --title "Cataclysm 1.0: eight-way animated hero, leg motion, turret, mobile HUD" --body "New modern hero art only: 64 directional run frames, 48 idle and 64 attack frames. One complete drawn frame per pose, no runtime stitching or mixing with obsolete hero sheets. Fixed Android top safe-area fullscreen/header overlap; redesigned engineer turret. Original score, cat banter, levels, companion systems and balance unchanged. Verified with real Chrome gameplay.")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Merge independently verified game without bypassing branch protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+        run: |
+          set -euo pipefail
+          gh pr merge "$PR_URL" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          node game_factory/cataclysm_finish_score_contract.cjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: hero-8way-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/
+      - name: Deploy accepted 1.0 game and Night99 lab
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: hero-8way-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Back off after another Pages deployment if needed
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry exact artifact if Pages was busy
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: hero-8way-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Independently verify public binary frames and renderer against merged source
+        run: |
+          python - <<'PY'
+          import hashlib,time,urllib.request
+          from pathlib import Path
+          base='https://borhex.github.io/kbc-rpg-prototype/'
+          files=['index.html','animation.js','game.js','game.css',
+            'art/characters/hero/directed-run.png','art/characters/hero/directed-idle.png',
+            'art/characters/hero/directed-attack.png']
+          for directory in ['cataclysm-1-0-major','cataclysm-100-lab']:
+              for name in files:
+                  expected=hashlib.sha256((Path('docs')/directory/name).read_bytes()).hexdigest()
+                  for attempt in range(12):
+                      try:
+                          req=urllib.request.Request(base+directory+'/'+name+'?check='+str(attempt),headers={'Cache-Control':'no-cache'})
+                          with urllib.request.urlopen(req,timeout=20) as response:
+                              assert hashlib.sha256(response.read()).hexdigest()==expected
+                          print('LIVE VERIFIED',directory,name)
+                          break
+                      except Exception as exc:
+                          if attempt==11:raise RuntimeError('Public game mismatch '+directory+'/'+name+': '+str(exc))
+                          time.sleep(5)
+          PY
+      - name: Report game links
+        run: |
+          echo "Cataclysm 1.0: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Night99 lab: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/" >> "$GITHUB_STEP_SUMMARY"
