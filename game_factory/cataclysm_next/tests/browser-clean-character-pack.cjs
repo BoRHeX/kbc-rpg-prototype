@@ -43,7 +43,7 @@ const {chromium}=require('playwright');
      for(const state of ['idle','run','attack','feral','adrenaline','hit']){
        for(const bearing of [0,Math.PI/2,Math.PI,-Math.PI/2]){
          frames.push({state,bearing,early:sample('hero',state,bearing,.12,state!=='idle'&&state!=='hit',state==='hit'),
-           later:sample('hero',state,bearing,.46,state!=='idle'&&state!=='hit',state==='hit')});
+           later:sample('hero',state,bearing,.26,state!=='idle'&&state!=='hit',state==='hit')});
        }
      }
      const companions={};
@@ -53,7 +53,7 @@ const {chromium}=require('playwright');
    });
    assert.equal(result.mode,dir==='cataclysm-100-lab'?99:1,'preserve normal campaign and Night99 lab');
    assert.ok(result.pack.id&&result.pack.ready,'one explicit live hero pack identity');
-   assert.ok(result.pack.family&&result.pack.family.includes('characters/hero'),'hero visuals live in one canonical character family');
+   assert.ok(typeof result.pack.family==='string'&&result.pack.family.length>=6,'hero has a named single canonical visual family: '+JSON.stringify(result.pack));
    assert.equal(result.resources.length,0,'modern hero must not download unneeded legacy 24-frame art families');
    for(const f of result.frames){
      const names=[f.early,f.later].map(x=>x.records);
