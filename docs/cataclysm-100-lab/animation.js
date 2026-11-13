@@ -18,7 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-herodir-43432275819';
+const assetRelease='cataclysm-10-alive-43443458400';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
@@ -163,14 +163,24 @@ function heroBarrels(angle,r=27){
  return (authored||[-1,1].map(side=>[48+Math.cos(bearing)*31-Math.sin(bearing)*side*8,58+Math.sin(bearing)*31+Math.cos(bearing)*side*8]))
   .map(([x,y])=>({x:(x-48)*r/23,y:(y-58)*r/23}));
 }
-function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false){
+function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false,effect=null,firing=false){
   if(!PALETTES[id])id='shambler';
   const requested=state;
-  const directed=id==='hero'?directedHero[state]:null;
+  // Locomotion is independent of transient effects, including damage recovery.
+  const bodyState=id==='hero'?(moving?'run':['feral','adrenaline','hit','walk'].includes(state)?(firing?'attack':'idle'):state):state;
+  const directed=id==='hero'?(directedHero[bodyState]?.ready?directedHero[bodyState]:Object.values(directedHero).find(a=>a.ready)):null;
   if(directed?.ready){
-    const phase=reduced?0:Math.floor(Math.max(0,time)*directed.fps)%directed.count;
+    const phase=reduced?0:Math.floor(Math.max(0,time)*directed.fps*(effect?1.16:1))%directed.count;
     const frame=aimFrame(aim)*directed.count+phase;
     ctx.save();ctx.scale(r/23,r/23);
+    if(!reduced){
+      // Move the complete painted silhouette: no waist seams or replacement poses.
+      const breath=Math.sin(time*3.8)*.45;
+      const kick=firing?Math.pow(Math.max(0,Math.sin(time*24)),6)*1.5:0;
+      ctx.translate(-Math.cos(aim)*kick,breath-Math.sin(aim)*kick);
+      if(effect){const spring=Math.sin(time*directed.fps*2)*.012;
+        ctx.scale(1-spring,1+spring);ctx.rotate(Math.sin(time*7)*.012);}
+    }
     ctx.drawImage(directed.image,frame*96,0,96,96,-48,-58,96,96);
     if(damaged){
       ctx.save();ctx.globalAlpha=.52;ctx.filter='brightness(2.2)';
@@ -191,7 +201,8 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving
     (overrides['hero-idle']?.ready&&overrides['hero-idle'])||
     (overrides['hero-run']?.ready&&overrides['hero-run'])||
     (overrides['hero-attack']?.ready&&overrides['hero-attack']))||null;
-  const reference=override||heroModernFallback;
+  const modernCompanionFallback=allyIds.includes(id)&&['run','idle','attack'].map(s=>overrides[id+'-'+s]).find(a=>a?.ready);
+  const reference=override||heroModernFallback||modernCompanionFallback;
   const count=reference?reference.count:frameCount(id,state);
   const fps=reference?reference.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
   const action=['attack','special','hit'].includes(state);
