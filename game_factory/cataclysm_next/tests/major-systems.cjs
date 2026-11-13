@@ -41,7 +41,7 @@ assert.equal(new Set(catalog.elites.map(e=>e.attack)).size,6);
 assert.equal(new Set(catalog.superElites.map(e=>e.attack)).size,3);
 for(const id of catalog.normal.filter(e=>e.role==='caster').map(e=>e.id))
   assert.ok(catalog.normal.find(e=>e.id===id).range>=340);
-assert.equal(art.frameTotal,378);
+assert.ok(Number.isInteger(art.frameTotal)&&art.frameTotal>=378,'Character art must preserve at least 378 animated poses; new coherent hero packs can add frames');
 assert.equal(art.enemyIds.length,27);
 assert.equal(art.allyIds.length,8);
 const poses=[];
@@ -87,4 +87,4 @@ assert.equal(campaign.won(ledger,true),true);
 ledger.night=99;
 assert.equal(campaign.won(ledger,true),false,'cannot win before Night100');
 assert.equal(campaign.won({...campaign.newLedger(),night:100,finaleCleared:true},true),true,'only Night 100 final horde should gate victory');
-console.log('PASS Cataclysm major: 100 nights, 27 archetypes, 378 animated poses, two songs, final-horde victory');
+console.log('PASS Cataclysm major: 100 nights, 27 archetypes, 378 baseline poses, '+art.frameTotal+' total authored frames, two songs, final-horde victory');
