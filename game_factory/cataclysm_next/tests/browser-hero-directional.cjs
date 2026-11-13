@@ -28,7 +28,7 @@ const {chromium}=require('playwright');
     c.drawImage=function(...args){sources.push({url:String(args[0]?.src||''),sx:args[1]});return original(...args);};
     const sample=(state,angle,time)=>{
       sources=[];c.clearRect(0,0,96,96);c.save();c.translate(48,58);
-      art.draw(c,'hero',23,time,state,angle,false,false,true);c.restore();
+      art.draw(c,'hero',23,time,state,angle,false,false,state==='run');c.restore();
       const bytes=c.getImageData(0,0,96,96).data;
       let signature=0;for(let i=0;i<bytes.length;i+=4)signature+=bytes[i]+bytes[i+1]*3+bytes[i+2]*5+bytes[i+3]*7;
       return {sources:[...sources],signature};
