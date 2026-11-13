@@ -73,20 +73,25 @@ const {chromium}=require('playwright');
    assert.notEqual(heroRunSheet(frames.heroRun).sourceX,heroRunSheet(frames.heroRunLater).sourceX,'hero run must advance actual painted frames, not a static image');
 
    await page.evaluate(()=>__TUNE_QA.forceSpeech());
-   await page.waitForFunction(()=>document.querySelector('.cat-speech[data-cat-speech]:not([hidden])'),null,{timeout:5000});
-   const bubble=await page.evaluate(()=>{
-      const el=document.querySelector('.cat-speech[data-cat-speech]:not([hidden])'),cs=getComputedStyle(el);
-      return {bg:cs.backgroundColor,text:cs.color,border:cs.borderColor,full:el.getAttribute('aria-label')||el.textContent};
-   });
-   const channels=bubble.bg.match(/[\d.]+/g)?.map(Number)||[];
-   assert.ok(channels.length===4&&channels[3]>0&&channels[3]<.9,'speech bubble must be translucent, not opaque: '+JSON.stringify({bubble,channels}));
-   const foreground=bubble.text.match(/[\d.]+/g)?.map(Number)||[];
+   // Follow ONE deliberately emitted hero hurt line; ordinary companions may
+   // speak concurrently and their bubbles must not be compared with this line.
+   const selector='.cat-speech[data-cat-speech="hero"][data-speech-event="hurt"]:not([hidden])';
+   await page.waitForFunction(sel=>document.querySelector(sel),selector,{timeout:5000});
+   const bubble=await page.evaluate(sel=>{
+     const el=document.querySelector(sel),cs=getComputedStyle(el);
+     return {bg:cs.backgroundColor,text:cs.color,full:el.getAttribute('aria-label')};
+   },selector);
+   const channels=bubble.bg.match(/[\\d.]+/g)?.map(Number)||[];
+   assert.ok(channels.length===4&&channels[3]>0&&channels[3]<.9,'speech bubble must be translucent, not opaque: '+JSON.stringify(bubble));
+   const foreground=bubble.text.match(/[\\d.]+/g)?.map(Number)||[];
    assert.ok(foreground.length>=3&&foreground.slice(0,3).every(v=>v>185),'speech text must be white/high-contrast');
-   const atStart=await page.locator('.cat-speech[data-cat-speech]:visible').first().textContent();
-   await page.waitForTimeout(320);
-   const after=await page.locator('.cat-speech[data-cat-speech]:visible').first().textContent();
-   assert.ok(after.length>=atStart.length,'typing reveal must not reverse');
-   assert.ok(atStart.length<after.length||after.length>=8,'the bubble is readable, not permanently blank');
+   const ink=page.locator(selector+' .speech-ink');
+   const first=await ink.textContent();
+   await page.waitForTimeout(180);
+   const second=await ink.textContent();
+   assert.ok(second.length>=first.length,'one triggered line must reveal forwards, not backwards');
+   assert.ok(second.length>first.length||second.length===bubble.full.length,'typed text should advance or already be complete');
+   assert.ok(bubble.full.length>=8,'complete speech line should be readable');
    assert.deepEqual(errors,[],'no runtime exceptions');
    const out=path.resolve('artifacts/cataclysm-major');fs.mkdirSync(out,{recursive:true});
    await page.screenshot({path:path.join(out,'tuning-'+width+'x'+height+'.png')});
