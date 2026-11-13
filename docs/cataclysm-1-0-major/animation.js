@@ -50,6 +50,16 @@ const ready=root.fetch(assetBase+'actor-packs.json?art='+assetRelease).then(r=>{
  metrics.manifestReady=true;
  await Promise.all(ids.map(async id=>{
   const p=packs[id],states=data.characters[id].states;
+  const rigSpec=data.characters[id].rig;
+  if(id==='hero'&&rigSpec?.parts){
+   for(const key of ['torso','thigh','calf','paw'])if(!rigSpec.parts[key])throw Error('Incomplete articulated hero rig: '+key);
+   const entries=await Promise.all(Object.entries(rigSpec.parts).map(async([name,info])=>{
+     if(!/^[-a-z0-9/]+\.png$/.test(info.url))throw Error('Invalid rig texture '+name);
+     return [name,await loadRigPart({...info,part:name})];
+   }));
+   p.rig=Object.freeze(Object.fromEntries(entries));p.states=Object.freeze({});
+   p.ready=true;Object.freeze(p);return;
+  }
   const textures=await Promise.all(Object.entries(states).map(async([state,info])=>{
    if(!Number.isInteger(info.frames)||info.frames<1||!Number.isFinite(info.fps)||!/^[-a-z0-9/]+\.png$/.test(info.url))throw Error('Invalid texture '+id+'/'+state);
    return [state,await loadTexture(info)];
@@ -59,18 +69,41 @@ const ready=root.fetch(assetBase+'actor-packs.json?art='+assetRelease).then(r=>{
 });
 // Keep failures observable via ready, without an unhandled rejection before boot attaches.
 ready.catch(()=>{});
+// New rig packs contain one painted, leg-free upper body and independent
+// original-texture thigh, calf and paw pieces. Load before selecting the pack;
+// no old full-body sheet is drawn underneath the IK rig.
+function loadRigPart(info){
+ metrics.total++;
+ const entry={...info,ready:false,image:new root.Image()};
+ return new Promise((resolve,reject)=>{
+  const fail=()=>{metrics.failed++;reject(Error('Missing articulated body part '+info.url));};
+  entry.image.onerror=fail;
+  entry.image.onload=async()=>{
+   const w=info.part==='torso'?(info.frames||1)*96:info.width;
+   const h=info.part==='torso'?(info.bearings||8)*96:info.height;
+   if(!w||!h||entry.image.naturalWidth!==w||entry.image.naturalHeight!==h){fail();return;}
+   try{if(entry.image.decode)await entry.image.decode();entry.ready=true;metrics.loaded++;resolve(entry);}catch(e){fail();}
+  };
+  entry.image.src=assetBase+info.url+'?art='+assetRelease;
+ });
+}
 function assetStatus(){return {loaded:metrics.loaded,failed:metrics.failed,total:metrics.total};}
 function overrideStatus(){return {...metrics,characters:Object.entries(packs).flatMap(([id,p])=>p.ready?Object.keys(p.states).map(s=>id+'-'+s):[])};}
 function directionalStatus(){const p=packs.hero;return {loaded:p?.ready?Object.keys(p.states).length:0,failed:metrics.failed,total:10,states:Object.fromEntries(Object.entries(p?.states||{}).map(([s,v])=>[s,v.ready]))};}
 function hasReferenceAnimation(id,state){return !!(packs[id]?.ready&&packs[id].states[state]);}
 function actionDuration(id,state){const s=packs[id]?.states[state];return s?s.frames/s.fps:8/12;}
-function frameCount(id,state){return packs[id]?.states[state]?.frames||(id==='hero'?12:allyIds.includes(id)?12:6);}
+function frameCount(id,state){return packs[id]?.rig?(packs[id].rig.torso.frames||12):(packs[id]?.states[state]?.frames||(id==='hero'?12:allyIds.includes(id)?12:6));}
 function heroBarrels(angle,r=27){
  const barrels=[[[56,43],[85,34]],[[58,53],[80,57]],[[44,72],[66,63]],[[18,60],[47,70]],[[5,40],[41,44]],[[11,29],[41,42]],[[35,6],[67,6]],[[21,19],[69,7]]];
  return barrels[aimFrame(angle)].map(([x,y])=>({x:(x-48)*r/23,y:(y-58)*r/23}));
 }
-function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false,effect=null,firing=false){
+function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false,effect=null,firing=false,profile=null){
  const pack=packs[id];if(!pack?.ready)return -1;
+ if(id==='hero'&&pack.rig){
+   const pose=profile?.kinematics;
+   const result=root.CATA_HERO_RIG_RENDER?.draw(ctx,pack.rig,pose,aim,r,time,{hit:damaged,reduced});
+   return result?result.bearing*100+result.frame:-1;
+ }
  let selected=state;
  if(id==='hero'){
   if(state==='hit'||damaged)selected='hit';
