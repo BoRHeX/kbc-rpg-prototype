@@ -52,7 +52,7 @@ const {chromium}=require('playwright');
    assert.ok(result.ghostPrice>result.weaverPrice,'director also prices silencing enemies above generic shooters');
 
    // Capture *actual painted sprite source rectangles*, not decorative frame counters.
-   await page.waitForFunction(()=>window.CATA_ART&&CATA_ART.assetStatus().loaded>=40,{timeout:15000});
+   await page.waitForFunction(()=>window.CATA_ART&&(window.CATA_ART.packInfo?.('hero')?.ready?CATA_ART.assetStatus().loaded>=32:CATA_ART.assetStatus().loaded>=40),{timeout:15000});
    const frames=await page.evaluate(()=>{
     const c=document.createElement('canvas').getContext('2d'),original=c.drawImage.bind(c),frames={};
     c.drawImage=function(...args){(frames.call||(frames.call=[])).push({name:String(args[0]?.src||''),sourceX:args[1]});return original(...args);};
