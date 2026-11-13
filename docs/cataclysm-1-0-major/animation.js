@@ -5,7 +5,7 @@
 const allyIds=Object.freeze(['shooter','healer','tank','brawler','sniper','engineer','trapper','bard']);
 const enemyIds=Object.freeze(Object.values(root.CATA_MAJOR.catalog).flat().map(e=>e.id));
 const assetBase=typeof document!=='undefined'&&document.currentScript?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-cleanpack-43455224866';
+const assetRelease='cataclysm-10-herorig-43483184752';
 const packs=Object.create(null),metrics={loaded:0,failed:0,total:0,manifestReady:false};
 const TWO=Math.PI*2;
 const PALETTES={shooter:'#e5c38a',sniper:'#bde282',watcher:'#8fa4ad','echo-reaper':'#c7b5a2',ghost:'#c9bfe5'};

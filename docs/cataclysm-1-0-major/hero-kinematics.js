@@ -26,13 +26,17 @@ function advance(rig,input){
  const vx=Number(input.vx)||0,vy=Number(input.vy)||0;
  const speed=Math.hypot(vx,vy),speedRatio=clamp(speed/Math.max(1,Number(input.baseSpeed)||180),0,3.6);
  const moving=speed>5;
+ const state=input.state||'run';
+ const shielded=!!input.shielded||state.startsWith('shield-');
+ const damaged=!!input.damaged||state==='hit';
+ const brace=damaged?3.5:shielded?2:0;
  const headingX=moving?vx/speed:rig.headingX,headingY=moving?vy/speed:rig.headingY;
  rig.headingX=headingX;rig.headingY=headingY;rig.seconds+=dt;
- const cadence=moving?clamp(.95+speedRatio*1.15,1.1,4.5):0;
+ const cadence=moving?clamp(1.12+speedRatio*1.46,1.3,5.5):0;
  const period=1/Math.max(.2,cadence);
  if(moving)rig.cycle+=dt*cadence;
- const phase=fract(rig.cycle),stanceFrac=.58;
- const stride=clamp(12+speedRatio*8,13,31),lift=moving?clamp(4+speedRatio*4,5,16):0;
+ const phase=fract(rig.cycle),stanceFrac=.51;
+ const stride=clamp(16+speedRatio*14,18,43),lift=moving?clamp(6+speedRatio*5.5,8,21):0;
  const legs=[];
  for(let i=0;i<2;i++){
   const side=i===0?-1:1,footState=rig.feet[i],u=fract(phase+i*.5),previous=footState.lastU;
@@ -62,19 +66,22 @@ function advance(rig,input){
    air=Math.sin(Math.PI*t)*lift;
   }
   footState.planted=stance;footState.lastU=u;
-  const hip={x:side*6.3,y:4};
-  const foot={x:clamp(side*7+(world.x-x)*.48,-21,21),
-              y:clamp(26+(world.y-y)*.29-air,8,37)};
-  const ik=solveIK(hip,foot,14.5,15.5,side===-1?1:-1);
+  const hip={x:side*7.3,y:4+brace};
+  const foot={x:clamp(side*9+(world.x-x)*.82,-30,30),
+              y:clamp(28+(world.y-y)*.38-air*1.18,5,40)};
+  // In profile both knees bend forward. Opposite bend signs produce a
+  // bow-legged crab silhouette, hiding the passing knee at phone size.
+  const bend=Math.abs(headingX)>.35?(headingX>0?-1:1):(side===-1?1:-1);
+  const ik=solveIK(hip,foot,17,18,bend);
   legs.push({side,phase:u,stance,plantWorld:stance?{...footState.anchor}:null,
     world,air,hip:ik.hip,knee:ik.knee,ankle:ik.ankle,upper:ik.upper,lower:ik.lower});
  }
  const breath=Math.sin(rig.seconds*TAU*.29),shoulder=Math.sin(rig.seconds*TAU*.47+.5);
- const torso={breath:1.05*breath,shoulder:shoulder*.6,lean:clamp(speedRatio*.7,0,2.5),
+ const torso={brace,breath:1.05*breath,shoulder:shoulder*.6,lean:clamp(speedRatio*.7,0,2.5),
               bob:moving?Math.sin(rig.cycle*TAU*2)*1.1:breath*.45};
  rig.body=torso;rig.pose={speedRatio,moving,headingX,headingY,phase,torso,legs,
- state:input.state||'run',shielded:!!input.shielded,damaged:!!input.damaged,
- feral:!!input.feral,adrenaline:!!input.adrenaline};
+ state,shielded,damaged,
+ feral:!!input.feral||state==='feral',adrenaline:!!input.adrenaline||state==='adrenaline'};
  rig.lastX=x;rig.lastY=y;return rig.pose;
 }
 const API=Object.freeze({create,advance,solveIK,version:'ik-worldplant-v1'});
