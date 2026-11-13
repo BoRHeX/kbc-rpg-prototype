@@ -9,6 +9,7 @@ on:
       - game_factory/requests/cataclysm_10_finish_RESUME2.md
       - game_factory/requests/cataclysm_10_finish_RESUME3.md
       - game_factory/requests/cataclysm_10_finish_RESUME4.md
+      - game_factory/requests/cataclysm_10_finish_RESUME5.md
 permissions:
   contents: read
   actions: read
@@ -18,7 +19,7 @@ concurrency:
 
 jobs:
   scoring:
-    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') && !contains(github.event.head_commit.message, '[resume-balance-43324139957]') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: score
@@ -126,13 +127,51 @@ jobs:
       stage: presentation
       previous: animation
     secrets: inherit
+  recover_balance:
+    if: ${{ contains(github.event.head_commit.message, '[resume-balance-43324139957]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Restore ALL work from the previously failed balance QA — do not discard art or code
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43324139957
+          github-token: ${{ github.token }}
+          name: cataclysm-10-unaccepted-balance-source
+          path: docs/
+      - name: Verify preserved candidate before correcting mechanics
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-0-major/game.js
+          test -s docs/cataclysm-100-lab/game.js
+          for js in docs/cataclysm-1-0-major/*.js docs/cataclysm-100-lab/*.js; do node --check "$js"; done
+          node game_factory/cataclysm_finish_acceptance.cjs animation
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          echo 'Original painted art, player/squad animation, score, upgrades and balance-stage work preserved'
+      - name: Provide exact unaccepted predecessor as the next corrective-stage input
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-finish-balance-recovered
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
+
   balance:
-    needs: presentation
-    if: ${{ always() && needs.presentation.result == 'success' }}
+    needs: [presentation, recover_balance]
+    if: ${{ always() && (needs.presentation.result == 'success' || needs.recover_balance.result == 'success') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: balance
-      previous: presentation
+      previous: ${{ needs.recover_balance.result == 'success' && 'balance-recovered' || 'presentation' }}
     secrets: inherit
 
   release:
@@ -187,6 +226,7 @@ jobs:
           npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
           nohup python -m http.server 8765 --directory docs >/tmp/cata-finish-release.log 2>&1 &
           node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-infinite.cjs
           node game_factory/cataclysm_next/tests/browser-art.cjs
           node game_factory/cataclysm_next/tests/browser-horde.cjs
           node game_factory/cataclysm_next/tests/browser-polish.cjs
