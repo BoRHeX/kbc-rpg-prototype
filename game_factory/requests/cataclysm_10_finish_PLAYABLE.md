@@ -12,3 +12,5 @@ Creator instruction, 13 November 2026:
 Workflow should run recover_playable -> source checks -> browser smoke -> PR -> merge -> GitHub Pages deployment. If any basic play smoke check fails, retain evidence and stop without falsely claiming release.
 
 Second attempt: isolate the optional QA boss at the spawn function; retain all original assets and avoid finale stress test.
+
+Final retry: previous run passed campaign and infinite-world Chrome checks; corrected obsolete art-test starter-level assertion.
