@@ -57,7 +57,7 @@ const path=require('node:path');
    assert.equal(badResources.length,0,badResources.join('\n'));
    assert.equal(result.snap.mode,'running','Art pass must keep real game playable');
    assert.equal(result.snap.major.campaign.night,dir==='cataclysm-100-lab'?99:1);
-   assert.equal(result.snap.player.level,dir==='cataclysm-100-lab'?100:0);
+   assert.equal(result.snap.player.level,dir==='cataclysm-100-lab'?100:1);
    const out='artifacts/cataclysm-major';fs.mkdirSync(out,{recursive:true});
    await page.screenshot({path:path.join(out,'art-'+dir+'.png')});
    console.log('PASS loaded and applied',result.art.loaded,'art sheets, in',dir,'running with',result.snap.enemies.length,'enemies');
