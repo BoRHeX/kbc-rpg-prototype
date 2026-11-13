@@ -13,11 +13,17 @@ function segment(ctx,part,a,b,width){
  ctx.drawImage(part.image,-width/2,-2,width,len+3);
  ctx.restore();
 }
-function foot(ctx,part,ankle,stance,speedRatio){
+function foot(ctx,part,leg,pose){
  if(!part?.ready)return;
- ctx.save();ctx.translate(ankle.x,ankle.y);ctx.rotate(stance?0:clamp(speedRatio*.10,0,.3));
- const w=part.drawWidth||16,h=part.drawHeight||10;
- ctx.drawImage(part.image,-w/2,-h/2,w,h);ctx.restore();
+ const {ankle,stance}=leg;
+ const direction=pose.headingX<-.15?-1:1;
+ // The heel seats under the shank; the toe projects forward. Swing lifts
+ // the toe, then extends for landing, rather than rotating a centered block.
+ const swing=clamp((leg.phase-.58)/.42,0,1);
+ const pitch=stance?0:-Math.sin(swing*Math.PI)*.48;
+ ctx.save();ctx.translate(ankle.x,ankle.y);ctx.scale(direction,1);ctx.rotate(pitch);
+ const w=part.drawWidth||21,h=part.drawHeight||13;
+ ctx.drawImage(part.image,-w*.36,-h*.55,w,h);ctx.restore();
 }
 function draw(ctx,rig,pose,aim=0,r=23,time=0,opt={}){
  if(!rig||!pose||!rig.torso?.ready) return false;
@@ -30,13 +36,17 @@ function draw(ctx,rig,pose,aim=0,r=23,time=0,opt={}){
  // Neither leg is duplicated; each IK segment and foot is drawn exactly once.
  for(const leg of legs){
    segment(ctx,rig.calf,leg.knee,leg.ankle,rig.calf.drawWidth||10);
-   foot(ctx,rig.paw,leg.ankle,leg.stance,pose.speedRatio||0);
+   foot(ctx,rig.paw,leg,pose);
    segment(ctx,rig.thigh,leg.hip,leg.knee,rig.thigh.drawWidth||11);
  }
  const torso=rig.torso,frames=torso.frames||1;
  const phase=opt.reduced?0:Math.floor(Math.max(0,time)*(torso.fps||8))%frames;
  ctx.save();
- ctx.translate(0,(pose.torso?.breath||0)*.72+(pose.torso?.bob||0)*.38);
+ ctx.translate(pose.damaged?-1.5:0,(pose.torso?.brace||0)+(pose.torso?.breath||0)*.72+(pose.torso?.bob||0)*.38);
+ if(pose.damaged)ctx.rotate(-.055);
+ else if(pose.shielded)ctx.rotate(.025);
+ if(pose.feral)ctx.filter='saturate(1.18)';
+ else if(pose.adrenaline)ctx.filter='brightness(1.08)';
  if(opt.hit)ctx.filter='brightness(1.15)';
  // Full-body OLD sprite is never drawn. Torso texture is a leg-free upper body.
  ctx.drawImage(torso.image,phase*96,bearing*96,96,96,-48,-58,96,96);

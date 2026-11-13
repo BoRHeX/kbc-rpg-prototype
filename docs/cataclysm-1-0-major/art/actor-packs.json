@@ -2,7 +2,7 @@
   "version": 1,
   "characters": {
     "hero": {
-      "family": "hero-articulated-v1",
+      "family": "hero-ik-rig-v1",
       "states": {
         "idle": {
           "url": "characters/hero/articulated-v1/idle.png",
@@ -63,6 +63,35 @@
           "frames": 12,
           "fps": 23,
           "bearings": 8
+        }
+      },
+      "rig": {
+        "parts": {
+          "torso": {
+            "url": "characters/hero/hero-ik-rig-v1/torso.png",
+            "frames": 4,
+            "bearings": 8,
+            "fps": 8
+          },
+          "thigh": {
+            "url": "characters/hero/hero-ik-rig-v1/thigh.png",
+            "width": 20,
+            "height": 32,
+            "drawWidth": 17
+          },
+          "calf": {
+            "url": "characters/hero/hero-ik-rig-v1/calf.png",
+            "width": 18,
+            "height": 34,
+            "drawWidth": 14
+          },
+          "paw": {
+            "url": "characters/hero/hero-ik-rig-v1/paw.png",
+            "width": 24,
+            "height": 16,
+            "drawWidth": 23,
+            "drawHeight": 13
+          }
         }
       }
     },

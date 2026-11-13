@@ -4,7 +4,7 @@
 const TAU=Math.PI*2;
 const artBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-cleanpack-43455224866';
+const assetRelease='cataclysm-10-herorig-43483184752';
 const paintings=Object.create(null);
 for(const name of ['ground-0','ground-1','ground-2','ground-3','prop-building','prop-car','prop-dumpster']){
  const asset={image:null,ready:false};paintings[name]=asset;
