@@ -67,7 +67,7 @@ const {chromium}=require('playwright');
    assert.notEqual(paintedX(frames.attackA),paintedX(frames.attackB),'enemy without special attack atlas must not freeze on a static fallback frame');
    assert.ok(frames.heroFeral.some(x=>x.name.includes('hero-feral.png')),'hero feral must show painted feral pose, not just an effect ring');
    assert.ok(frames.heroHit.some(x=>x.name.includes('hero-hit.png')),'hero hit must use painted hit pose');
-   const heroRunSheet=x=>x.find(a=>/hero-run\\.png|characters\\/hero\\/run\\.png/.test(a.name));
+   const heroRunSheet=x=>x.find(a=>a.name.includes('hero-run.png')||a.name.includes('characters/hero/run.png'));
    assert.ok(heroRunSheet(frames.heroRun),'hero running pose must use an actual painted run atlas');
    assert.ok(heroRunSheet(frames.heroRunLater),'hero running pose must retain the painted run atlas later');
    assert.notEqual(heroRunSheet(frames.heroRun).sourceX,heroRunSheet(frames.heroRunLater).sourceX,'hero run must advance actual painted frames, not a static image');
