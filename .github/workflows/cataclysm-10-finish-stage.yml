@@ -57,6 +57,9 @@ jobs:
           Path('/tmp/cataclysm-stage-before.json').write_text(json.dumps(files))
           print('Stage baseline:',len(files),'game files')
           PY
+      - name: Prepare image tools for clean full-body hero sprite painting
+        if: inputs.stage == 'cleanpack'
+        run: python -m pip install --disable-pip-version-check --quiet pillow==11.3.0
       - name: AI team implements its complete bounded stage from the executive order
         uses: openai/codex-action@v1
         with:
