@@ -147,14 +147,27 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving
   if(!PALETTES[id])id='shambler';
   const requested=state;
   // Missing action sheets use the complete painted run cycle, including during telegraphs.
-  const paintedHeroAction=id==='hero'&&['attack','hit','feral','adrenaline'].includes(state)&&atlases[id+'-'+state]?.ready;
-  const override=!paintedHeroAction&&overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
-  const count=override?override.count:frameCount(id,state);
-  const fps=override?override.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
+  // Reference-animation manifest is authoritative for every available state.
+  // Never swap a modern character's pose back to the legacy painted hero midway
+  // through an attack, hit, feral or adrenaline effect (the two art sets differ).
+  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
+  // Modern hero may load individual states asynchronously: once any modern pose is
+  // ready, use another modern pose briefly rather than flashing legacy artwork.
+  // Legacy sheets remain available for enemies and companions with no authored
+  // replacement, and if the reference manifest cannot load at all.
+  const heroModernFallback=id==='hero'&&(
+    (overrides['hero-idle']?.ready&&overrides['hero-idle'])||
+    (overrides['hero-run']?.ready&&overrides['hero-run'])||
+    (overrides['hero-attack']?.ready&&overrides['hero-attack']))||null;
+  const reference=override||heroModernFallback;
+  const count=reference?reference.count:frameCount(id,state);
+  const fps=reference?reference.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
   const action=['attack','special','hit'].includes(state);
   const frame=state==='aim'?aimFrame(aim):reduced&&!action?0:Math.floor(Math.max(0,time)*fps)%count;
-  const sheet=override||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-idle']||atlases[id+'-run'];
-  const directional=id==='hero'&&overrides['hero-aim']?.ready&&['idle','aim'].includes(state);
+  const sheet=reference||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-idle']||atlases[id+'-run'];
+  // Idle has its own latest six-frame animation. The 8-way aim sheet is a pose,
+  // not an animation, and must never silently replace idle or locomotion.
+  const directional=id==='hero'&&state==='aim'&&overrides['hero-aim']?.ready;
   if(directional){
     const top=overrides['hero-aim'],f=aimFrame(aim),unit=r/23;
     // Draw the full authored directional pose; never stitch unrelated waist/leg sheets.
