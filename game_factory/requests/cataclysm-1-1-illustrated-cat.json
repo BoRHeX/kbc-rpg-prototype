@@ -1,0 +1,11 @@
+{
+  "request_id": "cataclysm-11-illustrated-cat-reference-20261113",
+  "game": "cataclysm",
+  "version": "1.1",
+  "phase": "illustrated-hero-concept-source",
+  "drive_file_id": "1yZoNC7QKfLcrKF2MhcQWWn_s3olLyBYs",
+  "source_url": "https://drive.google.com/file/d/1yZoNC7QKfLcrKF2MhcQWWn_s3olLyBYs/view?usp=drivesdk",
+  "target": "docs/cataclysm-1-1/art/references/hero-illustrated-pose-sheet.png",
+  "objective": "Adopt actual generated professional illustrated quadruped white-cat pose sheet. Do not use code-drawn geometric imitation. No tail, no gun for this art pass. No immediate gameplay change.",
+  "approved_by_creator": true
+}
