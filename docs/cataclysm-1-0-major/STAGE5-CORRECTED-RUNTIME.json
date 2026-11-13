@@ -1,0 +1,1579 @@
+{
+  "version": "1.0",
+  "patch": "cataclysm-10-corrected-world-spawns-06",
+  "date": "2026-11-13",
+  "status": "gameplay implemented; browser/mobile acceptance pending",
+  "method": {
+    "runtime": "Actual game.js tick/render/control flow in Node VM; DOM and canvas drawing stubbed; no browser or FPS claim",
+    "stepSeconds": 0.05,
+    "seed": 424242,
+    "directorSeed": 990100,
+    "skilledBot": "Eight movement directions and idle; predicts nearby enemy/projectile danger, rejects terrain collisions, targets weapon range; campaign seeks fish and selects only offered upgrades",
+    "weakBot": "Moves toward enemies beyond 350 units and away within 260 units",
+    "solo": "Lab starting build with active squad removed; no replacement bonuses",
+    "buildChanges": "No health, immunity, damage, timer, kill or victory overrides during combat runs",
+    "instrumentation": "Private functions exposed only in temporary in-memory verification copy; production diagnostics remain read-only",
+    "campaign": "Night 1 natural start; run died on Night 49. No full 100-night campaign completion claimed"
+  },
+  "contracts": [
+    {
+      "mode": "cataclysm-1-0-major",
+      "idleStationary": true,
+      "bothFormerEdges": true,
+      "negativeRevisit": true,
+      "chunkCacheBound": 64
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "idleStationary": true,
+      "bothFormerEdges": true,
+      "negativeRevisit": true,
+      "chunkCacheBound": 64
+    }
+  ],
+  "additionalContracts": [
+    "Matching director exports and pure pacing bounds/HP recovery/density backpressure/time pressure",
+    "Offscreen normal spawn coordinates checked against recorded player/viewport",
+    "Remote ordinary retirement grants no kill credit and retains scripted majors",
+    "qaSpawnScale ignored in campaign, effective 0.3 seconds only in QA Night100 lab",
+    "QA accelerated score total zero and no persisted win/best",
+    "All eighteen unique scripted arrivals at nine-second intervals with real slain timestamps",
+    "Additive victory milestone exactly once atop earned score"
+  ],
+  "checks": [
+    "Existing scoring acceptance PASS",
+    "Existing follower acceptance PASS",
+    "Existing painted-animation acceptance PASS",
+    "Both game.js syntax PASS",
+    "git diff --check PASS"
+  ],
+  "browser": {
+    "status": "BLOCKED",
+    "serverError": "PermissionError: Operation not permitted creating HTTP socket",
+    "chromiumError": "Crashpad socket setsockopt: Operation not permitted; browser terminated before launch",
+    "mobileChrome": "NOT VERIFIED",
+    "browserExceptions": "NOT MEASURED",
+    "screenshots": "NOT CAPTURED",
+    "fps": "NOT MEASURED"
+  },
+  "resourceLimits": {
+    "activeMobs": 72,
+    "ordinaryMobs": 54,
+    "heroAndSquadProjectiles": 160,
+    "enemyProjectiles": 90,
+    "fishDrops": 180,
+    "rerollDrops": 16,
+    "powerups": 48,
+    "particles": 280,
+    "chunkCache": 64,
+    "actorCollisionPasses": 4,
+    "normalArrivalLedger": 512
+  },
+  "cadence": {
+    "recorded": 258,
+    "totalSpawned": 258,
+    "boundaryCrossings": [
+      {
+        "night": 2,
+        "before": 12.450000000000042,
+        "after": 13.850000000000062,
+        "gap": 1.40000000000002
+      },
+      {
+        "night": 3,
+        "before": 25.500000000000227,
+        "after": 27.05000000000025,
+        "gap": 1.550000000000022
+      },
+      {
+        "night": 4,
+        "before": 38.54999999999995,
+        "after": 40.199999999999854,
+        "gap": 1.6499999999999062
+      },
+      {
+        "night": 5,
+        "before": 50.399999999999274,
+        "after": 52.19999999999917,
+        "gap": 1.7999999999998977
+      },
+      {
+        "night": 6,
+        "before": 63.749999999998515,
+        "after": 65.69999999999841,
+        "gap": 1.9499999999998963
+      },
+      {
+        "night": 7,
+        "before": 77.79999999999772,
+        "after": 79.9999999999976,
+        "gap": 2.199999999999875
+      },
+      {
+        "night": 8,
+        "before": 89.39999999999706,
+        "after": 91.74999999999693,
+        "gap": 2.3499999999998664
+      },
+      {
+        "night": 9,
+        "before": 101.74999999999636,
+        "after": 104.29999999999622,
+        "gap": 2.549999999999855
+      },
+      {
+        "night": 10,
+        "before": 116.24999999999554,
+        "after": 118.5499999999954,
+        "gap": 2.2999999999998693
+      },
+      {
+        "night": 11,
+        "before": 129.79999999999526,
+        "after": 131.94999999999575,
+        "gap": 2.150000000000489
+      },
+      {
+        "night": 12,
+        "before": 141.14999999999785,
+        "after": 143.6499999999984,
+        "gap": 2.5000000000005684
+      },
+      {
+        "night": 13,
+        "before": 153.7500000000007,
+        "after": 156.15000000000126,
+        "gap": 2.4000000000005457
+      },
+      {
+        "night": 14,
+        "before": 168.250000000004,
+        "after": 171.3000000000047,
+        "gap": 3.0500000000006935
+      },
+      {
+        "night": 15,
+        "before": 181.25000000000696,
+        "after": 183.50000000000747,
+        "gap": 2.2500000000005116
+      },
+      {
+        "night": 16,
+        "before": 192.65000000000956,
+        "after": 195.30000000001016,
+        "gap": 2.6500000000006025
+      },
+      {
+        "night": 17,
+        "before": 204.85000000001233,
+        "after": 210.10000000001352,
+        "gap": 5.250000000001194
+      },
+      {
+        "night": 18,
+        "before": 210.10000000001352,
+        "after": 223.1500000000165,
+        "gap": 13.050000000002967
+      },
+      {
+        "night": 19,
+        "before": 231.6000000000184,
+        "after": 240.60000000002046,
+        "gap": 9.000000000002046
+      },
+      {
+        "night": 20,
+        "before": 244.50000000002134,
+        "after": 247.55000000002204,
+        "gap": 3.0500000000006935
+      },
+      {
+        "night": 21,
+        "before": 259.7000000000248,
+        "after": 262.8000000000255,
+        "gap": 3.100000000000705
+      },
+      {
+        "night": 22,
+        "before": 263.3500000000256,
+        "after": 273.20000000002784,
+        "gap": 9.85000000000224
+      },
+      {
+        "night": 23,
+        "before": 282.75000000003,
+        "after": 293.3000000000324,
+        "gap": 10.550000000002399
+      },
+      {
+        "night": 24,
+        "before": 296.3500000000331,
+        "after": 305.2000000000351,
+        "gap": 8.850000000002012
+      },
+      {
+        "night": 25,
+        "before": 311.6000000000366,
+        "after": 317.70000000003796,
+        "gap": 6.100000000001387
+      },
+      {
+        "night": 26,
+        "before": 323.80000000003935,
+        "after": 325.15000000003965,
+        "gap": 1.350000000000307
+      },
+      {
+        "night": 27,
+        "before": 335.60000000004203,
+        "after": 339.750000000043,
+        "gap": 4.150000000000944
+      },
+      {
+        "night": 28,
+        "before": 341.50000000004337,
+        "after": 353.70000000004615,
+        "gap": 12.200000000002774
+      },
+      {
+        "night": 29,
+        "before": 361.60000000004794,
+        "after": 365.9000000000489,
+        "gap": 4.300000000000978
+      },
+      {
+        "night": 30,
+        "before": 376.20000000005126,
+        "after": 383.5000000000529,
+        "gap": 7.30000000000166
+      },
+      {
+        "night": 31,
+        "before": 387.15000000005375,
+        "after": 390.8000000000546,
+        "gap": 3.65000000000083
+      },
+      {
+        "night": 32,
+        "before": 398.10000000005624,
+        "after": 404.0500000000576,
+        "gap": 5.950000000001353
+      },
+      {
+        "night": 33,
+        "before": 412.70000000005956,
+        "after": 416.3500000000604,
+        "gap": 3.65000000000083
+      },
+      {
+        "night": 34,
+        "before": 425.9500000000626,
+        "after": 440.900000000066,
+        "gap": 14.9500000000034
+      },
+      {
+        "night": 35,
+        "before": 440.900000000066,
+        "after": 451.30000000006834,
+        "gap": 10.400000000002365
+      },
+      {
+        "night": 36,
+        "before": 451.30000000006834,
+        "after": 457.4000000000697,
+        "gap": 6.100000000001387
+      },
+      {
+        "night": 37,
+        "before": 467.55000000007203,
+        "after": 469.6000000000725,
+        "gap": 2.050000000000466
+      },
+      {
+        "night": 38,
+        "before": 480.90000000007507,
+        "after": 486.50000000007634,
+        "gap": 5.600000000001273
+      },
+      {
+        "night": 39,
+        "before": 491.85000000007756,
+        "after": 495.4500000000784,
+        "gap": 3.6000000000008185
+      },
+      {
+        "night": 40,
+        "before": 506.2000000000808,
+        "after": 508.55000000008135,
+        "gap": 2.3500000000005343
+      },
+      {
+        "night": 41,
+        "before": 519.5000000000753,
+        "after": 524.5000000000707,
+        "gap": 4.9999999999954525
+      },
+      {
+        "night": 42,
+        "before": 530.3000000000654,
+        "after": 534.100000000062,
+        "gap": 3.799999999996544
+      },
+      {
+        "night": 43,
+        "before": 544.9000000000522,
+        "after": 546.3500000000508,
+        "gap": 1.4499999999986812
+      },
+      {
+        "night": 44,
+        "before": 554.1500000000437,
+        "after": 559.9000000000385,
+        "gap": 5.74999999999477
+      },
+      {
+        "night": 45,
+        "before": 561.8000000000368,
+        "after": 572.4000000000271,
+        "gap": 10.59999999999036
+      },
+      {
+        "night": 46,
+        "before": 582.450000000018,
+        "after": 585.5000000000152,
+        "gap": 3.049999999997226
+      },
+      {
+        "night": 47,
+        "before": 593.9500000000075,
+        "after": 598.950000000003,
+        "gap": 4.9999999999954525
+      },
+      {
+        "night": 48,
+        "before": 606.2499999999964,
+        "after": 613.5499999999897,
+        "gap": 7.299999999993361
+      }
+    ],
+    "firstArrivals": [
+      {
+        "timestamp": 0.05,
+        "id": 1,
+        "kind": "shambler",
+        "x": 2335.013566520065,
+        "y": 1094.4854368932038,
+        "playerX": 2100,
+        "playerY": 2100,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 1.4000000000000006,
+        "id": 2,
+        "kind": "shambler",
+        "x": 1583.8510280736518,
+        "y": 2407.028995460559,
+        "playerX": 2149.851028073652,
+        "playerY": 1873.8989719263482,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 2.7499999999999982,
+        "id": 3,
+        "kind": "shambler",
+        "x": 1902.9343966320885,
+        "y": 868.384408819552,
+        "playerX": 2149.851028073652,
+        "playerY": 1873.8989719263482,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 4.099999999999993,
+        "id": 4,
+        "kind": "shambler",
+        "x": 2805.2285982577814,
+        "y": 1289.2564348379265,
+        "playerX": 2239.2285982577814,
+        "playerY": 1998.5265421104777,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 5.449999999999989,
+        "id": 5,
+        "kind": "shambler",
+        "x": 2935.9041122946073,
+        "y": 2771.4472131675157,
+        "playerX": 2369.9041122946073,
+        "playerY": 2038.0530842209555,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 6.849999999999984,
+        "id": 6,
+        "kind": "shambler",
+        "x": 2996.0796263314332,
+        "y": 1499.642452909612,
+        "playerX": 2430.0796263314332,
+        "playerY": 2165.8775701841296,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 8.249999999999982,
+        "id": 7,
+        "kind": "shambler",
+        "x": 2632.3862590314748,
+        "y": 1270.9800164352173,
+        "playerX": 2413.4626169735493,
+        "playerY": 2276.4945795420135,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 9.650000000000002,
+        "id": 8,
+        "kind": "shambler",
+        "x": 2382.217820247817,
+        "y": 3435.5941894382295,
+        "playerX": 2330.3775701841296,
+        "playerY": 2430.0796263314332,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 11.050000000000022,
+        "id": 9,
+        "kind": "shambler",
+        "x": 2549.9752565358904,
+        "y": 3564.7577175118804,
+        "playerX": 2442.6765421104756,
+        "playerY": 2559.243154405084,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 12.450000000000042,
+        "id": 10,
+        "kind": "shambler",
+        "x": 2312.5782623325586,
+        "y": 1553.728591298288,
+        "playerX": 2645.364042110473,
+        "playerY": 2559.243154405084,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 1
+      },
+      {
+        "timestamp": 13.850000000000062,
+        "id": 11,
+        "kind": "shambler",
+        "x": 3280.565883252823,
+        "y": 1764.7632324860942,
+        "playerX": 2714.565883252823,
+        "playerY": 2530.5788132627335,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 15.250000000000082,
+        "id": 12,
+        "kind": "shambler",
+        "x": 3116.9760538883024,
+        "y": 3549.6058763695296,
+        "playerX": 2812.4320655375236,
+        "playerY": 2544.0913132627334,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 16.6500000000001,
+        "id": 13,
+        "kind": "shambler",
+        "x": 2315.6339066798737,
+        "y": 2057.030601237299,
+        "playerX": 2881.6339066798737,
+        "playerY": 2542.4519721203824,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 18.05000000000012,
+        "id": 14,
+        "kind": "shambler",
+        "x": 3207.451385234468,
+        "y": 3605.29521751188,
+        "playerX": 2979.5000889645744,
+        "playerY": 2599.7806544050836,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 19.500000000000142,
+        "id": 15,
+        "kind": "shambler",
+        "x": 3667.8670983224583,
+        "y": 2549.559863561261,
+        "playerX": 3101.8670983224583,
+        "playerY": 2616.3976637629676,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 21.000000000000163,
+        "id": 16,
+        "kind": "shambler",
+        "x": 2668.80317318553,
+        "y": 3230.5477531767724,
+        "playerX": 3234.80317318553,
+        "playerY": 2579.1316824787355,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 22.500000000000185,
+        "id": 17,
+        "kind": "shambler",
+        "x": 2677.111677864472,
+        "y": 3173.8216427079005,
+        "playerX": 3243.111677864472,
+        "playerY": 2396.5891590840256,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 24.000000000000206,
+        "id": 18,
+        "kind": "shambler",
+        "x": 3215.68902182678,
+        "y": 3153.093161364576,
+        "playerX": 3076.351117038226,
+        "playerY": 2147.57859825778,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 25.500000000000227,
+        "id": 19,
+        "kind": "shambler",
+        "x": 2161.3830796066904,
+        "y": 2827.205899008905,
+        "playerX": 2751.3830796066904,
+        "playerY": 2214.0466356893157,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 2
+      },
+      {
+        "timestamp": 27.05000000000025,
+        "id": 20,
+        "kind": "shambler",
+        "x": 1971.6225187804448,
+        "y": 1528.5269981819843,
+        "playerX": 2537.622518780445,
+        "playerY": 2251.5571965155614,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 28.650000000000272,
+        "id": 21,
+        "kind": "shambler",
+        "x": 2839.738056050283,
+        "y": 2179.5559886926803,
+        "playerX": 2273.738056050283,
+        "playerY": 2165.209892740068,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 30.300000000000296,
+        "id": 22,
+        "kind": "shambler",
+        "x": 2293.681997519452,
+        "y": 1147.822170775623,
+        "playerX": 2191.023714907933,
+        "playerY": 2153.336733882419,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 31.95000000000032,
+        "id": 23,
+        "kind": "shambler",
+        "x": 2501.644289576965,
+        "y": 2757.1126314810895,
+        "playerX": 1935.644289576965,
+        "playerY": 2272.630855405552,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 33.60000000000023,
+        "id": 24,
+        "kind": "shambler",
+        "x": 2453.8703876730474,
+        "y": 1201.521638571682,
+        "playerX": 1887.8703876730474,
+        "playerY": 1862.3378319785047,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 35.30000000000013,
+        "id": 25,
+        "kind": "shambler",
+        "x": 1319.552009196182,
+        "y": 2071.948352110237,
+        "playerX": 1885.552009196182,
+        "playerY": 1702.5062104553722,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 36.90000000000004,
+        "id": 26,
+        "kind": "shambler",
+        "x": 2002.634536967912,
+        "y": 598.8323296009359,
+        "playerX": 1832.1363269438234,
+        "playerY": 1604.346892707732,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 38.54999999999995,
+        "id": 27,
+        "kind": "shambler",
+        "x": 1800.2123634727695,
+        "y": 526.3163483167037,
+        "playerX": 1728.4023082280555,
+        "playerY": 1531.8309114234999,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 3
+      },
+      {
+        "timestamp": 40.199999999999854,
+        "id": 28,
+        "kind": "shambler",
+        "x": 1985.9357416636494,
+        "y": 451.539806206226,
+        "playerX": 1626.9288503385333,
+        "playerY": 1457.054369313022,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 4
+      },
+      {
+        "timestamp": 41.89999999999976,
+        "id": 29,
+        "kind": "weaver",
+        "x": 1784.1482775197592,
+        "y": 405.9653202430519,
+        "playerX": 1502.3012801544037,
+        "playerY": 1411.479883349848,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 4
+      },
+      {
+        "timestamp": 43.64999999999966,
+        "id": 30,
+        "kind": "shambler",
+        "x": 820.2895725699435,
+        "y": 1817.4801354765102,
+        "playerX": 1381.9502520807519,
+        "playerY": 1332.0809114234999,
+        "viewportWidth": 720,
+        "viewportHeight": 1599.0291262135922,
+        "night": 4
+      }
+    ]
+  },
+  "campaignChallenge": {
+    "mode": "cataclysm-1-0-major",
+    "solo": true,
+    "elapsed": 626.1499999999783,
+    "end": "dead",
+    "hp": 0,
+    "night": 49,
+    "level": 3,
+    "kills": 213,
+    "fish": 33,
+    "normalSpawns": 258,
+    "finalSpawned": 0,
+    "finalSlain": 0,
+    "arrivals": [],
+    "score": {
+      "total": 3483,
+      "components": {
+        "survival": 1695,
+        "kills": 1491,
+        "fish": 297,
+        "milestones": 0
+      },
+      "unrankedTotal": null,
+      "survivalPoints": 1695.3159999999943,
+      "weightedKills": 213,
+      "fish": 33,
+      "milestonePoints": 0,
+      "eligible": true,
+      "ruleVersion": "cataclysm-1.0-score-1",
+      "awarded": []
+    },
+    "caps": {
+      "maxEnemies": 64,
+      "maxShots": 3,
+      "maxEnemyShots": 83
+    },
+    "maxTickMs": 9.116158999997424,
+    "meanTickMs": 2.9293583293940153,
+    "exceptions": 0
+  },
+  "standardFinaleRuns": [
+    {
+      "mode": "cataclysm-100-lab",
+      "solo": true,
+      "elapsed": 239.19999999978245,
+      "end": "won",
+      "hp": 20.779999999999998,
+      "night": 100,
+      "level": 101,
+      "kills": 689,
+      "fish": 238,
+      "normalSpawns": 470,
+      "finalSpawned": 18,
+      "finalSlain": 18,
+      "arrivals": [
+        {
+          "timestamp": 1287.0499999999881,
+          "kind": "boss",
+          "majorId": "major-2",
+          "rosterId": "the-catastrophe",
+          "slainAt": 1349.4499999999314
+        },
+        {
+          "timestamp": 1296.04999999998,
+          "kind": "boss",
+          "majorId": "major-3",
+          "rosterId": "volt-hydra",
+          "slainAt": 1345.349999999935
+        },
+        {
+          "timestamp": 1305.0499999999718,
+          "kind": "boss",
+          "majorId": "major-4",
+          "rosterId": "echo-reaper",
+          "slainAt": 1374.5499999999086
+        },
+        {
+          "timestamp": 1314.0499999999636,
+          "kind": "boss",
+          "majorId": "major-5",
+          "rosterId": "venom-oracle",
+          "slainAt": 1362.3499999999196
+        },
+        {
+          "timestamp": 1323.0499999999554,
+          "kind": "boss",
+          "majorId": "major-6",
+          "rosterId": "rust-butcher",
+          "slainAt": 1385.049999999899
+        },
+        {
+          "timestamp": 1332.0499999999472,
+          "kind": "boss",
+          "majorId": "major-7",
+          "rosterId": "moth-queen",
+          "slainAt": 1366.1499999999162
+        },
+        {
+          "timestamp": 1341.049999999939,
+          "kind": "boss",
+          "majorId": "major-8",
+          "rosterId": "neon-siren",
+          "slainAt": 1403.0499999998826
+        },
+        {
+          "timestamp": 1350.0499999999308,
+          "kind": "boss",
+          "majorId": "major-9",
+          "rosterId": "iron-titan",
+          "slainAt": 1394.0999999998908
+        },
+        {
+          "timestamp": 1359.0499999999226,
+          "kind": "boss",
+          "majorId": "major-10",
+          "rosterId": "alley-king",
+          "slainAt": 1384.7499999998993
+        },
+        {
+          "timestamp": 1368.0499999999145,
+          "kind": "superElite",
+          "majorId": "major-11",
+          "rosterId": "void-harbinger",
+          "slainAt": 1507.9999999997872
+        },
+        {
+          "timestamp": 1377.0499999999063,
+          "kind": "superElite",
+          "majorId": "major-12",
+          "rosterId": "plague-empress",
+          "slainAt": 1498.7999999997955
+        },
+        {
+          "timestamp": 1386.049999999898,
+          "kind": "superElite",
+          "majorId": "major-13",
+          "rosterId": "dreadnought",
+          "slainAt": 1508.8499999997864
+        },
+        {
+          "timestamp": 1395.04999999989,
+          "kind": "elite",
+          "majorId": "major-14",
+          "rosterId": "storm-magus",
+          "slainAt": 1484.1499999998089
+        },
+        {
+          "timestamp": 1404.0499999998817,
+          "kind": "elite",
+          "majorId": "major-15",
+          "rosterId": "grave-herald",
+          "slainAt": 1482.6499999998102
+        },
+        {
+          "timestamp": 1413.0499999998735,
+          "kind": "elite",
+          "majorId": "major-16",
+          "rosterId": "pulse-drone",
+          "slainAt": 1485.5999999998076
+        },
+        {
+          "timestamp": 1422.0499999998653,
+          "kind": "elite",
+          "majorId": "major-17",
+          "rosterId": "watcher",
+          "slainAt": 1496.6999999997975
+        },
+        {
+          "timestamp": 1431.0499999998572,
+          "kind": "elite",
+          "majorId": "major-18",
+          "rosterId": "scrapper",
+          "slainAt": 1513.1999999997824
+        },
+        {
+          "timestamp": 1440.049999999849,
+          "kind": "elite",
+          "majorId": "major-19",
+          "rosterId": "jawbreaker",
+          "slainAt": 1512.599999999783
+        }
+      ],
+      "score": {
+        "total": 1000008152,
+        "components": {
+          "survival": 1188,
+          "kills": 4823,
+          "fish": 2142,
+          "milestones": 999999999
+        },
+        "unrankedTotal": null,
+        "survivalPoints": 1188.433999998917,
+        "weightedKills": 689,
+        "fish": 238,
+        "milestonePoints": 999999999,
+        "eligible": true,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "caps": {
+        "maxEnemies": 24,
+        "maxShots": 18,
+        "maxEnemyShots": 42
+      },
+      "maxTickMs": 5.055358999999953,
+      "meanTickMs": 0.889165769440606,
+      "exceptions": 0,
+      "arrivalIntervalRange": [
+        8.999999999991815,
+        8.999999999991815
+      ],
+      "majorsSlainBeforeNextArrival": 0,
+      "majorsSlainBeforeFullRoster": 9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "solo": false,
+      "elapsed": 188.64999999982842,
+      "end": "won",
+      "hp": 24.378668,
+      "night": 100,
+      "level": 101,
+      "kills": 606,
+      "fish": 248,
+      "normalSpawns": 390,
+      "finalSpawned": 18,
+      "finalSlain": 18,
+      "arrivals": [
+        {
+          "timestamp": 1287.0499999999881,
+          "kind": "boss",
+          "majorId": "major-2",
+          "rosterId": "the-catastrophe",
+          "slainAt": 1309.8499999999674
+        },
+        {
+          "timestamp": 1296.04999999998,
+          "kind": "boss",
+          "majorId": "major-3",
+          "rosterId": "volt-hydra",
+          "slainAt": 1351.2999999999297
+        },
+        {
+          "timestamp": 1305.0499999999718,
+          "kind": "boss",
+          "majorId": "major-4",
+          "rosterId": "echo-reaper",
+          "slainAt": 1351.4499999999296
+        },
+        {
+          "timestamp": 1314.0499999999636,
+          "kind": "boss",
+          "majorId": "major-5",
+          "rosterId": "venom-oracle",
+          "slainAt": 1363.149999999919
+        },
+        {
+          "timestamp": 1323.0499999999554,
+          "kind": "boss",
+          "majorId": "major-6",
+          "rosterId": "rust-butcher",
+          "slainAt": 1354.8499999999265
+        },
+        {
+          "timestamp": 1332.0499999999472,
+          "kind": "boss",
+          "majorId": "major-7",
+          "rosterId": "moth-queen",
+          "slainAt": 1365.5499999999167
+        },
+        {
+          "timestamp": 1341.049999999939,
+          "kind": "boss",
+          "majorId": "major-8",
+          "rosterId": "neon-siren",
+          "slainAt": 1372.99999999991
+        },
+        {
+          "timestamp": 1350.0499999999308,
+          "kind": "boss",
+          "majorId": "major-9",
+          "rosterId": "iron-titan",
+          "slainAt": 1381.2499999999025
+        },
+        {
+          "timestamp": 1359.0499999999226,
+          "kind": "boss",
+          "majorId": "major-10",
+          "rosterId": "alley-king",
+          "slainAt": 1381.0999999999026
+        },
+        {
+          "timestamp": 1368.0499999999145,
+          "kind": "superElite",
+          "majorId": "major-11",
+          "rosterId": "void-harbinger",
+          "slainAt": 1405.94999999988
+        },
+        {
+          "timestamp": 1377.0499999999063,
+          "kind": "superElite",
+          "majorId": "major-12",
+          "rosterId": "plague-empress",
+          "slainAt": 1421.0999999998662
+        },
+        {
+          "timestamp": 1386.049999999898,
+          "kind": "superElite",
+          "majorId": "major-13",
+          "rosterId": "dreadnought",
+          "slainAt": 1433.0999999998553
+        },
+        {
+          "timestamp": 1395.04999999989,
+          "kind": "elite",
+          "majorId": "major-14",
+          "rosterId": "storm-magus",
+          "slainAt": 1439.5499999998494
+        },
+        {
+          "timestamp": 1404.0499999998817,
+          "kind": "elite",
+          "majorId": "major-15",
+          "rosterId": "grave-herald",
+          "slainAt": 1413.4499999998732
+        },
+        {
+          "timestamp": 1413.0499999998735,
+          "kind": "elite",
+          "majorId": "major-16",
+          "rosterId": "pulse-drone",
+          "slainAt": 1432.4999999998558
+        },
+        {
+          "timestamp": 1422.0499999998653,
+          "kind": "elite",
+          "majorId": "major-17",
+          "rosterId": "watcher",
+          "slainAt": 1446.0499999998435
+        },
+        {
+          "timestamp": 1431.0499999998572,
+          "kind": "elite",
+          "majorId": "major-18",
+          "rosterId": "scrapper",
+          "slainAt": 1452.9999999998372
+        },
+        {
+          "timestamp": 1440.049999999849,
+          "kind": "elite",
+          "majorId": "major-19",
+          "rosterId": "jawbreaker",
+          "slainAt": 1462.6499999998284
+        }
+      ],
+      "score": {
+        "total": 1000007410,
+        "components": {
+          "survival": 937,
+          "kills": 4242,
+          "fish": 2232,
+          "milestones": 999999999
+        },
+        "unrankedTotal": null,
+        "survivalPoints": 937.2004999991863,
+        "weightedKills": 606,
+        "fish": 248,
+        "milestonePoints": 999999999,
+        "eligible": true,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "caps": {
+        "maxEnemies": 19,
+        "maxShots": 36,
+        "maxEnemyShots": 38
+      },
+      "maxTickMs": 4.56484800000004,
+      "meanTickMs": 1.066130494037544,
+      "exceptions": 0,
+      "arrivalIntervalRange": [
+        8.999999999991815,
+        8.999999999991815
+      ],
+      "majorsSlainBeforeNextArrival": 0,
+      "majorsSlainBeforeFullRoster": 15
+    }
+  ],
+  "weakBotRuns": [
+    {
+      "mode": "cataclysm-1-0-major",
+      "solo": false,
+      "query": "",
+      "bot": true,
+      "elapsed": 63.64999999999852,
+      "modeEnd": "dead",
+      "hp": 0,
+      "minHP": 0,
+      "kills": 17,
+      "level": 0,
+      "finalSpawned": 0,
+      "slain": 0,
+      "normalSpawns": 41,
+      "maxEnemies": 25,
+      "maxShots": 2,
+      "maxEnemyShots": 5,
+      "maxTickMs": 3.893019000000095,
+      "score": {
+        "total": 250,
+        "components": {
+          "survival": 131,
+          "kills": 119,
+          "fish": 0,
+          "milestones": 0
+        },
+        "unrankedTotal": null,
+        "survivalPoints": 131.03799999999526,
+        "weightedKills": 17,
+        "fish": 0,
+        "milestonePoints": 0,
+        "eligible": true,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "storedKeys": [
+        "cataclysm-major-encounters",
+        "cataclysm-runs",
+        "cataclysm-best",
+        "cataclysm-best-breakdown"
+      ],
+      "exceptions": 0,
+      "arrivals": []
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "solo": true,
+      "query": "",
+      "bot": true,
+      "elapsed": 66.54999999993947,
+      "modeEnd": "dead",
+      "hp": 0,
+      "minHP": 0,
+      "kills": 152,
+      "level": 100,
+      "finalSpawned": 6,
+      "slain": 3,
+      "normalSpawns": 91,
+      "maxEnemies": 13,
+      "maxShots": 15,
+      "maxEnemyShots": 20,
+      "maxTickMs": 2.6269640000000436,
+      "score": {
+        "total": 2105,
+        "components": {
+          "survival": 330,
+          "kills": 1064,
+          "fish": 711,
+          "milestones": 0
+        },
+        "unrankedTotal": null,
+        "survivalPoints": 330.36349999969644,
+        "weightedKills": 152,
+        "fish": 79,
+        "milestonePoints": 0,
+        "eligible": true,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "storedKeys": [
+        "cataclysm-lab-encounters",
+        "cataclysm-lab-best",
+        "cataclysm-lab-best-breakdown"
+      ],
+      "exceptions": 0,
+      "arrivals": [
+        {
+          "timestamp": 1287.0499999999881,
+          "kind": "boss",
+          "majorId": "major-2",
+          "rosterId": "the-catastrophe",
+          "slainAt": 1325.3999999999533
+        },
+        {
+          "timestamp": 1296.04999999998,
+          "kind": "boss",
+          "majorId": "major-3",
+          "rosterId": "volt-hydra",
+          "slainAt": 1316.3499999999615
+        },
+        {
+          "timestamp": 1305.0499999999718,
+          "kind": "boss",
+          "majorId": "major-4",
+          "rosterId": "echo-reaper",
+          "slainAt": 1326.1999999999525
+        },
+        {
+          "timestamp": 1314.0499999999636,
+          "kind": "boss",
+          "majorId": "major-5",
+          "rosterId": "venom-oracle"
+        },
+        {
+          "timestamp": 1323.0499999999554,
+          "kind": "boss",
+          "majorId": "major-6",
+          "rosterId": "rust-butcher"
+        },
+        {
+          "timestamp": 1332.0499999999472,
+          "kind": "boss",
+          "majorId": "major-7",
+          "rosterId": "moth-queen"
+        }
+      ]
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "solo": false,
+      "query": "",
+      "bot": true,
+      "elapsed": 163.4999999998513,
+      "modeEnd": "dead",
+      "hp": 0,
+      "minHP": 0,
+      "kills": 414,
+      "level": 101,
+      "finalSpawned": 17,
+      "slain": 16,
+      "normalSpawns": 212,
+      "maxEnemies": 10,
+      "maxShots": 34,
+      "maxEnemyShots": 15,
+      "maxTickMs": 4.6197980000001735,
+      "score": {
+        "total": 5951,
+        "components": {
+          "survival": 812,
+          "kills": 2898,
+          "fish": 2241,
+          "milestones": 0
+        },
+        "unrankedTotal": null,
+        "survivalPoints": 812.2049999992828,
+        "weightedKills": 414,
+        "fish": 249,
+        "milestonePoints": 0,
+        "eligible": true,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "storedKeys": [
+        "cataclysm-lab-encounters",
+        "cataclysm-lab-best",
+        "cataclysm-lab-best-breakdown"
+      ],
+      "exceptions": 0,
+      "arrivals": [
+        {
+          "timestamp": 1287.0499999999881,
+          "kind": "boss",
+          "majorId": "major-2",
+          "rosterId": "the-catastrophe",
+          "slainAt": 1298.6499999999776
+        },
+        {
+          "timestamp": 1296.04999999998,
+          "kind": "boss",
+          "majorId": "major-3",
+          "rosterId": "volt-hydra",
+          "slainAt": 1307.5999999999694
+        },
+        {
+          "timestamp": 1305.0499999999718,
+          "kind": "boss",
+          "majorId": "major-4",
+          "rosterId": "echo-reaper",
+          "slainAt": 1316.949999999961
+        },
+        {
+          "timestamp": 1314.0499999999636,
+          "kind": "boss",
+          "majorId": "major-5",
+          "rosterId": "venom-oracle",
+          "slainAt": 1326.0499999999527
+        },
+        {
+          "timestamp": 1323.0499999999554,
+          "kind": "boss",
+          "majorId": "major-6",
+          "rosterId": "rust-butcher",
+          "slainAt": 1331.5999999999476
+        },
+        {
+          "timestamp": 1332.0499999999472,
+          "kind": "boss",
+          "majorId": "major-7",
+          "rosterId": "moth-queen",
+          "slainAt": 1343.0999999999372
+        },
+        {
+          "timestamp": 1341.049999999939,
+          "kind": "boss",
+          "majorId": "major-8",
+          "rosterId": "neon-siren",
+          "slainAt": 1348.799999999932
+        },
+        {
+          "timestamp": 1350.0499999999308,
+          "kind": "boss",
+          "majorId": "major-9",
+          "rosterId": "iron-titan",
+          "slainAt": 1356.7999999999247
+        },
+        {
+          "timestamp": 1359.0499999999226,
+          "kind": "boss",
+          "majorId": "major-10",
+          "rosterId": "alley-king",
+          "slainAt": 1366.5499999999158
+        },
+        {
+          "timestamp": 1368.0499999999145,
+          "kind": "superElite",
+          "majorId": "major-11",
+          "rosterId": "void-harbinger",
+          "slainAt": 1375.4499999999077
+        },
+        {
+          "timestamp": 1377.0499999999063,
+          "kind": "superElite",
+          "majorId": "major-12",
+          "rosterId": "plague-empress",
+          "slainAt": 1385.8499999998983
+        },
+        {
+          "timestamp": 1386.049999999898,
+          "kind": "superElite",
+          "majorId": "major-13",
+          "rosterId": "dreadnought",
+          "slainAt": 1398.8999999998864
+        },
+        {
+          "timestamp": 1395.04999999989,
+          "kind": "elite",
+          "majorId": "major-14",
+          "rosterId": "storm-magus",
+          "slainAt": 1419.5999999998676
+        },
+        {
+          "timestamp": 1404.0499999998817,
+          "kind": "elite",
+          "majorId": "major-15",
+          "rosterId": "grave-herald",
+          "slainAt": 1412.1999999998743
+        },
+        {
+          "timestamp": 1413.0499999998735,
+          "kind": "elite",
+          "majorId": "major-16",
+          "rosterId": "pulse-drone",
+          "slainAt": 1421.249999999866
+        },
+        {
+          "timestamp": 1422.0499999998653,
+          "kind": "elite",
+          "majorId": "major-17",
+          "rosterId": "watcher",
+          "slainAt": 1426.749999999861
+        },
+        {
+          "timestamp": 1431.0499999998572,
+          "kind": "elite",
+          "majorId": "major-18",
+          "rosterId": "scrapper"
+        }
+      ]
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "solo": false,
+      "query": "&qaNight100&qaSpawnScale=30",
+      "bot": true,
+      "elapsed": 55.04999999994993,
+      "modeEnd": "won",
+      "hp": 10.621894199999979,
+      "minHP": 10.621894199999979,
+      "kills": 271,
+      "level": 100,
+      "finalSpawned": 18,
+      "slain": 18,
+      "normalSpawns": 77,
+      "maxEnemies": 31,
+      "maxShots": 34,
+      "maxEnemyShots": 75,
+      "maxTickMs": 4.5031019999996715,
+      "score": {
+        "total": 0,
+        "components": {
+          "survival": 273,
+          "kills": 1897,
+          "fish": 1296,
+          "milestones": 0
+        },
+        "unrankedTotal": 3466,
+        "survivalPoints": 273.5984999997537,
+        "weightedKills": 271,
+        "fish": 144,
+        "milestonePoints": 0,
+        "eligible": false,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "storedKeys": [
+        "cataclysm-lab-encounters"
+      ],
+      "exceptions": 0,
+      "arrivals": [
+        {
+          "timestamp": 1287,
+          "kind": "boss",
+          "majorId": "major-1",
+          "rosterId": "the-catastrophe",
+          "slainAt": 1318.5499999999713
+        },
+        {
+          "timestamp": 1287.2999999999997,
+          "kind": "boss",
+          "majorId": "major-2",
+          "rosterId": "volt-hydra",
+          "slainAt": 1315.649999999974
+        },
+        {
+          "timestamp": 1287.5999999999995,
+          "kind": "boss",
+          "majorId": "major-3",
+          "rosterId": "echo-reaper",
+          "slainAt": 1323.299999999967
+        },
+        {
+          "timestamp": 1287.8999999999992,
+          "kind": "boss",
+          "majorId": "major-4",
+          "rosterId": "venom-oracle",
+          "slainAt": 1306.799999999982
+        },
+        {
+          "timestamp": 1288.199999999999,
+          "kind": "boss",
+          "majorId": "major-5",
+          "rosterId": "rust-butcher",
+          "slainAt": 1308.99999999998
+        },
+        {
+          "timestamp": 1288.4999999999986,
+          "kind": "boss",
+          "majorId": "major-6",
+          "rosterId": "moth-queen",
+          "slainAt": 1305.0999999999835
+        },
+        {
+          "timestamp": 1288.7999999999984,
+          "kind": "boss",
+          "majorId": "major-7",
+          "rosterId": "neon-siren",
+          "slainAt": 1318.3999999999714
+        },
+        {
+          "timestamp": 1289.099999999998,
+          "kind": "boss",
+          "majorId": "major-8",
+          "rosterId": "iron-titan",
+          "slainAt": 1297.5499999999904
+        },
+        {
+          "timestamp": 1289.3999999999978,
+          "kind": "boss",
+          "majorId": "major-9",
+          "rosterId": "alley-king",
+          "slainAt": 1311.299999999978
+        },
+        {
+          "timestamp": 1289.6999999999975,
+          "kind": "superElite",
+          "majorId": "major-10",
+          "rosterId": "void-harbinger",
+          "slainAt": 1312.7499999999766
+        },
+        {
+          "timestamp": 1289.9999999999973,
+          "kind": "superElite",
+          "majorId": "major-11",
+          "rosterId": "plague-empress",
+          "slainAt": 1342.04999999995
+        },
+        {
+          "timestamp": 1290.299999999997,
+          "kind": "superElite",
+          "majorId": "major-12",
+          "rosterId": "dreadnought",
+          "slainAt": 1313.349999999976
+        },
+        {
+          "timestamp": 1290.5999999999967,
+          "kind": "elite",
+          "majorId": "major-13",
+          "rosterId": "storm-magus",
+          "slainAt": 1314.449999999975
+        },
+        {
+          "timestamp": 1290.8999999999965,
+          "kind": "elite",
+          "majorId": "major-14",
+          "rosterId": "grave-herald",
+          "slainAt": 1303.2999999999852
+        },
+        {
+          "timestamp": 1291.1999999999962,
+          "kind": "elite",
+          "majorId": "major-15",
+          "rosterId": "pulse-drone",
+          "slainAt": 1341.0999999999508
+        },
+        {
+          "timestamp": 1291.499999999996,
+          "kind": "elite",
+          "majorId": "major-16",
+          "rosterId": "watcher",
+          "slainAt": 1304.9999999999836
+        },
+        {
+          "timestamp": 1291.7999999999956,
+          "kind": "elite",
+          "majorId": "major-17",
+          "rosterId": "scrapper",
+          "slainAt": 1314.3499999999751
+        },
+        {
+          "timestamp": 1292.0999999999954,
+          "kind": "elite",
+          "majorId": "major-18",
+          "rosterId": "jawbreaker",
+          "slainAt": 1311.6999999999775
+        }
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "cataclysm-1-0-major/game.js": "9f67b157aac3bba01266230468377bf6373b5f3873cdacee02df68064ea6b95e",
+    "cataclysm-1-0-major/director.js": "df26c569277f6143f52bcfe6c8d49dfe823609501913d92ff2b3d1e14e974f54",
+    "cataclysm-100-lab/game.js": "16f7b1641831820a7b29b184658f6a3bb18a6ea6c54d537e9f7e01b24652ecf0",
+    "cataclysm-100-lab/director.js": "df26c569277f6143f52bcfe6c8d49dfe823609501913d92ff2b3d1e14e974f54"
+  }
+}

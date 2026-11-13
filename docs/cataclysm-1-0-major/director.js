@@ -1,8 +1,16 @@
-/* Cataclysm full-campaign monster economy; no gameplay/browser dependencies.
-   Nights 1-99 spend and reserve credits. Night 100 is a fixed cinematic roster. */
+/* Pure milestone/event planner and continuous ordinary spawn pacing.
+   Historical credit plans remain bookkeeping only; live normal releases use normalSpawnInterval. */
 (function(root){
 'use strict';
-const NIGHT_SECONDS=13,FINAL_NIGHT=100;
+const NIGHT_SECONDS=13,FINAL_NIGHT=100,FINAL_INTERVAL_SECONDS=9;
+// Seconds between individual releases; no credits accumulate at a night boundary.
+function normalSpawnInterval({elapsed=0,alive=0,cap=54,hpFraction=1,killRate=0}={}){
+ const finite=(v,f)=>Number.isFinite(v)?v:f;
+ const t=Math.max(0,finite(elapsed,0)),density=Math.max(0,finite(alive,0))/Math.max(1,finite(cap,54));
+ const pressure=1+1.6*(1-Math.exp(-t/600));
+ const recovery=1+1.4*Math.max(0,1-Math.min(1,finite(hpFraction,1)));
+ return Math.max(.32,Math.min(3,1.35/pressure*recovery*(1+3*density*density)/(1+Math.min(2,Math.max(0,finite(killRate,0)))*.18)));
+}
 const NORMAL=Object.freeze([
  {id:'shambler',cost:1,rank:1,role:'melee'},
  {id:'dasher',cost:2,rank:2,role:'melee'},
@@ -39,7 +47,7 @@ function create(seed=990100){
   if(n===100){
    lastNight=100;
    return Object.freeze({night:100,income:0,reserved:0,released:0,bankAfter:bank,budget:0,spent:0,unspent:0,
-    isPeak:true,isSurprise:false,rank:11,interval:.9,scripted:true,queue:FINAL_HORDE,
+    isPeak:true,isSurprise:false,rank:11,interval:FINAL_INTERVAL_SECONDS,scripted:true,queue:FINAL_HORDE,
     counts:Object.freeze({boss:9,superElite:3,elite:6})});
   }
   const income=budgetForNight(n),peak=isPeak(n),reserved=Math.floor(income*reserveShare(n));
@@ -83,7 +91,7 @@ function create(seed=990100){
  return Object.freeze({plan,primeTo,snapshot});
 }
 const API=Object.freeze({create,normal:NORMAL,costs:COSTS,priceFor,healthScale,finalHorde:FINAL_HORDE,
- rankOf,isPeak,reserveShare,budgetForNight,SURPRISE_NIGHTS,NIGHT_SECONDS,FINAL_NIGHT});
+ FINAL_INTERVAL_SECONDS,normalSpawnInterval,rankOf,isPeak,reserveShare,budgetForNight,SURPRISE_NIGHTS,NIGHT_SECONDS,FINAL_NIGHT});
 root.CATA_LAB_DIRECTOR=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -18,7 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-painted42-cachefix-01';
+const assetRelease='cataclysm-10-balance-43338706087';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
@@ -63,7 +63,7 @@ function loadReferenceAnimations(){
     if(!info||!Number.isInteger(info.frames)||info.frames<2||info.frames>16||
       !Number.isFinite(info.fps)||info.fps<2||info.fps>30)continue;
     const key=id+'-'+state,entry={image:null,ready:false,count:info.frames,fps:info.fps,
-      embeddedWeapon:info.embedded_weapon!==false,scale:Math.min(1.35,Math.max(.75,Number(info.scale)||1))};
+      aim:info.aim||null,embeddedWeapon:info.embedded_weapon!==false,scale:Math.min(1.35,Math.max(.75,Number(info.scale)||1))};
     overrides[key]=entry;overrideMetrics.total++;
     const img=new root.Image();entry.image=img;
     let settled=false;
@@ -134,31 +134,57 @@ function poly(ctx,pts,fill,stroke='#091c27',sw=2){
 function oval(ctx,x,y,rx,ry,color){
   ctx.beginPath();ctx.ellipse(x,y,Math.max(1,rx),Math.max(1,ry),0,0,TWO);ctx.fillStyle=color;ctx.fill();
 }
-function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
+// Compass sheets are E, SE, S, SW, W, NW, N, NE; never time-cycled.
+function aimFrame(angle){return ((Math.round((Number.isFinite(angle)?angle:0)/(Math.PI/4))%8)+8)%8;}
+function actionDuration(id,state){const a=overrides[id+'-'+state];return a?.ready?a.count/a.fps:8/12;}
+function heroBarrels(angle,r=27){
+ const a=overrides['hero-aim'],f=aimFrame(angle),bearing=f*Math.PI/4;
+ const authored=a?.aim?.barrels?.[f];
+ return (authored||[-1,1].map(side=>[48+Math.cos(bearing)*31-Math.sin(bearing)*side*8,58+Math.sin(bearing)*31+Math.cos(bearing)*side*8]))
+  .map(([x,y])=>({x:(x-48)*r/23,y:(y-58)*r/23}));
+}
+function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false){
   if(!PALETTES[id])id='shambler';
-  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:
-    (state!=='run'&&overrides[id+'-run']?.ready?overrides[id+'-run']:null);
+  const requested=state;
+  // Missing action art holds this actor's idle/first painted pose, never a fake run cycle.
+  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
   const count=override?override.count:frameCount(id,state);
   const fps=override?override.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
-  const frame=reduced?0:Math.floor(Math.max(0,time)*fps)%count;
-  const sheet=override||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-run'];
+  const action=['attack','special','hit'].includes(state);
+  const frame=state==='aim'?aimFrame(aim):reduced&&!action?0:action?Math.min(count-1,Math.floor(Math.max(0,time)*fps)):Math.floor(Math.max(0,time)*fps)%count;
+  const sheet=override||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-idle']||atlases[id+'-run'];
+  const directional=id==='hero'&&overrides['hero-aim']?.ready&&state!=='hit';
+  if(directional){
+    const top=overrides['hero-aim'],f=aimFrame(aim),unit=r/23;
+    // Upper body includes the painted face, scarf, forearms and BOTH pistols.
+    // Keep the original moving feet below the authored waist seam (source y=70).
+    const seam=top.aim?.split_y||70;
+    ctx.save();ctx.scale(unit,unit);
+    const lower=atlases['hero-'+(['feral','adrenaline'].includes(state)?state:moving||state==='run'||state==='walk'?'run':'idle')];
+    if(lower?.ready){const lf=reduced?0:Math.floor(time*24)%lower.count;ctx.drawImage(lower.image,lf*96,seam,96,96-seam,-48,seam-58,96,96-seam);}
+    ctx.drawImage(top.image,f*96,0,96,seam,-48,-58,96,seam);
+    ctx.restore();
+    if(['feral','adrenaline'].includes(state)){ctx.save();ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,r, r*1.15,r*.25,0,0,TWO);ctx.stroke();ctx.restore();}
+    return f;
+  }
   if(sheet&&sheet.ready){
     // Atlas feet sit at y=82; entity origin at (48,58), matching the fallback footprint.
     const unit=r/23*(override?override.scale:1),recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
     ctx.save();ctx.scale(unit,unit);
-    ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);
+    ctx.drawImage(sheet.image,(override||id==='hero'||state==='run'?frame%sheet.count:0)*96,0,96,96,-48,-58,96,96);
     if(damaged){
       // Repaint only the sprite silhouette with a bright exposure; transparency remains intact.
       ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
-      ctx.drawImage(sheet.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
+      ctx.drawImage(sheet.image,(override||id==='hero'||state==='run'?frame%sheet.count:0)*96,0,96,96,-48,-58,96,96);ctx.restore();
     }
-    if((!override||!override.embeddedWeapon)&&(id==='hero'||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
+    // Hero atlases contain both pistols attached to their animated hands.
+    if(id!=='hero'&&(!override||!override.embeddedWeapon)&&(id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
     if(state==='feral'||state==='adrenaline'){
       ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=1.5;ctx.globalAlpha=.65;
       ctx.beginPath();ctx.ellipse(0,24,26,6,0,0,TWO);ctx.stroke();
       if(!reduced)for(let k=0;k<3;k++)rect(ctx,-34-k*4,-8+k*12,7+Math.sin(time*9+k)*3,1,ctx.strokeStyle);
     }
-    if(state==='attack'&&!reduced&&recoil>.15){
+    if(id!=='hero'&&state==='attack'&&!reduced&&recoil>.15){
       ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
       poly(ctx,[[29,0],[35,-5],[34,-1],[43,0],[34,2],[36,5]],'#ffe8a2',null);ctx.restore();
     }
@@ -250,7 +276,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false){
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,assetVersion:assetRelease,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,aimFrame,heroBarrels,actionDuration,assetVersion:assetRelease,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
