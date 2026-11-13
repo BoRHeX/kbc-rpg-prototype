@@ -29,16 +29,21 @@ module.exports.prove=async(page,job,out)=>{
  await open(job.play_url_path);
  await page.screenshot({path:path.join(out,'actual-game.png')});
  await page.keyboard.down('w');
- await page.waitForTimeout(220);
- const first=await page.evaluate(()=>__ACTUAL_HERO_IK());
- await page.waitForTimeout(380);
- const second=await page.evaluate(()=>__ACTUAL_HERO_IK());
+ const samples=[];
+ for(let frame=0;frame<9;frame++){
+   await page.waitForTimeout(73);
+   samples.push(await page.evaluate(()=>__ACTUAL_HERO_IK()));
+ }
  await page.keyboard.up('w');
- assert.ok(first.pose&&second.pose&&second.pose.moving,'Actual player WASD motion MUST advance rig');
+ assert.ok(samples.some(x=>x.pose?.moving),'Actual player WASD motion MUST drive rig');
+ // Sampling only twice can accidentally compare the same phase one gait
+ // period later. Cover a whole stride and inspect BOTH knees and ankles.
  for(const joint of ['ankle','knee']){
-  assert.ok(first.pose.legs.some((leg,i)=>
-    Math.hypot(leg[joint].x-second.pose.legs[i][joint].x,leg[joint].y-second.pose.legs[i][joint].y)>1),
-    'Frozen '+joint+' positions in real game WASD');
+   for(let foot=0;foot<2;foot++){
+     const positions=samples.filter(x=>x.pose?.legs?.[foot]).map(x=>x.pose.legs[foot][joint]);
+     const distance=Math.max(...positions.flatMap(a=>positions.map(b=>Math.hypot(a.x-b.x,a.y-b.y))));
+     assert.ok(distance>2.5,'Real '+joint+' '+foot+' remains effectively frozen across nine WASD samples: '+distance);
+   }
  }
  const pictures=await page.evaluate(job=>{
   const ART=CATA_ART,K=CATA_HERO_KINEMATICS;
@@ -96,7 +101,7 @@ module.exports.prove=async(page,job,out)=>{
  }
  fs.writeFileSync(path.join(out,'animation-contact.png'),Buffer.from(pictures.contact,'base64'));
  fs.writeFileSync(path.join(out,'motion-render.png'),Buffer.from(pictures.contact,'base64'));
- fs.writeFileSync(path.join(out,'runtime-parts.json'),JSON.stringify({first,second,calls:pictures.calls},null,2));
+ fs.writeFileSync(path.join(out,'runtime-parts.json'),JSON.stringify({samples,calls:pictures.calls},null,2));
  await open('cataclysm-100-lab');
  const lab=await page.evaluate(()=>__ACTUAL_HERO_IK());
  assert.equal(lab.family,job.family);
