@@ -20,16 +20,22 @@ elif new not in src:
 campaign.write_text(src)
 
 src=lab.read_text()
-old="g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;"
-replacement="""g.labWave=wave;g.labQueue=wave.queue.map(x=>({...x}));g.labNextSpawn=g.t;
-    // Isolated QA Night100 scenario: ONE boss, not an 18-enemy horde.
-    // The full campaign and its director's original roster are unchanged.
-    if(n===100&&new URLSearchParams(location.search).has('qaNight100'))
-      g.labQueue=g.labQueue.filter(item=>item.id==='boss').slice(0,1);"""
-if old in src:
-    assert src.count(old)==1, "ambiguous final-encounter init"
-    src=src.replace(old,replacement,1)
-elif replacement not in src:
-    raise RuntimeError("Night 100 QA spawn initialization is unrecognized")
+# Apply the QA-only override at the moment the night-100 lab actually releases
+# an encounter. This works even if the development team changed queue setup.
+marker="function releaseLabSpawn(){"
+injection="""function releaseLabSpawn(){
+    if(game && game.campaign.night===100 &&
+       new URLSearchParams(location.search).has('qaNight100') &&
+       game.labFinalSpawned===0 && game.labQueue?.length>1){
+      // The QA scenario gets ONE boss. This does not touch the full campaign.
+      game.labQueue=game.labQueue.filter(item=>item.id==='boss').slice(0,1);
+      game.labFinalTotal=game.labQueue.length;
+    }
+"""
+if marker in src:
+    assert src.count(marker)==1, "ambiguous lab spawn function"
+    src=src.replace(marker,injection,1)
+elif injection not in src:
+    raise RuntimeError("Night 100 QA spawn function is unrecognized")
 lab.write_text(src)
-print("PASS recovered Cataclysm campaign starts at level 1; test Night100 summons one boss; art preserved")
+print("PASS recovered Cataclysm campaign level 1 and QA-only single boss; painted art preserved")
