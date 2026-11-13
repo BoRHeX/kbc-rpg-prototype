@@ -1,33 +1,77 @@
 {
-  "request_id": "cataclysm-1.0-hero-isolated-correction-04",
+  "request_id": "cataclysm-1.0-hero-kinetic-canon-20261113",
   "game": "cataclysm",
   "character": "hero",
-  "reference": "docs/cataclysm-1-0-major/art/hero-idle.png",
+  "atlas_layout": "directional-grid",
+  "family": "hero-articulated-v2",
+  "reference": "docs/cataclysm-1-0-major/art/characters/hero/aim.png",
   "source_dir": "docs/cataclysm-1-0-major",
   "mirror_dir": "docs/cataclysm-100-lab",
   "play_url_path": "cataclysm-1-0-major",
+  "bearings": 8,
   "frames_per_state": 24,
   "frame_size": 96,
   "states": [
     "idle",
+    "walk",
     "run",
+    "sprint",
+    "overdrive",
+    "shield-idle",
+    "shield-run",
     "hit",
+    "recover",
+    "attack",
+    "run-fire",
     "feral",
-    "adrenaline",
-    "attack"
+    "adrenaline"
   ],
-  "visual_direction": "Cataclysm 1.0 CHARACTER-ONLY VISUAL UPGRADE. Preserve white cat identity, coral scarf, dual hand-held pistols and existing gameplay. Replace the visually two-pose mirrored walking cycle with a genuine fluid 24-pose run, including distinct contact/down/passing/up phases, alternating planted feet and knee bend, identifiable overlapping arm/pistol actions, weight transfer, natural head counter-motion, tail and scarf follow-through. Run must have >=8 non-mirrored silhouette families. Attack has anticipation, alternating recoil, muzzle flashes and recovery, not a static shooting pose. Idle breath/blink/tail, hit recoil/stagger/recover, feral aggressive silhouette and adrenaline fast run-and-gun need visibly different pose choreography, NOT merely recolors or phase shifts. At native mobile game size visually compelling, high-contrast, legible, polished intentional game pixel-art with real volumes and shading. Draw 24 meaningfully interpolated frames per state without repeating two flips or palette-only effects; retain version 1.0. PRIOR ATTEMPT WAS REJECTED by real visual QA: only 2-3 perceived mirrored poses even though alpha silhouette hashes counted 24; fix actual recognizably distinct full-body key poses, recoil and anatomical joints. The AI art director must approve the final playable result or no release. Production CI now uses separate secured GitHub runners for each of up to three candidate art passes; preserve visual QA score >=4 in every category and keep Cataclysm 1.0 unchanged until approval.",
+  "state_frames": {
+    "idle": 16,
+    "walk": 24,
+    "run": 24,
+    "sprint": 24,
+    "overdrive": 24,
+    "shield-idle": 16,
+    "shield-run": 24,
+    "hit": 12,
+    "recover": 12,
+    "attack": 16,
+    "run-fire": 24,
+    "feral": 24,
+    "adrenaline": 24
+  },
+  "fps": {
+    "idle": 8,
+    "walk": 12,
+    "run": 16,
+    "sprint": 19,
+    "overdrive": 23,
+    "shield-idle": 8,
+    "shield-run": 16,
+    "hit": 16,
+    "recover": 12,
+    "attack": 16,
+    "run-fire": 16,
+    "feral": 20,
+    "adrenaline": 23
+  },
+  "visual_direction": "99% MAIN PROTAGONIST. The creator likes the existing WHITE CAT'S FACE, scarf, pistols and 8-way UPPER BODY AIM, but the legs literally don't move in the current game. Stop generating disconnected hero-run PNGs that the renderer ignores. Implement a new canonical character family hero-articulated-v2 in actor-packs.json, and ACTUALLY SELECT its 13 states from real game movement and buffs. Walk: realistic foot planting. Run: strong alternating stride, knee bending and foot lift. Sprint: extended footfalls, not the same walking frame at faster FPS. Overdrive: explosive pace, readable feet. Shield idle/run: distinct grounded protective stance with running feet. Hurt/stagger recovery, idle breathing/blink, dual-pistol attack and run-fire, feral and adrenaline fully moving with eight independent aim bearings. Proper anatomical silhouette at 48px actual phone size, foot contact visibly changes relative to the torso; no mirrored two-poses, no full-body bounces pretending to run, no duplicate layers, no static legs hiding behind moving guns. The artist chooses the creative motion choreography and full-body rig; preserve character identity, approved upper aim and game mechanics. Independent reviewer must score LEG MOTION at least 4/5 specifically. The existing Department can perform up to three autonomous art reviews/corrections. Keep version 1.0, Night1 main and Night99 lab, score, XP, controls, squad, enemies, assets and UI.",
   "minimum_visual_score": 4,
-  "allowed_generator": "hero_generate.py",
+  "allowed_generator": "generate.py",
   "publish": true,
-  "browser_adapter": "game_factory/art_department/adapters/cataclysm.cjs",
+  "browser_adapter": "game_factory/art_department/adapters/cataclysm_directional.cjs",
   "unit_tests": [
     "game_factory/cataclysm_next/tests/art-integration.cjs",
     "game_factory/cataclysm_next/tests/major-systems.cjs",
-    "game_factory/cataclysm_next/tests/spawn-economy.cjs"
+    "game_factory/cataclysm_next/tests/spawn-economy.cjs",
+    "game_factory/cataclysm_next/tests/visuals-scroll.cjs",
+    "game_factory/cataclysm_finish_score_contract.cjs"
   ],
   "browser_tests": [
     "game_factory/cataclysm_next/tests/browser-art.cjs",
-    "game_factory/cataclysm_next/tests/browser-major.cjs"
+    "game_factory/cataclysm_next/tests/browser-major.cjs",
+    "game_factory/cataclysm_next/tests/browser-clean-character-pack.cjs",
+    "game_factory/cataclysm_next/tests/browser-tuning.cjs"
   ]
 }
