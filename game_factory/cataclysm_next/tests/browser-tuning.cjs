@@ -59,7 +59,7 @@ const {chromium}=require('playwright');
     const record=(id,state,t)=>{frames.call=[];CATA_ART.draw(c,id,18,t,state,0,false,false,true);return [...frames.call];};
     return {enemyA:record('shambler','run',.13),enemyB:record('shambler','run',.38),
       attackA:record('shambler','attack',.13),attackB:record('shambler','attack',.38),
-      heroRun:record('hero','run',.4),heroFeral:record('hero','feral',.4),
+      heroRun:record('hero','run',.14),heroRunLater:record('hero','run',.57),heroFeral:record('hero','feral',.4),
       heroHit:record('hero','hit',.4)};
    });
    const paintedX=a=>a.find(x=>x.name.includes('shambler-run.png'))?.sourceX;
@@ -67,7 +67,10 @@ const {chromium}=require('playwright');
    assert.notEqual(paintedX(frames.attackA),paintedX(frames.attackB),'enemy without special attack atlas must not freeze on a static fallback frame');
    assert.ok(frames.heroFeral.some(x=>x.name.includes('hero-feral.png')),'hero feral must show painted feral pose, not just an effect ring');
    assert.ok(frames.heroHit.some(x=>x.name.includes('hero-hit.png')),'hero hit must use painted hit pose');
-   assert.ok(frames.heroRun.some(x=>x.name.includes('hero-run.png')),'hero run should animate');
+   const heroRunSheet=x=>x.find(a=>/hero-run\\.png|characters\\/hero\\/run\\.png/.test(a.name));
+   assert.ok(heroRunSheet(frames.heroRun),'hero running pose must use an actual painted run atlas');
+   assert.ok(heroRunSheet(frames.heroRunLater),'hero running pose must retain the painted run atlas later');
+   assert.notEqual(heroRunSheet(frames.heroRun).sourceX,heroRunSheet(frames.heroRunLater).sourceX,'hero run must advance actual painted frames, not a static image');
 
    await page.evaluate(()=>__TUNE_QA.forceSpeech());
    await page.waitForFunction(()=>document.querySelector('[data-cat-speech]:not([hidden])'),null,{timeout:5000});
