@@ -42,7 +42,7 @@ const {chromium}=require('playwright');
     }
     return {status:art.directionalStatus(),states,engineerAt0:__TURRET_PAINT_QA(0),engineerAt90:__TURRET_PAINT_QA(Math.PI/2)};
    });
-   assert.deepEqual(result.status,{loaded:3,failed:0,total:3,states:{run:true,idle:true,attack:true}},'three complete directed hero atlases decode');
+   assert.ok(result.status.loaded>=3&&result.status.failed===0&&['run','idle','attack'].every(k=>result.status.states[k]),'base directional sheets must remain loaded; creative buff sheets may add states');
    for(const [state,frames] of [['run',8],['idle',6],['attack',8]]){
     const firstFrames=[];
     for(let direction=0;direction<8;direction++){
