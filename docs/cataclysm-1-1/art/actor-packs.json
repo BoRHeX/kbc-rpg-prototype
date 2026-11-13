@@ -1,0 +1,652 @@
+{
+  "version": 1,
+  "characters": {
+    "hero": {
+      "family": "hero-ik-rig-v1",
+      "states": {
+        "idle": {
+          "url": "characters/hero/articulated-v1/idle.png",
+          "frames": 12,
+          "fps": 6,
+          "bearings": 8
+        },
+        "run": {
+          "url": "characters/hero/articulated-v1/run.png",
+          "frames": 12,
+          "fps": 16,
+          "bearings": 8
+        },
+        "attack": {
+          "url": "characters/hero/articulated-v1/attack.png",
+          "frames": 8,
+          "fps": 20,
+          "bearings": 8
+        },
+        "run-fire": {
+          "url": "characters/hero/articulated-v1/run-fire.png",
+          "frames": 12,
+          "fps": 16,
+          "bearings": 8
+        },
+        "feral": {
+          "url": "characters/hero/articulated-v1/feral.png",
+          "frames": 12,
+          "fps": 20,
+          "bearings": 8
+        },
+        "adrenaline": {
+          "url": "characters/hero/articulated-v1/adrenaline.png",
+          "frames": 12,
+          "fps": 23,
+          "bearings": 8
+        },
+        "hit": {
+          "url": "characters/hero/articulated-v1/hit.png",
+          "frames": 8,
+          "fps": 23,
+          "bearings": 8
+        },
+        "recover": {
+          "url": "characters/hero/articulated-v1/recover.png",
+          "frames": 8,
+          "fps": 23,
+          "bearings": 8
+        },
+        "feral-fire": {
+          "url": "characters/hero/articulated-v1/feral-fire.png",
+          "frames": 12,
+          "fps": 20,
+          "bearings": 8
+        },
+        "adrenaline-fire": {
+          "url": "characters/hero/articulated-v1/adrenaline-fire.png",
+          "frames": 12,
+          "fps": 23,
+          "bearings": 8
+        }
+      },
+      "rig": {
+        "parts": {
+          "torso": {
+            "url": "characters/hero/hero-ik-rig-v1/torso.png",
+            "frames": 4,
+            "bearings": 8,
+            "fps": 8
+          },
+          "thigh": {
+            "url": "characters/hero/hero-ik-rig-v1/thigh.png",
+            "width": 20,
+            "height": 32,
+            "drawWidth": 17
+          },
+          "calf": {
+            "url": "characters/hero/hero-ik-rig-v1/calf.png",
+            "width": 18,
+            "height": 34,
+            "drawWidth": 14
+          },
+          "paw": {
+            "url": "characters/hero/hero-ik-rig-v1/paw.png",
+            "width": 24,
+            "height": 16,
+            "drawWidth": 23,
+            "drawHeight": 13
+          }
+        }
+      }
+    },
+    "shooter": {
+      "family": "shooter-painted-v1",
+      "states": {
+        "run": {
+          "url": "shooter-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/shooter/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/shooter/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/shooter/hit.png"
+        }
+      }
+    },
+    "healer": {
+      "family": "healer-painted-v1",
+      "states": {
+        "run": {
+          "url": "healer-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/healer/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/healer/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/healer/hit.png"
+        }
+      }
+    },
+    "tank": {
+      "family": "tank-painted-v1",
+      "states": {
+        "run": {
+          "url": "tank-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/tank/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/tank/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/tank/hit.png"
+        }
+      }
+    },
+    "brawler": {
+      "family": "brawler-painted-v1",
+      "states": {
+        "run": {
+          "url": "brawler-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/brawler/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/brawler/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/brawler/hit.png"
+        }
+      }
+    },
+    "sniper": {
+      "family": "sniper-painted-v1",
+      "states": {
+        "run": {
+          "url": "sniper-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/sniper/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/sniper/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/sniper/hit.png"
+        }
+      }
+    },
+    "engineer": {
+      "family": "engineer-painted-v1",
+      "states": {
+        "run": {
+          "url": "engineer-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/engineer/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/engineer/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/engineer/hit.png"
+        }
+      }
+    },
+    "trapper": {
+      "family": "trapper-painted-v1",
+      "states": {
+        "run": {
+          "url": "trapper-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/trapper/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/trapper/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/trapper/hit.png"
+        }
+      }
+    },
+    "bard": {
+      "family": "bard-painted-v1",
+      "states": {
+        "run": {
+          "url": "bard-run.png",
+          "frames": 12,
+          "fps": 12,
+          "embedded_weapon": false
+        },
+        "attack": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/bard/attack.png"
+        },
+        "special": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/bard/special.png"
+        },
+        "hit": {
+          "frames": 8,
+          "fps": 8,
+          "scale": 1,
+          "embedded_weapon": true,
+          "url": "characters/bard/hit.png"
+        }
+      }
+    },
+    "shambler": {
+      "family": "shambler-painted-v1",
+      "states": {
+        "run": {
+          "url": "shambler-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "dasher": {
+      "family": "dasher-painted-v1",
+      "states": {
+        "run": {
+          "url": "dasher-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "stalker": {
+      "family": "stalker-painted-v1",
+      "states": {
+        "run": {
+          "url": "stalker-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "weaver": {
+      "family": "weaver-painted-v1",
+      "states": {
+        "run": {
+          "url": "weaver-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "orbiter": {
+      "family": "orbiter-painted-v1",
+      "states": {
+        "run": {
+          "url": "orbiter-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "ghost": {
+      "family": "ghost-painted-v1",
+      "states": {
+        "run": {
+          "url": "ghost-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "hexer": {
+      "family": "hexer-painted-v1",
+      "states": {
+        "run": {
+          "url": "hexer-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "summoner": {
+      "family": "summoner-painted-v1",
+      "states": {
+        "run": {
+          "url": "summoner-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "blight": {
+      "family": "blight-painted-v1",
+      "states": {
+        "run": {
+          "url": "blight-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "alley-king": {
+      "family": "alley-king-painted-v1",
+      "states": {
+        "run": {
+          "url": "alley-king-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "iron-titan": {
+      "family": "iron-titan-painted-v1",
+      "states": {
+        "run": {
+          "url": "iron-titan-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "neon-siren": {
+      "family": "neon-siren-painted-v1",
+      "states": {
+        "run": {
+          "url": "neon-siren-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "moth-queen": {
+      "family": "moth-queen-painted-v1",
+      "states": {
+        "run": {
+          "url": "moth-queen-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "rust-butcher": {
+      "family": "rust-butcher-painted-v1",
+      "states": {
+        "run": {
+          "url": "rust-butcher-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "venom-oracle": {
+      "family": "venom-oracle-painted-v1",
+      "states": {
+        "run": {
+          "url": "venom-oracle-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "echo-reaper": {
+      "family": "echo-reaper-painted-v1",
+      "states": {
+        "run": {
+          "url": "echo-reaper-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "volt-hydra": {
+      "family": "volt-hydra-painted-v1",
+      "states": {
+        "run": {
+          "url": "volt-hydra-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "the-catastrophe": {
+      "family": "the-catastrophe-painted-v1",
+      "states": {
+        "run": {
+          "url": "the-catastrophe-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "jawbreaker": {
+      "family": "jawbreaker-painted-v1",
+      "states": {
+        "run": {
+          "url": "jawbreaker-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "scrapper": {
+      "family": "scrapper-painted-v1",
+      "states": {
+        "run": {
+          "url": "scrapper-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "watcher": {
+      "family": "watcher-painted-v1",
+      "states": {
+        "run": {
+          "url": "watcher-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "pulse-drone": {
+      "family": "pulse-drone-painted-v1",
+      "states": {
+        "run": {
+          "url": "pulse-drone-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "grave-herald": {
+      "family": "grave-herald-painted-v1",
+      "states": {
+        "run": {
+          "url": "grave-herald-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "storm-magus": {
+      "family": "storm-magus-painted-v1",
+      "states": {
+        "run": {
+          "url": "storm-magus-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "dreadnought": {
+      "family": "dreadnought-painted-v1",
+      "states": {
+        "run": {
+          "url": "dreadnought-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "plague-empress": {
+      "family": "plague-empress-painted-v1",
+      "states": {
+        "run": {
+          "url": "plague-empress-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    },
+    "void-harbinger": {
+      "family": "void-harbinger-painted-v1",
+      "states": {
+        "run": {
+          "url": "void-harbinger-run.png",
+          "frames": 6,
+          "fps": 6,
+          "embedded_weapon": false
+        }
+      }
+    }
+  }
+}
