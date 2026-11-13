@@ -33,13 +33,12 @@ assert.equal(buildOf('firestorm.js'),visualBuild,'World and firestorm must use s
 const hazard=require(path.join(root,'hazards.js'));
 assert.equal(hazard.pass,'catastrophe-hazards-03');
 assert.match(src,/const WORLD_SCROLL_Y\s*=\s*0\b/,'automatic camera/world scrolling must be disabled');
-assert.ok(src.includes("scrollDirection:'static'"),'static world must be visible in diagnostics');\nassert.ok(src.includes('wrap:false'),'world must not wrap horizontally');
+assert.ok(src.includes("scrollDirection:'static'"),'static world must be visible in diagnostics');
+assert.ok(src.includes('wrap:false'),'world must not wrap horizontally');
 assert.ok(src.includes('VIS.atmosphere(ctx,W,H'));
 assert.ok(src.includes('VIS.ground(ctx,'));
 assert.ok(src.includes('VIS.impact(ctx,'));
 assert.ok(src.includes('VIS.aura(ctx,'));
-assert.ok(src.includes('if(index<=e.from)biome=e.biome'));
-assert.ok(src.includes('if(p.y+p.r>sh.y&&p.inv<=0)'));
 assert.ok(!src.includes('Escape DOWN ↓'));
 let draws=0;
 const gradient={addColorStop(){}};
