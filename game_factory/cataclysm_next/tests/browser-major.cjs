@@ -33,9 +33,10 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       assert.equal(snapshot.major.nightDuration,13);
       assert.equal(snapshot.major.animationFrames,378);
       assert.deepEqual(snapshot.major.songs,['ironmarch','afterlight']);
-      assert.equal(snapshot.world.size,4200);
-      assert.equal(snapshot.world.scrollDirection,'north');
-      assert.equal(snapshot.presentation.worldScrollY,-45);
+      assert.equal(snapshot.world.size,null,'world must be unbounded');
+      assert.equal(snapshot.world.wrap,false,'no horizontal cylinder teleport');
+      assert.equal(snapshot.world.scrollDirection,'static','no automatic world motion');
+      assert.equal(snapshot.presentation.worldScrollY,0,'no imposed northbound drift');
       assert.equal(snapshot.presentation.visualPass,'catastrophe-neon-noir-02');
       assert.equal(snapshot.major.campaign.night,1);
       assert.equal(snapshot.player.level,0,'full campaign must start at level zero');
@@ -54,7 +55,8 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       if(width===844){
         await page.waitForTimeout(550);
         const drift=await page.evaluate(()=>window.CATACLYSM_DIAGNOSTICS.snapshot());
-        assert.ok(drift.player.y<snapshot.player.y-4,'idle player drifts north, environment scrolls down');
+        assert.ok(Math.abs(drift.player.y-snapshot.player.y)<.3,'idle hero does not drift without input');
+        assert.ok(Math.abs(drift.player.x-snapshot.player.x)<.3,'idle hero keeps fixed world X');
         await page.mouse.move(box.x+box.width*.4,box.y+box.height*.65);
         await page.mouse.down();
         await page.mouse.move(box.x+box.width*.54,box.y+box.height*.8,{steps:6});
@@ -68,6 +70,6 @@ const SIZES=[[390,844],[360,780],[640,320],[667,375],[780,360],[844,390],[915,41
       await page.close();
       count++;
     }
-    console.log('PASS Cataclysm major: eight mobile/desktop browser viewports; running live gameplay, 27 archetypes, 378 frames, new audio registry, 4200 world, no JS exceptions');
+    console.log('PASS Cataclysm major: eight mobile/desktop browser viewports; running live gameplay, 27 archetypes, 378 frames, new audio registry, stationary infinite map, no JS exceptions');
   }finally{await browser.close();}
 })().catch(e=>{console.error(e.stack||String(e));process.exitCode=1;});
