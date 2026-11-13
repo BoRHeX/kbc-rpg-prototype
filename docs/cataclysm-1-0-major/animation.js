@@ -18,7 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-latestanim-43428362594';
+const assetRelease='cataclysm-10-herodir-43432275819';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
@@ -39,6 +39,26 @@ function loadAtlas(key,count){
 for(const state of ['idle','run','hit','feral','adrenaline','attack'])loadAtlas('hero-'+state,24);
 for(const id of allyIds)loadAtlas(id+'-run',12);
 for(const id of enemyIds)loadAtlas(id+'-run',6);
+// The directional hero sheets use only the current modern reference artwork.
+// Each 96px frame is a complete, pre-composited picture; no runtime stitching.
+const directedHero=Object.create(null);
+const directedMetrics={loaded:0,failed:0,total:3};
+for(const [state,frames,fps] of [['run',8,12],['idle',6,7],['attack',8,12]]){
+  const entry={ready:false,count:frames,fps,image:null};
+  directedHero[state]=entry;
+  if(typeof root.Image!=='function')continue;
+  const img=new root.Image();entry.image=img;
+  let settled=false;
+  const fail=()=>{if(!settled){settled=true;directedMetrics.failed++;}};
+  img.onerror=fail;
+  img.onload=()=>{
+    if(img.naturalWidth!==8*frames*96||img.naturalHeight!==96){fail();return;}
+    const ready=()=>{if(!settled){settled=true;entry.ready=true;directedMetrics.loaded++;}};
+    if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
+  };
+  img.src=assetBase+'characters/hero/directed-'+state+'.png?art='+assetRelease;
+}
+function directionalStatus(){return {...directedMetrics,states:Object.fromEntries(Object.entries(directedHero).map(([k,v])=>[k,v.ready]))};}
 function assetStatus(){return {loaded,failed,total};}
 // Optional, data-only animations produced from an artist's visual reference.
 // New characters/states load without further game-source edits.
@@ -146,6 +166,18 @@ function heroBarrels(angle,r=27){
 function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false){
   if(!PALETTES[id])id='shambler';
   const requested=state;
+  const directed=id==='hero'?directedHero[state]:null;
+  if(directed?.ready){
+    const phase=reduced?0:Math.floor(Math.max(0,time)*directed.fps)%directed.count;
+    const frame=aimFrame(aim)*directed.count+phase;
+    ctx.save();ctx.scale(r/23,r/23);
+    ctx.drawImage(directed.image,frame*96,0,96,96,-48,-58,96,96);
+    if(damaged){
+      ctx.save();ctx.globalAlpha=.52;ctx.filter='brightness(2.2)';
+      ctx.drawImage(directed.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
+    }
+    ctx.restore();return frame;
+  }
   // Missing action sheets use the complete painted run cycle, including during telegraphs.
   // Reference-animation manifest is authoritative for every available state.
   // Never swap a modern character's pose back to the legacy painted hero midway
@@ -286,7 +318,7 @@ function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving
   ctx.restore();
   return frame;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,overrideStatus,hasReferenceAnimation,aimFrame,heroBarrels,actionDuration,assetVersion:assetRelease,frameTotal:162+96+120});
+const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,directionalStatus,overrideStatus,hasReferenceAnimation,aimFrame,heroBarrels,actionDuration,assetVersion:assetRelease,frameTotal:162+96+120});
 root.CATA_ART=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
