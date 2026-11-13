@@ -1,0 +1,152 @@
+name: Cataclysm 1.1 — BoRHeZ playable-first studio
+run-name: 1.1 · quadruped + tail gun + shooters + hordes + upgrades
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-1-launch.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-11-playable-first
+  cancel-in-progress: false
+
+jobs:
+  build-and-ship:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create isolated playable 1.1 fork of existing working campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/cataclysm-1-0-major/index.html
+          if [ ! -d docs/cataclysm-1-1 ]; then
+            cp -a docs/cataclysm-1-0-major docs/cataclysm-1-1
+          fi
+          test -f docs/cataclysm-1-1/game.js
+          echo "Old Cataclysm 1.0 untouched. Versioned 1.1 copy ready." >> "$GITHUB_STEP_SUMMARY"
+      - name: Install art and quick browser test tools
+        run: |
+          python -m pip install --quiet pillow cairosvg
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Start working preview server
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-11-server.log 2>&1 &
+      - name: BoRHeZ Studio — draw and implement 1.1
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: game_factory/requests/cataclysm-1-1-launch.md
+      - name: Reject changes to frozen 1.0 and unrelated source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          changed=subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).splitlines()
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          bad=[p for p in set(changed+untracked) if not p.startswith('docs/cataclysm-1-1/')]
+          if bad: raise SystemExit('Unauthorized 1.1 studio changes: '+str(sorted(bad)))
+          from pathlib import Path
+          p=Path('docs/cataclysm-1-1')
+          assert (p/'index.html').exists() and (p/'game.js').exists()
+          assert '1.1' in (p/'index.html').read_text(), 'Missing 1.1 release identity'
+          assert '1.1' in (p/'game.js').read_text(), 'Missing 1.1 runtime identity'
+          print('Source stays version-isolated')
+          PY
+          for f in docs/cataclysm-1-1/*.js; do node --check "$f"; done
+      - name: The one release gate — not a blank screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
+          for (const size of [{width:844,height:390},{width:390,height:844}]) {
+            const page=await browser.newPage({viewport:size,isMobile:true,hasTouch:true});
+            await page.goto('http://127.0.0.1:8765/cataclysm-1-1/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForFunction(()=>{const b=document.getElementById('play');return !!b && !b.disabled},{timeout:40000});
+            await page.locator('#play').click({timeout:10000});
+            await page.waitForTimeout(1200);
+            const a=await page.evaluate(()=>{
+              const c=document.getElementById('canvas');
+              if(!c||c.width<50||c.height<50)return {ok:false,why:'no canvas'};
+              const x=c.getContext('2d',{willReadFrequently:true});
+              const w=c.width,h=c.height;
+              const colors=new Set();
+              for(let j=1;j<=6;j++)for(let i=1;i<=8;i++){
+                const d=x.getImageData(Math.floor(w*i/9),Math.floor(h*j/7),1,1).data;
+                colors.add([...d].join(','));
+              }
+              return {ok:colors.size>=3,width:w,height:h,colors:colors.size,playHidden:document.getElementById('start-overlay')?.hidden,clock:document.getElementById('time')?.textContent};
+            });
+            if(!a.ok||!a.playHidden)throw Error('Not playable at '+size.width+'x'+size.height+': '+JSON.stringify(a));
+            console.log('PLAYABLE',size,a);
+            await page.close();
+          }
+          await browser.close();
+          JS
+      - name: Publish playable source through normal GitHub PR history
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git switch -c "studio/cataclysm-11-$GITHUB_RUN_ID"
+          git add docs/cataclysm-1-1
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::No new 1.1 playable files"; exit 1; }
+          git commit -m "BoRHeZ Games Studio: Cataclysm 1.1 playable-first"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "studio/cataclysm-11-$GITHUB_RUN_ID" --title "Cataclysm 1.1 · Everything Drawn (jank-positive playtest)" --body "One-pass playable-first 1.1 delivery for #82. Four-legged drawn hero and independently auto-aimed tail gun; all allies except Brawler fire; more weaker zombies; more cards. Gate: browser loads and starts on mobile portrait + landscape, paints a nonblank canvas. Jank accepted. Frozen Cataclysm 1.0 directories untouched.")"
+          echo "PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          test -f docs/cataclysm-1-1/index.html
+          echo "Playable: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-1/" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload playable Pages site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-11-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy 1.1 playtest without editing 1.0
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-11-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Print playtest URL
+        run: |
+          echo "### PLAY CATACLYSM 1.1" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-1/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Only load/start/nonblank canvas verified in browser. Jank is intentionally allowed." >> "$GITHUB_STEP_SUMMARY"
