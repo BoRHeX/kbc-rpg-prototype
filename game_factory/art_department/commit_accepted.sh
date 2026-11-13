@@ -9,7 +9,10 @@ v=json.loads(Path('artifacts/art-department/accepted.json').read_text())
 j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
 if v.get('verdict',{}).get('pass') is not True or v.get('request_id') != j.get('request_id'):
     raise SystemExit('Candidate missing review acceptance for active job')
-if any(v['verdict'].get(key,0)<j['minimum_visual_score'] for key in ('identity','motion','quality','integration')):
+keys=('identity','motion','quality','integration')
+if j.get('atlas_layout')=='directional-grid':
+    keys+=('leg_motion',)
+if any(v['verdict'].get(key,0)<j['minimum_visual_score'] for key in keys):
     raise SystemExit('Candidate scored below visual acceptance threshold')
 print('Publishing independently accepted art candidate, review attempt',v['attempt'])
 PY
