@@ -1,14 +1,19 @@
 {
-  "request_id": "cataclysm-1.0-hero-kinetic-canon-20261113",
+  "request_id": "cataclysm-1.0-hero-rigged-kinematics-20261113",
   "game": "cataclysm",
   "character": "hero",
-  "atlas_layout": "directional-grid",
-  "family": "hero-articulated-v2",
+  "atlas_layout": "rigged-parts",
+  "family": "hero-ik-rig-v1",
   "reference": "docs/cataclysm-1-0-major/art/characters/hero/aim.png",
   "source_dir": "docs/cataclysm-1-0-major",
   "mirror_dir": "docs/cataclysm-100-lab",
   "play_url_path": "cataclysm-1-0-major",
-  "bearings": 8,
+  "rig_parts": [
+    "torso",
+    "thigh",
+    "calf",
+    "paw"
+  ],
   "frames_per_state": 24,
   "frame_size": 96,
   "states": [
@@ -26,52 +31,24 @@
     "feral",
     "adrenaline"
   ],
-  "state_frames": {
-    "idle": 16,
-    "walk": 24,
-    "run": 24,
-    "sprint": 24,
-    "overdrive": 24,
-    "shield-idle": 16,
-    "shield-run": 24,
-    "hit": 12,
-    "recover": 12,
-    "attack": 16,
-    "run-fire": 24,
-    "feral": 24,
-    "adrenaline": 24
-  },
-  "fps": {
-    "idle": 8,
-    "walk": 12,
-    "run": 16,
-    "sprint": 19,
-    "overdrive": 23,
-    "shield-idle": 8,
-    "shield-run": 16,
-    "hit": 16,
-    "recover": 12,
-    "attack": 16,
-    "run-fire": 16,
-    "feral": 20,
-    "adrenaline": 23
-  },
-  "visual_direction": "99% MAIN PROTAGONIST. The creator likes the existing WHITE CAT'S FACE, scarf, pistols and 8-way UPPER BODY AIM, but the legs literally don't move in the current game. Stop generating disconnected hero-run PNGs that the renderer ignores. Implement a new canonical character family hero-articulated-v2 in actor-packs.json, and ACTUALLY SELECT its 13 states from real game movement and buffs. Walk: realistic foot planting. Run: strong alternating stride, knee bending and foot lift. Sprint: extended footfalls, not the same walking frame at faster FPS. Overdrive: explosive pace, readable feet. Shield idle/run: distinct grounded protective stance with running feet. Hurt/stagger recovery, idle breathing/blink, dual-pistol attack and run-fire, feral and adrenaline fully moving with eight independent aim bearings. Proper anatomical silhouette at 48px actual phone size, foot contact visibly changes relative to the torso; no mirrored two-poses, no full-body bounces pretending to run, no duplicate layers, no static legs hiding behind moving guns. The artist chooses the creative motion choreography and full-body rig; preserve character identity, approved upper aim and game mechanics. Independent reviewer must score LEG MOTION at least 4/5 specifically. The existing Department can perform up to three autonomous art reviews/corrections. Keep version 1.0, Night1 main and Night99 lab, score, XP, controls, squad, enemies, assets and UI.",
+  "visual_direction": "Architectural replacement: a world-grounded two-bone inverse-kinematics rig now drives hips, knees, ankles, foot planting and lifted swing in actual Cataclysm player movement. Do NOT generate old complete sprite animations: paint exactly FOUR ORIGINAL textured pieces to skin existing rig: leg-free 8-way white-cat upper body (torso.png at 4x96 by 8x96, with lively breathing/ear/eye/scarf/dual-pistol aim and recoil), 20x32 thigh.png, 18x34 calf.png, 24x16 paw.png. Preserve strong existing white-cat face, cyan eyes, red scarf, suit and dual-pistol eight-direction gun aiming. The PAWS must be visually legible at 48px phone scale, alternating planted strike, knee bend, toe-off, swing lift and landing, with faster running and overdrive actually moving faster than walking. No double bodies, no static legacy feet, no abstract geometric tubes instead of painted character anatomy. Add part rig to both actor-packs.json files with family hero-ik-rig-v1. Keep scores, XP, combat, companions, fish, HUD, audio, Night1 public, Night99 lab, all other art unchanged. If renderer geometry or textures are visually inadequate, creatively improve joints and textures within the two modes, NEVER change protected tests. Independent reviewer must rate leg_motion >= 4/5; auto-revise up to three attempts. Do not release an unconvincing cat.",
   "minimum_visual_score": 4,
   "allowed_generator": "generate.py",
   "publish": true,
-  "browser_adapter": "game_factory/art_department/adapters/cataclysm_directional.cjs",
+  "browser_adapter": "game_factory/art_department/adapters/cataclysm_ik.cjs",
   "unit_tests": [
-    "game_factory/cataclysm_next/tests/art-integration.cjs",
+    "game_factory/art_department/tests/hero-kinematics.cjs",
     "game_factory/cataclysm_next/tests/major-systems.cjs",
     "game_factory/cataclysm_next/tests/spawn-economy.cjs",
+    "game_factory/cataclysm_next/tests/art-integration.cjs",
     "game_factory/cataclysm_next/tests/visuals-scroll.cjs",
     "game_factory/cataclysm_finish_score_contract.cjs"
   ],
   "browser_tests": [
-    "game_factory/cataclysm_next/tests/browser-art.cjs",
+    "game_factory/cataclysm_next/tests/browser-hero-rig.cjs",
     "game_factory/cataclysm_next/tests/browser-major.cjs",
-    "game_factory/cataclysm_next/tests/browser-clean-character-pack.cjs",
-    "game_factory/cataclysm_next/tests/browser-tuning.cjs"
+    "game_factory/cataclysm_next/tests/browser-art.cjs",
+    "game_factory/cataclysm_next/tests/browser-infinite.cjs",
+    "game_factory/cataclysm_next/tests/browser-personality.cjs"
   ]
 }
