@@ -48,6 +48,16 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
 @media(max-width:380px){.navlinks a{padding:10px 5px}.hero h1{font-size:38px}.actions .btn{width:100%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.game-card{transition:none}.btn:hover,.game-card:hover{transform:none}}
 
+/* Cataclysm 1.0 frozen release has two direct play targets at the top on all devices. */
+.release-banner{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:22px;padding:21px 23px;border-radius:19px;border:1px solid #69d8b29a;background:linear-gradient(115deg,#183846,#111d32 68%,#27223b);box-shadow:0 12px 38px #050c1980}
+.release-banner-copy{display:flex;flex-direction:column;gap:6px;max-width:610px}
+.release-banner-copy .release-caption{font-size:10px;letter-spacing:1.5px;color:#8af2cd;font-weight:900}
+.release-banner-copy strong{font-size:clamp(20px,2.45vw,30px);line-height:1.1;letter-spacing:-.65px}
+.release-banner-copy small{font-size:12px;line-height:1.6;color:#b6ccdc}
+.release-buttons{display:flex;gap:9px;flex-shrink:0;flex-wrap:wrap}
+.release-buttons .btn{white-space:nowrap}
+@media(max-width:900px){.release-banner{align-items:flex-start;flex-direction:column}.release-buttons{width:100%}.release-buttons .btn{flex:1}}
+@media(max-width:650px){.release-banner{margin-top:15px;padding:17px}.release-buttons{flex-direction:column}.release-buttons .btn{width:100%}}
 /* Development dashboard: game selection, build lanes and clearly separated play/source targets */
 .project-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 auto 23px}
 .project-option{display:flex;flex-direction:column;gap:8px;border:1px solid #3c5571;background:linear-gradient(145deg,#142943,#101b31);border-radius:17px;padding:18px;min-height:133px;transition:border-color .2s,transform .2s}
@@ -90,17 +100,28 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
   </div>
 </header>
 <main>
+  <section class="wrap release-banner" aria-label="Frozen Cataclysm 1.0 release">
+    <div class="release-banner-copy">
+      <span class="release-caption">FROZEN RELEASE · 1.0 · THE CATASTROPHE</span>
+      <strong>Cataclysm 1.0 — The Catastrophe</strong>
+      <small>Keep this playable version. Normal campaign starts at Night 1; the separate Level 100 test starts at Night 99. Future development belongs to a separate 1.1 branch.</small>
+    </div>
+    <div class="release-buttons">
+      <a class="btn btn-primary" href="../cataclysm-1-0-major/">▶ PLAY CATACLYSM 1.0</a>
+      <a class="btn" href="../cataclysm-100-lab/">⚔ LEVEL 100 TEST</a>
+    </div>
+  </section>
   <section class="wrap hero" aria-labelledby="hero-title">
     <div>
       <div class="eyebrow"><span class="signal" aria-hidden="true"></span> AI-BUILT · HUMAN-PLAYED · ALWAYS EVOLVING</div>
       <h1 id="hero-title">Games in progress.<br><em>Every build, one place.</em></h1>
       <p>Choose a game, open the exact version you want to test, and follow the development branches behind it. Playable builds are separate from code branches and archives.</p>
-      <div class="actions"><a class="btn btn-primary" href="#games">Choose a project <span class="arrow" aria-hidden="true">↓</span></a><a class="btn" href="#builds">Compare Cataclysm builds</a></div>
+      <div class="actions"><a class="btn btn-primary" href="../cataclysm-1-0-major/">▶ Play Cataclysm 1.0</a><a class="btn" href="../cataclysm-100-lab/">⚔ Level 100 Test</a><a class="btn" href="#games">Other projects <span class="arrow" aria-hidden="true">↓</span></a></div>
     </div>
     <aside class="overview" aria-label="Studio overview">
       <div class="overview-head"><span>STUDIO / CONTROL ROOM</span><span class="tag">LIVE REPOSITORY</span></div>
       <div class="mini-panel">
-        <div><small>PRIMARY PLAYTEST · 1.0</small><b>CATACLYSM</b></div>
+        <div><small>FROZEN RELEASE · THE CATASTROPHE</small><b>CATACLYSM 1.0</b></div>
         <svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="39" stroke="#79f4d0" stroke-width="2" stroke-dasharray="6 6"/><path d="M31 41 36 18 47 33 61 33 72 18 76 45 72 68 58 78 43 78 29 66Z" fill="#12253b" stroke="#92f7d9" stroke-width="3"/><circle cx="43" cy="49" r="3" fill="#8af9d5"/><circle cx="63" cy="49" r="3" fill="#8af9d5"/><path d="M48 59 53 63 58 59" stroke="#8af9d5" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
       <div class="overview-foot"><div class="stat"><strong id="game-count">6 playable games</strong><span>From this repository; I.C.E. is separate</span></div><div class="stat"><strong>5 planning agents</strong><span>Plus coding and QA</span></div></div>
@@ -108,14 +129,14 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
   </section>
 
   <nav class="wrap project-switch" id="projects" aria-label="Choose a game project">
-    <a class="project-option" href="#builds"><span class="project-overline">PRIMARY PROJECT · 1.0</span><strong>🐈 Cataclysm</strong><small>Full campaign, Night 100 stress test, earlier 1.0 candidates and 0.9 history.</small><span class="project-arrow">SEE BUILD BRANCHES ↓</span></a>
+    <a class="project-option" href="#builds"><span class="project-overline">FROZEN RELEASE · 1.0</span><strong>🐈 Cataclysm — The Catastrophe</strong><small>Playable frozen 1.0, direct Level 100 test and independent future versions.</small><span class="project-arrow">SEE BUILD BRANCHES ↓</span></a>
     <a class="project-option" href="#flame"><span class="project-overline">INDEPENDENT STUDIO · PASS TWO</span><strong>🔥 I.C.E. — Flame Game</strong><small>Current playable preview and separate production branches.</small><span class="project-arrow">SEE FLAME DEVELOPMENT ↓</span></a>
     <a class="project-option" href="#other"><span class="project-overline">SMALL MOBILE GAMES</span><strong>🍑 Peach Bounce &amp; more</strong><small>Latest playable versions of the studio's experimental arcade titles.</small><span class="project-arrow">SEE OTHER GAMES ↓</span></a>
   </nav>
   <section class="wrap section" id="games">
     <div class="section-heading"><div><div class="section-num">01 / GAME PROJECTS</div><h2>Start with a playable build.</h2><p>Separate game projects, separate development versions. Links labeled PLAY open games; SOURCE opens GitHub.</p></div><a class="soft-link" href="#feedback">How feedback works ↗</a></div>
     <article class="feature">
-      <div class="feature-copy"><span class="pill">PRIMARY PLAYTEST · 1.0</span><h3>CATACLYSM<span>.</span></h3><p>The Catastrophe: start at Level 0, Night 1 and play the full 100-night campaign. A separate isolated test skips to Level 100 / Night 99 for extreme-balance checks.</p><div class="meta"><span>FULL CAMPAIGN</span><span>DEVELOPMENT CANDIDATE</span><span>1.0</span></div><a class="btn btn-primary" href="../cataclysm-1-0-major/">▶ PLAY 1.0 FROM NIGHT 1 <span aria-hidden="true">↗</span></a></div>
+      <div class="feature-copy"><span class="pill">PRESERVED 1.0 · RELEASE BASELINE</span><h3>CATACLYSM 1.0<span>.</span></h3><p><strong>The Catastrophe.</strong> The complete playable campaign is frozen as the 1.0 baseline. Start at Night 1 or open the independent Level 100 test at Night 99. Future 1.1 work will not replace these builds.</p><div class="meta"><span>THE CATASTROPHE</span><span>FULL CAMPAIGN</span><span>FROZEN 1.0</span></div><div class="actions"><a class="btn btn-primary" href="../cataclysm-1-0-major/">▶ PLAY 1.0 · NIGHT 1</a><a class="btn" href="../cataclysm-100-lab/">⚔ LEVEL 100 TEST</a></div></div>
       <div class="feature-art" role="img" aria-label="Stylized night city with a glowing-eyed cat and lurking zombies">
         <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs><radialGradient id="sky"><stop stop-color="#355e72"/><stop offset="1" stop-color="#0c182f"/></radialGradient><linearGradient id="road" x2="0" y2="1"><stop stop-color="#183b4b"/><stop offset="1" stop-color="#081524"/></linearGradient></defs>
@@ -130,20 +151,20 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
       </div>
     </article>
     <section id="builds" aria-labelledby="builds-heading" class="section">
-      <div class="section-heading"><div><div class="section-num">CATACLYSM / VERSION TREE</div><h2 id="builds-heading">Which Cataclysm do you want to test?</h2><p>The primary 1.0 campaign is distinct from its balance lab, prior candidate and 0.9 archives.</p></div></div>
+      <div class="section-heading"><div><div class="section-num">CATACLYSM / VERSION TREE</div><h2 id="builds-heading">Which Cataclysm do you want to test?</h2><p>Cataclysm 1.0 is preserved. Its main campaign and Level 100 lab remain playable while future versions branch separately.</p></div></div>
       <div class="development-key" aria-label="Build types"><span><i class="key-dot"></i><b>Primary:</b> full campaign</span><span><i class="key-dot lab"></i><b>Experimental:</b> isolated tests and candidates</span><span><i class="key-dot old"></i><b>Archive:</b> earlier playable snapshots</span></div>
       <div class="branch-board">
         <article class="build-tile branch-primary">
-          <div class="branch-header"><span class="tagline">MAINLINE / 1.0 DEVELOPMENT CANDIDATE</span><span class="branch-state">FULL CAMPAIGN</span></div>
+          <div class="branch-header"><span class="tagline">FROZEN 1.0 / THE CATASTROPHE</span><span class="branch-state">FULL CAMPAIGN</span></div>
           <h3>Cataclysm 1.0 — The Catastrophe</h3>
-          <p>Current full-run playtest. Begin at <strong>Level 0, Night 1</strong>; survive through the final Night 100 encounter. This is the normal game, not a shortcut or a stable public release. Includes campaign progression, evolving enemy types, upgrades, companions and hazard systems.</p>
-          <div class="build-links"><a class="play-link" href="../cataclysm-1-0-major/">▶ PLAY 1.0 · NIGHT 1</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/tree/main/docs/cataclysm-1-0-major" target="_blank" rel="noopener noreferrer">Published source ↗</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/pull/47" target="_blank" rel="noopener noreferrer">Major-build history ↗</a></div>
+          <p><strong>Preserved 1.0 release.</strong> Start the complete campaign at Night 1 with a Level 1 hero, survive waves, recruit companions, gain upgrades, collect fish and reach the final boss. The source is fixed on the release branch; new development starts in a separate 1.1 version.</p>
+          <div class="build-links"><a class="play-link" href="../cataclysm-1-0-major/">▶ PLAY 1.0 · NIGHT 1</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/tree/release/cataclysm-1.0-the-catastrophe-20261113/docs/cataclysm-1-0-major" target="_blank" rel="noopener noreferrer">Frozen 1.0 source ↗</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/pull/47" target="_blank" rel="noopener noreferrer">Major-build history ↗</a></div>
         </article>
         <div class="branch-split" aria-label="Parallel experiment and older 1.0 candidate">
           <article class="build-tile">
-            <div class="tagline">EXPERIMENT / NIGHT 100 BALANCE LAB</div><h3>1.0 · Extreme-end stress test</h3>
-            <p>Isolated balancing experiment. Start at <strong>Level 100, Night 99</strong>; the final encounter exercises nine bosses, six elites and three super-elites. Not the normal campaign or an automatic progression shortcut.</p>
-            <div class="build-links"><a class="play-link" href="../cataclysm-100-lab/">▶ PLAY NIGHT 99 LAB</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/tree/experiment/cataclysm-night100-balance-lab" target="_blank" rel="noopener noreferrer">Experiment branch ↗</a></div>
+            <div class="tagline">FROZEN 1.0 / LEVEL 100 TEST</div><h3>1.0 · Extreme-end stress test</h3>
+            <p>Preserved 1.0 test mode. Start at <strong>Level 100, Night 99</strong> to stress-test extreme combat with powerful upgrades, bosses and elites. Separate from the normal campaign.</p>
+            <div class="build-links"><a class="play-link" href="../cataclysm-100-lab/">▶ PLAY NIGHT 99 LAB</a><a class="source-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/tree/release/cataclysm-1.0-the-catastrophe-20261113/docs/cataclysm-100-lab" target="_blank" rel="noopener noreferrer">Frozen test source ↗</a></div>
           </article>
           <article class="build-tile">
             <div class="tagline">PRIOR CANDIDATE / 1.0 PREVIEW</div><h3>1.0 · Earlier four-pass candidate</h3>
@@ -152,6 +173,7 @@ footer{border-top:1px solid #25334c;padding:32px 0 45px;color:#8ca3bd;font-size:
           </article>
         </div>
       </div>
+      <p class="branch-explainer"><strong>Development split:</strong> Cataclysm 1.0 — The Catastrophe is preserved. A future 1.1 will be developed separately, only when commissioned. The release source is pinned to <a class="soft-link" href="https://github.com/BoRHeX/kbc-rpg-prototype/tree/release/cataclysm-1.0-the-catastrophe-20261113" target="_blank" rel="noopener noreferrer">the frozen GitHub branch</a>.</p>
       <div class="branch-archives">
         <h3>Previous versions and comparison points</h3>
         <div class="builds-grid">
