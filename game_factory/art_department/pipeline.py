@@ -223,13 +223,30 @@ def review():
         "changes, missing body parts, inconsistent identity, or game screenshot is not "
         "proof of integration. Visual direction: " + j["visual_direction"]
     )
+    if j.get('atlas_layout') == 'directional-grid':
+        instruction += (
+            " CRITICAL EXTRA REQUIREMENT: score LEG MOTION separately. "
+            "The creator reports that legs are frozen while the torso and guns animate. "
+            "Use the 24-frame run sheet AND phone-size images to track knees, feet, "
+            "ground contact and full foot swings. Even if arms, eyes, tail and "
+            "gun recoil look excellent, if either leg stays fixed relative to "
+            "hips across running, walking and buffs, set leg_motion 0-2 and "
+            "PASS=false. Do not mistake camera bob, torso translation, shadows, "
+            "a two-pose flip or color animation for a running gait. "
+            "Require convincing planted foot, passing leg, toe-off and airborne "
+            "foot positions in a smooth readable loop. "
+            "Return the additional JSON key leg_motion (integer 0-5). "
+            "The independent pipeline REQUIRES leg_motion >=4 for acceptance."
+        )
     answer = vision(instruction, images)
     (OUT / "visual-review-raw.txt").write_text(answer)
     try:
         verdict = json.loads(answer.strip().removeprefix("```json").removesuffix("```").strip())
     except json.JSONDecodeError as exc:
         raise RuntimeError("Visual reviewer must return valid JSON") from exc
-    scores = ("identity", "motion", "quality", "integration")
+    scores = ("identity", "motion", "quality", "integration") + (
+        ("leg_motion",) if j.get('atlas_layout') == 'directional-grid' else ()
+    )
     minimum = int(j["minimum_visual_score"])
     attempt = int(os.environ.get("ART_REVIEW_ATTEMPT", "1"))
     assert 1 <= attempt <= 3, "Visual-review attempt must be bounded"
