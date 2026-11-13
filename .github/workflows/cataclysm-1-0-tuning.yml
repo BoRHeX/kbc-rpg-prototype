@@ -1,0 +1,172 @@
+name: BoRHeZ Games · Cataclysm 1.0 Balancing & Art Polish
+run-name: Cataclysm 1.0 · expensive ranged threats → XP & animation → visual polish → QA & release
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm_10_finish_TUNING_LAUNCH.md
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: borhez-cataclysm-tuning
+  cancel-in-progress: false
+
+jobs:
+  tuning:
+    uses: ./.github/workflows/cataclysm-10-finish-stage.yml
+    with:
+      stage: tuning
+      previous: ''
+    secrets: inherit
+
+  release:
+    needs: tuning
+    if: ${{ always() && needs.tuning.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    concurrency:
+      group: borhez-mobile-pages-delivery
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore ONLY fully tested Cataclysm 1.0 tuning candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: cataclysm-10-finish-tuning
+          path: docs/
+      - name: Verify full two-mode source, scoring, behavior and all texture contracts
+        run: |
+          set -euo pipefail
+          for game in docs/cataclysm-1-0-major docs/cataclysm-100-lab; do
+            for file in "$game"/*.js; do node --check "$file"; done
+          done
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs tuning
+          git diff --check
+      - name: Install Chrome and run comprehensive final mobile regression
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          nohup python -m http.server 8765 --directory docs >/tmp/cata-finish-release.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-infinite.cjs
+          node game_factory/cataclysm_next/tests/browser-art.cjs
+          node game_factory/cataclysm_next/tests/browser-personality.cjs
+          node game_factory/cataclysm_next/tests/browser-tuning.cjs
+          node game_factory/cataclysm_next/tests/browser-one-boss.cjs
+          node game_factory/cataclysm_next/tests/browser-polish.cjs
+      - name: Commit only independently accepted Cataclysm 1.0 and open PR
+        id: pr
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Cataclysm 1.0 Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="studio/cataclysm-10-finish-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git add docs/cataclysm-1-0-major docs/cataclysm-100-lab
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "::error::No actual new 1.0 playable code"; exit 1; fi
+          python - <<'PY'
+          import subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert names
+          assert all(x.startswith(('docs/cataclysm-1-0-major/','docs/cataclysm-100-lab/')) for x in names)
+          print('Accepted source changes:',len(names))
+          PY
+          git commit -m "Tune Cataclysm 1.0: premium ranged threats, XP progression, painted animation and readable speech"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+          pr_url="$(gh pr create --base main --head "$branch" --title "Cataclysm 1.0 · Balance, Animation and Speech Polish" --body "Focused Cataclysm 1.0 on-device feedback correction: ranged/silencing encounter costs, 6/8/10 early XP, restored painted character frame animation, translucent typewriter cat dialogue, and elimination of deceptive mooring motifs in floor artwork. Preserve all Living Cats systems and Cataclysm 1.0 gameplay. Independent real Chrome QA. No Night100 stress.")"
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "$pr_url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Merge fully tested game without bypassing branch protection
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+        run: |
+          set -euo pipefail
+          gh pr merge "$PR_URL" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs tuning
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-10-complete-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/
+      - name: Deploy both accepted 1.0 versions
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-10-complete-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Backoff when another Pages deployment overlaps
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry exact same accepted Pages archive
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-10-complete-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Independently compare real LIVE score and game assets with accepted source
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib,os,time,urllib.request
+          from pathlib import Path
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          for game in ('cataclysm-1-0-major','cataclysm-100-lab'):
+            for name in ('index.html','game.js','score.js','follower-behavior.js','animation.js',
+                         'art/tank-run.png','art/characters/sniper/special.png'):
+              filename=Path('docs')/game/name
+              wanted=hashlib.sha256(filename.read_bytes()).hexdigest()
+              for attempt in range(16):
+                try:
+                  url=base+game+'/'+name+'?verify='+os.environ['GITHUB_RUN_ID']+'&attempt='+str(attempt)
+                  req=urllib.request.Request(url,headers={'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=20) as reply:
+                    observed=hashlib.sha256(reply.read()).hexdigest()
+                  if observed!=wanted:raise RuntimeError('Source/live SHA mismatch')
+                  print('LIVE:',game,name)
+                  break
+                except Exception as error:
+                  if attempt==15:raise RuntimeError('Live release mismatch '+game+'/'+name+': '+str(error))
+                  time.sleep(5)
+          PY
+      - name: Publish final test links and actual evidence
+        run: |
+          echo "### Cataclysm 1.0 · balancing and animation polish deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "Campaign: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Night 99 lab: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/" >> "$GITHUB_STEP_SUMMARY"
