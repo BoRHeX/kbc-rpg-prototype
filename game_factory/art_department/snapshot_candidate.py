@@ -10,8 +10,28 @@ import subprocess
 root=Path(__file__).resolve().parents[2]
 j=json.loads((root/'game_factory/art_department/jobs/active.json').read_text())
 src=Path(j['source_dir'])
-paths=[str(src/'art'/f"{j['character']}-{state}.png") for state in j['states']]
-paths += [str(src/'art'/j['allowed_generator']),str(src/'animation.js')]
+if j.get('atlas_layout')=='directional-grid':
+    # Preserve the COMPLETE new canonical pack plus game integration and the
+    # Night99 mirror, without committing the studio's temporary QA artifacts.
+    main=src/'art'/'characters'/j['character']/j['family']
+    mirror=Path(j['mirror_dir'])
+    labpack=mirror/'art'/'characters'/j['character']/j['family']
+    paths=[str(main/(state+'.png')) for state in j['states']]
+    paths += [str(main/j['allowed_generator'])]
+    paths += [str(labpack/(state+'.png')) for state in j['states']]
+    for base in (src,mirror):
+        for name in ('art/actor-packs.json','animation.js','game.js','index.html','visuals.js'):
+            paths.append(str(base/name))
+    paths += [str(p) for folder in (main,labpack) for p in folder.glob('*.json')]
+    paths=list(dict.fromkeys(paths))
+    # git diff normally excludes untracked binary PNGs. Intent-to-add is
+    # limited to this exact audited allowlist so --binary includes their data.
+    for p in paths:
+        if (root/p).exists():
+            subprocess.run(['git','add','-N','--',p],cwd=root,check=True)
+else:
+    paths=[str(src/'art'/f"{j['character']}-{state}.png") for state in j['states']]
+    paths += [str(src/'art'/j['allowed_generator']),str(src/'animation.js')]
 out=root/'artifacts/art-department/candidate.patch'
 out.parent.mkdir(parents=True,exist_ok=True)
 with out.open('wb') as fd:
