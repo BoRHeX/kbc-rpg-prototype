@@ -185,6 +185,9 @@ jobs:
         run: node game_factory/cataclysm_next/tests/browser-infinite.cjs
       - name: Compare painted asset revision and actual animation frames in both games
         run: node game_factory/cataclysm_next/tests/browser-art.cjs
+      - name: Prove expensive shooters and ghosts, early XP thresholds, animated sprites and translucent speech
+        if: inputs.stage == 'tuning'
+        run: node game_factory/cataclysm_next/tests/browser-tuning.cjs
       - name: Independently check cat speech, menu, cards and move-only controls
         if: inputs.stage == 'polishui'
         run: node game_factory/cataclysm_next/tests/browser-personality.cjs
