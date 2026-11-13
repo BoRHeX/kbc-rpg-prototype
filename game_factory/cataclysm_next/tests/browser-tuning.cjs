@@ -40,7 +40,8 @@ const {chromium}=require('playwright');
      ranged:__TUNE_QA.cost('weaver'),
      ghost:__TUNE_QA.cost('ghost'),
      caster:__TUNE_QA.cost('hexer'),
-     director:CATA_LAB_DIRECTOR,
+     ghostPrice:CATA_LAB_DIRECTOR.priceFor('ghost',15),
+     weaverPrice:CATA_LAB_DIRECTOR.priceFor('weaver',15),
      player:CATACLYSM_DIAGNOSTICS.snapshot().player
    }));
    assert.deepEqual(result.levels.slice(0,3),[6,8,10],'early XP costs should be 6, 8, 10 instead of 10, 13, 16');
@@ -48,7 +49,7 @@ const {chromium}=require('playwright');
    assert.ok(result.ranged>=result.melee*2,'ranged units cost materially more threat than basic melee');
    assert.ok(result.ghost>=result.ranged*1.4,'silencing ghost is a premium enemy');
    assert.ok(result.caster>=result.melee*2,'caster pressure has meaningful cost');
-   assert.ok(result.director.priceFor('ghost',15)>result.director.priceFor('weaver',15),'director also prices silencing enemies above generic shooters');
+   assert.ok(result.ghostPrice>result.weaverPrice,'director also prices silencing enemies above generic shooters');
 
    // Capture *actual painted sprite source rectangles*, not decorative frame counters.
    await page.waitForFunction(()=>window.CATA_ART&&CATA_ART.assetStatus().loaded>=40,{timeout:15000});
