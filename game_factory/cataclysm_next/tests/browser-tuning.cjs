@@ -73,18 +73,18 @@ const {chromium}=require('playwright');
    assert.notEqual(heroRunSheet(frames.heroRun).sourceX,heroRunSheet(frames.heroRunLater).sourceX,'hero run must advance actual painted frames, not a static image');
 
    await page.evaluate(()=>__TUNE_QA.forceSpeech());
-   await page.waitForFunction(()=>document.querySelector('[data-cat-speech]:not([hidden])'),null,{timeout:5000});
+   await page.waitForFunction(()=>document.querySelector('.cat-speech[data-cat-speech]:not([hidden])'),null,{timeout:5000});
    const bubble=await page.evaluate(()=>{
-      const el=document.querySelector('[data-cat-speech]:not([hidden])'),cs=getComputedStyle(el);
+      const el=document.querySelector('.cat-speech[data-cat-speech]:not([hidden])'),cs=getComputedStyle(el);
       return {bg:cs.backgroundColor,text:cs.color,border:cs.borderColor,full:el.getAttribute('aria-label')||el.textContent};
    });
    const channels=bubble.bg.match(/[\d.]+/g)?.map(Number)||[];
    assert.ok(channels.length===4&&channels[3]>0&&channels[3]<.9,'speech bubble must be translucent, not opaque: '+JSON.stringify({bubble,channels}));
    const foreground=bubble.text.match(/[\d.]+/g)?.map(Number)||[];
    assert.ok(foreground.length>=3&&foreground.slice(0,3).every(v=>v>185),'speech text must be white/high-contrast');
-   const atStart=await page.locator('[data-cat-speech]:visible').first().textContent();
+   const atStart=await page.locator('.cat-speech[data-cat-speech]:visible').first().textContent();
    await page.waitForTimeout(320);
-   const after=await page.locator('[data-cat-speech]:visible').first().textContent();
+   const after=await page.locator('.cat-speech[data-cat-speech]:visible').first().textContent();
    assert.ok(after.length>=atStart.length,'typing reveal must not reverse');
    assert.ok(atStart.length<after.length||after.length>=8,'the bubble is readable, not permanently blank');
    assert.deepEqual(errors,[],'no runtime exceptions');
