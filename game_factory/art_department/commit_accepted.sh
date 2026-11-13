@@ -10,7 +10,7 @@ j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
 if v.get('verdict',{}).get('pass') is not True or v.get('request_id') != j.get('request_id'):
     raise SystemExit('Candidate missing review acceptance for active job')
 keys=('identity','motion','quality','integration')
-if j.get('atlas_layout')=='directional-grid':
+if j.get('atlas_layout') in ('directional-grid','rigged-parts'):
     keys+=('leg_motion',)
 if any(v['verdict'].get(key,0)<j['minimum_visual_score'] for key in keys):
     raise SystemExit('Candidate scored below visual acceptance threshold')
@@ -25,15 +25,15 @@ import json,subprocess
 from pathlib import Path
 j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
 src=Path(j['source_dir']);mirror=Path(j['mirror_dir'])
-if j.get('atlas_layout')=='directional-grid':
+if j.get('atlas_layout') in ('directional-grid','rigged-parts'):
     pack=src/'art'/'characters'/j['character']/j['family']
     mirrorpack=mirror/'art'/'characters'/j['character']/j['family']
-    paths=[pack/(s+'.png') for s in j['states']]
-    paths += [mirrorpack/(s+'.png') for s in j['states']]
+    paths=[pack/(s+'.png') for s in j['states']] if j.get('atlas_layout')=='directional-grid' else [pack/(part+'.png') for part in j['rig_parts']]
+    paths += [mirrorpack/(s+'.png') for s in j['states']] if j.get('atlas_layout')=='directional-grid' else [mirrorpack/(part+'.png') for part in j['rig_parts']]
     paths += [pack/j['allowed_generator']]
     paths += [p for folder in (pack,mirrorpack) for p in folder.glob('*.json')]
     paths += [folder/name for folder in (src,mirror) for name in
-              ('art/actor-packs.json','animation.js','game.js','index.html','visuals.js')]
+              ('art/actor-packs.json','animation.js','game.js','index.html','visuals.js','hero-kinematics.js','hero-rig-renderer.js')]
 else:
     paths=[src/'art'/f"{j['character']}-{s}.png" for s in j['states']]
     paths += [src/'art'/j['allowed_generator'],src/'animation.js']
