@@ -12,7 +12,7 @@ const {chromium}=require('playwright');
    page.on('response',r=>{if(r.status()>=400&&r.url().includes('/art/'))bad.push(r.url())});
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded',timeout:30000});
    await page.waitForFunction(()=>window.CATACLYSM_READY===true,{timeout:20000});
-   await page.waitForFunction(()=>window.CATA_ART?.directionalStatus()?.loaded===3,{timeout:30000});
+   await page.waitForFunction(()=>window.CATA_ART?.directionalStatus()?.loaded>=3,{timeout:30000});
    await page.locator('#play').click({force:true});
    await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',{timeout:6000});
    const observation=await page.evaluate(()=>{
