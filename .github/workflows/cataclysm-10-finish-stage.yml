@@ -185,6 +185,9 @@ jobs:
         run: node game_factory/cataclysm_next/tests/browser-infinite.cjs
       - name: Compare painted asset revision and actual animation frames in both games
         run: node game_factory/cataclysm_next/tests/browser-art.cjs
+      - name: Independently check cat speech, menu, cards and move-only controls
+        if: inputs.stage == 'polishui'
+        run: node game_factory/cataclysm_next/tests/browser-personality.cjs
       - name: Enforce stage-specific motion, score and follower acceptance
         run: node game_factory/cataclysm_finish_acceptance.cjs "$STAGE"
       - name: Save exact source for next stage recovery
