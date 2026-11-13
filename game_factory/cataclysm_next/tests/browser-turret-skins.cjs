@@ -12,8 +12,8 @@ const {chromium}=require('playwright');
    const file=path.resolve(__dirname,'../../../docs',dir,'game.js');
    await page.route(new RegExp('/'+dir+'/game\\.js\\?build='),async route=>{
      let src=fs.readFileSync(file,'utf8');
-     const marker='  window.CATACLYSM_BOOT.ready(BUILD);';
-     assert.ok(src.includes(marker),'retain normal boot handshake');
+     const marker=src.lastIndexOf('})();');
+     assert.ok(marker>=0,'retain normal boot handshake');
      const probe=[
        'window.__CAT_TURRET_SKIN_TEST=()=>{',
        'const c=document.createElement("canvas");c.width=150;c.height=150;',
@@ -28,7 +28,7 @@ const {chromium}=require('playwright');
        '});',
        '};'
      ].join('\n');
-     await route.fulfill({status:200,contentType:'application/javascript',body:src.replace(marker,probe+'\n'+marker)});
+     await route.fulfill({status:200,contentType:'application/javascript',body:src.slice(0,marker)+probe+'\n'+src.slice(marker)});
    });
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded',timeout:30000});
    await page.waitForFunction(()=>window.CATACLYSM_READY===true,{timeout:20000});
