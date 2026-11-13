@@ -1884,6 +1884,21 @@
     anim.gaitClock=(anim.gaitClock||0)+dt*(anim.settle>0?Math.max(.7,anim.gaitSpeed):anim.gaitSpeed);
     if(!anim.moving&&Math.abs(Math.sin(anim.gaitClock*16/12*TWO))<.2)anim.settle=0;
     anim.visualMoving=anim.moving||anim.settle>0;
+    // Visual-only grounded gait. The real-world foot anchor is updated from
+    // actual player displacement; combat, collision and XP remain unchanged.
+    const gaitSystem=window.CATA_HERO_KINEMATICS;
+    if(gaitSystem){
+      if(!anim.ikRig)anim.ikRig=gaitSystem.create();
+      anim.gaitPose=gaitSystem.advance(anim.ikRig,{
+        x:p.x,y:p.y,
+        vx:dt>0?wrappedDelta(beforeX,p.x)/dt:0,
+        vy:dt>0?(p.y-beforeY-WORLD_SCROLL_Y*dt)/dt:0,
+        dt,baseSpeed:cfg.speed,
+        shielded:p.inv>0,damaged:anim.hit>0,
+        feral:g.buffs.rage>0||g.feralInstinct.active,
+        adrenaline:g.buffs.survivalInstinct>0||g.feralInstinctOverdrive>0
+      });
+    }
     anim.state=anim.hit>0?'hit':anim.moving?'run':anim.attack>0?'attack':'idle';
     anim.frame=Math.floor(anim.clock*12)%12;
     for(const enemy of g.enemies){
@@ -2283,7 +2298,7 @@
     VIS.aura(ctx,type,r,time,effect||state,reducedMotion);
     const anim=isHero?game.player.animation:null;
     const artTime=isHero?(state==='hit'?.35-anim.hit:state==='recover'?8/23-anim.recovery:anim.visualMoving?anim.gaitClock:state==='attack'?Math.max(0,game.t-(game.player.lastShotAt??game.t)):time):time;
-    return ART.draw(ctx,type,r,artTime,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.visualMoving),effect,!!(isHero&&game.player.animation.attack>0));
+    return ART.draw(ctx,type,r,artTime,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.visualMoving),effect,!!(isHero&&game.player.animation.attack>0),isHero?{kinematics:anim.gaitPose,speedRatio:anim.gaitPose?.speedRatio||0,shielded:game.player.inv>0}:null);
   }
   function renderWorld(){
     const source=game,p=source.player;
