@@ -1,0 +1,2318 @@
+{
+  "evidenceType": "Offline PIL resampling only; NOT browser-rendered gameplay",
+  "viewport": [
+    390,
+    844
+  ],
+  "nominalSpritePixels": 61,
+  "sourceIdentity": "read-only art/characters/hero/aim.png articulated painted texture parts",
+  "samples": [
+    {
+      "time": 0.0,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "run",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "run",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "run",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "run",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 16,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 32,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 16,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 32,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 16,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 32,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.0,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "run",
+      "bearing": 0,
+      "frame": 1,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        96,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "run",
+      "bearing": 2,
+      "frame": 25,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        96,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "run",
+      "bearing": 4,
+      "frame": 49,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        96,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "run",
+      "bearing": 6,
+      "frame": 73,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        96,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 18,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 34,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 26,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 74,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 26,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 74,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 18,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 34,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 18,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 34,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.1,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 1,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 25,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 49,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 73,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "run",
+      "bearing": 0,
+      "frame": 3,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        288,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "run",
+      "bearing": 2,
+      "frame": 27,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        288,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "run",
+      "bearing": 4,
+      "frame": 51,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        288,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "run",
+      "bearing": 6,
+      "frame": 75,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        288,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 28,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 76,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 28,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 76,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.2,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 1,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 25,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 49,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 73,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        96,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "run",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "run",
+      "bearing": 2,
+      "frame": 28,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "run",
+      "bearing": 4,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "run",
+      "bearing": 6,
+      "frame": 76,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 22,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 38,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 30,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 78,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 30,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 78,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 22,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 38,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 22,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 38,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.3,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 3,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        288,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 27,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        288,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 51,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        288,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 75,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        288,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "run",
+      "bearing": 0,
+      "frame": 9,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        864,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "run",
+      "bearing": 2,
+      "frame": 33,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        864,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "run",
+      "bearing": 4,
+      "frame": 57,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        864,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "run",
+      "bearing": 6,
+      "frame": 81,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        864,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 0,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 24,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 48,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 72,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        0,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 1,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        96,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 25,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        96,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 49,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        96,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 73,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        96,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 5,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        480,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 21,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        480,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 37,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        480,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 53,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        480,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 5,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        480,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 21,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        480,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 37,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        480,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.6,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 53,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        480,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "idle",
+      "bearing": 0,
+      "frame": 5,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        480,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "idle",
+      "bearing": 2,
+      "frame": 29,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        480,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "idle",
+      "bearing": 4,
+      "frame": 53,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        480,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "idle",
+      "bearing": 6,
+      "frame": 77,
+      "texture": "art/characters/hero/articulated-v1/idle.png",
+      "source": [
+        480,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "run",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "run",
+      "bearing": 2,
+      "frame": 26,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "run",
+      "bearing": 4,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "run",
+      "bearing": 6,
+      "frame": 74,
+      "texture": "art/characters/hero/articulated-v1/run.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "attack",
+      "bearing": 0,
+      "frame": 2,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "attack",
+      "bearing": 2,
+      "frame": 18,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "attack",
+      "bearing": 4,
+      "frame": 34,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "attack",
+      "bearing": 6,
+      "frame": 50,
+      "texture": "art/characters/hero/articulated-v1/attack.png",
+      "source": [
+        192,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "feral-fire",
+      "bearing": 0,
+      "frame": 6,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "feral-fire",
+      "bearing": 2,
+      "frame": 30,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "feral-fire",
+      "bearing": 4,
+      "frame": 54,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "feral-fire",
+      "bearing": 6,
+      "frame": 78,
+      "texture": "art/characters/hero/articulated-v1/feral-fire.png",
+      "source": [
+        576,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "adrenaline-fire",
+      "bearing": 0,
+      "frame": 8,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        768,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "adrenaline-fire",
+      "bearing": 2,
+      "frame": 32,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        768,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "adrenaline-fire",
+      "bearing": 4,
+      "frame": 56,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        768,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "adrenaline-fire",
+      "bearing": 6,
+      "frame": 80,
+      "texture": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+      "source": [
+        768,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "hit",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "hit",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "hit",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "hit",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/hit.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "recover",
+      "bearing": 0,
+      "frame": 4,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        0,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "recover",
+      "bearing": 2,
+      "frame": 20,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        192,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "recover",
+      "bearing": 4,
+      "frame": 36,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        384,
+        96,
+        96
+      ]
+    },
+    {
+      "time": 0.9,
+      "state": "recover",
+      "bearing": 6,
+      "frame": 52,
+      "texture": "art/characters/hero/articulated-v1/recover.png",
+      "source": [
+        384,
+        576,
+        96,
+        96
+      ]
+    }
+  ],
+  "pixelChangesFromT0": {
+    "idle": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 0,
+        "lowerBodyChangedPixels": 0
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 382,
+        "lowerBodyChangedPixels": 40
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 382,
+        "lowerBodyChangedPixels": 40
+      }
+    ],
+    "run": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 1112,
+        "lowerBodyChangedPixels": 358
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 1294,
+        "lowerBodyChangedPixels": 396
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 1266,
+        "lowerBodyChangedPixels": 384
+      }
+    ],
+    "attack": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 773,
+        "lowerBodyChangedPixels": 78
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 181,
+        "lowerBodyChangedPixels": 0
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 699,
+        "lowerBodyChangedPixels": 65
+      }
+    ],
+    "feral-fire": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 1312,
+        "lowerBodyChangedPixels": 402
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 1335,
+        "lowerBodyChangedPixels": 402
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 500,
+        "lowerBodyChangedPixels": 0
+      }
+    ],
+    "adrenaline-fire": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 1273,
+        "lowerBodyChangedPixels": 399
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 1313,
+        "lowerBodyChangedPixels": 399
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 500,
+        "lowerBodyChangedPixels": 0
+      }
+    ],
+    "hit": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 969,
+        "lowerBodyChangedPixels": 124
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 1014,
+        "lowerBodyChangedPixels": 137
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 858,
+        "lowerBodyChangedPixels": 96
+      }
+    ],
+    "recover": [
+      {
+        "toTime": 0.1,
+        "changedPixels": 556,
+        "lowerBodyChangedPixels": 66
+      },
+      {
+        "toTime": 0.2,
+        "changedPixels": 433,
+        "lowerBodyChangedPixels": 68
+      },
+      {
+        "toTime": 0.3,
+        "changedPixels": 782,
+        "lowerBodyChangedPixels": 103
+      }
+    ]
+  },
+  "heroCompressedBytes": 6487332,
+  "heroDecodedBytes": 31850496
+}

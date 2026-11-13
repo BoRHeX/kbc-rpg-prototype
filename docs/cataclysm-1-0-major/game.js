@@ -1870,10 +1870,20 @@
     else if(Math.hypot(input.x,input.y)>.1)p.aim=Math.atan2(input.y,input.x);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval/g.effectiveBuffs.fire);}
     const anim=p.animation;
+    const wasHit=anim.hit>0,wasMoving=anim.moving;
     anim.clock+=dt;anim.attack=Math.max(0,anim.attack-dt);anim.hit=Math.max(0,anim.hit-dt);
     if(g.shots.some(s=>s.kind==='normal'&&dist(s.x,s.y,p.x,p.y)<65))anim.attack=.14;
     anim.moveSpeed=dt>0?Math.hypot(wrappedDelta(beforeX,p.x),p.y-beforeY-WORLD_SCROLL_Y*dt)/dt:0;
     anim.moving=anim.moveSpeed>6;
+    anim.recovery=Math.max(0,(anim.recovery||0)-dt);
+    if(wasHit&&anim.hit===0)anim.recovery=8/23;
+    // Ease gait speed over starts/stops without layering or crossfading bodies.
+    anim.gaitSpeed=(anim.gaitSpeed||0)+(Number(anim.moving)-(anim.gaitSpeed||0))*Math.min(1,dt*12);
+    if(wasMoving&&!anim.moving)anim.settle=.16;
+    anim.settle=Math.max(0,(anim.settle||0)-dt);
+    anim.gaitClock=(anim.gaitClock||0)+dt*(anim.settle>0?Math.max(.7,anim.gaitSpeed):anim.gaitSpeed);
+    if(!anim.moving&&Math.abs(Math.sin(anim.gaitClock*16/12*TWO))<.2)anim.settle=0;
+    anim.visualMoving=anim.moving||anim.settle>0;
     anim.state=anim.hit>0?'hit':anim.moving?'run':anim.attack>0?'attack':'idle';
     anim.frame=Math.floor(anim.clock*12)%12;
     for(const enemy of g.enemies){
@@ -2268,54 +2278,12 @@
     // A new character-reference atlas can be shipped by manifest alone.
     // State requests come from actual game behavior, not a static animation preview.
     const isHero=type==='hero'&&game;
-    const state=isHero?(game.player.animation.moving?'run':game.player.animation.attack>0?'attack':'idle'):requestedState;
+    const state=isHero?(game.player.animation.hit>0?'hit':game.player.animation.recovery>0?'recover':game.player.animation.visualMoving?'run':game.player.animation.attack>0?'attack':'idle'):requestedState;
     const effect=isHero?(game.buffs.rage>0||game.feralInstinct.active?'feral':game.buffs.survivalInstinct>0||game.feralInstinctOverdrive>0?'adrenaline':null):null;
     VIS.aura(ctx,type,r,time,effect||state,reducedMotion);
-    return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.moving),effect,!!(isHero&&game.player.animation.attack>0));
-    // Original fallback below is retained as inert reference during migration.
-    const hero=type==='hero',ally=roleNames.includes(type);
-    const palette={hero:'#f4f3df',shooter:'#e0bd82',healer:'#a5dfc5',tank:'#a6bad4',brawler:'#ed9c7d',sniper:'#b8d17f',engineer:'#efca70',trapper:'#87c9d1',bard:'#c5a0e5',shambler:'#789b7b',weaver:'#ad91c7',dasher:'#d8a267',orbiter:'#65b8bf',stalker:'#b9b17c',ghost:'#c9bfe5',gas:'#a5bd68',boss:'#c36b87'};
-    const fur=hurt?'#fff4d7':palette[type]||palette.shambler;
-    const a=hero&&game?game.player.animation:null,pose=reducedMotion?0:Math.floor(time*12)/12;
-    const stride=a&&a.state==='run'?Math.sin(pose*16)*4:0;
-    const breathe=reducedMotion?0:Math.sin(pose*3)*.6;
-    const recoil=a&&a.state==='attack'&&!reducedMotion?2:0;
-    ctx.save();ctx.scale(r/22,r/22);ctx.lineCap='round';
-    ctx.translate(-recoil,breathe+(a&&a.state==='hit'&&!reducedMotion?Math.sin(pose*40)*2:0));
-    if(hero&&a&&a.state==='hit')outline(0,0,29,'#ffb9a5',2);
-    ctx.fillStyle='#030e17aa';ctx.beginPath();ctx.ellipse(0,20,25,8,0,0,TWO);ctx.fill();
-    ctx.strokeStyle='#091822';ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(-13,14);ctx.quadraticCurveTo(-36,20,-29,-5+(reducedMotion?0:Math.sin(pose*4)*3));ctx.stroke();
-    ctx.strokeStyle=fur;ctx.lineWidth=5;ctx.stroke();
-    ctx.fillStyle=hero?'#487d77':ally?'#304d60':'#314b48';ctx.beginPath();ctx.ellipse(0,13,16,13,0,0,TWO);ctx.fill();
-    circle(-10,23+stride,6,fur);circle(10,23-stride,6,fur);
-    polygon(0,0,[[-21,1],[-21,-27],[-7,-19],[7,-19],[21,-27],[22,2],[16,14],[-16,14]],'#091822');
-    polygon(0,0,[[-18,0],[-18,-21],[-7,-14],[7,-14],[18,-21],[19,1],[13,11],[-13,11]],fur);
-    polygon(0,0,[[-16,-17],[-9,-12],[-15,-8]],'#c58388');polygon(0,0,[[16,-17],[9,-12],[15,-8]],'#c58388');
-    if(type==='stalker'){polygon(0,0,[[-23,-5],[0,-28],[23,-5],[12,-11],[-12,-11]],'#343c35');}
-    if(hero&&Math.floor(time*12)%60===0){ctx.save();ctx.scale(1,.65);}
-    ctx.fillStyle=hero||ally?'#102d36':'#ffb38d';ctx.fillRect(-12,-3,7,4);ctx.fillRect(5,-3,7,4);
-    if(hero||ally){circle(-8,-3,1,'#fff');circle(9,-3,1,'#fff');}
-    if(hero&&Math.floor(time*12)%60===0)ctx.restore();
-    polygon(0,0,[[-3,3],[3,3],[0,6]],'#a15d6e');ctx.strokeStyle='#334149';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-5,8);ctx.lineTo(0,9);ctx.lineTo(5,8);ctx.stroke();
-    if(hero){ctx.fillStyle='#76e2c1';ctx.fillRect(-16,10,32,4);polygon(0,0,[[-12,13],[-22,25],[-12,23]],'#76e2c1');}
-    if(type==='healer'){ctx.fillStyle='#f4efdb';ctx.fillRect(-17,-13,34,6);ctx.fillStyle='#a83f59';ctx.fillRect(-2,-16,4,12);ctx.fillRect(-6,-12,12,4);ctx.fillStyle='#ecedce';ctx.fillRect(10,13,13,12);ctx.fillStyle='#327b69';ctx.fillRect(15,15,3,8);ctx.fillRect(12,18,9,3);}
-    if(type==='tank'){polygon(0,0,[[-23,7],[-9,9],[-8,24],[-17,31],[-25,22]],'#7f9eb5');ctx.strokeStyle='#d9e9ec';ctx.lineWidth=2;ctx.strokeRect(-21,12,9,9);ctx.fillStyle='#526d88';ctx.fillRect(-21,-15,42,7);}
-    if(type==='shooter'){ctx.fillStyle='#463e37';ctx.fillRect(-19,-13,38,7);ctx.fillStyle='#efbb6b';ctx.fillRect(-12,11,4,12);}
-    if(type==='brawler'){for(const side of [-1,1]){inkBox(side*20-6,9,12,10,'#b85948');for(let i=0;i<3;i++)inkBox(side*20-5+i*4,18,2,10,'#fff2d5','#091822',1);}}
-    if(type==='sniper'){inkBox(-20,-12,40,6,'#476647');circle(9,-8,6,'#a9efc4');inkBox(13,12,31,5,'#a6ba9b');inkBox(23,6,10,5,'#374f49');}
-    if(type==='engineer'){inkBox(-22,-18,44,9,'#d3a34d');inkBox(-9,-24,18,9,'#efcd77');inkBox(13,9,9,23,'#778e9c');circle(17,9,7,'#c6d5cb');circle(17,8,3,'#30444b');}
-    if(type==='trapper'){inkBox(-20,-14,40,5,'#3e757c');outline(18,18,11,'#b9e7df',3);inkBox(-24,10,12,14,'#588993');}
-    if(type==='bard'){polygon(0,0,[[-22,-13],[0,-30],[22,-13]],'#765090');circle(19,18,10,'#e8bd78');inkBox(11,-2,5,26,'#b58960');ctx.fillStyle='#fff0ba';ctx.font='bold 17px system-ui';ctx.fillText('♪',-27,18);}
-    if(hero||type==='shooter'){
-      ctx.save();ctx.translate(13,13);ctx.rotate(aim);ctx.fillStyle='#0a1821';ctx.fillRect(0,-5,24,10);ctx.fillStyle='#8baba9';ctx.fillRect(4,-5,15,4);ctx.fillStyle='#e7d3a0';ctx.fillRect(20,-3,5,6);ctx.restore();
-    }
-    if(type==='dasher'){polygon(0,0,[[-21,4],[-34,13],[-21,12]],'#e0b66e');polygon(0,0,[[21,4],[32,13],[21,12]],'#e0b66e');}
-    if(type==='weaver'){ctx.strokeStyle='#dac4e5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-16,13);ctx.lineTo(-25,22);ctx.lineTo(-16,21);ctx.lineTo(-24,30);ctx.stroke();}
-    if(type==='orbiter'){outline(0,6,28,'#5fbbc3',2);circle(27,0,4,'#d3ffff');}
-    if(type==='gas'){circle(-10,6,7,'#33462e');circle(10,6,7,'#33462e');ctx.fillStyle='#d6e790';ctx.fillRect(-4,2,8,11);}
-    if(type==='ghost'){polygon(0,0,[[-17,12],[-22,30],[-10,24],[0,32],[10,24],[22,30],[17,12]],'#c9bfe5');}
-    if(type==='boss'){polygon(0,0,[[-18,-17],[-23,-34],[-9,-26],[0,-39],[9,-26],[23,-34],[18,-17]],'#ebbf6d');circle(0,-25,3,'#e96e8b');ctx.fillStyle='#702e4b';ctx.fillRect(-17,12,34,6);}
-    ctx.restore();
+    const anim=isHero?game.player.animation:null;
+    const artTime=isHero?(state==='hit'?.35-anim.hit:state==='recover'?8/23-anim.recovery:anim.visualMoving?anim.gaitClock:state==='attack'?Math.max(0,game.t-(game.player.lastShotAt??game.t)):time):time;
+    return ART.draw(ctx,type,r,artTime,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.visualMoving),effect,!!(isHero&&game.player.animation.attack>0));
   }
   function renderWorld(){
     const source=game,p=source.player;
@@ -2776,5 +2744,5 @@
   });
   window.spawnRelic=spawnRelic;
   last=performance.now();requestAnimationFrame(frame);
-  window.CATACLYSM_BOOT.ready(BUILD);
+  ART.ready.then(()=>window.CATACLYSM_BOOT.ready(BUILD)).catch(error=>window.CATACLYSM_BOOT.fail('Character pack failed: '+error.message));
 })();
