@@ -14,9 +14,9 @@ const {chromium}=require('playwright');
    page.on('pageerror',e=>errors.push(e.message));
    await page.route(new RegExp('/'+build+'/game\\.js\\?build='),async route=>{
     let src=fs.readFileSync(path.join(gameRoot,build,'game.js'),'utf8');
-    const marker='  window.CATACLYSM_BOOT.ready(BUILD);';
-    assert.ok(src.includes(marker),'test injection point not found');
-    src=src.replace(marker,`
+    const marker=src.lastIndexOf('})();');
+    assert.ok(marker>=0,'test injection point not found');
+    src=src.slice(0,marker)+`
       // TEST-ONLY local-browser interception. Never committed to the production game.
       window.__POLISH_QA=Object.freeze({
         prepareMagnet(){
@@ -37,7 +37,7 @@ const {chromium}=require('playwright');
         lateNightOne(){game.t=12.98;},
         lateNightTwo(){game.t=25.98;}
       });
-`+marker);
+`+src.slice(marker);
     await route.fulfill({status:200,contentType:'application/javascript',body:src});
    });
    const response=await page.goto('http://127.0.0.1:8765/'+build+'/',{waitUntil:'domcontentloaded',timeout:30000});
