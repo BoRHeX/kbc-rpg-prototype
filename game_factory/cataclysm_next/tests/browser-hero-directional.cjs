@@ -62,18 +62,18 @@ const {chromium}=require('playwright');
    }
    const diff=result.engineerAt0.reduce((n,v,i)=>n+(v!==result.engineerAt90[i]?1:0),0);
    assert.ok(diff>90,'turret visually rotates to track targets');
+   await page.locator('#play').click({force:true});
+   await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',{timeout:6000});
    await page.addStyleTag({content:':root{--cat-top-inset:32px !important}'});
    const rects=await page.evaluate(()=>{
      const r=id=>document.querySelector(id).getBoundingClientRect().toJSON();
      return {header:r('.identity'),hud:r('.hud'),full:r('#fullscreen'),pause:r('#pause'),title:r('.identity>span')};
    });
    assert.ok(rects.header.bottom+3<=rects.hud.top,'top Android safe area must not cause HUD/header overlap: '+JSON.stringify(rects));
-   assert.ok(rects.full.right+3<=rects.pause.left,'fullscreen must not overlap Pause');
+   assert.ok(rects.full.right+3<=rects.pause.left,'fullscreen must not overlap a visible Pause control: '+JSON.stringify(rects));
    assert.ok(rects.title.right<=rects.full.left+1,'game title must not draw beneath fullscreen');
    assert.deepEqual(errors,[],'runtime JS errors');
    assert.deepEqual(assets,[],'missing painted assets');
-   await page.locator('#play').click({force:true});
-   await page.waitForFunction(()=>CATACLYSM_DIAGNOSTICS.snapshot().mode==='running',{timeout:6000});
    const out='artifacts/cataclysm-hero-directional';fs.mkdirSync(out,{recursive:true});
    await page.screenshot({path:path.join(out,dir+'.png')});
    await page.close();
