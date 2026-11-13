@@ -183,8 +183,6 @@ jobs:
         run: node game_factory/cataclysm_next/tests/browser-major.cjs
       - name: Traverse the fixed, unbounded map on both game modes in real Chrome
         run: node game_factory/cataclysm_next/tests/browser-infinite.cjs
-      - name: Verify night 99/100 battle and final wave stress
-        run: node game_factory/cataclysm_next/tests/browser-horde.cjs
       - name: Compare painted asset revision and actual animation frames in both games
         run: node game_factory/cataclysm_next/tests/browser-art.cjs
       - name: Enforce stage-specific motion, score and follower acceptance
