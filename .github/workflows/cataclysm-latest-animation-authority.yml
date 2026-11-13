@@ -1,0 +1,157 @@
+name: Cataclysm 1.0 · Latest Character Animations Only
+run-name: Verify latest sprite sources and publish consistent Cataclysm 1.0
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm_10_LATEST_ANIMATION_LAUNCH.md
+permissions:
+  contents: read
+concurrency:
+  group: borhez-mobile-pages-delivery
+  cancel-in-progress: false
+
+jobs:
+  latest-sprites:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rotate a synchronized Android-safe asset revision across game and lab
+        run: |
+          python game_factory/cataclysm_asset_release.py --stage latestanim --run-id "$GITHUB_RUN_ID"
+          git diff --check
+      - name: Verify no old hero sprites can override the latest reference state
+        run: |
+          set -euo pipefail
+          for dir in docs/cataclysm-1-0-major docs/cataclysm-100-lab; do
+            for js in "$dir"/*.js; do node --check "$js"; done
+          done
+          node --check game_factory/cataclysm_next/tests/browser-animation-authority.cjs
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs tuning
+      - name: Real browser QA — newest hero and companion artwork across every action state
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          nohup python -m http.server 8765 --directory docs >/tmp/cataclysm-latest-animation.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-animation-authority.cjs
+          node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-art.cjs
+          node game_factory/cataclysm_next/tests/browser-infinite.cjs
+          node game_factory/cataclysm_next/tests/browser-personality.cjs
+          node game_factory/cataclysm_next/tests/browser-tuning.cjs
+          node game_factory/cataclysm_next/tests/browser-one-boss.cjs
+          node game_factory/cataclysm_next/tests/browser-polish.cjs
+      - name: Preserve actual source evidence and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-latest-animation-evidence
+          path: |
+            artifacts/cataclysm-animation-authority/
+            artifacts/cataclysm-major/
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: PR only synchronized cache revision changes; game source already on main
+        shell: bash
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="studio/cataclysm-latest-animations-$GITHUB_RUN_ID"
+          git checkout -b "$branch"
+          git add docs/cataclysm-1-0-major/animation.js docs/cataclysm-1-0-major/visuals.js docs/cataclysm-1-0-major/index.html
+          git add docs/cataclysm-100-lab/animation.js docs/cataclysm-100-lab/visuals.js docs/cataclysm-100-lab/index.html
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::Synchronized revision was not changed"; exit 1; }
+          git commit -m "Synchronize newest Cataclysm character sprites across Android cache and lab"
+          gh auth setup-git
+          git push --set-upstream origin "$branch"
+          pr_url="$(gh pr create --base main --head "$branch" --title "Cataclysm 1.0 · Latest animation atlas only" --body "Synchronized cache revision for the newest authored character animation sources after independent Chrome verified all 7 hero states, companion action sheets, no mixed legacy hero sprites, original animated enemies, progression and gameplay. No changes to balance, cards, speech or controls.")"
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+      - name: Merge accepted cache revision and ensure exact latest game source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+        run: |
+          set -euo pipefail
+          gh pr merge "$PR_URL" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-latest-animation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/
+      - name: Deploy latest verified Cataclysm 1.0 animation source
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-latest-animation-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Back off for another Pages publication if needed
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry same accepted artifact after deployment contention
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-latest-animation-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Confirm public production and lab sprite source matches accepted commit
+        run: |
+          python - <<'PY'
+          import hashlib,time,urllib.request
+          from pathlib import Path
+          base="https://borhex.github.io/kbc-rpg-prototype/"
+          files=["index.html","animation.js","visuals.js","art/character-animations.json","art/characters/hero/idle.png","art/characters/hero/run.png","art/characters/hero/attack.png","art/characters/hero/feral.png"]
+          for directory in ("cataclysm-1-0-major","cataclysm-100-lab"):
+              for name in files:
+                  expected=hashlib.sha256((Path("docs")/directory/name).read_bytes()).hexdigest()
+                  for attempt in range(12):
+                      try:
+                          url=base+directory+"/"+name+"?verify-latest="+str(attempt)
+                          request=urllib.request.Request(url,headers={"Cache-Control":"no-cache"})
+                          with urllib.request.urlopen(request,timeout=20) as response:
+                              if hashlib.sha256(response.read()).hexdigest()!=expected:raise RuntimeError("SHA256 mismatch")
+                          print("LIVE VERIFIED",directory,name)
+                          break
+                      except Exception as e:
+                          if attempt==11:raise RuntimeError("Live latest animation mismatch: "+directory+"/"+name+": "+str(e))
+                          time.sleep(5)
+          PY
+      - name: Link verified playable game
+        run: |
+          echo "Latest character animation PASS: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Lab: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/" >> "$GITHUB_STEP_SUMMARY"
