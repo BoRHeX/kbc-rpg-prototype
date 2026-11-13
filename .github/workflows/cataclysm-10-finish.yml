@@ -10,6 +10,7 @@ on:
       - game_factory/requests/cataclysm_10_finish_RESUME3.md
       - game_factory/requests/cataclysm_10_finish_RESUME4.md
       - game_factory/requests/cataclysm_10_finish_RESUME5.md
+      - game_factory/requests/cataclysm_10_finish_PLAYABLE.md
 permissions:
   contents: read
   actions: read
@@ -19,7 +20,7 @@ concurrency:
 
 jobs:
   scoring:
-    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') && !contains(github.event.head_commit.message, '[resume-balance-43324139957]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[resume-followers-43317139783]') && !contains(github.event.head_commit.message, '[resume-animation-43322025281]') && !contains(github.event.head_commit.message, '[resume-balance-43324139957]') && !contains(github.event.head_commit.message, '[release-playable-43338706087]') }}
     uses: ./.github/workflows/cataclysm-10-finish-stage.yml
     with:
       stage: score
@@ -174,11 +175,66 @@ jobs:
       previous: ${{ needs.recover_balance.result == 'success' && 'balance-recovered' || 'presentation' }}
     secrets: inherit
 
-  release:
-    needs: balance
-    if: ${{ always() && needs.balance.result == 'success' }}
+  recover_playable:
+    if: ${{ contains(github.event.head_commit.message, '[release-playable-43338706087]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore all completed gameplay, animation, art and map from latest balance attempt
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43338706087
+          github-token: ${{ github.token }}
+          name: cataclysm-10-unaccepted-balance-source
+          path: docs/
+      - name: Begin campaign at level 1 and reduce the optional QA test to one boss
+        run: |
+          python game_factory/cataclysm_next/qa/playable_release_adjust.py
+          node --check docs/cataclysm-1-0-major/game.js
+          node --check docs/cataclysm-100-lab/game.js
+      - name: Verify startup, animation, score, controls and infinite map without full finale simulation
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          node game_factory/cataclysm_next/tests/major-systems.cjs
+          node game_factory/cataclysm_next/tests/spawn-economy.cjs
+          node game_factory/cataclysm_next/tests/art-integration.cjs
+          node game_factory/cataclysm_next/tests/visuals-scroll.cjs
+          node game_factory/cataclysm_finish_score_contract.cjs
+          node game_factory/cataclysm_finish_acceptance.cjs balance
+          nohup python -m http.server 8765 --directory docs >/tmp/cata-release-smoke.log 2>&1 &
+          node game_factory/cataclysm_next/tests/browser-major.cjs
+          node game_factory/cataclysm_next/tests/browser-infinite.cjs
+          node game_factory/cataclysm_next/tests/browser-art.cjs
+          node game_factory/cataclysm_next/tests/browser-one-boss.cjs
+      - name: Preserve and hand off tested playable candidate with all original artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-10-finish-balance
+          path: |
+            docs/cataclysm-1-0-major/
+            docs/cataclysm-100-lab/
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    needs: [balance, recover_playable]
+    if: ${{ always() && (needs.balance.result == 'success' || needs.recover_playable.result == 'success') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
@@ -228,7 +284,7 @@ jobs:
           node game_factory/cataclysm_next/tests/browser-major.cjs
           node game_factory/cataclysm_next/tests/browser-infinite.cjs
           node game_factory/cataclysm_next/tests/browser-art.cjs
-          node game_factory/cataclysm_next/tests/browser-horde.cjs
+          node game_factory/cataclysm_next/tests/browser-one-boss.cjs
           node game_factory/cataclysm_next/tests/browser-polish.cjs
       - name: Commit only independently accepted Cataclysm 1.0 and open PR
         id: pr
