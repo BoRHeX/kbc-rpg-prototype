@@ -62,5 +62,5 @@ for(const state of ['run','feral','adrenaline','hit','attack']){
 vfx.shot(ctx,{x:100,y:100,kind:'pet',trail:[{x:77,y:85}]},2,false);
 vfx.impact(ctx,25,1,true,false);
 vfx.atmosphere(ctx,844,390,12,1,false);
-assert.ok(draws>200,'render methods issue real canvas commands');
+assert.ok(draws>20,'World scenery and effects must issue meaningful canvas operations; full-body sprites now draw as one texture rather than hundreds of procedural primitives');
 console.log('PASS Cataclysm visuals: biome scenery, three prop classes, hero states, impact/SFX cues, fixed infinite world and inverted shadow');
