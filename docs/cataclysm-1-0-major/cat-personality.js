@@ -150,7 +150,7 @@ function dispatch(s,roles,night=1){
   const b=s.queue[i];if((s.nextSpeechAt||0)>s.clock&&b.priority<75)continue;if((s.cooldowns[b.role]||0)>s.clock&&b.priority<75)continue;
   if(s.active.some(a=>a.role===b.role)){if(b.priority<75||s.active.some(a=>a.role===b.role&&a.priority>=b.priority))continue;s.active=s.active.filter(a=>a.role!==b.role);}
   if(s.active.length>=2){const low=s.active.reduce((a,c)=>a.priority<c.priority?a:c);if(low.priority>=b.priority)continue;s.active=s.active.filter(a=>a!==low);}
-  s.queue.splice(i,1);s.nextSpeechAt=s.clock+1.1;b.until=s.clock+Math.max(2.8,Math.min(4.8,1.3+b.text.length*.055));s.active.push(b);s.cooldowns[b.role]=b.until+5;
+  s.queue.splice(i,1);s.nextSpeechAt=s.clock+1.1;b.started=s.clock;b.until=s.clock+Math.max(2.8,Math.min(4.8,1.3+b.text.length*.055));s.active.push(b);s.cooldowns[b.role]=b.until+5;
   s.history.push({role:b.role,event:b.event,text:b.text,at:s.clock});if(s.history.length>40)s.history.shift();
   const exchange=exchanges[b.text];
   if(night<98&&exchange&&roles.includes(exchange.role)){s.reply={role:exchange.role,event:'reply',text:exchange.text,at:b.until+.5};}
@@ -178,7 +178,10 @@ function render(s,g,canvas,W,H,shakeX=0,shakeY=0){
  const placed=[];
  for(const b of bubbles){
   const actor=b.role==='hero'?g.player:g.companionSquad.find(c=>c.type===b.role);if(!actor)continue;
-  let node=nodes.get(b.id);if(!node){node=document.createElement('div');node.className='cat-speech';node.dataset.catSpeech=b.role;node.dataset.speechEvent=b.event;node.textContent=b.text;layer.appendChild(node);nodes.set(b.id,node);}
+  let node=nodes.get(b.id);if(!node){node=document.createElement('div');node.className='cat-speech';node.dataset.catSpeech=b.role;node.dataset.speechEvent=b.event;node.setAttribute('role','status');node.setAttribute('aria-label',b.text);const full=document.createElement('span');full.className='speech-layout';full.textContent=b.text;full.setAttribute('aria-hidden','true');const ink=document.createElement('span');ink.className='speech-ink';ink.setAttribute('aria-hidden','true');node.append(full,ink);node.ink=ink;layer.appendChild(node);nodes.set(b.id,node);}
+  const duration=Math.max(.25,Math.min(.8,b.text.length*.014)),reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const revealed=reduced?b.text.length:Math.min(b.text.length,Math.floor(Math.max(0,s.clock-(b.started??s.clock))/duration*b.text.length));
+  if(node.revealed!==revealed){node.ink.textContent=b.text.slice(0,revealed);node.revealed=revealed;}
   const ax=rect.left+(actor.x-g.player.x+W/2+shakeX)*scaleX,ay=rect.top+(actor.y-g.player.y+H/2+shakeY)*scaleY-(actor.r+12)*scaleY;
   node.hidden=false;if(!node.speechSize)node.speechSize={width:node.offsetWidth,height:node.offsetHeight,viewport:rect.width};
   if(node.speechSize.viewport!==rect.width)node.speechSize={width:node.offsetWidth,height:node.offsetHeight,viewport:rect.width};
@@ -194,6 +197,6 @@ function render(s,g,canvas,W,H,shakeX=0,shakeY=0){
   if(b.event==='guide'){node.dataset.guideTarget='pause-menu';if(guide&&typeof guide.cue==='function'){try{guide.cue({actor:'hero',target:'pause',until:b.until,clock:s.clock});}catch(_){/* The Guide may mount after the game. */}}}
  }
 }
-function presentation(){return [...nodes.values()].map(n=>({role:n.dataset.catSpeech,event:n.dataset.speechEvent,visible:!n.hidden,text:n.textContent,left:parseFloat(n.style.left),top:parseFloat(n.style.top)}));}
+function presentation(){return [...nodes.values()].map(n=>({role:n.dataset.catSpeech,event:n.dataset.speechEvent,visible:!n.hidden,text:n.getAttribute('aria-label'),revealed:n.revealed,left:parseFloat(n.style.left),top:parseFloat(n.style.top)}));}
 const api={pass:'cats-alive-01',presentation,voices,shared,create,emit,tick,dispatch,render,registerGuide,guideAvailable,contractVersion:1};root.CATA_CATS=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

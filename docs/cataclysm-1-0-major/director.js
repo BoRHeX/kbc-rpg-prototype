@@ -14,13 +14,13 @@ function normalSpawnInterval({elapsed=0,alive=0,cap=54,hpFraction=1,killRate=0}=
 const NORMAL=Object.freeze([
  {id:'shambler',cost:1,rank:1,role:'melee'},
  {id:'dasher',cost:2,rank:2,role:'melee'},
- {id:'weaver',cost:3,rank:3,role:'ranged'},
- {id:'stalker',cost:3,rank:3,role:'melee'},
- {id:'orbiter',cost:4,rank:4,role:'ranged'},
- {id:'ghost',cost:5,rank:5,role:'ranged'},
- {id:'hexer',cost:6,rank:6,role:'caster'},
- {id:'summoner',cost:7,rank:7,role:'caster'},
- {id:'blight',cost:8,rank:8,role:'caster'}
+ {id:'weaver',cost:5,rank:3,role:'ranged'},
+ {id:'stalker',cost:2.6,rank:3,role:'melee'},
+ {id:'orbiter',cost:7,rank:4,role:'ranged'},
+ {id:'ghost',cost:12,rank:5,role:'ranged'},
+ {id:'hexer',cost:9,rank:6,role:'caster'},
+ {id:'summoner',cost:10,rank:7,role:'caster'},
+ {id:'blight',cost:9,rank:8,role:'caster'}
 ]);
 const COSTS=Object.freeze({...Object.fromEntries(NORMAL.map(x=>[x.id,x.cost])),elite:18,superElite:26,boss:34});
 const SURPRISE_NIGHTS=Object.freeze([17,38,59,83]);
@@ -71,7 +71,7 @@ function create(seed=990100){
   const max=n>=95?24:Math.min(22,5+Math.floor(n/8));
   const weight=e=>Math.max(1,9-2*Math.abs(e.rank-(tier-1)));
   for(let attempts=0;queue.length<max&&attempts<200;attempts++){
-   const remaining=budget-spent(),choices=order.filter(e=>priceFor(e.id,n)<=remaining+.0001);
+   const remaining=budget-spent(),choices=order.filter(e=>priceFor(e.id,n)<=remaining+.0001&&(e.role==='melee'||queue.filter(q=>NORMAL.find(a=>a.id===q.id)?.role!=='melee').length<Math.floor((queue.length+1)/3)));
    if(!choices.length)break;
    const sum=choices.reduce((total,e)=>total+weight(e),0);
    let roll=rand()*sum,chosen=choices[choices.length-1];
@@ -90,7 +90,8 @@ function create(seed=990100){
  function snapshot(){return {seed,bank,lastNight,totalSpent,totalEarned,rankPrices:COSTS,surprises:[...SURPRISE_NIGHTS]};}
  return Object.freeze({plan,primeTo,snapshot});
 }
-const API=Object.freeze({create,normal:NORMAL,costs:COSTS,priceFor,healthScale,finalHorde:FINAL_HORDE,
+function xpRequired(level){return [6,8,10,13,16,20,24,28,32,36][Math.max(1,Math.floor(level))-1]??(7+3*Math.max(1,Math.floor(level)));}
+const API=Object.freeze({xpRequired,create,normal:NORMAL,costs:COSTS,priceFor,healthScale,finalHorde:FINAL_HORDE,
  FINAL_INTERVAL_SECONDS,normalSpawnInterval,rankOf,isPeak,reserveShare,budgetForNight,SURPRISE_NIGHTS,NIGHT_SECONDS,FINAL_NIGHT});
 root.CATA_LAB_DIRECTOR=API;
 if(typeof module!=='undefined'&&module.exports)module.exports=API;
