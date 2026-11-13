@@ -18,7 +18,7 @@ const characters=Object.freeze({
 // Resolve against this script so both document links and nested routes use local art.
 const assetBase=typeof document!=='undefined'&&document.currentScript
  ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-balance-43338706087';
+const assetRelease='cataclysm-10-polishui-43349018644';
 const atlases=Object.create(null);
 let loaded=0,failed=0,total=0;
 function loadAtlas(key,count){
