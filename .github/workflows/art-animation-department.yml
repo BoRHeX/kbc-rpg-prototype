@@ -25,7 +25,7 @@ jobs:
       actions: read
     outputs:
       pr: ${{ steps.candidate.outputs.pr }}
-      review_outcome: ${{ steps.review1.outcome }}
+      review_outcome: ${{ steps.gate1.outcome == 'failure' && 'failure' || steps.review1.outcome }}
     env:
       ART_JOB: game_factory/art_department/jobs/active.json
       BORHEZ_BROWSER_CHANNEL: chrome
@@ -59,14 +59,26 @@ jobs:
           allow-bots: true
           prompt-file: game_factory/art_department/PRODUCTION_PROMPT.md
       - name: Independent mechanical animation and scope gates
+        id: gate1
+        continue-on-error: true
         run: |
+          set -euo pipefail
+          mkdir -p artifacts/art-department
+          {
           python -m game_factory.art_department.pipeline gate
           if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout')=='directional-grid' else 1)"; then
             python -m game_factory.cataclysm_asset_release --stage heroanimation --run-id "$GITHUB_RUN_ID"
           fi
           git diff --check
           python -m game_factory.art_department.run_checks unit
+          } 2>&1 | tee artifacts/art-department/mechanical-gate-1.log
+      - name: Write automatic mechanical rejection feedback for next isolated animator
+        if: steps.gate1.outcome == 'failure'
+        env:
+          ART_REVIEW_ATTEMPT: '1'
+        run: python game_factory/art_department/mechanical_failure.py
       - name: Launch a genuine web game, not a mockup
+        if: steps.gate1.outcome == 'success'
         shell: bash
         run: |
           nohup python -m http.server 8765 --directory docs >/tmp/borhez-art-server.log 2>&1 &
@@ -74,10 +86,12 @@ jobs:
           target="$(python -c 'import json;print(json.load(open("game_factory/art_department/jobs/active.json"))["play_url_path"])')"
           curl --fail "http://127.0.0.1:8765/$target/" >/dev/null
       - name: Inspect running game, motion states and stress scene in Chrome
+        if: steps.gate1.outcome == 'success'
         run: |
           node game_factory/art_department/browser-review.cjs
           python -m game_factory.art_department.run_checks browser
       - name: Independent art director — assess first candidate
+        if: steps.gate1.outcome == 'success'
         id: review1
         continue-on-error: true
         env:
@@ -85,10 +99,10 @@ jobs:
           ART_REVIEW_ATTEMPT: '1'
         run: python -m game_factory.art_department.pipeline review
       - name: Snapshot rejected source and independent visual evidence
-        if: steps.review1.outcome == 'failure'
+        if: steps.review1.outcome == 'failure' || steps.gate1.outcome == 'failure'
         run: python game_factory/art_department/snapshot_candidate.py
       - name: Transfer rejected candidate to a fresh secured runner
-        if: steps.review1.outcome == 'failure'
+        if: steps.review1.outcome == 'failure' || steps.gate1.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: rejected-art-stage1
@@ -122,7 +136,7 @@ jobs:
       actions: read
     outputs:
       pr: ${{ steps.candidate.outputs.pr }}
-      review_outcome: ${{ steps.review2.outcome }}
+      review_outcome: ${{ steps.gate2.outcome == 'failure' && 'failure' || steps.review2.outcome }}
     env:
       ART_JOB: game_factory/art_department/jobs/active.json
       BORHEZ_BROWSER_CHANNEL: chrome
@@ -162,14 +176,26 @@ jobs:
           allow-bots: true
           prompt-file: game_factory/art_department/REVISION_PROMPT.md
       - name: Source, frame, silhouette and gameplay contracts
+        id: gate2
+        continue-on-error: true
         run: |
+          set -euo pipefail
+          mkdir -p artifacts/art-department
+          {
           python -m game_factory.art_department.pipeline gate
           if python -c "import json; j=json.load(open('game_factory/art_department/jobs/active.json')); exit(0 if j.get('atlas_layout')=='directional-grid' else 1)"; then
             python -m game_factory.cataclysm_asset_release --stage heroanimation --run-id "$GITHUB_RUN_ID"
           fi
           git diff --check
           python -m game_factory.art_department.run_checks unit
+          } 2>&1 | tee artifacts/art-department/mechanical-gate-2.log
+      - name: Write automatic mechanical rejection feedback for next isolated animator
+        if: steps.gate2.outcome == 'failure'
+        env:
+          ART_REVIEW_ATTEMPT: '2'
+        run: python game_factory/art_department/mechanical_failure.py
       - name: Serve the actual Cataclysm game and stress lab
+        if: steps.gate2.outcome == 'success'
         shell: bash
         run: |
           nohup python -m http.server 8765 --directory docs >/tmp/borhez-art-server.log 2>&1 &
@@ -177,10 +203,12 @@ jobs:
           target="$(python -c 'import json;print(json.load(open("game_factory/art_department/jobs/active.json"))["play_url_path"])')"
           curl --fail "http://127.0.0.1:8765/$target/" >/dev/null
       - name: Re-render all 24 real-browser run and attack frames
+        if: steps.gate2.outcome == 'success'
         run: |
           node game_factory/art_department/browser-review.cjs
           python -m game_factory.art_department.run_checks browser
       - name: Independent visual art director — attempt two
+        if: steps.gate2.outcome == 'success'
         id: review2
         continue-on-error: true
         env:
@@ -188,10 +216,10 @@ jobs:
           ART_REVIEW_ATTEMPT: '2'
         run: python -m game_factory.art_department.pipeline review
       - name: Snapshot independently rejected corrected artwork
-        if: steps.review2.outcome == 'failure'
+        if: steps.review2.outcome == 'failure' || steps.gate2.outcome == 'failure'
         run: python game_factory/art_department/snapshot_candidate.py
       - name: Transfer correction to final isolated runner
-        if: steps.review2.outcome == 'failure'
+        if: steps.review2.outcome == 'failure' || steps.gate2.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: rejected-art-stage2
