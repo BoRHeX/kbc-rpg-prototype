@@ -1,6 +1,6 @@
 # Autonomous Art Department — repair independently rejected motion
 
-You are resuming exactly the same character-animation request after an independent visual critique rejected the last candidate. This is **not a new gameplay project**. Read the current `jobs/active.json`, production prompt, `artifacts/art-department/revision-brief.md`, `visual-review.json`, `mechanical-gate.json`, `animation-contact.png`, `motion-render.png`, `run-cycle.png`, `attack-cycle.png`, and `actual-game.png`. Inspect the actual images, not only the pass/fail numbers.
+You are resuming exactly the same character-animation request after an independent visual critique rejected the last candidate. This is **not a new gameplay project**. Read the current `jobs/active.json`, production prompt, `artifacts/art-department/revision-brief.md`, `visual-review.json`, `mechanical-gate.json`, `animation-contact.png`, `motion-render.png`, `run-cycle.png`, `attack-cycle.png`, and `actual-game.png`. Inspect the actual images, not only the pass/fail numbers. If the candidate failed mechanical QA before browser images existed, the revision brief includes the exact independent mechanical-gate output; resolve it from the restored source and do not require missing screenshots.
 
 Change the **actual artwork, skeleton/rig, frame choreography, and where necessary the active runtime selection**, not the tests. Never change the studio job, validation, reviewer, CI or unrelated systems. Preserve the project and Cataclysm 1.0 gameplay.
 
