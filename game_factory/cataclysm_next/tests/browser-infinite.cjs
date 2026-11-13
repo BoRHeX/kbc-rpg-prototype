@@ -12,14 +12,14 @@ const {chromium}=require('playwright');
    const filename=path.resolve(__dirname,'../../../docs',dir,'game.js');
    await page.route(new RegExp('/'+dir+'/game\\.js\\?build='),async route=>{
     let src=fs.readFileSync(filename,'utf8');
-    const marker='  window.CATACLYSM_BOOT.ready(BUILD);';
-    assert.ok(src.includes(marker),'game QA entrypoint missing');
-    src=src.replace(marker,`
+    const marker=src.lastIndexOf('})();');
+    assert.ok(marker>=0,'game QA entrypoint missing');
+    src=src.slice(0,marker)+`
       // Intercepted in the browser test only; never shipped to the game.
       window.__WORLD_QA=Object.freeze({
         setPosition(x,y){game.player.x=x;game.player.y=y;return {x:game.player.x,y:game.player.y};}
       });
-`+marker);
+`+src.slice(marker);
     await route.fulfill({status:200,contentType:'application/javascript',body:src});
    });
    await page.goto('http://127.0.0.1:8765/'+dir+'/',{waitUntil:'domcontentloaded',timeout:30000});
