@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const stage=process.argv[2],valid=['score','followers','animation','presentation','balance','personality','polishui'];
+const stage=process.argv[2],valid=['score','followers','animation','presentation','balance','personality','polishui','tuning'];
 assert.ok(valid.includes(stage),'Unexpected finishing stage: '+stage);
 const dirs=['cataclysm-1-0-major','cataclysm-100-lab'].map(dir=>path.resolve(__dirname,'../docs',dir));
 const read=(i,file)=>fs.readFileSync(path.join(dirs[i],file),'utf8');
