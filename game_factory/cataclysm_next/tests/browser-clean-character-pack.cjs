@@ -24,10 +24,10 @@ const {chromium}=require('playwright');
      const ctx=canvas.getContext('2d',{willReadFrequently:true});
      const original=ctx.drawImage.bind(ctx),records=[];
      ctx.drawImage=function(...args){records.push({url:String(args[0]?.src||''),sx:args[1],sy:args[2]});return original(...args);};
-     const sample=(state,bearing,time,moving,damaged=false)=>{
+     const sample=(id,state,bearing,time,moving,damaged=false)=>{
        records.length=0;
        ctx.clearRect(0,0,128,128);ctx.save();ctx.translate(64,64);
-       a.draw(ctx,'hero',23,time,state,bearing,damaged,false,moving,
+       a.draw(ctx,id,23,time,state,bearing,damaged,false,moving,
          state==='feral'||state==='adrenaline'?state:null,false);
        ctx.restore();
        const pixels=ctx.getImageData(0,0,128,128).data;
@@ -42,12 +42,12 @@ const {chromium}=require('playwright');
      const frames=[];
      for(const state of ['idle','run','attack','feral','adrenaline','hit']){
        for(const bearing of [0,Math.PI/2,Math.PI,-Math.PI/2]){
-         frames.push({state,bearing,early:sample(state,bearing,.12,state!=='idle'&&state!=='hit'),
-           later:sample(state,bearing,.46,state!=='idle'&&state!=='hit')});
+         frames.push({state,bearing,early:sample('hero',state,bearing,.12,state!=='idle'&&state!=='hit',state==='hit'),
+           later:sample('hero',state,bearing,.46,state!=='idle'&&state!=='hit',state==='hit')});
        }
      }
      const companions={};
-     for(const id of a.allyIds)companions[id]=['run','special','attack'].map(state=>sample(state,0,.2,false,false));
+     for(const id of a.allyIds)companions[id]=['run','special','attack'].map(state=>sample(id,state,0,.2,false,false));
      return {pack,frames,companions,mode:CATACLYSM_DIAGNOSTICS.snapshot().major.campaign.night,
        resources:performance.getEntriesByType('resource').filter(x=>/\/art\/hero-(idle|run|feral|adrenaline|hit|attack)\.png/.test(x.name)).map(x=>x.name)};
    });
