@@ -77,6 +77,11 @@ jobs:
         env:
           ART_REVIEW_ATTEMPT: '1'
         run: python game_factory/art_department/mechanical_failure.py
+      - name: Preserve complete artist source BEFORE browser testing
+        if: steps.gate1.outcome == 'success'
+        env:
+          ART_SNAPSHOT_PREVIEW: '1'
+        run: python game_factory/art_department/snapshot_candidate.py
       - name: Launch a genuine web game, not a mockup
         if: steps.gate1.outcome == 'success'
         shell: bash
@@ -194,6 +199,10 @@ jobs:
         env:
           ART_REVIEW_ATTEMPT: '2'
         run: python game_factory/art_department/mechanical_failure.py
+      - name: Preserve corrected character source BEFORE browser testing
+        env:
+          ART_SNAPSHOT_PREVIEW: '1'
+        run: python game_factory/art_department/snapshot_candidate.py
       - name: Serve the actual Cataclysm game and stress lab
         if: steps.gate2.outcome == 'success'
         shell: bash
@@ -300,6 +309,10 @@ jobs:
           fi
           git diff --check
           python -m game_factory.art_department.run_checks unit
+      - name: Preserve corrected character source BEFORE browser testing
+        env:
+          ART_SNAPSHOT_PREVIEW: '1'
+        run: python game_factory/art_department/snapshot_candidate.py
       - name: Serve the actual Cataclysm game and stress lab
         shell: bash
         run: |
