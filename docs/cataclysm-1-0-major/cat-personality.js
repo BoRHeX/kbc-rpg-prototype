@@ -93,20 +93,69 @@ const exchanges={
  'Brawler, patience has range.':{role:'brawler',text:'So does a running jump.'},
  'I prescribe one uninterrupted minute.':{role:'bard',text:'An entire minute without a solo? Brave.'}
 };
-const priorities={tutorial:35,death:100,victory:100,arrival:85,hurt:80,healRequest:75,healed:75,feral:70,adrenaline:65,late:65,defeated:60,recruit:55,special:45,encounter:45,seek:30,fed:35,fish:25,guide:24,hunger:18,miss:15,idle:10,reply:10,callback:10,start:50};
+// Additional local writing: observations are gated by simulation facts below.
+const additions={
+ start:'The lease said pets allowed. No mention of this.|I left the oven off. Probably the whole street is off.|Find a lane. Keep it. Borrow another.',
+ hurt:'Keep the hurt small. Keep moving.|That goes on the landlord complaint.|Four paws. Inventory complete.|The scarf survived. So will I.',
+ healRequest:'Small hole in the captain. Assistance.|I need a healer more than a heroic speech.|Could you put the inside back inside?',
+ healed:'That buys us another corner.|Less leaking. Good craftsmanship.|I felt that all the way to my tail.|Keep the bandage. It suits my rank.',
+ feral:'All right. Indoor manners end here.|My fur has voted unanimously.|You wanted the difficult cat.|Claws out. Head clear.',
+ adrenaline:'The street got slower. Useful.|Borrowing energy from tomorrow me.|No wasted steps.|My heartbeat has hired a drummer.',
+ fish:'A pension with scales.|Emergency rations. All rations are emergencies.|I have diversified into sardines.|Smells like financial security.|Pocket secured. Dignity negotiable.',
+ miss:'I have successfully threatened a drain.|That was for the mosquito behind you.|Windage. Or whiskerage.|The road knows I mean business.|Too wide. Breathe. Correct.',
+ idle:'I used to patrol three cushions.|My tail keeps checking behind us. Good employee.|A cardboard box would fix some of this.|Every window looks occupied by yesterday.|When we get home, I am knocking ONE thing off a shelf.',
+ victory:'All present? Count tails twice.|We survived. That is the speech.|I want breakfast somewhere with a ceiling.',
+ death:'Take the others home.|Not the scarf. Keep the scarf.|I almost smelled breakfast.'
+};
+for(const [event,lines] of Object.entries(additions))voices.hero[event].push(...split(lines));
+Object.assign(voices.hero,{
+ rain:split('My ears have gutters now.|Rain is just a bath with poor supervision.|Wet whiskers. Dry ammunition. Priorities.|The sky could try knocking first.'),
+ pressure:split('Do not chase. Open a lane.|Too many close paws. Moving out.|Keep the circle broken.|Watch the gap, not the teeth.|Small steps. No panic.'),
+ critical:split('Stay awake. Next corner.|No spare lives on credit.|One breath. One safe step.|I can still move. That counts.'),
+ recovery:split('Still standing. Let the paws settle.|That was close enough to smell.|Remember that exit. It worked.|I would like to file a quieter night.'),
+ level:split('Experience is mostly bruises with notes.|New trick. Same extremely qualified cat.|I am becoming a problem with credentials.|That lesson had teeth.|Promotion accepted. Where is my chair?'),
+ streets:split('New block. Check both exits.|Different stones. Same careful paws.|Mark this corner in whisker memory.|The city keeps changing the furniture.'),
+ wetStreet:split('Canals. My least favourite kind of floor gap.|Water beside the road is showing restraint.|No swimming. That is a leadership decision.|Fish below. Problems above. Stay on the road.'),
+ hotStreet:split('Warm pavement. Terrible place for a nap.|The works are still holding their heat.|Do not lean on the furnace things.|Smells like somebody cooked a bicycle.'),
+ crystalStreet:split('Shiny ground. Check it before pouncing.|Pretty rocks. Absolutely no time to sit on them.|My reflection looks worried. Sensible cat.|Nothing here needs knocking off a shelf. Yet.'),
+ neonStreet:split('Back under the signs. Keep your eyes low.|Neon makes every puddle look expensive.|This block has too many blind corners.|Follow the road. Ignore the advertisements.'),
+ recruit:split('Another set of paws. Welcome to the mess.|Stay where I can count you.|Good. Nobody does this street alone.|You brought yourself. Best equipment we have.'),
+ healerFriend:split('A doctor. I shall develop fewer hobbies involving teeth.|Please ignore my medical history. It is mostly fences.|You fix us. We keep the lane open.'),
+ engineerFriend:split('If it starts purring, is it family?|Your machine gets no fish allowance.|Please point the clever end away from my tail.'),
+ tankFriend:split('A mobile safe place. Excellent.|I shall heroically occupy the space behind you.|You take the weight. I watch the sides.'),
+ bardFriend:split('Music? Keep the beat where my paws can reach it.|If I fall, omit the verse about the bin.|A song is fine. No audience participation.'),
+ shooterFriend:split('Cover my left. My tail covers morale.|Save a round for the thing I miss.'),
+ sniperFriend:split('You watch far away. I shall worry nearby.|Quiet company. My favourite volume.'),
+ brawlerFriend:split('Teeth first is a plan. Please add an exit.|You pounce. I make somewhere to land.'),
+ trapperFriend:split('Tell me where the string is BEFORE the demonstration.|A thoughtful cat. With alarming hobbies.'),
+ late:split('No cat gets left at the last corner.|We are close. Stay exact.|Save the jokes for breakfast.|Everyone behind my voice. Keep moving.|The last nights still need every paw.')
+});
+Object.assign(exchanges,{
+ 'Your machine gets no fish allowance.':{role:'engineer',text:'It runs on professional jealousy.'},
+ 'Please ignore my medical history. It is mostly fences.':{role:'healer',text:'The fences sent statements.'},
+ 'A song is fine. No audience participation.':{role:'bard',text:'Your tail has already joined the chorus.'},
+ 'You take the weight. I watch the sides.':{role:'tank',text:'Deal. Keep the small ones close.'},
+ 'Tell me where the string is BEFORE the demonstration.':{role:'trapper',text:'You are standing in the footnotes.'},
+ 'Quiet company. My favourite volume.':{role:'sniper',text:'Agreed.'},
+ 'Teeth first is a plan. Please add an exit.':{role:'brawler',text:'Fine. Teeth first, feet second.'}
+});
+const priorities={rain:18,pressure:72,critical:92,recovery:48,level:42,streets:22,wetStreet:22,hotStreet:22,crystalStreet:22,neonStreet:22,tutorial:35,death:100,victory:100,arrival:85,hurt:80,healRequest:75,healed:75,feral:70,adrenaline:65,late:65,defeated:60,recruit:55,special:45,encounter:45,seek:30,fed:35,fish:25,guide:24,hunger:18,miss:15,idle:10,reply:10,callback:10,start:50};
 function create(seed=1){return {seed:seed>>>0,clock:0,active:[],queue:[],history:[],cooldowns:{},eventTimes:{},used:{},serial:0,nextIdle:14,started:false,seen:[],night:0,lastHp:null,lastFish:0,feral:false,adrenaline:false,encounter:null,reply:null,guideAt:18};}
 function random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
 function emit(s,role,event,options={}){
- if(s?.serious&&['idle','reply','callback','miss','fish','hunger','seek','fed','guide','tutorial'].includes(event))return false;
+ if(s?.serious&&['idle','reply','callback','miss','fish','hunger','seek','fed','guide','tutorial','level','streets','wetStreet','hotStreet','crystalStreet','neonStreet','recruit'].includes(event))return false;
  if(!s||!(voices[role]||role==='hero'))return false;
+ if(s.serious&&event!=='special'&&(priorities[event]||20)<60)return false;
  const key=role+':'+event, gap=options.gap??(event==='miss'?24:event==='special'?18:8);
  if(s.clock<(s.eventTimes[key]??-100)+gap)return false;
  s.eventTimes[key]=s.clock;
  const bank=(s.serious&&event==='special'?shared.late:voices[role][event]||shared[event]);if(!bank)return false;
- const unused=bank.map((line,i)=>i).filter(i=>!(s.used[key]||[]).includes(i));
+ const contextual=bank.map((line,i)=>i).filter(i=>!s.roles||!['healer','tank','bard','brawler','sniper','trapper','engineer','shooter'].some(r=>new RegExp('\\b'+r+'\\b','i').test(bank[i])&&!s.roles.includes(r)));
+ if(!contextual.length)return false;
+ const unused=contextual.filter(i=>!(s.used[key]||[]).includes(i));
  if(!unused.length)s.used[key]=[];
  const previous=s.lastLine?.[key];
- const eligible=unused.length?unused:bank.map((_,i)=>i).filter(i=>bank.length===1||i!==previous);
+ const eligible=unused.length?unused:contextual.filter(i=>contextual.length===1||i!==previous);
  const fresh=eligible.filter(i=>!(s.recentTexts||[]).includes(bank[i]));
  const pool=fresh.length?fresh:eligible,index=pool[Math.floor(random(s)*pool.length)];
  (s.recentTexts||(s.recentTexts=[])).push(options.text||bank[index]);if(s.recentTexts.length>14)s.recentTexts.shift();
@@ -121,6 +170,23 @@ function tick(s,g,dt,guideAvailable=false){
  if(s.serious){s.reply=null;s.queue=s.queue.filter(b=>b.priority>=60);s.active=s.active.filter(b=>b.priority>=60);}
  s.clock+=dt;s.active=s.active.filter(b=>b.until>s.clock);
  const roles=['hero',...g.companionSquad.map(c=>c.type)],p=g.player;
+ // Hysteresis prevents pressure/recovery chatter as enemies cross a boundary.
+ s.roles=roles;
+ const close=g.enemies.filter(e=>e.hp>0&&Math.hypot(e.x-p.x,e.y-p.y)<190).length;
+ const critical=p.hp<=p.maxHp*.25;
+ if(critical&&!s.wasCritical)emit(s,'hero','critical',{gap:32});
+ s.wasCritical=critical;
+ if(close>=5&&!s.underPressure){s.underPressure=true;emit(s,'hero','pressure',{gap:35});}
+ if(close<=1&&s.underPressure){s.underPressure=false;if(!critical)emit(s,'hero','recovery',{gap:40});}
+ if(s.level!==undefined&&p.level>s.level)emit(s,'hero','level',{gap:24});s.level=p.level;
+ const biome=g.world?.epoch;
+ if(s.biome!==undefined&&biome!==s.biome){
+  emit(s,'hero',['neonStreet','wetStreet','hotStreet','crystalStreet'][biome%4]||'streets',{gap:55});
+ }s.biome=biome;
+ const friends=g.companionSquad.map(c=>c.type);
+ for(const role of friends)if(!(s.friends||[]).includes(role))emit(s,'hero',voices.hero[role+'Friend']?role+'Friend':'recruit',{gap:20,ttl:6});
+ s.friends=friends;
+ if(!s.weatherNoted&&s.clock>=45&&close===0&&g.campaign.night<98&&!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){s.weatherNoted=true;emit(s,'hero','rain',{ttl:5});}
  if(!s.started){s.started=true;emit(s,'hero','start');}
  if(!s.tutorial&&s.clock>=6&&g.campaign.night<98){s.tutorial=true;emit(s,'hero','tutorial');}
  if(s.lastHp!==null&&p.hp>s.lastHp+.015)emit(s,'hero','healed',{gap:22});
@@ -142,7 +208,9 @@ function tick(s,g,dt,guideAvailable=false){
   const nearby=g.enemies.some(e=>e.hp>0&&Math.hypot(e.x-p.x,e.y-p.y)<300);
   if(!nearby&&g.campaign.night<98){const role=roles[Math.floor(random(s)*roles.length)];emit(s,role,g.fishItems.some(f=>Math.hypot(f.x-p.x,f.y-p.y)<280)?'hunger':'idle');}
  }
- s.queue=s.queue.filter(b=>b.expires>s.clock&&roles.includes(b.role));
+ s.queue=s.queue.filter(b=>b.expires>s.clock&&roles.includes(b.role)&&
+  (b.event!=='critical'||critical)&&(b.event!=='pressure'||close>=3)&&
+  (b.event!=='healRequest'||p.hp<p.maxHp-.4)&&(b.priority>=60||!critical));
  dispatch(s,roles,g.campaign.night);
 }
 function dispatch(s,roles,night=1){
@@ -150,7 +218,7 @@ function dispatch(s,roles,night=1){
   const b=s.queue[i];if((s.nextSpeechAt||0)>s.clock&&b.priority<75)continue;if((s.cooldowns[b.role]||0)>s.clock&&b.priority<75)continue;
   if(s.active.some(a=>a.role===b.role)){if(b.priority<75||s.active.some(a=>a.role===b.role&&a.priority>=b.priority))continue;s.active=s.active.filter(a=>a.role!==b.role);}
   if(s.active.length>=2){const low=s.active.reduce((a,c)=>a.priority<c.priority?a:c);if(low.priority>=b.priority)continue;s.active=s.active.filter(a=>a!==low);}
-  s.queue.splice(i,1);s.nextSpeechAt=s.clock+1.1;b.started=s.clock;b.until=s.clock+Math.max(2.8,Math.min(4.8,1.3+b.text.length*.055));s.active.push(b);s.cooldowns[b.role]=b.until+5;
+  s.queue.splice(i,1);s.nextSpeechAt=s.clock+5.5;b.started=s.clock;b.until=s.clock+Math.max(2.8,Math.min(4.8,1.3+b.text.length*.055));s.active.push(b);s.cooldowns[b.role]=b.until+5;
   s.history.push({role:b.role,event:b.event,text:b.text,at:s.clock});if(s.history.length>40)s.history.shift();
   const exchange=exchanges[b.text];
   if(night<98&&exchange&&roles.includes(exchange.role)){s.reply={role:exchange.role,event:'reply',text:exchange.text,at:b.until+.5};}
@@ -198,5 +266,5 @@ function render(s,g,canvas,W,H,shakeX=0,shakeY=0){
  }
 }
 function presentation(){return [...nodes.values()].map(n=>({role:n.dataset.catSpeech,event:n.dataset.speechEvent,visible:!n.hidden,text:n.getAttribute('aria-label'),revealed:n.revealed,left:parseFloat(n.style.left),top:parseFloat(n.style.top)}));}
-const api={pass:'cats-alive-01',presentation,voices,shared,create,emit,tick,dispatch,render,registerGuide,guideAvailable,contractVersion:1};root.CATA_CATS=api;if(typeof module==='object'&&module.exports)module.exports=api;
+const api={pass:'living-studio-02',presentation,voices,shared,create,emit,tick,dispatch,render,registerGuide,guideAvailable,contractVersion:1};root.CATA_CATS=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(globalThis);

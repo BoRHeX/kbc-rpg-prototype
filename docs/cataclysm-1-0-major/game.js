@@ -6,7 +6,7 @@
   const canvas = $('canvas'), ctx = canvas.getContext('2d', {alpha:false});
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches && new URLSearchParams(location.search).get('motion')!=='full';
   const MIN_SHOT_INTERVAL = .04;
-  const PATCH_ID = 'cataclysm-10-playtest-corrections-07';
+  const PATCH_ID = 'cataclysm-10-living-studio-02';
   const WORLD_SCROLL_Y=0; // World coordinates change only through chosen movement or physical contact.
   const MAJOR = globalThis.CATA_MAJOR, ART = globalThis.CATA_ART, VIS = globalThis.CATA_VISUALS, LAB = globalThis.CATA_LAB_DIRECTOR, HAZ = globalThis.CATA_HAZARDS;
   const STRESS_MODE=false;
@@ -1146,7 +1146,7 @@
           const spread=pet.type==='sniper'?0:Math.min(3,q.spread);
           for(let i=-spread;i<=spread;i++)squadShot(pet,nearest,damage*(pet.type==='sniper'?2.8:1)*(1+q.spread*2)/(1+spread*2),pet.type==='sniper'?2:0,pet,i*.18);
           if(pet.type==='shooter')pet.ammo--;
-        }else if(pet.type==='engineer'&&!pet.turret)pet.turret={x:pet.x,y:pet.y,life:8,timer:0};
+        }else if(pet.type==='engineer'&&!pet.turret)pet.turret={x:pet.x,y:pet.y,life:8,timer:0,skin:pet.rank>=2?'porcelain':'brass'};
         else if(pet.type==='trapper'){if(pet.traps.length>=3)pet.traps.shift();pet.traps.push({x:pet.x,y:pet.y,r:65,life:5});}
         else if(pet.type==='brawler'&&nearest){squadHit(nearest,damage*2);nearest.squadStun=nearest.variant==='boss'?.1:.35;}
         if(pet.type==='bard'&&g.t>=(pet.nextTaunt||0)){pet.tauntUntil=g.t+.65;pet.nextTaunt=g.t+5;}
@@ -1221,7 +1221,7 @@
       p.hp=Math.min(p.maxHp,p.hp+1+Math.min(.5,pet.rank*.1));
       for(const ally of g.companionSquad){ally.flash=.5;burst(ally.x,ally.y,'#8affbd',6);}
     }else if(type==='tank')pet.specialDuration=6;
-    else if(type==='engineer'){pet.specialDuration=8;pet.turret={x:pet.x,y:pet.y,life:8,timer:0};}
+    else if(type==='engineer'){pet.specialDuration=8;pet.turret={x:pet.x,y:pet.y,life:8,timer:0,skin:pet.rank>=2?'porcelain':'brass'};}
     else if(type==='trapper'){
       pet.traps=[-1,0,1].map(i=>({x:wrapCoord(pet.x+i*85),y:pet.y,r:95,life:8}));pet.specialDuration=8;
     }else if(type==='bard')pet.specialDuration=7;
@@ -1867,6 +1867,7 @@
     let aimTarget=null,aimDistance=460;
     for(const e of g.enemies){const d=dist(p.x,p.y,e.x,e.y);if(e.hp>0&&d<aimDistance){aimTarget=e;aimDistance=d;}}
     if(aimTarget)p.aim=Math.atan2(verticalDelta(p.y,aimTarget.y),wrappedDelta(p.x,aimTarget.x));
+    else if(Math.hypot(input.x,input.y)>.1)p.aim=Math.atan2(input.y,input.x);
     p.shots-=dt;if(p.shots<=0){shotAtEnemy();p.shots=Math.max(MIN_SHOT_INTERVAL,p.shotInterval/g.effectiveBuffs.fire);}
     const anim=p.animation;
     anim.clock+=dt;anim.attack=Math.max(0,anim.attack-dt);anim.hit=Math.max(0,anim.hit-dt);
@@ -2208,31 +2209,41 @@
     }
     ctx.restore();
   }
+  // Cosmetic only: identical targeting, projectile cadence, lifetime and footprint.
   function drawEngineerTurret(c,t,time){
-    c.save();c.translate(t.x,t.y);
-    c.fillStyle='#071b23a9';c.beginPath();c.ellipse(0,15,22,8,0,0,TWO);c.fill();
-    // Tripod base and hardened mount; unlike the old two golden rectangles.
-    c.lineJoin='round';c.lineCap='round';
+    const porcelain=t.skin==='porcelain',motion=!reducedMotion;
+    const metal=porcelain?'#b9ddd7':'#c99e55',shade=porcelain?'#477a86':'#795337';
+    const light=t.life<1?'#ff926a':porcelain?'#8effed':'#ffe4a3';
+    const kick=motion?Math.max(0,(t.timer-.25)/.1):0;
+    const fold=motion?Math.max(0,1-t.life)*5:0;
+    c.save();c.translate(t.x,t.y);c.lineJoin='round';c.lineCap='round';
+    c.fillStyle='#071b23a9';c.beginPath();c.ellipse(0,16,24,8,0,0,TWO);c.fill();
+    // Splayed shock-absorber feet and a low, riveted turntable.
     for(const side of [-1,1]){
-      c.strokeStyle='#092632';c.lineWidth=8;c.beginPath();c.moveTo(side*4,7);c.lineTo(side*17,15);c.stroke();
-      c.strokeStyle='#b3a17d';c.lineWidth=4;c.stroke();
+      c.strokeStyle='#142d38';c.lineWidth=8;c.beginPath();c.moveTo(side*5,5);c.lineTo(side*(19-fold),17);c.stroke();
+      c.strokeStyle=metal;c.lineWidth=4;c.stroke();c.fillStyle=shade;c.fillRect(side*(19-fold)-5,15,10,4);
     }
-    c.fillStyle='#344f5a';c.strokeStyle='#a7dac9';c.lineWidth=2;
-    c.beginPath();c.ellipse(0,7,13,9,0,0,TWO);c.fill();c.stroke();
-    c.fillStyle='#f1cf74';c.fillRect(-4,4,8,5);
-    c.save();c.translate(0,-3);c.rotate(Number.isFinite(t.aim)?t.aim:0);
-    c.fillStyle='#112d39';c.strokeStyle='#8dc5bb';c.lineWidth=2;
-    c.beginPath();c.roundRect(-12,-10,26,18,5);c.fill();c.stroke();
-    c.fillStyle='#c8b477';c.fillRect(-9,-8,6,4);c.fillRect(-9,1,6,4);
-    c.fillStyle='#a2d8ca';c.fillRect(10,-5,23,10);
-    c.fillStyle='#163946';c.fillRect(28,-5,6,10);
-    c.fillStyle='#ffd890';c.fillRect(32,-3,3,6);
-    if(t.timer>.28&&t.timer<=.35){
-      c.fillStyle='#fff3b7';c.beginPath();c.moveTo(35,0);c.lineTo(50,-7);
-      c.lineTo(45,0);c.lineTo(50,7);c.closePath();c.fill();
-    }
-    c.restore();c.restore();
+    c.fillStyle=shade;c.strokeStyle=metal;c.lineWidth=2;c.beginPath();c.ellipse(0,6,14,9,0,0,TWO);c.fill();c.stroke();
+    for(let i=0;i<4;i++){c.fillStyle=t.life>i*2?light:'#203d43';c.fillRect(-9+i*5,7,3,3);}
+    c.save();c.translate(0,-4+fold);c.rotate(Number.isFinite(t.aim)?t.aim:0);c.translate(-kick*4,0);
+    c.fillStyle=shade;c.strokeStyle='#152c37';c.lineWidth=3;
+    c.beginPath();c.roundRect(-14,-12,30,24,porcelain?10:4);c.fill();c.stroke();
+    c.fillStyle=metal;c.beginPath();c.roundRect(-12,-11,25,18,porcelain?9:3);c.fill();
+    // Ceramic model has twin cooling fins; brass model has a winding key.
+    c.fillStyle=shade;
+    if(porcelain){c.fillRect(-9,-16,17,3);c.fillRect(-9,12,17,3);}
+    else{c.fillRect(-20,-3,8,6);c.strokeStyle=metal;c.lineWidth=3;c.beginPath();c.ellipse(-23,0,4,7,0,0,TWO);c.stroke();}
+    c.fillStyle='#243d49';c.fillRect(9,-5,23,10);c.fillStyle=metal;c.fillRect(12,-4,12,3);
+    c.fillStyle=shade;c.fillRect(27,-7,7,14);c.fillStyle='#101f2b';c.fillRect(33,-4,3,8);
+    c.fillStyle=light;c.beginPath();c.arc(3,-5,3,0,TWO);c.fill();
+    // Tiny inspection marks: a purposeful machine, with a cat's quality control.
+    c.fillStyle='#203740';for(let i=0;i<3;i++)c.fillRect(-8+i*4,2,2,4);
+    if(kick>0){c.globalAlpha=Math.min(1,kick);c.fillStyle='#fff2bd';c.beginPath();c.moveTo(36,0);c.lineTo(46,-5);c.lineTo(42,0);c.lineTo(48,4);c.closePath();c.fill();}
+    c.restore();
+    if(t.life<1){c.strokeStyle=light;c.lineWidth=2;c.beginPath();c.arc(0,-7,20,-Math.PI/2,-Math.PI/2+Math.max(0,t.life)*TWO);c.stroke();}
+    c.restore();
   }
+  window.drawEngineerTurret=drawEngineerTurret;
   function drawCompanionEffect(pet){
     ctx.save();ctx.translate(pet.x,pet.y);
     if(pet.type==='tank'&&pet.state==='guarding'&&pet.specialDuration>0){
@@ -2256,17 +2267,11 @@
   function catSprite(type,r,time,hurt=false,aim=0,requestedState='run'){
     // A new character-reference atlas can be shipped by manifest alone.
     // State requests come from actual game behavior, not a static animation preview.
-    const state=type==='hero'&&game?
-      game.player.animation.state==='hit'?'hit':
-      game.feralInstinctOverdrive>0?'adrenaline':
-      game.buffs.rage>0||game.feralInstinct.active?'feral':
-      game.buffs.survivalInstinct>0?'adrenaline':
-      game.player.animation.moving?
-        (ART.hasReferenceAnimation('hero','walk')&&game.player.animation.moveSpeed<game.player.speed*.65?'walk':'run'):
-      game.player.animation.state==='attack'?'attack':'idle':requestedState;
-    if(!(ART.hasReferenceAnimation(type,state)&&type==='hero'))
-      VIS.aura(ctx,type,r,time,state,reducedMotion);
-    return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion,type==='hero'&&game?.player.animation.moving);
+    const isHero=type==='hero'&&game;
+    const state=isHero?(game.player.animation.moving?'run':game.player.animation.attack>0?'attack':'idle'):requestedState;
+    const effect=isHero?(game.buffs.rage>0||game.feralInstinct.active?'feral':game.buffs.survivalInstinct>0||game.feralInstinctOverdrive>0?'adrenaline':null):null;
+    VIS.aura(ctx,type,r,time,effect||state,reducedMotion);
+    return ART.draw(ctx,type,r,time,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.moving),effect,!!(isHero&&game.player.animation.attack>0));
     // Original fallback below is retained as inert reference during migration.
     const hero=type==='hero',ally=roleNames.includes(type);
     const palette={hero:'#f4f3df',shooter:'#e0bd82',healer:'#a5dfc5',tank:'#a6bad4',brawler:'#ed9c7d',sniper:'#b8d17f',engineer:'#efca70',trapper:'#87c9d1',bard:'#c5a0e5',shambler:'#789b7b',weaver:'#ad91c7',dasher:'#d8a267',orbiter:'#65b8bf',stalker:'#b9b17c',ghost:'#c9bfe5',gas:'#a5bd68',boss:'#c36b87'};
