@@ -246,8 +246,8 @@ a{color:#a5e7ce}.identity{letter-spacing:1px;background:linear-gradient(#08131be
 
 /* Actor speech is fixed to the canvas camera; no pointer interception or animation clock. */
 .cat-speech-layer{position:fixed;inset:0;pointer-events:none;z-index:14;overflow:hidden}
-.cat-speech{position:fixed;width:max-content;max-width:min(168px,42vw);box-sizing:border-box;padding:5px 8px;border:1px solid #c4d3e466;border-radius:13px;background:#151c28c9;color:#fff;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 2px 0 #0005;text-align:center;pointer-events:none}
-.cat-speech::after{content:'';position:absolute;left:var(--tail-x,50%);bottom:-8px;width:10px;height:10px;background:#151c28c9;border-right:1px solid #c4d3e466;border-bottom:1px solid #c4d3e466;transform:translateX(-50%) rotate(45deg)}
+.cat-speech{position:fixed;width:max-content;max-width:min(168px,42vw);box-sizing:border-box;padding:5px 8px;border:1px solid #c4d3e466;border-radius:13px;background:#151c2899;color:#fff;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 2px 0 #0005;text-align:center;pointer-events:none}
+.cat-speech::after{content:'';position:absolute;left:var(--tail-x,50%);bottom:-8px;width:10px;height:10px;background:#151c2899;border-right:1px solid #c4d3e466;border-bottom:1px solid #c4d3e466;transform:translateX(-50%) rotate(45deg)}
 .cat-speech.tail-up::after{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
 .cat-speech[hidden]{display:none}
 
