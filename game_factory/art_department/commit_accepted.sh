@@ -22,10 +22,21 @@ import json,subprocess
 from pathlib import Path
 j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
 src=Path(j['source_dir']);mirror=Path(j['mirror_dir'])
-paths=[src/'art'/f"{j['character']}-{s}.png" for s in j['states']]
-paths += [src/'art'/j['allowed_generator'],src/'animation.js']
-paths += [mirror/'art'/f"{j['character']}-{s}.png" for s in j['states']]
-subprocess.run(['git','add',*[str(p) for p in paths]],check=True)
+if j.get('atlas_layout')=='directional-grid':
+    pack=src/'art'/'characters'/j['character']/j['family']
+    mirrorpack=mirror/'art'/'characters'/j['character']/j['family']
+    paths=[pack/(s+'.png') for s in j['states']]
+    paths += [mirrorpack/(s+'.png') for s in j['states']]
+    paths += [pack/j['allowed_generator']]
+    paths += [p for folder in (pack,mirrorpack) for p in folder.glob('*.json')]
+    paths += [folder/name for folder in (src,mirror) for name in
+              ('art/actor-packs.json','animation.js','game.js','index.html','visuals.js')]
+else:
+    paths=[src/'art'/f"{j['character']}-{s}.png" for s in j['states']]
+    paths += [src/'art'/j['allowed_generator'],src/'animation.js']
+    paths += [mirror/'art'/f"{j['character']}-{s}.png" for s in j['states']]
+paths=list(dict.fromkeys(paths))
+subprocess.run(['git','add','--',*[str(p) for p in paths if p.is_file()]],check=True)
 PY
 git diff --cached --check
 git diff --cached --quiet && { echo "::error::No accepted art changes"; exit 1; }
