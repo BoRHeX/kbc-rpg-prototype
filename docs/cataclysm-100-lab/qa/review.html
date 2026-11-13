@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hero pack visual review · Cataclysm 1.0</title>
+<style>body{margin:0;background:#111d29;color:#fff;font:14px system-ui}main{max-width:780px;margin:auto;padding:12px}a{color:#8ee8ed}canvas{display:block;background:#1b2c39;width:390px;max-width:100%;image-rendering:auto}button,select{font:inherit;margin:6px;padding:8px}pre{white-space:pre-wrap;font-size:11px}</style>
+<main><p>Cataclysm 1.0 · isolated sprite review. Canvas uses the real 390×844 game scale (720 world units across). This is not a gameplay capture.</p><p><a href="../">Play this mode</a> · <a href="../../cataclysm-100-lab/">Night 99 lab</a></p>
+<button id="toggle">Pause</button><select id="state"><option>idle</option><option>run</option><option>attack</option><option>feral</option><option>adrenaline</option><option>hit</option><option>recover</option></select><label><input type="checkbox" id="fire">Fire while moving</label><button id="snap">Save current raster</button>
+<canvas width="390" height="844" id="review"></canvas><pre id="trace">Loading all actor packs…</pre></main>
+<script src="../campaign.js"></script><script src="../animation.js"></script><script>
+let paused=false,clock=0,last=0;const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+const trace=document.querySelector('#trace'),state=document.querySelector('#state');document.querySelector('#toggle').onclick=()=>paused=!paused;document.querySelector('#snap').onclick=()=>{const a=document.createElement('a');a.download='hero-mobile-raster.png';a.href=canvas.toDataURL();a.click();};
+CATA_ART.ready.then(()=>requestAnimationFrame(frame));
+function frame(now){if(last&&!paused)clock+=(now-last)/1000;last=now;ctx.fillStyle='#1b2c39';ctx.fillRect(0,0,390,844);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.fillText(state.value+' · t='+clock.toFixed(2)+'s',12,28);const records=[];
+const real=ctx.drawImage.bind(ctx);ctx.drawImage=(image,...args)=>{records.push({url:image.src,source:args.slice(0,4)});real(image,...args);};
+for(let i=0;i<4;i++){ctx.save();ctx.translate(70+i%2*190,150+Math.floor(i/2)*240);ctx.scale(390/720,390/720);CATA_ART.draw(ctx,'hero',27,clock,state.value,i*Math.PI/2,false,false,['run','feral','adrenaline'].includes(state.value),['feral','adrenaline'].includes(state.value)?state.value:null,document.querySelector('#fire').checked);ctx.restore();ctx.fillStyle='#fff';ctx.fillText(['E','S','W','N'][i],55+i%2*190,220+Math.floor(i/2)*240);}
+ctx.drawImage=real;trace.textContent=JSON.stringify({pack:CATA_ART.packInfo('hero'),time:clock,state:state.value,bodyDraws:records.length,records},null,2);requestAnimationFrame(frame);}
+</script>

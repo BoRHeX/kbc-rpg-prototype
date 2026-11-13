@@ -1,110 +1,17 @@
-/* Original painted atlases with procedural articulated loading/failure fallback.
-   Five independent body groups, deterministic frame selection and readable states. */
+/* One immutable visual-family authority per actor. Complete textured frames only.
+   Hero frames are baked from an articulated painted rig, never whole-body blends. */
 (function(root){
 'use strict';
-const major=root.CATA_MAJOR;
-const allyIds=['shooter','healer','tank','brawler','sniper','engineer','trapper','bard'];
-const allyColors=['#e5c38a','#92e6bf','#9fc6ee','#ed9b7d','#bde282','#ebc36e','#8bdfeb','#d1a1ec'];
-const PALETTES={hero:'#f4eee1'};
-for(let i=0;i<allyIds.length;i++)PALETTES[allyIds[i]]=allyColors[i];
-const shape={hero:'scarf',shooter:'visor',healer:'healer',tank:'armor',brawler:'fangs',sniper:'scope',engineer:'helmet',trapper:'antenna',bard:'hood'};
-for(const row of Object.values(major.catalog))for(const item of row){PALETTES[item.id]=item.color;shape[item.id]=item.shape||({melee:'fangs',ranged:'scope',caster:'hood'})[item.role];}
-const enemyIds=Object.values(major.catalog).flat().map(e=>e.id);
-const characters=Object.freeze({
- enemies:Object.freeze(Object.fromEntries(enemyIds.map(id=>[id,6]))),
- allies:Object.freeze(Object.fromEntries(allyIds.map(id=>[id,12]))),
- hero:Object.freeze({idle:24,run:24,hit:24,feral:24,adrenaline:24})
-});
-// Resolve against this script so both document links and nested routes use local art.
-const assetBase=typeof document!=='undefined'&&document.currentScript
- ?new URL('art/',document.currentScript.src).href:'./art/';
-const assetRelease='cataclysm-10-alive-43443458400';
-const atlases=Object.create(null);
-let loaded=0,failed=0,total=0;
-function loadAtlas(key,count){
- total++;
- const entry={image:null,ready:false,count};atlases[key]=entry;
- if(typeof root.Image!=='function')return;
- const img=new root.Image();entry.image=img;
- let settled=false;
- const fail=()=>{if(!settled){settled=true;failed++;}};
- img.onerror=fail;
- img.onload=()=>{
-  if(img.naturalWidth!==count*96||img.naturalHeight!==96){fail();return;}
-  const ready=()=>{if(!settled){settled=true;entry.ready=true;loaded++;}};
-  if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
- };
- img.src=assetBase+key+'.png?art='+assetRelease;
-}
-for(const state of ['idle','run','hit','feral','adrenaline','attack'])loadAtlas('hero-'+state,24);
-for(const id of allyIds)loadAtlas(id+'-run',12);
-for(const id of enemyIds)loadAtlas(id+'-run',6);
-// The directional hero sheets use only the current modern reference artwork.
-// Each 96px frame is a complete, pre-composited picture; no runtime stitching.
-const directedHero=Object.create(null);
-const directedMetrics={loaded:0,failed:0,total:3};
-for(const [state,frames,fps] of [['run',8,12],['idle',6,7],['attack',8,12]]){
-  const entry={ready:false,count:frames,fps,image:null};
-  directedHero[state]=entry;
-  if(typeof root.Image!=='function')continue;
-  const img=new root.Image();entry.image=img;
-  let settled=false;
-  const fail=()=>{if(!settled){settled=true;directedMetrics.failed++;}};
-  img.onerror=fail;
-  img.onload=()=>{
-    if(img.naturalWidth!==8*frames*96||img.naturalHeight!==96){fail();return;}
-    const ready=()=>{if(!settled){settled=true;entry.ready=true;directedMetrics.loaded++;}};
-    if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
-  };
-  img.src=assetBase+'characters/hero/directed-'+state+'.png?art='+assetRelease;
-}
-function directionalStatus(){return {...directedMetrics,states:Object.fromEntries(Object.entries(directedHero).map(([k,v])=>[k,v.ready]))};}
-function assetStatus(){return {loaded,failed,total};}
-// Optional, data-only animations produced from an artist's visual reference.
-// New characters/states load without further game-source edits.
-const overrides=Object.create(null);
-const overrideMetrics={loaded:0,failed:0,total:0,manifestReady:false};
-function overrideStatus(){
- return {...overrideMetrics,characters:Object.keys(overrides).filter(k=>overrides[k].ready)};
-}
-function hasReferenceAnimation(id,state){return !!overrides[id+'-'+state]?.ready;}
-function loadReferenceAnimations(){
- if(typeof root.fetch!=='function'||typeof root.Image!=='function')return;
- root.fetch(assetBase+'character-animations.json?art='+assetRelease,{cache:'no-store'}).then(response=>{
-  if(!response.ok)throw Error('Character manifest HTTP '+response.status);
-  return response.json();
- }).then(data=>{
-  if(data.version!==1||!data.characters||typeof data.characters!=='object')
-   throw Error('Invalid character animation manifest');
-  for(const [id,states] of Object.entries(data.characters)){
-   if(!Object.prototype.hasOwnProperty.call(PALETTES,id)||!states||typeof states!=='object')continue;
-   for(const [state,info] of Object.entries(states)){
-    if(!/^(idle|walk|run|attack|aim|hit|feral|adrenaline|special)$/.test(state))continue;
-    if(!info||!Number.isInteger(info.frames)||info.frames<2||info.frames>16||
-      !Number.isFinite(info.fps)||info.fps<2||info.fps>30)continue;
-    const key=id+'-'+state,entry={image:null,ready:false,count:info.frames,fps:info.fps,
-      aim:info.aim||null,embeddedWeapon:info.embedded_weapon!==false,scale:Math.min(1.35,Math.max(.75,Number(info.scale)||1))};
-    overrides[key]=entry;overrideMetrics.total++;
-    const img=new root.Image();entry.image=img;
-    let settled=false;
-    const fail=()=>{if(!settled){settled=true;overrideMetrics.failed++;}};
-    img.onerror=fail;
-    img.onload=()=>{
-     if(img.naturalWidth!==entry.count*96||img.naturalHeight!==96){fail();return;}
-     const ready=()=>{if(!settled){settled=true;entry.ready=true;overrideMetrics.loaded++;}};
-     if(typeof img.decode==='function')img.decode().then(ready,fail);else ready();
-    };
-    img.src=assetBase+'characters/'+encodeURIComponent(id)+'/'+encodeURIComponent(state)+'.png?art='+assetRelease;
-   }
-  }
-  overrideMetrics.manifestReady=true;
- }).catch(err=>{overrideMetrics.failed++;overrideMetrics.manifestReady=false;
-  if(root.console&&root.console.warn)root.console.warn('Reference animation manifest unavailable',err.message);
- });
-}
-loadReferenceAnimations();
-
-// A separate metal gun layer pivots at the hands, keeping aim continuous between atlas frames.
+const allyIds=Object.freeze(['shooter','healer','tank','brawler','sniper','engineer','trapper','bard']);
+const enemyIds=Object.freeze(Object.values(root.CATA_MAJOR.catalog).flat().map(e=>e.id));
+const assetBase=typeof document!=='undefined'&&document.currentScript?new URL('art/',document.currentScript.src).href:'./art/';
+const assetRelease='cataclysm-10-cleanpack-43455224866';
+const packs=Object.create(null),metrics={loaded:0,failed:0,total:0,manifestReady:false};
+const TWO=Math.PI*2;
+const PALETTES={shooter:'#e5c38a',sniper:'#bde282',watcher:'#8fa4ad','echo-reaper':'#c7b5a2',ghost:'#c9bfe5'};
+function rect(ctx,x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h);}
+function poly(ctx,pts,fill,stroke='#091c27',sw=2){ctx.beginPath();ctx.moveTo(...pts[0]);for(const p of pts.slice(1))ctx.lineTo(...p);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=sw;ctx.stroke();}}
+function oval(ctx,x,y,rx,ry,color){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,TWO);ctx.fillStyle=color;ctx.fill();}
 function paintedGun(ctx,id,aim,recoil){
  const long=id==='sniper'||id==='echo-reaper'||id==='ghost';
  ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
@@ -117,219 +24,73 @@ function paintedGun(ctx,id,aim,recoil){
  oval(ctx,-5,5,3.5,3,id==='hero'?'#f0e9d7':PALETTES[id]);
  ctx.restore();
 }
-const TWO=Math.PI*2;
-function frameCount(id,state){
-  if(id==='hero')return 24;
-  if(allyIds.includes(id))return 12;
-  return 6;
-}
-function pose(id,state,frame){
-  const count=frameCount(id,state),f=((Math.floor(frame)%count)+count)%count;
-  const t=f/count*TWO,run=state==='run'||state==='feral'||state==='adrenaline';
-  const feral=state==='feral',adrenaline=state==='adrenaline',hit=state==='hit',attack=state==='attack';
-  const intensity=run?1.3:state==='idle'?.32:attack?.72:.68;
-  const stride=Math.sin(t),lift=Math.max(0,stride),recoil=attack?Math.max(0,Math.sin(t*2))*.8:0;
-  const weight=feral?1.3:adrenaline?1.18:1;
-  return Object.freeze({
-    frame:f,
-    head:{x:stride*1.8*weight,y:Math.cos(t*2)*1.45*intensity+(hit?Math.sin(t*3)*3:0)-recoil*1.8,rotation:stride*.06+(hit?.17:0)-recoil*.08},
-    torso:{y:Math.cos(t*2)*2.4*intensity-recoil*2,scale:1+Math.cos(t*2)*.055*intensity,tilt:stride*.055+(feral?.07:0)},
-    legs:{left:(stride*9-lift*4)*intensity,right:(-stride*9-Math.max(0,-stride)*4)*intensity,front:stride*4*intensity},
-    arms:{left:-stride*11*intensity+recoil*4,right:stride*11*intensity-recoil*7},
-    tail:{x:Math.sin(t+.6)*14*weight,rotation:Math.sin(t+.7)*.36*weight},
-    eyes:{open:hit?.5:feral?1.35:adrenaline?1.2:1,offset:Math.sin(t)*.7},
-    whiskers:Math.sin(t*3)*1.8,
-    recoil,effort:weight*intensity,
-    glow:feral?'#ff853a':adrenaline?'#80f4ff':hit?'#ff5c73':null,
-    speedStreak:feral?1.8:adrenaline?2:0
-  });
-}
-function rect(ctx,x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h);}
-function poly(ctx,pts,fill,stroke='#091c27',sw=2){
-  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
-  for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
-  ctx.closePath();ctx.fillStyle=fill;ctx.fill();
-  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=sw;ctx.stroke();}
-}
-function oval(ctx,x,y,rx,ry,color){
-  ctx.beginPath();ctx.ellipse(x,y,Math.max(1,rx),Math.max(1,ry),0,0,TWO);ctx.fillStyle=color;ctx.fill();
-}
-// Compass sheets are E, SE, S, SW, W, NW, N, NE; never time-cycled.
 function aimFrame(angle){return ((Math.round((Number.isFinite(angle)?angle:0)/(Math.PI/4))%8)+8)%8;}
-function actionDuration(id,state){const a=overrides[id+'-'+state];return a?.ready?a.count/a.fps:8/12;}
+function packInfo(id){const p=packs[id];return Object.freeze({id,family:p?.family||null,ready:!!p?.ready});}
+function loadTexture(info){
+ metrics.total++;
+ const entry={...info,ready:false,image:new root.Image()};
+ return new Promise((resolve,reject)=>{
+  const fail=()=>{metrics.failed++;reject(Error('Invalid or missing '+info.url));};
+  entry.image.onerror=fail;
+  entry.image.onload=async()=>{
+   if(entry.image.naturalWidth!==info.frames*96||entry.image.naturalHeight!==(info.bearings||1)*96){fail();return;}
+   try{if(entry.image.decode)await entry.image.decode();entry.ready=true;metrics.loaded++;resolve(entry);}catch(e){fail();}
+  };
+  entry.image.src=assetBase+info.url+'?art='+assetRelease;
+ });
+}
+const ready=root.fetch(assetBase+'actor-packs.json?art='+assetRelease).then(r=>{if(!r.ok)throw Error('Actor manifest HTTP '+r.status);return r.json();}).then(async data=>{
+ if(data.version!==1)throw Error('Invalid actor pack version');
+ const ids=['hero',...allyIds,...enemyIds];
+ // Selection is assigned ONCE, before any image resolves. No load-order switching.
+ for(const id of ids){
+  const spec=data.characters[id];if(!spec?.family||!spec.states)throw Error('No visual family for '+id);
+  packs[id]={family:spec.family,states:Object.create(null),ready:false};
+ }
+ metrics.manifestReady=true;
+ await Promise.all(ids.map(async id=>{
+  const p=packs[id],states=data.characters[id].states;
+  const textures=await Promise.all(Object.entries(states).map(async([state,info])=>{
+   if(!Number.isInteger(info.frames)||info.frames<1||!Number.isFinite(info.fps)||!/^[-a-z0-9/]+\.png$/.test(info.url))throw Error('Invalid texture '+id+'/'+state);
+   return [state,await loadTexture(info)];
+  }));
+  p.states=Object.freeze(Object.fromEntries(textures));p.ready=true;Object.freeze(p);
+ }));
+});
+// Keep failures observable via ready, without an unhandled rejection before boot attaches.
+ready.catch(()=>{});
+function assetStatus(){return {loaded:metrics.loaded,failed:metrics.failed,total:metrics.total};}
+function overrideStatus(){return {...metrics,characters:Object.entries(packs).flatMap(([id,p])=>p.ready?Object.keys(p.states).map(s=>id+'-'+s):[])};}
+function directionalStatus(){const p=packs.hero;return {loaded:p?.ready?Object.keys(p.states).length:0,failed:metrics.failed,total:10,states:Object.fromEntries(Object.entries(p?.states||{}).map(([s,v])=>[s,v.ready]))};}
+function hasReferenceAnimation(id,state){return !!(packs[id]?.ready&&packs[id].states[state]);}
+function actionDuration(id,state){const s=packs[id]?.states[state];return s?s.frames/s.fps:8/12;}
+function frameCount(id,state){return packs[id]?.states[state]?.frames||(id==='hero'?12:allyIds.includes(id)?12:6);}
 function heroBarrels(angle,r=27){
- const a=overrides['hero-aim'],f=aimFrame(angle),bearing=f*Math.PI/4;
- const authored=a?.aim?.barrels?.[f];
- return (authored||[-1,1].map(side=>[48+Math.cos(bearing)*31-Math.sin(bearing)*side*8,58+Math.sin(bearing)*31+Math.cos(bearing)*side*8]))
-  .map(([x,y])=>({x:(x-48)*r/23,y:(y-58)*r/23}));
+ const barrels=[[[56,43],[85,34]],[[58,53],[80,57]],[[44,72],[66,63]],[[18,60],[47,70]],[[5,40],[41,44]],[[11,29],[41,42]],[[35,6],[67,6]],[[21,19],[69,7]]];
+ return barrels[aimFrame(angle)].map(([x,y])=>({x:(x-48)*r/23,y:(y-58)*r/23}));
 }
 function draw(ctx,id,r,time,state='run',aim=0,damaged=false,reduced=false,moving=false,effect=null,firing=false){
-  if(!PALETTES[id])id='shambler';
-  const requested=state;
-  // Locomotion is independent of transient effects, including damage recovery.
-  const bodyState=id==='hero'?(moving?'run':['feral','adrenaline','hit','walk'].includes(state)?(firing?'attack':'idle'):state):state;
-  const directed=id==='hero'?(directedHero[bodyState]?.ready?directedHero[bodyState]:Object.values(directedHero).find(a=>a.ready)):null;
-  if(directed?.ready){
-    const phase=reduced?0:Math.floor(Math.max(0,time)*directed.fps*(effect?1.16:1))%directed.count;
-    const frame=aimFrame(aim)*directed.count+phase;
-    ctx.save();ctx.scale(r/23,r/23);
-    if(!reduced){
-      // Move the complete painted silhouette: no waist seams or replacement poses.
-      const breath=Math.sin(time*3.8)*.45;
-      const kick=firing?Math.pow(Math.max(0,Math.sin(time*24)),6)*1.5:0;
-      ctx.translate(-Math.cos(aim)*kick,breath-Math.sin(aim)*kick);
-      if(effect){const spring=Math.sin(time*directed.fps*2)*.012;
-        ctx.scale(1-spring,1+spring);ctx.rotate(Math.sin(time*7)*.012);}
-    }
-    ctx.drawImage(directed.image,frame*96,0,96,96,-48,-58,96,96);
-    if(damaged){
-      ctx.save();ctx.globalAlpha=.52;ctx.filter='brightness(2.2)';
-      ctx.drawImage(directed.image,frame*96,0,96,96,-48,-58,96,96);ctx.restore();
-    }
-    ctx.restore();return frame;
-  }
-  // Missing action sheets use the complete painted run cycle, including during telegraphs.
-  // Reference-animation manifest is authoritative for every available state.
-  // Never swap a modern character's pose back to the legacy painted hero midway
-  // through an attack, hit, feral or adrenaline effect (the two art sets differ).
-  const override=overrides[id+'-'+state]?.ready?overrides[id+'-'+state]:null;
-  // Modern hero may load individual states asynchronously: once any modern pose is
-  // ready, use another modern pose briefly rather than flashing legacy artwork.
-  // Legacy sheets remain available for enemies and companions with no authored
-  // replacement, and if the reference manifest cannot load at all.
-  const heroModernFallback=id==='hero'&&(
-    (overrides['hero-idle']?.ready&&overrides['hero-idle'])||
-    (overrides['hero-run']?.ready&&overrides['hero-run'])||
-    (overrides['hero-attack']?.ready&&overrides['hero-attack']))||null;
-  const modernCompanionFallback=allyIds.includes(id)&&['run','idle','attack'].map(s=>overrides[id+'-'+s]).find(a=>a?.ready);
-  const reference=override||heroModernFallback||modernCompanionFallback;
-  const count=reference?reference.count:frameCount(id,state);
-  const fps=reference?reference.fps:(id==='hero'?24:allyIds.includes(id)?12:6);
-  const action=['attack','special','hit'].includes(state);
-  const frame=state==='aim'?aimFrame(aim):reduced&&!action?0:Math.floor(Math.max(0,time)*fps)%count;
-  const sheet=reference||atlases[id+'-'+(id==='hero'?state:'run')]||atlases[id+'-idle']||atlases[id+'-run'];
-  // Idle has its own latest six-frame animation. The 8-way aim sheet is a pose,
-  // not an animation, and must never silently replace idle or locomotion.
-  const directional=id==='hero'&&state==='aim'&&overrides['hero-aim']?.ready;
-  if(directional){
-    const top=overrides['hero-aim'],f=aimFrame(aim),unit=r/23;
-    // Draw the full authored directional pose; never stitch unrelated waist/leg sheets.
-    ctx.save();ctx.scale(unit,unit);
-    if(moving&&!reduced)ctx.translate(Math.sin(time*12)*.8,Math.cos(time*24)*1.5);
-    ctx.drawImage(top.image,f*96,0,96,96,-48,-58,96,96);
-    ctx.restore();
-    return f;
-  }
-  if(sheet&&sheet.ready){
-    // Atlas feet sit at y=82; entity origin at (48,58), matching the fallback footprint.
-    const unit=r/23*(override?override.scale:1),recoil=state==='attack'&&!reduced?Math.max(0,Math.sin(frame/count*TWO*2))*.8:0;
-    ctx.save();ctx.scale(unit,unit);
-    ctx.drawImage(sheet.image,(frame%sheet.count)*96,0,96,96,-48,-58,96,96);
-    if(damaged){
-      // Repaint only the sprite silhouette with a bright exposure; transparency remains intact.
-      ctx.save();ctx.globalAlpha=.7;ctx.filter='brightness(2.6) saturate(.35)';
-      ctx.drawImage(sheet.image,(frame%sheet.count)*96,0,96,96,-48,-58,96,96);ctx.restore();
-    }
-    // Hero atlases contain both pistols attached to their animated hands.
-    if(id!=='hero'&&(!override||!override.embeddedWeapon)&&(id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'||id==='ghost'))paintedGun(ctx,id,aim,recoil);
-    if(state==='feral'||state==='adrenaline'){
-      ctx.strokeStyle=state==='feral'?'#ffb464':'#86f4fa';ctx.lineWidth=1.5;ctx.globalAlpha=.65;
-      ctx.beginPath();ctx.ellipse(0,24,26,6,0,0,TWO);ctx.stroke();
-      if(!reduced)for(let k=0;k<3;k++)rect(ctx,-34-k*4,-8+k*12,7+Math.sin(time*9+k)*3,1,ctx.strokeStyle);
-    }
-    if(id!=='hero'&&state==='attack'&&!reduced&&recoil>.15){
-      ctx.save();ctx.translate(8-recoil*3,3-recoil);ctx.rotate(Number.isFinite(aim)?aim:0);
-      poly(ctx,[[29,0],[35,-5],[34,-1],[43,0],[34,2],[36,5]],'#ffe8a2',null);ctx.restore();
-    }
-    ctx.restore();return frame;
-  }
-  const p=pose(id,state,frame),color=PALETTES[id],detail=shape[id]||'fangs';
-  const hero=id==='hero',ally=allyIds.includes(id),elite=major.catalog.elites.some(e=>e.id===id),superElite=major.catalog.superElites.some(e=>e.id===id);
-  const boss=major.catalog.bosses.some(e=>e.id===id);
-  ctx.save();ctx.scale(r/23,r/23);ctx.lineJoin='round';ctx.lineCap='round';
-  oval(ctx,2,24,27,8,'#060d18a0');
-  // TAIL: independent animated chain, readable even behind big boss armor.
-  ctx.beginPath();ctx.moveTo(-13,12);ctx.bezierCurveTo(-36,14,-38+p.tail.x,29,-35+p.tail.x,-1+p.tail.rotation*10);
-  ctx.strokeStyle='#0a1924';ctx.lineWidth=11;ctx.stroke();
-  ctx.strokeStyle=color;ctx.lineWidth=6;ctx.stroke();
-  ctx.beginPath();ctx.moveTo(-35+p.tail.x,-1+p.tail.rotation*10);ctx.lineTo(-35+p.tail.x,-7+p.tail.rotation*10);
-  ctx.strokeStyle=hero?'#e5d7c2':color;ctx.lineWidth=5;ctx.stroke();
-  // LEGS: visible left/right stepping, separate foot positions.
-  for(const [side,motion] of [[-1,p.legs.left],[1,p.legs.right]]){
-    const sx=side*9;
-    poly(ctx,[[sx-6,9],[sx+7,9],[sx+7+motion*.25,21+motion],[sx-7+motion*.3,24+motion]],
-      hero?'#d9d9d2':color);
-    oval(ctx,sx+motion*.5,22+motion,8,6,hero?'#fbf5e8':color);
-    rect(ctx,sx-4+motion*.5,24+motion,8,2,'#2b3b45');
-  }
-  // TORSO and armored garment.
-  ctx.save();ctx.translate(0,p.torso.y);ctx.rotate(p.torso.tilt);ctx.scale(p.torso.scale,1);
-  oval(ctx,0,5,boss?22:19,boss?18:17,'#091923');
-  oval(ctx,0,4,boss?19:16,boss?15:14,hero?'#57867d':ally?'#2c5357':'#43575a');
-  poly(ctx,[[-10,-7],[-3,-12],[10,-9],[8,-5],[-6,-3]],hero?'#b2e4cb':ally?'#8db9b4':'#6d8389',null);
-  poly(ctx,[[-7,8],[1,9],[12,6],[9,11],[-9,13]],hero?'#2d5c62':ally?'#1f4049':'#273f4c',null);
-  if(detail==='armor'||boss)poly(ctx,[[-18,-5],[-9,-19],[9,-19],[18,-5],[12,16],[-12,16]],'#34454d','#a2b4b4',2);
-  if(hero)poly(ctx,[[-15,10],[16,11],[13,14],[-10,14]],'#78efce',null);
-  ctx.restore();
-  // ARMS: animated independently of torso/legs.
-  for(const side of [-1,1]){
-    const move=side<0?p.arms.left:p.arms.right;
-    ctx.save();ctx.translate(side*16,0);ctx.rotate(move*.033);
-    poly(ctx,[[0,-4],[side*7,-3],[side*10,12],[side*5,18],[side*-2,14]],color);
-    oval(ctx,side*7,17,6,5,hero?'#fff1e2':color);
-    if(detail==='blades'||detail==='fangs')for(let j=0;j<3;j++)poly(ctx,[[side*(j*3+2),18],[side*(j*3+3),28],[side*(j*3+6),18]],'#efdfc9',null);
-    ctx.restore();
-  }
-  // HEAD: independent hinge, triangular ears and contour.
-  ctx.save();ctx.translate(p.head.x,-10+p.head.y);ctx.rotate(p.head.rotation);
-  poly(ctx,[[-18,-6],[-18,-29],[-7,-20],[7,-20],[18,-29],[19,-6],[14,8],[-13,8]],'#061723');
-  poly(ctx,[[-15,-5],[-15,-24],[-6,-15],[6,-15],[15,-24],[16,-6],[11,5],[-10,5]],color);
-  poly(ctx,[[-14,-15],[-7,-17],[-2,-12],[11,-14],[9,-10],[-10,-9]],hero?'#ffffff77':ally?'#d0fff077':'#ffe5d555',null);
-  poly(ctx,[[-13,-21],[-8,-16],[-13,-12]],'#e8a1a6',null);
-  poly(ctx,[[13,-21],[8,-16],[13,-12]],'#e8a1a6',null);
-  // Archetype-specific gear and silhouettes.
-  if(detail==='crown')poly(ctx,[[-17,-24],[-13,-37],[-5,-30],[0,-40],[5,-30],[13,-37],[17,-24]],'#f6c36d');
-  if(detail==='armor'||detail==='helmet')poly(ctx,[[-20,-11],[-17,-28],[0,-33],[17,-28],[20,-11],[11,-15],[-11,-15]],detail==='helmet'?'#e7ba61':'#839cab');
-  if(detail==='antenna')for(const side of [-1,1]){ctx.strokeStyle='#7ee0f6';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(side*12,-23);ctx.lineTo(side*23,-39);ctx.stroke();oval(ctx,side*23,-39,4,4,'#ffcf81');}
-  if(detail==='wings')for(const side of [-1,1])poly(ctx,[[side*17,-13],[side*35,-32],[side*29,6],[side*17,0]],color);
-  if(detail==='horns')for(const side of [-1,1])poly(ctx,[[side*10,-22],[side*20,-37],[side*18,-19]],'#f9dcb4');
-  if(detail==='hood')poly(ctx,[[-21,-8],[-18,-28],[0,-39],[19,-28],[21,-8],[12,-20],[-13,-20]],'#563e75');
-  if(detail==='scope'||detail==='visor')rect(ctx,-18,-13,36,6,detail==='scope'?'#72f3ff':'#1f343a');
-  if(detail==='healer'){rect(ctx,-19,-25,38,6,'#fff8e4');rect(ctx,-3,-29,6,15,'#dc647d');rect(ctx,-8,-23,16,4,'#dc647d');}
-  if(detail==='mask')rect(ctx,-17,-11,34,10,'#23344c');
-  // Eyes and nose move independently from helmet.
-  if(detail!=='visor'){
-    const iris=hero?'#164d59':ally?'#253e54':'#fa9688';
-    oval(ctx,-9+p.eyes.offset,-6,4,2.8*p.eyes.open,iris);oval(ctx,9+p.eyes.offset,-6,4,2.8*p.eyes.open,iris);
-    if(hero||ally){oval(ctx,-8.5+p.eyes.offset,-7,1.2,1.2,'#edffff');oval(ctx,9.5+p.eyes.offset,-7,1.2,1.2,'#edffff');}
-  }
-  poly(ctx,[[-3,1],[3,1],[0,5]],'#bf7a88',null);
-  ctx.strokeStyle='#e8d5c2';ctx.lineWidth=1;
-  for(const side of [-1,1])for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(side*8,3+i*2);ctx.lineTo(side*(20+p.whiskers),0+i*6);ctx.stroke();}
-  ctx.restore();
-  // Weapons/role silhouettes attached to upper body, distinct states.
-  if(hero||id==='shooter'||id==='sniper'||id==='watcher'||id==='echo-reaper'){
-    ctx.save();ctx.translate(13-p.recoil*4,11+p.recoil*2);ctx.rotate(Number.isFinite(aim)?aim:0);
-    rect(ctx,1,-4,id==='sniper'||id==='echo-reaper'?34:23,8,'#152a38');rect(ctx,8,-4,14,3,'#93afaf');rect(ctx,22,-2,7,4,'#e2ba74');ctx.restore();
-  }
-  if(detail==='healer'){rect(ctx,19,11,12,15,'#e9e8df');rect(ctx,24,13,3,11,'#52b5a1');rect(ctx,21,17,10,3,'#52b5a1');}
-  if(detail==='scarf'){poly(ctx,[[-15,13],[15,13],[10,17],[-12,17]],'#7ae9d1');poly(ctx,[[-10,15],[-27,29],[-10,25]],'#7ae9d1');}
-  if(detail==='crown'||boss){ctx.strokeStyle='#efb96e';ctx.lineWidth=2;ctx.strokeRect(-25,-29,50,53);}
-  if(elite||superElite){ctx.strokeStyle=superElite?'#ff9eec':'#ffe5b7';ctx.lineWidth=3;ctx.strokeRect(-26,-28,52,55);}
-  if(p.glow){
-    ctx.globalAlpha=.48+Math.sin(time*10)*.14;ctx.strokeStyle=p.glow;ctx.lineWidth=3;
-    ctx.beginPath();ctx.arc(0,0,33+2*Math.sin(time*8),0,TWO);ctx.stroke();
-    if(p.speedStreak)for(let i=0;i<5;i++){
-      const offset=(i*12+time*75*p.speedStreak)%70;
-      rect(ctx,-40-offset*.16,-21+i*9,15,2,p.glow);
-    }
-  }
-  if(damaged){ctx.globalAlpha=.55;ctx.strokeStyle='#fff0c2';ctx.lineWidth=3;ctx.strokeRect(-25,-28,50,55);}
-  if(state==='attack'&&!reduced){ctx.globalAlpha=.55;ctx.strokeStyle='#e5f7de';ctx.lineWidth=2;ctx.beginPath();ctx.arc(16,12,8+p.recoil*7,-.6,.7);ctx.stroke();}
-  ctx.restore();
-  return frame;
+ const pack=packs[id];if(!pack?.ready)return -1;
+ let selected=state;
+ if(id==='hero'){
+  if(state==='hit'||damaged)selected='hit';
+  else if(state==='recover')selected='recover';
+  else if(moving||['run','walk','feral','adrenaline'].includes(state))selected=effect==='feral'||state==='feral'?'feral':effect==='adrenaline'||state==='adrenaline'?'adrenaline':firing?'run-fire':'run';
+  else selected=firing||state==='attack'?'attack':'idle';
+ }
+ // Aliases remain INSIDE the selected family; unavailable actions never swap packs.
+ if(id==='hero'&&firing&&['feral','adrenaline'].includes(selected))selected+='-fire';
+ const sheet=pack.states[selected]||pack.states.run;
+ const phase=reduced&&!['hit','recover','attack','special'].includes(selected)?0:Math.floor(Math.max(0,time)*sheet.fps)%sheet.frames;
+ const bearing=sheet.bearings?aimFrame(aim):0;
+ ctx.save();ctx.scale(r/23,r/23);
+ // Exposure applies to the ONE draw, including damage; no repaint of silhouette.
+ if(damaged&&id!=='hero')ctx.filter='brightness(1.35)';
+ ctx.drawImage(sheet.image,phase*96,bearing*96,96,96,-48,-58,96,96);
+ if(id!=='hero'&&sheet.embedded_weapon===false&&['shooter','sniper','watcher','echo-reaper','ghost'].includes(id))paintedGun(ctx,id,aim,state==='attack'?.4:0);
+ ctx.restore();return bearing*sheet.frames+phase;
 }
-const API=Object.freeze({characters,enemyIds,allyIds,frameCount,pose,draw,assetStatus,directionalStatus,overrideStatus,hasReferenceAnimation,aimFrame,heroBarrels,actionDuration,assetVersion:assetRelease,frameTotal:162+96+120});
-root.CATA_ART=API;
-if(typeof module!=='undefined'&&module.exports)module.exports=API;
+const characters=Object.freeze({hero:Object.freeze({idle:12,run:12,hit:8,feral:12,adrenaline:12}),allies:Object.freeze(Object.fromEntries(allyIds.map(id=>[id,12]))),enemies:Object.freeze(Object.fromEntries(enemyIds.map(id=>[id,6])))});
+root.CATA_ART=Object.freeze({characters,enemyIds,allyIds,draw,ready,packInfo,assetStatus,overrideStatus,directionalStatus,hasReferenceAnimation,actionDuration,frameCount,aimFrame,heroBarrels,assetVersion:assetRelease,frameTotal:8*(12*7+8*3)+allyIds.length*36+enemyIds.length*6});
+if(typeof module!=='undefined'&&module.exports)module.exports=root.CATA_ART;
 })(typeof globalThis!=='undefined'?globalThis:this);
