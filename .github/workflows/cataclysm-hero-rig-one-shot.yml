@@ -1,0 +1,193 @@
+name: Cataclysm 1.0 · One-shot articulated rig recovery
+run-name: Saved skin → minimal QA → visual review → publish only if approved
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/hero_rig_simple_recovery.md
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: borhez-art-rig-one-shot
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    outputs:
+      pr: ${{ steps.accept.outputs.pr }}
+    env:
+      ART_JOB: game_factory/art_department/jobs/active.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install one ordinary independent test environment
+        run: |
+          python -m pip install --quiet pillow cairosvg
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+      - name: Recover already generated exact hero rig art — NO new AI generation
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 43473753649
+          github-token: ${{ github.token }}
+          name: rejected-art-stage1
+          path: artifacts/art-department/
+      - name: Apply saved four-part rig and check simple fixed contracts
+        run: |
+          set -euo pipefail
+          git apply --binary --check artifacts/art-department/candidate.patch
+          git apply --binary artifacts/art-department/candidate.patch
+          python -m game_factory.art_department.pipeline gate
+          python -m game_factory.cataclysm_asset_release --stage herorig --run-id "$GITHUB_RUN_ID"
+          git diff --check
+          python -m game_factory.art_department.run_checks unit
+      - name: One real Chrome gameplay and mobile animation review
+        run: |
+          set -euo pipefail
+          nohup python -m http.server 8765 --directory docs >/tmp/hero-rig-http.log 2>&1 &
+          node game_factory/art_department/browser-review.cjs
+          python -m game_factory.art_department.run_checks browser
+      - name: Independent image review — hard fail if feet still look fixed
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ART_REVIEW_ATTEMPT: '1'
+        run: python -m game_factory.art_department.pipeline review
+      - name: Commit only if every prior test and independent leg motion review passed
+        id: accept
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash game_factory/art_department/commit_accepted.sh
+      - name: Retain exact accepted or rejected evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-shot-hero-rig-visual-evidence
+          path: artifacts/art-department/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  publish-accepted-character:
+    needs: validate
+    if: needs.validate.result == 'success' && needs.validate.outputs.pr != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    concurrency:
+      group: borhez-mobile-pages-delivery
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Merge exact gated artwork PR, not an unrelated candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.validate.outputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          gh auth setup-git
+          head="$(gh pr view "$PR_NUMBER" --json headRefName --jq .headRefName)"
+          test "$head" = "studio/art-department-${{ github.run_id }}"
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+          python -m game_factory.art_department.run_checks unit
+      - name: Upload all playable games with newly accepted character
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: bo-rhez-art-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Deploy accepted build
+        id: deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: bo-rhez-art-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Retry identical Pages archive after competing deploy
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry Pages deployment
+        id: retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: bo-rhez-art-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Verify live playable game and new frame atlases byte-for-byte
+        env:
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,time,urllib.request
+          from pathlib import Path
+          j=json.loads(Path('game_factory/art_department/jobs/active.json').read_text())
+          base=os.environ['PAGES_URL'].rstrip('/')+'/'
+          paths=[j['source_dir'].removeprefix('docs/')+'/animation.js']
+          if j.get('atlas_layout') in ('directional-grid','rigged-parts'):
+              for directory in (j['source_dir'],j['mirror_dir']):
+                  basepath=directory.removeprefix('docs/')+'/'
+                  paths += [basepath+'animation.js',basepath+'art/actor-packs.json',basepath+'index.html',basepath+'game.js',
+                            basepath+'hero-kinematics.js',basepath+'hero-rig-renderer.js']
+                  if j.get('atlas_layout')=='rigged-parts':
+                      paths += [basepath+'art/characters/'+j['character']+'/'+j['family']+'/'+part+'.png' for part in j['rig_parts']]
+                  else:
+                      paths += [basepath+'art/characters/'+j['character']+'/'+j['family']+'/'+state+'.png' for state in j['states']]
+          else:
+              paths += [j['source_dir'].removeprefix('docs/')+'/art/'+j['character']+'-'+state+'.png' for state in j['states']]
+              paths += [j['mirror_dir'].removeprefix('docs/')+'/art/'+j['character']+'-'+state+'.png' for state in j['states']]
+          paths += [j['play_url_path']+'/index.html']
+          for item in paths:
+              expected=hashlib.sha256((Path('docs')/item).read_bytes()).hexdigest()
+              for attempt in range(12):
+                  try:
+                      u=base+item+'?run='+os.environ['GITHUB_RUN_ID']+'&attempt='+str(attempt)
+                      with urllib.request.urlopen(urllib.request.Request(u,headers={'Cache-Control':'no-cache'}),timeout=20) as r:
+                          assert hashlib.sha256(r.read()).hexdigest()==expected,'live bytes differ'
+                      print('LIVE VERIFIED:',u)
+                      break
+                  except Exception:
+                      if attempt==11:raise
+                      time.sleep(5)
+          PY
+      - name: Publish verified playtest link to workflow summary
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          j=json.load(open('game_factory/art_department/jobs/active.json'))
+          base='https://borhex.github.io/kbc-rpg-prototype/'
+          print('Art Department ACCEPTED and LIVE: '+base+j['play_url_path']+'/')
+          print('Mirror: '+base+j['mirror_dir'].removeprefix('docs/')+'/')
+          PY
