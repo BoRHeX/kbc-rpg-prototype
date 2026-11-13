@@ -1,0 +1,95 @@
+name: Cataclysm 1.1 — Illustrated Hero Reference Intake
+run-name: 1.1 illustrated cat · import actual artist pose sheet
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-1-illustrated-cat.json
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: cataclysm-11-illustrated-hero
+  cancel-in-progress: false
+jobs:
+  artist-reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image intake tools
+        run: python -m pip install --disable-pip-version-check --quiet pillow requests
+      - name: Download actual owner-approved illustrated art from private Drive
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run: |
+          python - <<'PY'
+          import io,json,requests
+          from pathlib import Path
+          from PIL import Image
+          from game_factory.private_playback import get_access_token
+          request=json.loads(Path("game_factory/requests/cataclysm-1-1-illustrated-cat.json").read_text())
+          assert request["request_id"]=="cataclysm-11-illustrated-cat-reference-20261113"
+          assert request["drive_file_id"]=="1yZoNC7QKfLcrKF2MhcQWWn_s3olLyBYs"
+          assert request["target"]=="docs/cataclysm-1-1/art/references/hero-illustrated-pose-sheet.png"
+          assert Path("docs/cataclysm-1-1/index.html").exists()
+          with requests.Session() as s:
+              token=get_access_token(s)
+              r=s.get("https://www.googleapis.com/drive/v3/files/"+request["drive_file_id"],params={"alt":"media"},headers={"Authorization":"Bearer "+token},timeout=90)
+              r.raise_for_status()
+              raw=r.content
+          assert raw[:8]==b'\x89PNG\r\n\x1a\n'
+          assert 100000<len(raw)<8000000
+          with Image.open(io.BytesIO(raw)) as image:
+              assert image.width>=1000 and image.height>=700
+              print("REAL ILLUSTRATED REFERENCE",image.size,len(raw))
+          target=Path(request["target"]);target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_bytes(raw)
+          guide=Path("docs/cataclysm-1-1/art/references/ART-DIRECTION.md")
+          guide.write_text("""# CATACLYSM 1.1 — Main hero art identity (concept pass)
+          
+          SOURCE: hero-illustrated-pose-sheet.png (real image-generation output, not procedural code).
+          It contains eleven separately illustrated white-cat poses in a coherent reference sheet.
+
+          ## Canonical visual identity
+          White, chubby-cute but agile QUADRUPED on all four paws; oversized cyan/teal eyes, pink nose and inner ears; fluffy face/chest; coral-red band on back; clean outlines and soft hand-painted shading. No tail, gun, pistol, mechanical joints, or geometric code-drawn placeholder shapes in this concept reference.
+
+          ## Poses represented in source
+          Top row: calm standing; smiling idle; walk; leaping sprint.
+          Middle row: stalking crouch; pounce; surprised; hurt.
+          Bottom row: feral/rage; determined; relaxed/resting.
+
+          ## Production directive
+          Reference image is the ART SOURCE and the visual ground truth. Do NOT reproduce it by drawing rectangles, ellipses, gradients and line segments with Canvas/Pillow/SVG. Sprite extraction, masking, transparent backgrounds, rigging and interpolation are permitted as asset processing only, provided the painted source and exact character identity survive. The engine renderer may position/raster-draw painted frames, never redraw an imitation cat with geometry.
+
+          This is a CONCEPT-ART PASS, not gameplay integration. The current Cataclysm 1.1 game remains playable with its earlier hero until an illustrated animation pass replaces it. Keep 1.0 untouched. Stage further animation from THIS image after the creator evaluates it.
+          """.replace("          ",""),encoding="utf-8")
+          PY
+      - name: Commit source image and art bible via PR without touching the game
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio — Art'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git switch -c "studio/cataclysm-11-illustrated-hero-$GITHUB_RUN_ID"
+          git add docs/cataclysm-1-1/art/references/hero-illustrated-pose-sheet.png docs/cataclysm-1-1/art/references/ART-DIRECTION.md
+          git diff --cached --check
+          git diff --cached --quiet && { echo "Reference not created"; exit 1; }
+          git commit -m "Art Studio: adopt illustrated quadruped hero pose sheet as canonical 1.1 reference"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "studio/cataclysm-11-illustrated-hero-$GITHUB_RUN_ID" --title "Cataclysm 1.1 · adopt hand-illustrated main cat pose sheet" --body "Import the original ChatGPT-generated pose sheet as the real visual source for 1.1. No code-drawn imitation, no tail/gun, and no gameplay changes in this concept pass. Next: turn approved artwork into genuine sprites/animation without changing the character design.")"
+          echo "ART PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          echo "Character art source: https://github.com/BoRHeX/kbc-rpg-prototype/tree/main/docs/cataclysm-1-1/art/references" >> "$GITHUB_STEP_SUMMARY"
