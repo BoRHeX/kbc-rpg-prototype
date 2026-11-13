@@ -2328,6 +2328,7 @@
     VIS.aura(ctx,type,r,time,effect||state,reducedMotion);
     const anim=isHero?game.player.animation:null;
     const artTime=isHero?(state==='hit'?.35-anim.hit:state==='recover'?8/23-anim.recovery:anim.visualMoving?anim.gaitClock:state==='attack'?Math.max(0,game.t-(game.player.lastShotAt??game.t)):time):time;
+    if(type==='hero')return globalThis.CATA_HERO_ILLUSTRATED.draw(ctx,r,artTime,state,!!anim?.visualMoving,effect,anim?.gaitPose,reducedMotion,aim);
     return ART.draw(ctx,type,r,isHero?game.t:artTime,state,aim,!!hurt,reducedMotion,!!(isHero&&game.player.animation.visualMoving),effect,!!(isHero&&game.player.animation.attack>0),isHero?{kinematics:anim.gaitPose,speedRatio:anim.gaitPose?.speedRatio||0,shielded:game.player.inv>0}:null);
   }
   function renderWorld(){
@@ -2489,12 +2490,6 @@
     drawRage(g,aim);
     catSprite('hero',27,g.t,p.animation.state==='hit',aim);
 
-    if(g.t-(p.lastShotAt??-100)<.065){
-      for(const barrel of ART.heroBarrels(aim)){
-        ctx.save();ctx.translate(barrel.x,barrel.y);ctx.rotate(aim);
-        polygon(0,0,[[0,-3],[10,-6],[17,0],[10,6],[0,3]],'#fff4c3');ctx.restore();
-      }
-    }
     ctx.restore();
     }
     for(const hit of g.damagePopups){
@@ -2789,5 +2784,5 @@
   });
   window.spawnRelic=spawnRelic;
   last=performance.now();requestAnimationFrame(frame);
-  ART.ready.then(()=>window.CATACLYSM_BOOT.ready(BUILD)).catch(error=>window.CATACLYSM_BOOT.fail('Character pack failed: '+error.message));
+  Promise.all([ART.ready,globalThis.CATA_HERO_ILLUSTRATED.ready]).then(()=>window.CATACLYSM_BOOT.ready(BUILD)).catch(error=>window.CATACLYSM_BOOT.fail('Character pack failed: '+error.message));
 })();
