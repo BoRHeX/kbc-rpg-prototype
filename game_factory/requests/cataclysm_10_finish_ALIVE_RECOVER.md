@@ -7,3 +7,5 @@ The autonomous Cats Alive run 43443458400 finished its creative implementation b
 Other acceptance checks now recognize the studio's two actual turret skins by their authored names instead of imposing numeric skin IDs, and accept a *moving* modern-hero frame during buffed/hit motion instead of mandating the older static feral pose. The new direct visual-motion test verifies animation rigorously.
 
 The public game must remain Cataclysm 1.0 and preserve its existing balance, XP costs 6/8/10, map, controls, fish and companions. No full Night100 stress test. No generated assets discarded.
+
+Independent recovery result: Night99 restored successfully; eight viewport gameplay, infinite world, art integrity, personality/cards and XP/balance Chrome checks all passed. Next test incorrectly requested stationary idle/attack artwork with `moving=true`, causing the renderer to correctly choose the running sprite instead. The independent browser-hero-directional test now sets moving only for the running state; buffed movement is checked separately by browser-alive.cjs. Rerun the same preserved studio artifact; do not regenerate images, dialogue or any source.
