@@ -130,7 +130,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: cataclysm-13-systems-${{ github.run_id }}-${{ github.run_attempt }}
-          path: .
+          path: docs/cataclysm-1-3
       - name: Verify first department handoff
         shell: bash
         run: |
