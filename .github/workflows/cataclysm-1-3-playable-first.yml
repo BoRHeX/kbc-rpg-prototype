@@ -1,0 +1,234 @@
+name: Cataclysm 1.3 — FELINE COMPANY autonomous studio
+run-name: 1.3 · Feline Company · 16 companions and Mecha Crew
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-3-launch.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cataclysm-13-playable-first
+  cancel-in-progress: false
+
+jobs:
+  design-develop-playtest-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fork the last merged illustrated 1.1 into independent 1.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/cataclysm-1-2/index.html
+          test -f docs/cataclysm-1-2/game.js
+          test -f game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+          test -f game_factory/requests/cataclysm-1-3-launch.md
+          test -s docs/cataclysm-1-2/STUDIO-REPORT.md
+          test -s game_factory/CATACLYSM_MASTER_LEDGER.json
+          test -s game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.json
+          if [ -d docs/cataclysm-1-3 ]; then echo 'Existing 1.3 version detected; refusing overwrite'; exit 1; fi
+          cp -a docs/cataclysm-1-2 docs/cataclysm-1-3
+          rm -f docs/cataclysm-1-3/STUDIO-REPORT.md docs/cataclysm-1-3/PRODUCTION-PLAN.md docs/cataclysm-1-3/SOURCE-TRACE.json
+          test -f docs/cataclysm-1-3/game.js
+          echo "1.0 and 1.1 preserved; isolated 1.3 workspace ready." >> "$GITHUB_STEP_SUMMARY"
+      - name: Install essential real-browser acceptance tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Serve the real game during studio integration
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-13-http.log 2>&1 &
+      - name: Assemble approved 1.3 brief and persistent studio memory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/cataclysm-13
+          {
+            echo '# Cataclysm 1.3 — FELINE COMPANY | department A: AI, economy, fusion'
+            echo 'ONE continuous Cataclysm game. Real 1.2 source is copied into docs/cataclysm-1-3.'
+            echo 'Edit ONLY docs/cataclysm-1-3/. All previous versions, studio infrastructure and roadmap remain read-only.'
+            echo 'Make real changes to actual running game, not a placeholder demo or writing-only output.'
+            echo 'First implement original 8 plus 8 NEW cats: Angler, Scout, Alchemist, Salvager, Saboteur, Stormcaller, Courier, Hexcat, each with unique combat/support behavior.'
+            echo 'Introduce autonomous follow/attack/forage/feed/protect/escape/rest behavior. Companions EAT their own fish. Reduce ordinary zombie fish drops without starving solo player XP.'
+            echo 'Implement individual companion Levels 1 to 3, meaningful identity-specific Level 3 evolution, and four-slot accounting with genuine Engineer Level3 + Shooter Level3 = one MECHA CREW (build, board, fire, heat, repair, downtime).'
+            echo 'Keep all existing eight companions and their roles, brawler melee only, others ranged, 1.2 nine lives and rerolls, illustrated quadruped tail gun, solo build, audio, auto-skills, controls, horde and restart.'
+            echo 'Write docs/cataclysm-1-3/PRODUCTION-PLAN.md with producer, gameplay, systems, art/audio, integrator QA responsibilities and ledger feature IDs CAT-13-01..CAT-13-11.'
+            echo 'Provide real fish conservation/fusion/levels diagnostics or deterministic tests. No external network telemetry.'
+            echo 'New menu interaction/three guns/world map/fishing minigame are LATER version features. No new manual combat buttons.'
+            echo 'Leave functional integration hooks for creative department B. Jank is allowed; no blank screens and no invented features.'
+            echo
+            echo '## Binding owner launch order'
+            cat game_factory/requests/cataclysm-1-3-launch.md
+            echo '## Creator-approved original roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio charter and corrections'
+            cat game_factory/CATACLYSM_STUDIO_CONSTITUTION.md
+            echo '## Tracked feature checklist'
+            cat game_factory/CATACLYSM_MASTER_LEDGER.json
+            echo '## Actual 29-response council synthesis'
+            cat game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.md
+            echo '## Actual inherited 1.2 behavior and limitations'
+            cat docs/cataclysm-1-2/STUDIO-REPORT.md
+          } > artifacts/cataclysm-13/SYSTEMS_BRIEF.md
+      - name: Department A — game mechanics, roster, fish-eating AI, evolution and fusion
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-13/SYSTEMS_BRIEF.md
+      - name: Assemble creative and integration handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '# Cataclysm 1.3 — FELINE COMPANY | department B: art, audio, integration, QA'
+            echo 'You are the SECOND AI studio department; review the REAL 1.3 source already changed by Department A.'
+            echo 'Edit ONLY docs/cataclysm-1-3/. Other versions and project files are immutable.'
+            echo 'Complete outstanding mechanics in 1.3 (all eight new cats, autonomous own-fish feeding, real L1→3 evolutions, Level3 Engineer+Shooter one-slot Mecha Crew). Do not just write promises.'
+            echo 'Integrate readable character art/animations at Samsung phone scale, companion feed/level/evolution, Mecha boarding and repair graphics, new event SFX and contextual voice bubbles.'
+            echo 'Reuse real illustrated hero assets. Do not claim procedurally drawn shapes are hand-painted art. Distinguish old texture reuse, genuinely authored assets and art still missing.'
+            echo 'Make compact HUD and pause guide for companion levels, max 4 unique slots, fish feeding and fusion readiness, with only movement as direct gameplay control.'
+            echo 'Preserve playable 1.2 survival, 9 lives, cards and rerolls, solo cat, horde, soundtrack, real controls and restart.'
+            echo 'Run deterministic mechanics QA if possible. On missing tests write exact limitation. No unrelated game infrastructure edits.'
+            echo 'Update main index.html to visibly identify Cataclysm 1.3. Write a NEW STUDIO-REPORT.md with the requested CAT-13 feature IDs, evidence, what truly works and is deferred, art/audio status, known jank and exact 1.4 handoff.'
+            echo 'The creator accepts jank and roughness, not fabricated completeness or blank screens. The team may make justified evolutionary changes to real game code.'
+            echo
+            echo '## Binding owner order'
+            cat game_factory/requests/cataclysm-1-3-launch.md
+            echo '## First department dependency plan'
+            if test -f docs/cataclysm-1-3/PRODUCTION-PLAN.md; then cat docs/cataclysm-1-3/PRODUCTION-PLAN.md; fi
+            echo '## Original approved 1.3 mechanics'
+            sed -n '/^### 1\.3 — FELINE COMPANY/,/^### 1\.4 — THE UNSEEN CITY/p' game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Council 1.3 release plan'
+            sed -n '/^### 1\.3 — FELINE COMPANY/,/^### 1\.4 — THE UNSEEN CITY/p' game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.md
+            echo '## Source 1.2 features and preservation'
+            cat docs/cataclysm-1-2/STUDIO-REPORT.md
+          } > artifacts/cataclysm-13/INTEGRATION_BRIEF.md
+      - name: Department B — visuals, soundtrack, UI, integration and report
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-13/INTEGRATION_BRIEF.md
+      - name: Enforce version isolation and JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          tracked=subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).splitlines()
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          touched=set(tracked+untracked)
+          unauthorized=sorted(p for p in touched if not p.startswith('docs/cataclysm-1-3/'))
+          if unauthorized: raise SystemExit('Studio attempted edits outside 1.3: '+str(unauthorized))
+          from pathlib import Path
+          root=Path('docs/cataclysm-1-3')
+          for name in ['index.html','game.js','game.css']:
+            assert (root/name).is_file(), 'Missing: '+name
+          assert '1.3' in (root/'index.html').read_text(), '1.3 version label missing from title/start page'
+          assert (root/'STUDIO-REPORT.md').is_file(), 'Studio must document delivered features and limitations'
+          assert (root/'PRODUCTION-PLAN.md').is_file(), 'Studio must provide actual 1.3 dependency plan'
+          js=' '.join(p.read_text(errors='ignore') for p in root.rglob('*.js') if 'qa' not in p.parts).lower()
+          missing=[r for r in ['angler','scout','alchemist','salvager','saboteur','stormcaller','courier','hexcat'] if r not in js]
+          if missing: raise SystemExit('Companion roles missing from runtime: '+str(missing))
+          assert 'mecha' in js, 'Mecha Crew must have a runtime presence'
+          assert (root/'game.js').read_bytes()!=Path('docs/cataclysm-1-2/game.js').read_bytes(), 'Source did not evolve from real 1.2'
+          print('Protected 1.0 and 1.1 remain untouched')
+          PY
+          for f in docs/cataclysm-1-3/*.js; do node --check "$f"; done
+      - name: Real Chrome nonblank/playable gate for both phone orientations
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
+          for (const size of [{width:844,height:390},{width:390,height:844}]) {
+            const page=await browser.newPage({viewport:size,isMobile:true,hasTouch:true});
+            const errors=[];
+            page.on('pageerror',error=>errors.push(String(error)));
+            await page.goto('http://127.0.0.1:8765/cataclysm-1-3/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForFunction(()=>{const b=document.getElementById('play'); return !!b && !b.disabled;},{timeout:40000});
+            await page.locator('#play').click({timeout:10000});
+            await page.waitForTimeout(1500);
+            const snapshot=await page.evaluate(()=>{
+              const c=document.getElementById('canvas');
+              if(!c||c.width<50||c.height<50) return {ok:false,reason:'canvas missing'};
+              const ctx=c.getContext('2d',{willReadFrequently:true});
+              const colors=new Set();
+              for(let j=1;j<=6;j++)for(let i=1;i<=8;i++){
+                colors.add([...ctx.getImageData(Math.floor(c.width*i/9),Math.floor(c.height*j/7),1,1).data].join(','));
+              }
+              return {ok:colors.size>=3,colors:colors.size,started:document.getElementById('start-overlay')?.hidden,width:c.width,height:c.height};
+            });
+            await page.screenshot({path:'/tmp/cataclysm-13-'+size.width+'.png'});
+            if(!snapshot.ok||!snapshot.started||errors.length) throw Error('Not playable: '+JSON.stringify({size,snapshot,errors}));
+            console.log('CATACLYSM 1.3 PLAYABLE',JSON.stringify({size,snapshot,errors}));
+            await page.close();
+          }
+          await browser.close();
+          JS
+      - name: Package versioned game in PR and merge one bounded studio pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Games Studio"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "studio/cataclysm-13-$GITHUB_RUN_ID"
+          git add docs/cataclysm-1-3
+          git -c core.whitespace=-trailing-space diff --cached --check
+          git diff --cached --quiet && { echo "::error::1.3 studio created no source changes"; exit 1; }
+          git commit -m "BoRHeZ Studio: Cataclysm 1.3 Feline Company playable candidate"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "studio/cataclysm-13-$GITHUB_RUN_ID" --title "Cataclysm 1.3 · FELINE COMPANY playable-first" --body "Resolves #89: Feline Company gameplay, new companion roles, autonomy, evolutions and fusion. Isolated source in docs/cataclysm-1-3; historic versions unchanged. Browser nonblank acceptance and code syntax checked; owner retains actual feature/art/balance acceptance; see STUDIO-REPORT for limitations.")"
+          echo "PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          test -s docs/cataclysm-1-3/game.js
+          echo "PLAYTEST: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-3/" >> "$GITHUB_STEP_SUMMARY"
+      - name: Prepare GitHub Pages artifact including historical builds
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-13-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Publish FELINE COMPANY without rewriting old game source
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-13-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Final playtest location and honest acceptance scope
+        run: |
+          echo '### Cataclysm 1.3 — FELINE COMPANY' >> "$GITHUB_STEP_SUMMARY"
+          echo 'https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-3/' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Studio executed. Mobile Chrome launch/nonblank verified; feature QA and final owner visual acceptance separate.' >> "$GITHUB_STEP_SUMMARY"
