@@ -1,0 +1,1022 @@
+{
+  "schema": "borhez.cataclysm.master-ledger.v1",
+  "updated": "2026-11-14",
+  "title": "Cataclysm 2.0 — THE CATACOMBS",
+  "authoritative_roadmap": "game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md",
+  "source_history": [
+    "https://github.com/BoRHeX/kbc-rpg-prototype/issues/46",
+    "https://github.com/BoRHeX/kbc-rpg-prototype/issues/82",
+    "https://github.com/BoRHeX/kbc-rpg-prototype/issues/85",
+    "https://github.com/BoRHeX/kbc-rpg-prototype/issues/23",
+    "game_factory/CATACLYSM_1_0_ROADMAP.md",
+    "game_factory/results/"
+  ],
+  "approved_policy": {
+    "source_priority": "Latest creator correction > approved roadmap/ledger > scoped milestone order > cited earlier feedback > studio suggestions",
+    "acceptance_status": "Draft feature is NOT implemented simply because listed. Working source/test, screenshot/playable proof and final creator judgment are separate.",
+    "change_control": "No requirement silently disappears. Defer or revise with reason, owner authority, dependencies and impacted version.",
+    "release_policy": "Playability required; rough visuals and nonfatal bugs allowed; preserve frozen versions and maintain each version URL."
+  },
+  "versions": [
+    {
+      "version": "1.0",
+      "name": "THE CATASTROPHE",
+      "phase": "historical",
+      "description": "Preserve original music, score, art, allies, boss/endgame and separate test URL.",
+      "requirements": [
+        "CAT-10-01",
+        "CAT-10-02"
+      ]
+    },
+    {
+      "version": "1.1",
+      "name": "EVERYTHING DRAWN",
+      "phase": "candidate",
+      "description": "Main cat and squad art, tail aim, weak zombie hordes.",
+      "requirements": [
+        "CAT-11-01",
+        "CAT-11-02",
+        "CAT-11-03",
+        "CAT-11-04",
+        "CAT-11-05",
+        "CAT-11-06"
+      ]
+    },
+    {
+      "version": "1.2",
+      "name": "NINE LIVES",
+      "phase": "candidate",
+      "description": "Survival and richer random card choices.",
+      "requirements": [
+        "CAT-12-01",
+        "CAT-12-02",
+        "CAT-12-03",
+        "CAT-12-04",
+        "CAT-12-05"
+      ]
+    },
+    {
+      "version": "1.3",
+      "name": "FELINE COMPANY",
+      "phase": "approved_next",
+      "description": "Eight NEW cats, levels, evolution and fusion; this must precede or be explicitly separated from 1.4.",
+      "requirements": [
+        "CAT-13-01",
+        "CAT-13-02",
+        "CAT-13-03",
+        "CAT-13-04",
+        "CAT-13-05",
+        "CAT-13-06",
+        "CAT-13-07",
+        "CAT-13-08",
+        "CAT-13-09",
+        "CAT-13-10",
+        "CAT-13-11"
+      ]
+    },
+    {
+      "version": "1.4",
+      "name": "THE UNSEEN CITY",
+      "phase": "approved_future",
+      "description": "Seeded districts and tactical exploration without a minimap.",
+      "requirements": [
+        "CAT-14-01",
+        "CAT-14-02",
+        "CAT-14-03",
+        "CAT-14-04",
+        "CAT-14-05",
+        "CAT-14-06",
+        "CAT-14-07",
+        "CAT-14-08",
+        "CAT-14-09",
+        "CAT-14-10"
+      ]
+    },
+    {
+      "version": "1.5",
+      "name": "HOOK, LINE & CATNIP",
+      "phase": "approved_future",
+      "description": "Fishing and fish as contested tactical economy.",
+      "requirements": [
+        "CAT-15-01",
+        "CAT-15-02",
+        "CAT-15-03",
+        "CAT-15-04",
+        "CAT-15-05",
+        "CAT-15-06",
+        "CAT-15-07"
+      ]
+    },
+    {
+      "version": "1.6",
+      "name": "MUTATIONS AFTER MIDNIGHT",
+      "phase": "approved_future",
+      "description": "Expanded threat ecology and biome/boss variations.",
+      "requirements": [
+        "CAT-16-01",
+        "CAT-16-02",
+        "CAT-16-03",
+        "CAT-16-04",
+        "CAT-16-05",
+        "CAT-16-06",
+        "CAT-16-07",
+        "CAT-16-08",
+        "CAT-16-09"
+      ]
+    },
+    {
+      "version": "1.7",
+      "name": "THE LONG NIGHT",
+      "phase": "approved_future",
+      "description": "1000-night campaign, checkpoints and Endless Mode.",
+      "requirements": [
+        "CAT-17-01",
+        "CAT-17-02",
+        "CAT-17-03",
+        "CAT-17-04",
+        "CAT-17-05",
+        "CAT-17-06",
+        "CAT-17-07"
+      ]
+    },
+    {
+      "version": "1.8",
+      "name": "UNASSIGNED — COUNCIL PROPOSAL",
+      "phase": "not_approved",
+      "description": "Intentionally unscheduled slot; studio may propose content/integration emphasis at roundtable.",
+      "requirements": [
+        "CAT-18-01",
+        "CAT-18-02"
+      ]
+    },
+    {
+      "version": "1.9",
+      "name": "UNASSIGNED — COUNCIL PROPOSAL",
+      "phase": "not_approved",
+      "description": "Intentionally unscheduled slot; studio may propose final integration/polish gate at roundtable.",
+      "requirements": [
+        "CAT-19-01",
+        "CAT-19-02"
+      ]
+    },
+    {
+      "version": "2.0",
+      "name": "THE CATACOMBS",
+      "phase": "approved_destination",
+      "description": "Complete unified adventure and Sphinx finale.",
+      "requirements": [
+        "CAT-20-01",
+        "CAT-20-02",
+        "CAT-20-03",
+        "CAT-20-04",
+        "CAT-20-05",
+        "CAT-20-06",
+        "CAT-20-07",
+        "CAT-20-08",
+        "CAT-20-09"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "CAT-10-01",
+      "version": "1.0",
+      "feature": "Protected 1.0 build and Night 99 lab must remain independently playable",
+      "status": "protected",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-10-02",
+      "version": "1.0",
+      "feature": "Store baseline source/rollback commit; never edit through future milestone",
+      "status": "protected",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-01",
+      "version": "1.1",
+      "feature": "Illustrated cute four-legged protagonist: idle/run/hurt/adrenaline/rage/shield, real animated art not geometry",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-02",
+      "version": "1.1",
+      "feature": "Independent auto-targeting drawn tail gun; no three-weapon loadout before 2.0",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-03",
+      "version": "1.1",
+      "feature": "Eight established cats; all ranged except melee Brawler; role specials intact",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-04",
+      "version": "1.1",
+      "feature": "Numerous individually weak zombies, performance-safe and off-screen spawning",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-05",
+      "version": "1.1",
+      "feature": "At least six meaningful working upgrades; preserved solo and squad paths",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-11-06",
+      "version": "1.1",
+      "feature": "Visual, audio and screen-size playtest evidence",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-12-01",
+      "version": "1.2",
+      "feature": "Nine lives separate from HP, death/revival, final-death game over",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-12-02",
+      "version": "1.2",
+      "feature": "Life HUD/revival VFX/sound, safe grace, persistent XP and squad across lives",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-12-03",
+      "version": "1.2",
+      "feature": "Rare, capped non-boss extra-life mechanism",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-12-04",
+      "version": "1.2",
+      "feature": "Up to five eligible random cards, unlocks and rerolls",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-12-05",
+      "version": "1.2",
+      "feature": "Survival, solo-cat and squad perk options; no dominant fire-rate-only strategy",
+      "status": "reported_in_candidate_not_owner_accepted",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-01",
+      "version": "1.3",
+      "feature": "Add eight distinct new roles: Angler, Scout, Alchemist, Salvager, Saboteur, Stormcaller, Courier, Hexcat",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-02",
+      "version": "1.3",
+      "feature": "All 16 distinct companion identities: drawn mobile sprites/animations, combat/support, banter, role SFX",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-03",
+      "version": "1.3",
+      "feature": "AI states follow/attack/protect/escape/forage/feed/rest/recover/joke/reposition; no direct commands",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-04",
+      "version": "1.3",
+      "feature": "Companions EAT their own fish; reduced ordinary mob fish drops; player retains alternative XP sources",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-05",
+      "version": "1.3",
+      "feature": "Individual Levels 1→3 using real actions and food; clear progression HUD and identity-defining Level-3 evolutions",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-06",
+      "version": "1.3",
+      "feature": "Allow eligible dual Level-3 pair fusion in ONE of four companion slots, with complete accounting",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-07",
+      "version": "1.3",
+      "feature": "Engineer + Shooter => deployable MECHA CREW: boarding, heat, ammunition, repair, breakdown, powerful-but-balanced horde attack",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-08",
+      "version": "1.3",
+      "feature": "Optional fusions from roadmap: Angler+Trapper, Scout+Sniper, Bard+Stormcaller, if appropriate budget",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-09",
+      "version": "1.3",
+      "feature": "Companions adapt to fast solo cat rather than teleport constantly or impose movement cap",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-10",
+      "version": "1.3",
+      "feature": "Integrate visual effects, animation states, companion SFX/music cues and persistent story dialogue",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-13-11",
+      "version": "1.3",
+      "feature": "Test 16 roster unlock eligibility, four-slot cap, fish accounting, fusion state/recovery, visual identity",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-01",
+      "version": "1.4",
+      "feature": "Seeded interconnected districts, roads, geography, obstacles and repeatable topology",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-02",
+      "version": "1.4",
+      "feature": "World map/city discovery shown BETWEEN runs or from main menu; not a standard in-play minimap",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-03",
+      "version": "1.4",
+      "feature": "In-game off-screen arrow only to reachable magnet/rage/beacon with distance and category",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-04",
+      "version": "1.4",
+      "feature": "Zone kill counters, guardian provocation, unique local bosses, optional risky beacon triggers",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-05",
+      "version": "1.4",
+      "feature": "Provoked unique area bosses may rarely give +1 LIFE once per eligible boss, never grindable",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-06",
+      "version": "1.4",
+      "feature": "DPS-check waves: countdown, escalating pressure, area unlocking, readable enemy telegraph",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-07",
+      "version": "1.4",
+      "feature": "Failing DPS check costs opportunity/creates hazard but never permanent softlock",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-08",
+      "version": "1.4",
+      "feature": "Zone visuals: destructible/interactive props, skyline, districts, weather, lighting, original ambience/music",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-09",
+      "version": "1.4",
+      "feature": "Tie companion Scout/Courier/Angler and future exploration roles to district navigation without bypassing 1.3",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-14-10",
+      "version": "1.4",
+      "feature": "Test seeded routes, accessible pickup arrows, travel loops, triggers, rewards, 30+ FPS representative browser",
+      "status": "required_not_implemented",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-01",
+      "version": "1.5",
+      "feature": "Discover/enter fishing spot; automatic cast while stationary; move away to cancel without button",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-02",
+      "version": "1.5",
+      "feature": "Unlock rods, bait types and casting upgrades through random cards",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-03",
+      "version": "1.5",
+      "feature": "Risk/reward catch tables include special rare catches, treasure, mutant, dangerous encounters",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-04",
+      "version": "1.5",
+      "feature": "Rebalance ordinary fish drops versus companion appetites, exploration caches, bosses and fishing",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-05",
+      "version": "1.5",
+      "feature": "Jackpot counter for catches, near-death maneuvers, combat/combo feats; no runaway score exploits",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-06",
+      "version": "1.5",
+      "feature": "Character fishing animation, line/water effects and original audio cues, mobile HUD clarity",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-15-07",
+      "version": "1.5",
+      "feature": "Test deterministic catch outcome accounting, fish depletion, bait effects and solo/squad economies",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-01",
+      "version": "1.6",
+      "feature": "Distinct enemy concepts: Mimic Strays, Bell-Ringers, Roof Pouncers, Necro-Groomers, Pack Leaders, Feral fish thieves",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-02",
+      "version": "1.6",
+      "feature": "Actual differentiated melee/ranged/caster/flying/phasing enemies; not color swaps",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-03",
+      "version": "1.6",
+      "feature": "Fusion/convergence => cocoon => inherited mutant traits with fair counters and reward accounting",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-04",
+      "version": "1.6",
+      "feature": "Preserve/expand nine distinct bosses, six elite and three super-elite archetypes, boss tells and unique attacks",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-05",
+      "version": "1.6",
+      "feature": "More terrain hazards, encounter variety, meaningful biome differences",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-06",
+      "version": "1.6",
+      "feature": "Adaptive original hard-rock/DnB/electronic musical layers and boss hooks with controls for volume/mute",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-07",
+      "version": "1.6",
+      "feature": "Dialogue between hero, new companions, fusions and enemies; contextual jokes",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-08",
+      "version": "1.6",
+      "feature": "Drawn/animated sprites with death/attack/special states, particles/telegraphs bound by phone performance",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-16-09",
+      "version": "1.6",
+      "feature": "Test horde budget, counterplay, mob AI, animation memory and audio scheduler",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-01",
+      "version": "1.7",
+      "feature": "Build 1000-night story in ten chapters, ~3-hour-class target with distinct milestones and encounters",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-02",
+      "version": "1.7",
+      "feature": "Checkpoint/save/resume including current chapter, lives, build, squad, fish, map/zone and RNG",
+      "status": "required_not_implemented",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-03",
+      "version": "1.7",
+      "feature": "Save version migration, corruption repair and phone-background safety",
+      "status": "required_not_implemented",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-04",
+      "version": "1.7",
+      "feature": "Endless Mode unlocked ONLY after complete designed campaign, bounded spawns and records",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-05",
+      "version": "1.7",
+      "feature": "Deepen meaningful late-run upgrades, elites/boss phase strategy, not just longer monotony",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-06",
+      "version": "1.7",
+      "feature": "Test accelerated 1000-night progress, 30-minute endurance, memory/audio/bullet budgets, resume on Android",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-17-07",
+      "version": "1.7",
+      "feature": "Distinct chapter environments, new themes/stingers and crescendo to finale",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-18-01",
+      "version": "1.8",
+      "feature": "Do not assume a 1.8 feature until recorded owner approval",
+      "status": "proposal_only",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-18-02",
+      "version": "1.8",
+      "feature": "If proposed, prioritize connecting systems, content density, art/audio and real playable impact",
+      "status": "proposal_only",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-19-01",
+      "version": "1.9",
+      "feature": "Do not assume a 1.9 feature until recorded owner approval",
+      "status": "proposal_only",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-19-02",
+      "version": "1.9",
+      "feature": "If proposed, demonstrate readiness of all systems and exact 2.0 blockers",
+      "status": "proposal_only",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-01",
+      "version": "2.0",
+      "feature": "One quadrupedal hero with TWO independently upgradeable hand guns + independently auto-aiming tail gun: three equipped weapons",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-02",
+      "version": "2.0",
+      "feature": "Visible, readable three-weapon shooting, upgrade individuality and movement-only direct combat",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-03",
+      "version": "2.0",
+      "feature": "Unified title/menu, pause/options, discovered city world map OUTSIDE active play, equipment/collections UI",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-04",
+      "version": "2.0",
+      "feature": "Boneyard/catacomb underground biomes with fresh enemy ecology, physics/effects and traversal",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-05",
+      "version": "2.0",
+      "feature": "Companion evolution/fusion gallery and character codex; enemy/boss bestiary and fish/bait/jackpot records",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-06",
+      "version": "2.0",
+      "feature": "Sphinx final boss with unique readable mechanics, music, original illustrated stages and earned resolution",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-07",
+      "version": "2.0",
+      "feature": "Fully compatible 1000-night campaign, checkpointing and Endless Mode unlock",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-08",
+      "version": "2.0",
+      "feature": "Viable solo/squad/fused/weapon strategies and many play histories per seed",
+      "status": "required_not_implemented",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-20-09",
+      "version": "2.0",
+      "feature": "Published versioned playable release and full field/visual/audio/Android QA evidence",
+      "status": "required_not_implemented",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "No implementation claim inferred from roadmap alone."
+    }
+  ]
+}
