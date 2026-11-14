@@ -95,6 +95,7 @@ jobs:
           allow-bots: true
           prompt-file: artifacts/cataclysm-13/SYSTEMS_BRIEF.md
       - name: Archive completed companion systems for independent second job
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-13-systems-${{ github.run_id }}-${{ github.run_attempt }}
