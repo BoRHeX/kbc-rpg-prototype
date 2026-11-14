@@ -45,6 +45,17 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ROADMAP_COUNCIL_MODEL: gpt-4.1-mini
         run: python -m game_factory.cataclysm_roadmap_council
+      - name: Preserve meeting outputs as recoverable artifact before PR
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-roadmap-council-${{ github.run_id }}
+          path: |
+            game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.json
+            game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.md
+            game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.json
+            game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.md
+          retention-days: 30
+          if-no-files-found: error
       - name: Verify all voices, roadmap version list, and no game source changes
         run: |
           set -euo pipefail
