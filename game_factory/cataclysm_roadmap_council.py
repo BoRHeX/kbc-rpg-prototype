@@ -235,7 +235,9 @@ def report(record):
         if record[stage]["errors"]:
             discussion.extend(["### Missing model outputs (not fabricated)",
                 "> "+json.dumps(record[stage]["errors"],ensure_ascii=False),""])
-    (OUT/"FULL_TRANSCRIPT.md").write_text("\n".join(discussion)+"\n",encoding="utf-8")
+    md="\n".join(discussion)
+    (OUT/"FULL_TRANSCRIPT.md").write_text(
+        "\n".join(line.rstrip() for line in md.splitlines()).rstrip()+"\n",encoding="utf-8")
     if record.get("producer_roadmap") and record["producer_roadmap"].get("parsed"):
         plan=record["producer_roadmap"]["parsed"]
         (OUT/"PROPOSED_ROADMAP.json").write_text(json.dumps(plan,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
@@ -267,7 +269,9 @@ def report(record):
               "The special 1.69 identity and 1.8/1.9 proposals require creator approval.",
               "No actual source was built; studio must check every feature against real code at each version.",
               "Full attributed discussion: [FULL_TRANSCRIPT.md](FULL_TRANSCRIPT.md) and [FULL_TRANSCRIPT.json](FULL_TRANSCRIPT.json)."]
-        (OUT/"PROPOSED_ROADMAP.md").write_text("\n\n".join(m)+"\n",encoding="utf-8")
+        md="\n\n".join(m)
+        (OUT/"PROPOSED_ROADMAP.md").write_text(
+            "\n".join(line.rstrip() for line in md.splitlines()).rstrip()+"\n",encoding="utf-8")
     else:
         (OUT/"PRODUCER_SYNTHESIS_FAILED.md").write_text(
            "Producer synthesis was incomplete or invalid; independent dialogue preserved in FULL_TRANSCRIPT.",
