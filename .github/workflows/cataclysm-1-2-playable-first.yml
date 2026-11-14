@@ -1,0 +1,190 @@
+name: Cataclysm 1.2 — NINE LIVES playable-first studio
+run-name: 1.2 · Nine Lives · survival and roguelite perks
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-2-launch.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cataclysm-12-playable-first
+  cancel-in-progress: false
+
+jobs:
+  design-develop-playtest-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fork the last merged illustrated 1.1 into independent 1.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/cataclysm-1-1/index.html
+          test -f docs/cataclysm-1-1/game.js
+          test -f game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+          test -f game_factory/requests/cataclysm-1-2-launch.md
+          if [ ! -d docs/cataclysm-1-2 ]; then
+            cp -a docs/cataclysm-1-1 docs/cataclysm-1-2
+          fi
+          test -f docs/cataclysm-1-2/game.js
+          echo "1.0 and 1.1 preserved; isolated 1.2 workspace ready." >> "$GITHUB_STEP_SUMMARY"
+      - name: Install essential real-browser acceptance tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Serve the real game during studio integration
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-12-http.log 2>&1 &
+      - name: Assemble the producer briefing and studio role memory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/cataclysm-12
+          {
+            echo '# BoRHeZ Games Studio executive order: Cataclysm 1.2 — NINE LIVES'
+            echo
+            echo 'You are the autonomous production team. Do not request further creator approvals for individual tasks.'
+            echo 'Act as Producer, Game Designer, Engineer, Art/Audio Director, Integration and QA, in that order.'
+            echo 'Start by writing an internal role/dependency plan, then IMPLEMENT a visibly evolved REAL playable game.'
+            echo 'Treat approved previous 1.1 illustrated hero, tail gun, followers, enemies and soundtrack as baseline.'
+            echo 'Do not restrict output to a proposal, checklist, stub feature, placeholder or isolated unit test.'
+            echo 'Only edit files inside docs/cataclysm-1-2/. Every other tree is read-only, including all 1.0 and 1.1.'
+            echo 'Do not create 2.0 three-gun loadout, world map, new companions, fishing or evolutions.'
+            echo 'Keep mobile movement-only input. Preserve the night-1 playable campaign and working restart.'
+            echo 'Concentrate on nine separate lives, true death/revive transition, safe brief respawn, rare capped extra-life reward, accessible lives HUD, upgrade card 4/5 unlocks, actual rerolls and new meaningful perks.'
+            echo 'Honor version text, card eligibility and permanent progress across a revive. Keep novelty and humor.'
+            echo 'Write a concise docs/cataclysm-1-2/STUDIO-REPORT.md stating exact implemented features, tradeoffs, known jank and how to reproduce the game mechanics.'
+            echo 'Include a docs/cataclysm-1-2/qa test program if practical. Do not let broad polish block first playable ship.'
+            echo 'Acceptance is practical: start, responsive movement, nonblank rendered game in Chrome on portrait and landscape. The owner will playtest quality.'
+            echo 'Avoid external secrets and network API calls in the game itself. Work against the existing browser runtime.'
+            echo
+            echo '## Binding version 1.2 studio order'
+            cat game_factory/requests/cataclysm-1-2-launch.md
+            echo
+            echo '## Approved roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo
+            echo '## Existing review / studio memory'
+            if [ -f game_factory/meetings/cataclysm-11-review08.md ]; then cat game_factory/meetings/cataclysm-11-review08.md; fi
+          } > artifacts/cataclysm-12/CODING_BRIEF.md
+      - name: BoRHeZ autonomous studio implements NINE LIVES
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-12/CODING_BRIEF.md
+      - name: Enforce version isolation and JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          tracked=subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).splitlines()
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          touched=set(tracked+untracked)
+          unauthorized=sorted(p for p in touched if not p.startswith('docs/cataclysm-1-2/'))
+          if unauthorized: raise SystemExit('Studio attempted edits outside 1.2: '+str(unauthorized))
+          from pathlib import Path
+          root=Path('docs/cataclysm-1-2')
+          for name in ['index.html','game.js','game.css']:
+            assert (root/name).is_file(), 'Missing: '+name
+          assert '1.2' in (root/'index.html').read_text(), '1.2 version label missing from title/start page'
+          assert (root/'STUDIO-REPORT.md').is_file(), 'Studio must document delivered features and limitations'
+          print('Protected 1.0 and 1.1 remain untouched')
+          PY
+          for f in docs/cataclysm-1-2/*.js; do node --check "$f"; done
+      - name: Real Chrome nonblank/playable gate for both phone orientations
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
+          for (const size of [{width:844,height:390},{width:390,height:844}]) {
+            const page=await browser.newPage({viewport:size,isMobile:true,hasTouch:true});
+            const errors=[];
+            page.on('pageerror',error=>errors.push(String(error)));
+            await page.goto('http://127.0.0.1:8765/cataclysm-1-2/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForFunction(()=>{const b=document.getElementById('play'); return !!b && !b.disabled;},{timeout:40000});
+            await page.locator('#play').click({timeout:10000});
+            await page.waitForTimeout(1500);
+            const snapshot=await page.evaluate(()=>{
+              const c=document.getElementById('canvas');
+              if(!c||c.width<50||c.height<50) return {ok:false,reason:'canvas missing'};
+              const ctx=c.getContext('2d',{willReadFrequently:true});
+              const colors=new Set();
+              for(let j=1;j<=6;j++)for(let i=1;i<=8;i++){
+                colors.add([...ctx.getImageData(Math.floor(c.width*i/9),Math.floor(c.height*j/7),1,1).data].join(','));
+              }
+              return {ok:colors.size>=3,colors:colors.size,started:document.getElementById('start-overlay')?.hidden,width:c.width,height:c.height};
+            });
+            await page.screenshot({path:'/tmp/cataclysm-12-'+size.width+'.png'});
+            if(!snapshot.ok||!snapshot.started||errors.length) throw Error('Not playable: '+JSON.stringify({size,snapshot,errors}));
+            console.log('CATACLYSM 1.2 PLAYABLE',JSON.stringify({size,snapshot,errors}));
+            await page.close();
+          }
+          await browser.close();
+          JS
+      - name: Package versioned game in PR and merge one bounded studio pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Games Studio"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "studio/cataclysm-12-$GITHUB_RUN_ID"
+          git add docs/cataclysm-1-2
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::1.2 studio created no source changes"; exit 1; }
+          git commit -m "BoRHeZ Studio: Cataclysm 1.2 Nine Lives playable candidate"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "studio/cataclysm-12-$GITHUB_RUN_ID" --title "Cataclysm 1.2 · NINE LIVES playable-first" --body "Resolves milestone #85: nine separate lives, richer survivability, rerolls and card choices. Isolated source in docs/cataclysm-1-2; frozen 1.0 and 1.1 unmodified. Only load/start/nonblank and syntax are mandatory release gates; creator retains gameplay/visual acceptance.")"
+          echo "PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          test -s docs/cataclysm-1-2/game.js
+          echo "PLAYTEST: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-2/" >> "$GITHUB_STEP_SUMMARY"
+      - name: Prepare GitHub Pages artifact including historical builds
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-12-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs
+      - name: Publish NINE LIVES without rewriting old game source
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-12-${{ github.run_id }}-${{ github.run_attempt }}
+          timeout: 180000
+      - name: Final playtest location and honest acceptance scope
+        run: |
+          echo '### Cataclysm 1.2 — NINE LIVES' >> "$GITHUB_STEP_SUMMARY"
+          echo 'https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-2/' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Studio executed. Mobile Chrome launch/nonblank verified; feature QA and final owner visual acceptance separate.' >> "$GITHUB_STEP_SUMMARY"
