@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(tr -d '\\r\\n' < game_factory/requests/cataclysm-1-1-launch.md)" = "Cataclysm 1.1"
+          test "$(cat game_factory/requests/cataclysm-1-1-launch.md)" = "Cataclysm 1.1"
           test -s game_factory/meetings/cataclysm-11-review08.md
           test -s game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
           test -s docs/cataclysm-1-1/art/references/ART-DIRECTION.md
