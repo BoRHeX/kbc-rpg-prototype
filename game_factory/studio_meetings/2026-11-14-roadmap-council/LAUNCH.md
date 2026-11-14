@@ -13,3 +13,6 @@ Deliver: FULL_TRANSCRIPT.md, FULL_TRANSCRIPT.json, PROPOSED_ROADMAP.md, PROPOSED
 
 ## Authorized retry after exact failure
 First run 43612740691 reached 14 genuine opening model calls but all replies exceeded the 1,750-token ceiling; the runner rejected truncated output. Retry with bounded, more concise requests and explicit recording of any partial statements. Deliver only a complete eight-version synthesis. No game edits.
+
+## Publication recovery — authorize corrected second full meeting
+The repaired run 43612947194 completed 14 independent opening speeches, 14 actual debate responses, and a complete producer eight-version plan, but failed solely at git diff --check due to Markdown whitespace. The runner had not yet persisted its output. Rerun a complete independent council and SAVE the exact original messages in raw JSON plus a sanitized human-readable Markdown transcript; upload a recoverable Actions artifact before any PR operation. Do not change Cataclysm game files.
