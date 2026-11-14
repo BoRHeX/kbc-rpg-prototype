@@ -1,0 +1,111 @@
+{
+  "baselineCommit": "352b3e9e30ce11fd871f8266ad7094a06a5a898d",
+  "candidate": "uncommitted docs/cataclysm-1-2/",
+  "trackingIssue": 85,
+  "published": false,
+  "runtime": [
+    {
+      "file": "index.html",
+      "sha256": "f53e3cb21ca636609cf15b992ac9df7b5ff6637576598a1fe680445296f51cf0",
+      "baselineSha256": "c5a7e87ca23026bc84b1261e4003e81beea230f42b3804b69dec024a9695442b",
+      "changedFrom11": true
+    },
+    {
+      "file": "game.js",
+      "sha256": "fe9cbf6ccd5461fd8776b3748e68f1048bdc9398bb56b407ec384ef9b7873de9",
+      "baselineSha256": "4df5f2a085336318b3b619ee55a041843a8687fa40730d687e79ebfd36465de2",
+      "changedFrom11": true
+    },
+    {
+      "file": "game.css",
+      "sha256": "c55213bfa9e9eef3a0646534f25cd58621601e550af5b225538b8377a8be4811",
+      "baselineSha256": "66ac2fd073dfa9066444d424f4f9e3f139a3595959f6f87f7826042d71cfb217",
+      "changedFrom11": true
+    },
+    {
+      "file": "animation.js",
+      "sha256": "78ba83d27616cc25d31616ebf3ea50cff3a8ec154d3e5c8461ea01593a6ccbbb",
+      "baselineSha256": "0a4bb1de5d585c5a670c3e1b802049a9624991a9d6193cf0ad53b416841b681f",
+      "changedFrom11": true
+    },
+    {
+      "file": "hero-rig-renderer.js",
+      "sha256": "8d9c1647d38a014720a5af6d4b1e2adfe73a4b124bcc2d1c9befa20bb85e0e2c",
+      "baselineSha256": "f3221afa585b6ba22fba1314e3db85a5c976acc905c60c38265c98479554b23d",
+      "changedFrom11": true
+    },
+    {
+      "file": "hero-illustrated.js",
+      "sha256": "7854f76e67cccf67b1eb6a1432ffb6d9ac7ba884d8d1766f805089d48faca7b4",
+      "baselineSha256": "7854f76e67cccf67b1eb6a1432ffb6d9ac7ba884d8d1766f805089d48faca7b4",
+      "changedFrom11": false
+    },
+    {
+      "file": "campaign.js",
+      "sha256": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6",
+      "baselineSha256": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6",
+      "changedFrom11": false
+    },
+    {
+      "file": "cat-personality.js",
+      "sha256": "28d578edb70f8a0c4a498224d1d0f5af801fa3ff2b228897c5ae3329392d7333",
+      "baselineSha256": "28d578edb70f8a0c4a498224d1d0f5af801fa3ff2b228897c5ae3329392d7333",
+      "changedFrom11": false
+    },
+    {
+      "file": "director.js",
+      "sha256": "3ea4c38a434b3a7217cdda3f11e76f212c3e0a0da47c95fa1f89afcd7fc18484",
+      "baselineSha256": "3ea4c38a434b3a7217cdda3f11e76f212c3e0a0da47c95fa1f89afcd7fc18484",
+      "changedFrom11": false
+    },
+    {
+      "file": "firestorm.js",
+      "sha256": "2961c749a1dcbe6a228c75a421b8c1f44e32acf446178fcd215e32d99af68a49",
+      "baselineSha256": "2961c749a1dcbe6a228c75a421b8c1f44e32acf446178fcd215e32d99af68a49",
+      "changedFrom11": false
+    },
+    {
+      "file": "follower-behavior.js",
+      "sha256": "7179c00650ca7f93057e81e7776e65db80e9206ad251d09530c118ab721a7613",
+      "baselineSha256": "7179c00650ca7f93057e81e7776e65db80e9206ad251d09530c118ab721a7613",
+      "changedFrom11": false
+    },
+    {
+      "file": "game-config.json",
+      "sha256": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc",
+      "baselineSha256": "f40bb4a365e27ae91e99d105ad942f777411ff7205f51c41df37ddf96b8cf5dc",
+      "changedFrom11": false
+    },
+    {
+      "file": "hazards.js",
+      "sha256": "5070549e9616dacb8be03dc8a8bd3f43d881aa3f7fafe78a0966efa446793e40",
+      "baselineSha256": "5070549e9616dacb8be03dc8a8bd3f43d881aa3f7fafe78a0966efa446793e40",
+      "changedFrom11": false
+    },
+    {
+      "file": "hero-kinematics.js",
+      "sha256": "daad949ceeffa1aba503b62674ab556dbec94bc4a7b64949ff384cc5bf241381",
+      "baselineSha256": "daad949ceeffa1aba503b62674ab556dbec94bc4a7b64949ff384cc5bf241381",
+      "changedFrom11": false
+    },
+    {
+      "file": "score.js",
+      "sha256": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a",
+      "baselineSha256": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a",
+      "changedFrom11": false
+    },
+    {
+      "file": "visuals.js",
+      "sha256": "f9c52deb165464823da2f84b1bbc48ab169c114cb111d489795ce786796dd058",
+      "baselineSha256": "f9c52deb165464823da2f84b1bbc48ab169c114cb111d489795ce786796dd058",
+      "changedFrom11": false
+    }
+  ],
+  "protectedTrackedFilesUnchanged": true,
+  "browserSmoke": {
+    "status": "BLOCKED_BEFORE_PAGE_CREATION",
+    "attemptedExecutable": "/usr/bin/chromium",
+    "error": "FATAL components/crash/core/app/crashpad_linux.cc:268 client.StartHandler; socket setsockopt: Operation not permitted (1)",
+    "videoCaptured": false
+  }
+}
