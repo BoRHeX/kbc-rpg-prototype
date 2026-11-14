@@ -402,12 +402,8 @@ def main() -> None:
         print("Review 08 Council and 1.1 Studio:", result)
         return
     if game == "cataclysm":
-        # The user explicitly authorized these correctly named gameplay reviews.
-        # Do not let a one-call summary censor or shrink the full Studio brief.
-        proposal = {"actionable": True, "prompt": "Review entire private recording",
-                    "acceptance": ["Council assesses the original full gameplay commentary"]}
-    else:
-        proposal = propose_update(game, transcript, visual, report)
+        raise RuntimeError("Unversioned Cataclysm auto-handoff is disabled. Require a versioned review and current roadmap.")
+    proposal = propose_update(game, transcript, visual, report)
     request = build_request(metadata["id"], game, game_title(game), proposal)
     if request is None:
         print("Review contains no actionable update; no paid studio run requested.")
