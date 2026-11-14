@@ -37,7 +37,7 @@ jobs:
           python -m py_compile game_factory/studio_roundtable.py
       - name: Ten independent opinions, actual challenges, producer synthesis
         env:
-          OPENAI_API_KEY: \${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           STUDIO_MEETING_MODEL: gpt-4.1-mini
         run: python -m game_factory.studio_roundtable
       - name: Verify attributed model responses; forbid game changes
@@ -61,7 +61,7 @@ jobs:
           PY
       - name: Commit and merge meeting memory without publishing games
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
