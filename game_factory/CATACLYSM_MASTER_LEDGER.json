@@ -125,6 +125,17 @@
       ]
     },
     {
+      "version": "1.69",
+      "name": "THE WILD CARD — council to propose",
+      "phase": "authorized_version_slot_scope_pending",
+      "description": "Creator specifies a playful custom 1.69 intermediate update. The council proposes its mechanics, art, audio and content; exact scope remains a proposal until creator acceptance.",
+      "requirements": [
+        "CAT-169-01",
+        "CAT-169-02",
+        "CAT-169-03"
+      ]
+    },
+    {
       "version": "1.7",
       "name": "THE LONG NIGHT",
       "phase": "approved_future",
@@ -1017,6 +1028,78 @@
       ],
       "evidence": [],
       "notes": "No implementation claim inferred from roadmap alone."
+    },
+    {
+      "id": "CAT-169-01",
+      "version": "1.69",
+      "feature": "Choose and implement an original release-defining gameplay twist, without regressing 1.6 combat and without consuming 1.7's marathon/save scope.",
+      "status": "proposal_only",
+      "domains": [
+        "gameplay",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "Creator authorized the version slot, not the proposed mechanics. Council to decide."
+    },
+    {
+      "id": "CAT-169-02",
+      "version": "1.69",
+      "feature": "Add unique illustrated content and at least one expressive character/story moment connecting player, companions and the changing city.",
+      "status": "proposal_only",
+      "domains": [
+        "art_audio",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "Unapproved candidate to discuss, not a release promise."
+    },
+    {
+      "id": "CAT-169-03",
+      "version": "1.69",
+      "feature": "Produce a distinct playable vertical slice, meaningful original sound and tracked carry-forward handoff to 1.7.",
+      "status": "proposal_only",
+      "domains": [
+        "qa",
+        "implementation"
+      ],
+      "evidence": [],
+      "notes": "Unapproved candidate to discuss, not a release promise."
     }
-  ]
+  ],
+  "release_order": [
+    "1.0",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "1.6",
+    "1.69",
+    "1.7",
+    "1.8",
+    "1.9",
+    "2.0"
+  ],
+  "product_identity": {
+    "game": "Cataclysm",
+    "continuity": "ONE ongoing video game: 0.1→1.0 The Catastrophe→1.1→1.2→eight intermediate updates→2.0 The Catacombs",
+    "current": "1.2",
+    "major_milestones": {
+      "1.0": "The Catastrophe",
+      "2.0": "The Catacombs"
+    },
+    "intermediate_updates": [
+      "1.3",
+      "1.4",
+      "1.5",
+      "1.6",
+      "1.69",
+      "1.7",
+      "1.8",
+      "1.9"
+    ],
+    "count_intermediate": 8,
+    "version_order_note": "Custom display labels, NOT semver ordering. Sort by release_order, including 1.69 between 1.6 and 1.7."
+  },
+  "notes_latest_creator_correction": "2026-11-14: releases are cumulative improvements to one Cataclysm game. Every version must move source, mechanics, content, illustration, animation, sound and integration forward from the previous playable version. All eight intermediate versions are meaningful; do not skip 1.7, and do not mis-sort custom 1.69."
 }
