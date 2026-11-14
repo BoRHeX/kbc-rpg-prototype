@@ -1,0 +1,93 @@
+name: Cataclysm roadmap council — eight updates, ONE game
+run-name: Cataclysm 1.2 to 2.0 · 14-agent roadmap debate
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/studio_meetings/2026-11-14-roadmap-council/LAUNCH.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-roadmap-council-20261114
+  cancel-in-progress: false
+jobs:
+  meet-and-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate creator instruction and meeting script
+        run: |
+          set -euo pipefail
+          test -s game_factory/studio_meetings/2026-11-14-roadmap-council/LAUNCH.md
+          test -s game_factory/studio_meetings/2026-11-14-roadmap-council/MEETING_REQUEST.md
+          python -m py_compile game_factory/cataclysm_roadmap_council.py
+          python - <<'PY'
+          import json
+          p=json.load(open("game_factory/CATACLYSM_MASTER_LEDGER.json"))
+          assert p["product_identity"]["count_intermediate"]==8
+          assert p["product_identity"]["intermediate_updates"]==["1.3","1.4","1.5","1.6","1.69","1.7","1.8","1.9"]
+          print("ONE CATACLYSM game; eight cumulative releases.")
+          PY
+      - name: Independent roles, genuine dialogue, evidence-based eight-update roadmap
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ROADMAP_COUNCIL_MODEL: gpt-4.1-mini
+        run: python -m game_factory.cataclysm_roadmap_council
+      - name: Verify all voices, roadmap version list, and no game source changes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          p=Path("game_factory/studio_meetings/2026-11-14-roadmap-council")
+          for name in ["FULL_TRANSCRIPT.json","FULL_TRANSCRIPT.md","PROPOSED_ROADMAP.md","PROPOSED_ROADMAP.json"]:
+              assert (p/name).is_file() and (p/name).stat().st_size>300, name
+          transcript=json.loads((p/"FULL_TRANSCRIPT.json").read_text())
+          plan=json.loads((p/"PROPOSED_ROADMAP.json").read_text())
+          expected=["1.3","1.4","1.5","1.6","1.69","1.7","1.8","1.9"]
+          assert plan["version_order"]==expected
+          assert [v["version"] for v in plan["releases"]]==expected
+          assert len(transcript["opening"]["responses"])>=11
+          assert len(transcript["debate"]["responses"])>=10
+          assert transcript["game_files_modified"] is False
+          paths=subprocess.check_output(["git","diff","--name-only","HEAD"],text=True).splitlines()
+          paths+=subprocess.check_output(["git","ls-files","--others","--exclude-standard"],text=True).splitlines()
+          unexpected=[x for x in paths if not x.startswith("game_factory/studio_meetings/2026-11-14-roadmap-council/")]
+          assert not unexpected, unexpected
+          print("Meeting authentic; full transcript and eight-release integrated plan checked.")
+          PY
+      - name: Publish actual meeting transcript and roadmap proposal as durable GitHub record
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Studio Roadmap Council"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="council/cataclysm-roadmap-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.* game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.*
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "Roadmap Council: fourteen voices, debate, eight-update Cataclysm plan"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "$branch" --title "Cataclysm: ONE game, eight updates, studio roadmap council" --body "Meeting only, no game code or release. Independent 14-role speeches and challenges, a proposed integrated feature/content/art/audio/test roadmap from 1.3 through 1.9 (including 1.69), and 2.0 THE CATACOMBS. Original creator-approved roadmap remains authoritative pending review.")"
+          gh pr merge "$pr" --squash --delete-branch
+          echo "### Cataclysm 1.2 → 2.0 ROADMAP COUNCIL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Roadmap: https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-14-roadmap-council/PROPOSED_ROADMAP.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "Full dialogue: https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "Full raw JSON: https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-14-roadmap-council/FULL_TRANSCRIPT.json" >> "$GITHUB_STEP_SUMMARY"
+          echo "No Cataclysm development was triggered." >> "$GITHUB_STEP_SUMMARY"
