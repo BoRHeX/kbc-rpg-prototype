@@ -1,0 +1,56 @@
+{
+  "sourceCommit": "41dd90c4cdad23b5f21a815cb981361488f0a1d3",
+  "baseline": "docs/cataclysm-1-2/",
+  "output": "docs/cataclysm-1-3",
+  "publishStatus": "local candidate only; not deployed or live-verified",
+  "changedRuntimeFiles": {
+    "index.html": {
+      "sha256": "9c52ff82a4bbac942c598d07a74298b84f376e32171e994ae3a9833208526ef9",
+      "baselineSha256": "f53e3cb21ca636609cf15b992ac9df7b5ff6637576598a1fe680445296f51cf0"
+    },
+    "game.js": {
+      "sha256": "7b23d75b1d2667f5819bc7f6d9ca9fcc06b5fb1a22cba4556dcdaf0dc7cfc414",
+      "baselineSha256": "fe9cbf6ccd5461fd8776b3748e68f1048bdc9398bb56b407ec384ef9b7873de9"
+    },
+    "company.js": {
+      "sha256": "3e247add1ffe2a03906cadb140515d2d0c64770262cd9f62698fdccef99e10ee",
+      "baselineSha256": null
+    },
+    "follower-behavior.js": {
+      "sha256": "c4ccd6e85a65a8e3f7a8715e92bdb9dbd4fbecee7d4e5d130053eef29c41d7d8",
+      "baselineSha256": "7179c00650ca7f93057e81e7776e65db80e9206ad251d09530c118ab721a7613"
+    },
+    "cat-personality.js": {
+      "sha256": "11109686a56f2ca1f99469b46451be7a1fbc25f4dcd9d7b292f695ab5466f089",
+      "baselineSha256": "28d578edb70f8a0c4a498224d1d0f5af801fa3ff2b228897c5ae3329392d7333"
+    },
+    "qa/runtime.cjs": {
+      "sha256": "202a9299437da137d8b76a8a988a2cc19d275ae15c84758b74e41a1875d5572a",
+      "baselineSha256": "42216623dcc5aa3b252c2c691cf178e0b14d8d4e1b9e0e34a84113f46e545574"
+    },
+    "qa/chrome-smoke.cjs": {
+      "sha256": "f6ebd41e11fe11d565b9dabb90f66875a70d4453125fa063ad83806aa41c21e5",
+      "baselineSha256": "96e31890f508fb88b55b4497bf790ed96eaaf3949256b3510885b2caffdc0c17"
+    },
+    "PRODUCTION-PLAN.md": {
+      "sha256": "b6f41be1bccfcf0e51a5c8f261f9d5c74e6e9f3533d4e9f44a4294db4cf63142",
+      "baselineSha256": "82767e0a73554e3623425c37ea3f18cf52a441637764f43674f22fd3d9cbd9d1"
+    },
+    "STUDIO-REPORT.md": {
+      "sha256": "5c2c750697742ed6504413b7f1a0d98b9d4d99d0bad75ede93368f34e3366afb",
+      "baselineSha256": "80974c2b9587e5e6f278cdc9748f908ba77f34937510aa4098d32a108c1634b5"
+    },
+    "game.css": {
+      "sha256": "456ed94e0e798bc518f8710e7748891c29c236f47740ba126480a3360059dba4",
+      "baselineSha256": "c55213bfa9e9eef3a0646534f25cd58621601e550af5b225538b8377a8be4811"
+    },
+    "company-presentation.js": {
+      "sha256": "e9343f7d30e7e6ba21dcabd8bbcd4dae3e7b70725103e5ec6dcd23d3c2c0b346",
+      "baselineSha256": null
+    }
+  },
+  "unchangedInheritedFiles": 161,
+  "scopeStatus": "?? docs/cataclysm-1-3/",
+  "departmentBInputCommit": "4d61de2e278bb7378e23feabc8f54adc922e5f20",
+  "departmentBNotes": "Only version directory edited. Art is inherited illustrated textures plus authored code-native costumes/Mecha; see new STUDIO-REPORT.md."
+}
