@@ -64,12 +64,32 @@ def transcribe(path, seconds):
         part.unlink()
     return chunks
 
-def analyse_frames(path, seconds):
-    # Sample evenly throughout the recording, capped to 24 images.
-    count=min(24,max(4,int(seconds//40)+1))
+def analyse_frames(path, seconds, transcript=None):
+    # Transcript is examined FIRST. Sample a maximum of 36 actual frames:
+    # half temporal coverage, half speech-anchored moments. Never infer motion
+    # between individual samples.
+    count=min(36,max(12,int(seconds//100)+1))
+    coverage=[seconds*(i+0.5)/(count//2) for i in range(count//2)]
+    keywords=("zombie","horde","spawn","wave","cat","tail","draw","animation",
+              "move","control","lag","bug","screen","follower","companion",
+              "upgrade","fish","boss","weapon","music","sound","ui","night",
+              "problem","need","should","look","see","better","wrong")
+    candidates=[]
+    for chunk in transcript or []:
+        for seg in chunk.get("segments",[]):
+            words=seg.get("text","").lower()
+            score=sum(1 for k in keywords if k in words)
+            if score:
+                candidates.append((score, (float(seg["start"])+float(seg["end"]))/2))
+    candidates.sort(key=lambda pair: (-pair[0],pair[1]))
+    selected=list(coverage)
+    for _,t in candidates:
+        if len(selected)>=count: break
+        if t>2 and t<seconds-2 and all(abs(t-s)>10 for s in selected):
+            selected.append(t)
+    targets=sorted(selected)[:count]
     items=[]
-    for i in range(count):
-        t=seconds*(i+0.5)/count
+    for i,t in enumerate(targets):
         image_path=OUT/("frame_%02d.jpg"%i)
         subprocess.run(["ffmpeg","-y","-v","error","-ss",str(t),"-i",str(path),
                         "-frames:v","1","-vf","scale=640:-2","-q:v","5",
@@ -90,7 +110,7 @@ def create_report(transcript, frames, seconds, recording_name):
       "issues and severity, reproducible tests, prioritized game-specific improvement backlog, "
       "and a suggested 45-120 second gameplay highlight edit as JSON on the last line "
       "with exact syntax EDIT_SEGMENTS=[{\"start\":0,\"end\":20}] and 2-5 segments. "
-      "Keep segments inside the recording duration and do not claim to know unobserved events. "
+      "Include up to six SHORT verbatim GAMEPLAY quotes with timecodes only when provably present in provided transcript; no private/personal remarks. " "Keep segments inside the recording duration and do not claim to know unobserved events. "
       "Use spoken transcript and sampled visual frames as different evidence sources. "
       "No automatic code merge or publishing.\nDuration: "+str(seconds)+
       "\nTranscript: "+json.dumps(transcript,ensure_ascii=False)[:40000]+
@@ -182,7 +202,7 @@ def main():
     seconds=duration(video)
     transcript=transcribe(video,seconds)
     (OUT/"transcript.json").write_text(json.dumps(transcript,indent=2,ensure_ascii=False))
-    frames=analyse_frames(video,seconds)
+    frames=analyse_frames(video,seconds,transcript)
     (OUT/"visual_review.md").write_text(frames)
     report=create_report(transcript,frames,seconds,metadata["name"])
     (OUT/"development_report.md").write_text(report)
