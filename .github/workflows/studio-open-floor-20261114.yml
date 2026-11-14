@@ -1,0 +1,80 @@
+name: BoRHeZ Games Studio — independent cross-game roundtable
+run-name: Studio Council · open floor · Cataclysm/Flame/Peach
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/studio_meetings/MEETING_REQUEST_2026_11_14.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: borhez-studio-open-floor-20261114
+  cancel-in-progress: false
+jobs:
+  independent-roundtable:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate planning evidence and explicit discussion request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s game_factory/studio_meetings/MEETING_REQUEST_2026_11_14.md
+          test -s game_factory/CATACLYSM_MASTER_LEDGER.json
+          test -s game_factory/CATACLYSM_STUDIO_CONSTITUTION.md
+          python -m py_compile game_factory/studio_roundtable.py
+      - name: Ten independent opinions, actual challenges, producer synthesis
+        env:
+          OPENAI_API_KEY: \${{ secrets.OPENAI_API_KEY }}
+          STUDIO_MEETING_MODEL: gpt-4.1-mini
+        run: python -m game_factory.studio_roundtable
+      - name: Verify attributed model responses; forbid game changes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json,subprocess
+          path=Path('game_factory/studio_meetings/2026-11-14-open-floor.json')
+          minutes=path.with_suffix('.md')
+          assert path.is_file() and minutes.is_file() and minutes.stat().st_size > 2500
+          result=json.loads(path.read_text())
+          assert len(result['opening']['responses']) >= 6
+          assert len(result['challenge']['responses']) >= 5
+          assert result['game_source_changed'] is False
+          paths=subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).splitlines()
+          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          invalid=[x for x in paths if not x.startswith('game_factory/studio_meetings/')]
+          assert not invalid, 'Meeting must not edit game source: '+str(invalid)
+          print('Verified real independent meeting and discussion.')
+          PY
+      - name: Commit and merge meeting memory without publishing games
+        env:
+          GH_TOKEN: \${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Studio Council"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "council/studio-open-floor-$GITHUB_RUN_ID"
+          git add game_factory/studio_meetings/2026-11-14-open-floor.*
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::Missing minutes"; exit 1; }
+          git commit -m "Studio Council: independent opinions, debate and synthesis"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "council/studio-open-floor-$GITHUB_RUN_ID" --title "BoRHeZ Studio Council: cross-game open-floor meeting" --body "Meeting only: ten independent AI studio perspectives, challenge round and producer synthesis. No game changes, no launch of 1.3 or 1.4. Proposals remain subject to creator approval.")"
+          echo "COUNCIL PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          echo "MEETING MINUTES: https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-14-open-floor.md" >> "$GITHUB_STEP_SUMMARY"
