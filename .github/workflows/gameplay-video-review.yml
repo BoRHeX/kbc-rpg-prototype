@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   actions: read
+  issues: write
 concurrency:
   group: borhez-gameplay-video-reviews
   cancel-in-progress: false
