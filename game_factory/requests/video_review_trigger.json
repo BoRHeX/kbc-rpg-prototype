@@ -1,11 +1,11 @@
 {
   "mode": "process_explicit",
-  "requested_for": "Cataclysm 0.8 gameplay review #06 → Cataclysm 0.9",
+  "requested_for": "Cataclysm Review 08 — transcript-led Studio Council → Cataclysm 1.1",
   "game_hint": "cataclysm",
-  "expected_filename": "cataclysm__review-06.mp4",
-  "expected_drive_file_id": "1a5XiVTUobim76NqGiy6Mxx24nMFdytNN",
-  "source": "user_requested_on_demand",
-  "request_key": "cataclysm-09-drive-review-06-20261108",
+  "expected_filename": "cataclysm__review-08.mp4",
+  "expected_drive_file_id": "1kTbJsk-3O_0KZLMnHFPHv-uEU09wV9u4",
+  "source": "user_requested_2026-11-14",
+  "request_key": "cataclysm11-review08-evidence-council-20261114",
   "attempt": 1,
-  "reason": "Process the complete private Cataclysm review #06 recording and sampled visuals. Treat it as the new primary creator playtest evidence for version 0.9, against the actually deployed 0.8 landscape build and the living 1.0 roadmap. Five Council roles should identify every actionable gameplay observation and implement a coherent, ambitious but bounded multi-system 0.9 update, retaining permanent companions, rogue-lite upgrades, one-screen landscape mobile UI, game identity and stable preview URL. Do not replay prior recordings or take YouTube comments as directives; preserve private transcript/audio, release only on verified code+QA+delivery."
+  "reason": "Transcribe the entire new private Review 08 first; use at most 36 transcript-guided screenshots from the hour; summarize only gameplay evidence and short actual quotes, distinguish sampled visuals and uncertainty; convene seven specialist API roles using the approved current 1.1 build, historical review references and the 1.1–2.0 roadmap; persist Council role memory and issue; only then one bounded version-isolated Cataclysm 1.1 build. Preserve frozen 1.0."
 }
