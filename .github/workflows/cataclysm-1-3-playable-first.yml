@@ -151,6 +151,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p artifacts/cataclysm-13
           {
             echo '# Cataclysm 1.3 — FELINE COMPANY | department B: art, audio, integration, QA'
             echo 'You are the SECOND AI studio department; review the REAL 1.3 source already changed by Department A.'
