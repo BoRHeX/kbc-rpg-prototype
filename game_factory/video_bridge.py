@@ -220,6 +220,164 @@ def mark_no_action(file_id: str, game: str) -> dict:
     return {"status": "skipped_no_actionable_update", "request_id": key, "game": game}
 
 
+
+def run_review08_council(metadata, transcript, visual, report):
+    """Review evidence, convene independent role calls, save their meeting, then launch 1.1."""
+    from openai import OpenAI
+    file_id=metadata["id"]
+    if file_id!="1kTbJsk-3O_0KZLMnHFPHv-uEU09wV9u4" or metadata["name"]!="cataclysm__review-08.mp4":
+        raise RuntimeError("Unexpected Review 08 identity")
+    baseline=(ROOT/"docs/cataclysm-1-1/index.html").read_text()
+    if 'id="game-version">1.1' not in baseline:
+        raise RuntimeError("Version-isolated 1.1 baseline is missing")
+    roadmap=(ROOT/"game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md").read_text()
+    art=(ROOT/"docs/cataclysm-1-1/art/references/ART-DIRECTION.md").read_text()
+    terms=("zombie","horde","spawn","wave","cat","tail","draw","animation","companion",
+           "follower","upgrade","fish","boss","movement","weapon","screen","level",
+           "sound","music","run","hit","player","bug")
+    scored=[]
+    for block in transcript:
+        for segment in block.get("segments",[]):
+            speech=segment.get("text","").strip()
+            if len(speech)<20 or "@" in speech or "http" in speech: continue
+            score=sum(1 for word in terms if word in speech.lower())
+            if score>=2:
+                excerpt=" ".join(speech.split()[:20])
+                sec=float(segment.get("start",0))
+                scored.append((score,sec,excerpt))
+    scored.sort(key=lambda item:(-item[0],item[1]))
+    quotes=[]
+    for _,sec,speech in scored:
+        if all(abs(sec-other[0])>60 for other in quotes):
+            quotes.append((sec,speech))
+        if len(quotes)>=7: break
+    if not quotes: raise RuntimeError("No source-verifiable gameplay excerpts")
+    quote_lines="\n".join("- %02d:%02d:%02d — \"%s\"" %
+        (int(s)//3600,(int(s)%3600)//60,int(s)%60,t) for s,t in sorted(quotes))
+    previous=(
+        "Prior footage archive IDs only (not freshly transcribed in this run): "
+        "review07=1cKz1LJxc6eTibKGTNmkNS9fVN62dVZ4I; "
+        "review06=1a5XiVTUobim76NqGiy6Mxx24nMFdytNN; "
+        "review05=1KrWKJuXj9cNTGK9cBgHkfbmeo7PpR8gH; "
+        "review04=1jJQeOwrK0PdVauUSP6cXfdzJi5LRnW1d; "
+        "review03=1egpBfOUcEHHzS0zvgd4UdjB4_i8SWlgV; "
+        "review02=1rVdvJ6bWXyfwcSpwRytXFHq2QROJMHE-; "
+        "review01=1j7XTQiWrHRKrZAnZjh3fUZsTXyJ78icE. "
+        "Use existing Studio audit, historical results, and roadmap as context, "
+        "never fabricate observations from earlier footage."
+    )
+    brief=(
+        "Goal: only Cataclysm 1.1 EVERYTHING DRAWN; current playable source "
+        "docs/cataclysm-1-1; frozen 1.0 must not change. "
+        "Owner approves original illustrated four-legged cat pixels, rejects "
+        "code-drawn cat and floating tail pistol. Preserve current illustrated art; "
+        "future separate tail-weapon art must be actually illustrated. "
+        "All companions fire except melee Brawler; increase number of weaker "
+        "zombies; more functioning upgrades; mobile play. Jank okay, blank screen not. "
+        "Funding: existing API/Actions; one bounded coding pass, no unbounded retries.\n"
+        +previous+"\nRoadmap:\n"+roadmap[:15500]+"\nArt:\n"+art[:3500]
+        +"\nReview08 full transcription's short exact gameplay quotes:\n"+quote_lines
+        +"\nReview08 analysis (model interpretation, distinguish hypotheses):\n"+report[:9000]
+        +"\nReview08 inspected visual samples (at most 36):\n"+visual[:7000]
+    )
+    client=OpenAI()
+    roles=("Evidence Researcher","Creative Game Designer","Gameplay Engineer",
+           "Illustration and Animation Director","Audio and UI Director",
+           "Independent Mobile QA","Producer and Integrator")
+    decisions={}
+    conversation=""
+    for role in roles:
+        system=(
+            "You are the "+role+" participating in a documented AI game studio "
+            "meeting. In under 400 words decide WHAT to do, WHY, exact owner, "
+            "interfaces/dependencies, handoffs, and observable acceptance. "
+            "Be critical, distinguish speech evidence from sampled visuals and "
+            "hypotheses. Do not claim to have watched previous videos. "
+            "Respect 1.1 scope and illustrated art identity. Preserve frozen 1.0. "
+            "Game glitches are permitted; blank-screen failures are not. "
+            "No unrelated personal information or invented quotes. "
+            "Proposals and deliberation are not proof of implementation."
+        )
+        answer=client.chat.completions.create(
+            model="gpt-4.1-mini",max_tokens=800,
+            messages=[{"role":"system","content":system},
+                      {"role":"user","content":brief+"\nCouncil discussion so far:\n"+conversation[-5500:]}]
+        ).choices[0].message.content
+        if not answer or len(answer.strip())<45:
+            raise RuntimeError("Council role did not respond: "+role)
+        decisions[role]=answer.strip()
+        conversation+="\n\n["+role+"]\n"+answer.strip()
+    meeting=(
+        "# Studio Council — Cataclysm 1.1 / Review 08\n\n"
+        "Command: Cataclysm 1.1\n\n"
+        "Evidence: private original Review08 transcript, <=36 selected actual "
+        "video frames, and the prior existing studio history and 1.1→2.0 roadmap. "
+        "The full private transcript and images are NOT published in GitHub. "
+        "Quotes below are brief automatic ASR excerpts; verify accuracy before reuse.\n\n"
+        "Original: https://drive.google.com/file/d/"+file_id+"/view\n\n"
+        "## Verbatim gameplay quote excerpts (transcript-derived)\n\n"+quote_lines+"\n\n"
+        "## Historical context\n\n"+previous+"\n\n"
+        "## Research summary and key video takeaways\n\n"+decisions["Evidence Researcher"]+"\n\n"
+        "## Role-agreed meeting decisions: scope, why, dependencies and handoffs\n\n"
+        +"\n\n".join("### "+role+"\n\n"+answer for role,answer in decisions.items()
+                    if role!="Evidence Researcher")
+        +"\n\n## Memory contract\n\n"
+        "Each role reads this file, the authoritative 1.1–2.0 roadmap, "
+        "the current 1.1 code and actual illustrated art reference. "
+        "Only the 1.1 milestone is authorized for this run; record later "
+        "ideas for future versions. The integration coder follows this "
+        "document, the independent QA checks a real nonblank playable "
+        "portrait/landscape build, and the Publisher never edits frozen 1.0.\n"
+    )
+    git("fetch","origin","main")
+    git("checkout","-B","video-review-handoff","origin/main")
+    marker=ROOT/"game_factory/review_markers"/(stable_job_id(file_id)+".json")
+    if marker.exists():
+        return {"status":"already_processed","file_id":file_id}
+    notes=ROOT/"game_factory/meetings/cataclysm-11-review08.md"
+    notes.parent.mkdir(parents=True,exist_ok=True)
+    notes.write_text(meeting,encoding="utf-8")
+    trigger=ROOT/"game_factory/requests/cataclysm-1-1-launch.md"
+    trigger.write_text("Cataclysm 1.1\n",encoding="utf-8")
+    marker.parent.mkdir(parents=True,exist_ok=True)
+    marker.write_text(json.dumps({"id":stable_job_id(file_id),
+        "game":"cataclysm","status":"studio_council_11_reviewed",
+        "meeting":str(notes.relative_to(ROOT))},indent=2)+"\n",encoding="utf-8")
+    git("config","user.name","BoRHeZ Games Studio Council")
+    git("config","user.email","github-actions[bot]@users.noreply.github.com")
+    git("add",str(notes.relative_to(ROOT)),str(trigger.relative_to(ROOT)),
+        str(marker.relative_to(ROOT)))
+    git("diff","--cached","--check")
+    git("commit","-m","Record Review 08 Council memory and launch Cataclysm 1.1")
+    git("push","origin","HEAD:main")
+    repo=os.environ["GH_REPO"]
+    token=os.environ["GH_TOKEN"]
+    headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json",
+             "X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"}
+    issue_body=(
+        "Review08 was transcribed and <=36 real frames inspected first. "
+        "Full private media and transcript are not published. "
+        "Persistent Council notes are at game_factory/meetings/cataclysm-11-review08.md.\n\n"
+        "### Source-verifiable short spoken excerpts\n"+quote_lines+"\n\n"
+        "### Evidence analyst's summary\n"+decisions["Evidence Researcher"]+"\n\n"
+        "### Producer's plan\n"+decisions["Producer and Integrator"]+"\n\n"
+        "Only versioned 1.1 is authorized; frozen 1.0 is protected."
+    )
+    issue=Request("https://api.github.com/repos/"+repo+"/issues",
+        data=json.dumps({"title":"Cataclysm Review 08 — quotes, Council & 1.1 plan",
+                         "body":issue_body}).encode(),headers=headers,method="POST")
+    with urlopen(issue,timeout=30) as response:
+        issue_url=json.load(response)["html_url"]
+    dispatch=Request("https://api.github.com/repos/"+repo+"/dispatches",
+        data=json.dumps({"event_type":"cataclysm-11-meeting-approved",
+                         "client_payload":{"review":stable_job_id(file_id)}}).encode(),
+        headers=headers,method="POST")
+    with urlopen(dispatch,timeout=30) as response:
+        if response.status!=204:
+            raise RuntimeError("Versioned Studio dispatch failed")
+    return {"status":"meeting_complete_studio_dispatched","issue":issue_url,
+            "memory":str(notes.relative_to(ROOT)),"role_count":len(decisions)}
+
 def main() -> None:
     meta_file = OUT / "recording.json"
     if not meta_file.exists():
@@ -238,6 +396,11 @@ def main() -> None:
     transcript = json.loads((OUT / "transcript.json").read_text(encoding="utf-8"))
     visual = (OUT / "visual_review.md").read_text(encoding="utf-8")
     report = (OUT / "development_report.md").read_text(encoding="utf-8")
+    if game == "cataclysm" and metadata["name"] == "cataclysm__review-08.mp4":
+        result=run_review08_council(metadata, transcript, visual, report)
+        (OUT / "studio_handoff.json").write_text(json.dumps(result,indent=2)+"\n")
+        print("Review 08 Council and 1.1 Studio:", result)
+        return
     if game == "cataclysm":
         # The user explicitly authorized these correctly named gameplay reviews.
         # Do not let a one-call summary censor or shrink the full Studio brief.
