@@ -37,3 +37,19 @@ Read the approved roadmap, master ledger, constitution, predecessor game's `STUD
 
 ## End-of-milestone handoff contract
 Each release produces a `STUDIO-REPORT.md` with **feature IDs** shipped, actual game code/assets, 15–30 second defining clip if practical, automated results, creator concerns, open work, exclusions, deferred features, source SHA, stable playable URL, rollback and next version dependencies. A Producer's meeting minutes may add new design **proposals** and open risks, not rewrite approved scope without explicit authorization.
+
+## First open-floor studio meeting — 14 November 2026
+The [actual 21-response roundtable](studio_meetings/2026-11-14-open-floor.md) and [attributed machine-readable transcript](studio_meetings/2026-11-14-open-floor.json) are durable **advisory** context for Cataclysm, Flame Game, Peach Bounce and studio infrastructure. Read these before any new version-production brief. This was a multi-call AI simulation of departmental opinions, not permanent agents gaining human experience or a user-approved change to scope.
+
+**Observed positions, not binding creator decisions:**
+- Most participating roles favored releasing 1.3 before full 1.4. The Contrarian argued for an isolated 1.4 seed-city/DPS design spike while 1.3's companion AI/fish/fusion systems are built; other roles accepted controlled exploration but objected to replacing the real 1.3 features with stubs.
+- Recommended next vertical slice: one genuinely functioning 1.3 fused companion with fish autonomy, illustrated actions and original cue sounds interacting with a miniature seeded 1.4 district, kept out of production until tested.
+- Other risks: overlapping legacy GitHub workflows, mutable historical published URLs, transitory model-agent context, lack of real companion behavior diagnostics, weak mobile-scale art acceptance.
+- Shared capabilities worth studying (without merging game repos): Flame Game's animation integration, audio layering and QA; Peach Bounce's deterministic future-path visualization and touch ergonomics.
+- A proposed centralized knowledge graph is **not approved** and may be overengineering versus audited Git-backed memory and a strict source-of-truth ledger. Demonstrate a concrete information-retrieval failure before commissioning a new service.
+- The meeting's summary incorrectly called the sequencing view 'unanimous' while preserving the Contrarian's alternative; the direct role statements take precedence over a synthesized consensus claim.
+- 1.8 and 1.9 remain unassigned; no new feature set was authorized. New cross-game and content ideas remain proposals.
+
+**Future meeting quality rule:** give the independent critic and at least one game designer an explicit opportunity to propose alternatives unconstrained by the prevailing roadmap, then test those alternatives against real evidence instead of merely rewarding agreement. Avoid repeatedly spending API calls to restate what is already approved.
+
+**Release-enforcement gap:** This charter is stored in Git, but existing older workflows do not all automatically ingest it. A future 1.3 or 1.4 studio workflow must explicitly load this charter, feature ledger, roadmap, predecessor report and latest meeting minutes into its coding/producer prompt, then report feature-ID handoffs. Do not claim cross-run memory is active unless those inputs are actually loaded.
