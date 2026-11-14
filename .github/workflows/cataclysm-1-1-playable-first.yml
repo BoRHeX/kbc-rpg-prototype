@@ -1,6 +1,8 @@
 name: Cataclysm 1.1 — BoRHeZ playable-first studio
 run-name: 1.1 · quadruped + tail gun + shooters + hordes + upgrades
 on:
+  repository_dispatch:
+    types: [cataclysm-11-meeting-approved]
   push:
     branches: [main]
     paths:
@@ -54,13 +56,40 @@ jobs:
           google-chrome --version
       - name: Start working preview server
         run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-11-server.log 2>&1 &
+      - name: Load persistent evidence, Council decisions and role memory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\\r\\n' < game_factory/requests/cataclysm-1-1-launch.md)" = "Cataclysm 1.1"
+          test -s game_factory/meetings/cataclysm-11-review08.md
+          test -s game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+          test -s docs/cataclysm-1-1/art/references/ART-DIRECTION.md
+          mkdir -p artifacts/cataclysm-11
+          {
+            echo '# Command: Cataclysm 1.1'
+            echo 'Act as the integration programmer executing the role-assigned plan below.'
+            echo 'The previous meeting was recorded and accepted as the source of agent memory.'
+            echo 'The approved 1.1 milestone is binding; do not implement future 1.2–2.0 features.'
+            echo 'Preserve the already-playable 1.1, the actual illustrated quadruped pixels, and all frozen 1.0 files.'
+            echo 'Real screenshot observations are sampled; do not infer unseen actions or introduce claims not supported by evidence.'
+            echo 'Build a fun release, accept visible jank, but never ship a blank screen. Do not repaint the cat using code geometry.'
+            echo
+            echo '## Studio meeting and durable memory'
+            cat game_factory/meetings/cataclysm-11-review08.md
+            echo
+            echo '## Binding 1.1-to-2.0 roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo
+            echo '## Creator-approved 1.1 illustrated art reference'
+            cat docs/cataclysm-1-1/art/references/ART-DIRECTION.md
+          } > artifacts/cataclysm-11/COUNCIL_PROMPT.md
       - name: BoRHeZ Studio — draw and implement 1.1
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
           allow-bots: true
-          prompt-file: game_factory/requests/cataclysm-1-1-launch.md
+          prompt-file: artifacts/cataclysm-11/COUNCIL_PROMPT.md
       - name: Reject changes to frozen 1.0 and unrelated source
         shell: bash
         run: |
