@@ -10,3 +10,6 @@ Agents may use any languages, Chinese symbols, algorithms, programming code snip
 Use master feature ledger, full original roadmap and history, 1.2 reported behavior, earlier council, and creator's correction. Output detailed version-by-version changes to gameplay, mechanics, characters, world, art/animation, SFX/music, UI, testing and carry-over. Treat 1.69/1.8/1.9 feature definitions as proposals pending creator acceptance. Summarize agent disagreements.
 
 Deliver: FULL_TRANSCRIPT.md, FULL_TRANSCRIPT.json, PROPOSED_ROADMAP.md, PROPOSED_ROADMAP.json. This is a meeting only, not permission to edit, release, deploy or schedule a game.
+
+## Authorized retry after exact failure
+First run 43612740691 reached 14 genuine opening model calls but all replies exceeded the 1,750-token ceiling; the runner rejected truncated output. Retry with bounded, more concise requests and explicit recording of any partial statements. Deliver only a complete eight-version synthesis. No game edits.
