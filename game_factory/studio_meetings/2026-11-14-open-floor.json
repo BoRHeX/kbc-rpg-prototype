@@ -1,0 +1,883 @@
+{
+  "schema": "borhez.roundtable.v1",
+  "held_utc": "2026-11-14T15:11:43.035692+00:00",
+  "run_id": "43608750424",
+  "evidence": {
+    "owner_request": "An OPEN-FLOOR meeting requested by BoRHeZ studio creator. Each AI role has permission to form a candid opinion, criticize studio conditions, disagree with the roadmap and recommend overlooked or surprising changes. Discuss Cataclysm, the Flame Game, Peach Bounce and the studio itself. The latest released Cataclysm candidate is 1.2; 1.3 FELINE COMPANY is unbuilt; 1.4 THE UNSEEN CITY is planned. The owner wants 1.4 soon but requests this discussion FIRST. Don't start development, pretend to have human feelings, or invent progress. Keep changes proposals pending creator approval.",
+    "sources": {
+      "constitution": {
+        "reference": "game_factory/CATACLYSM_STUDIO_CONSTITUTION.md",
+        "excerpt": "# BoRHeZ Games Studio — Cataclysm-to-2.0 production constitution\n**Recorded:** 2026-11-14. **This is a standing production reference, not a development trigger.**\n**Primary milestones:** [approved 1.1 → 2.0 roadmap](CATACLYSM_1_1_TO_2_0_ROADMAP.md).\n**Requirements ledger:** [feature IDs, versions and status](CATACLYSM_MASTER_LEDGER.json).\n\n## Source authority and adaptation\n- New direct creator instructions override older ideas. The approved roadmap and this traceability ledger govern the rest; specific version orders clarify implementation. Earlier issues #46 (1.0), #82 (1.1), #85 (1.2), previous video reports and `results/` remain useful source evidence, **not** instructions to regress from newer decisions.\n- Every feature is tracked across mechanics, content, character sprites, animation, VFX, original music/SFX, touch experience, tests and dependencies. The `requirements` ledger is a plan, not evidence of implementation.\n- A milestone starts only with an explicit creator-approved trigger. After launch, agents may independently plan and execute bounded tasks. A meeting cannot autonomously trigger a game release.\n- Studio proposals are welcome, including experiments across games. Label them **proposal** until creator approval. 1.8 and 1.9 are currently **unassigned**, pending design council/creator decision; do not invent commitments for them.\n- Conflict resolution: record new requirement, old requirement, evidence, verdict, rationale, owner sign-off, and a list of impacted release features. Never silently drop a feature just because it is hard. Label `implemented`, `verified`, `owner-accepted`, `deferred`, or `rejected`, each with traceable proof.\n- Never claim permanent autonomous memory based on transient worker context. Persist important decisions, dissent, source refs and action items under `game_factory/studio_meetings/`, this constitution, scoped production plans and versioned game source.\n\n## The game's identity\nOne-handed **movement-only** combat. Cute illustrated white four-legged cat, one independently aimed tail gun in 1.1–1.9. Two hand guns plus tail come only in 2.0; every weapon separately upgradable. All active abilities happen automatically. Four unique companion slots (fused pair occupies one); original eight archetypes plus eight in 1.3; companions have personalities, individual decisions and fish-eating behavior. Viable fast solo builds. More individually weak ordinary zombies than inflated-HP sponges. Diverse ranged/caster/flying/fusion enemies; nine bosses and distinct elite types. Exploration without cluttering active play with a conventional minimap. Freeform discovery, original music and cat dialogue, real drawing-based animation, mobile performance and responsive touch input.\n\n## Agent operating rules\n1. **Producer** owns milestone scope, dependency graph, conflicts, budget, approved current version and signed-off deliverables—not creative unanimity.\n2. **Designer** owns playable fun, player agency via movement, difficulty, viable alternative builds and the possibility of entertaining failure.\n3. **Systems engineer** owns runtime architecture, bounded performance, saves, probabilities, version routing and regression isolation.\n4. **Art and animation** own original illustrated texture identity, coherent sprite state libraries, VFX and frame-at-actual-phone-size review. Code-shape imitation is not a substitute for drawn art.\n5. **Audio/composer** owns thematic tracks, reactive music and sync to game states; keep audio controls and avoid mobile scheduling leaks.\n6. **Narrative/game personality** owns the cast's meaningful actions, short contextual banter, surprise events and continuity between versions.\n7. **QA** independently establishes actual source/runtime evidence, identifies missing tests and protects nonblank/mobile start. It cannot pretend browser Chrome validates a physical Samsung.\n8. **Studio architect/operations** owns correct workflow routing, useful memories, bounded inference spending, archive/rollback and minimizing overlapping legacy pipelines.\n9. **Contrarian/researcher** can identify hidden tradeoffs, disagreement, potential player frustration and propose what to cut or reorder. Agent opinions never automatically override the creator.\n\n## Before any milestone production\nRead the approved roadmap, master ledger, constitution, predecessor game's `STUDIO-REPORT.md` and most recent studio meeting minutes. State explicit inherited features and regressions to avoid. Map work items to feature IDs and roles. Preserve versioned source/playtest URLs: use the most recent stable version as baseline, not frozen 1.0. Complete a vertical slice in the **actual** game; assets without gameplay integration do not count. Demonstrate playable changes. Distinguish tested, planned, deferred and simulated claims.\n\n## Sequencing, dependency and conflict\n- **1.3 FELINE COMPANY**: eight cats, fish autonomy, Levels 1–3, fusions and Mecha Crew. This is the primary 1.4 prerequisite because zone and fish systems should understand those agents.\n- **1.4 THE UNSEEN CITY**: deterministic city districts, reachable arrows, map outside gameplay, DPS checks and zone guardians. It can be explored as a design spike before 1.3 but must not quietly delete companion integration.\n- **1.5** fishing and contested fish economy; **1.6** threat ecology/biome counterplay; **1.7** 1000 nights/checkpoints/endless; **2.0** three-gun loadout, fully integrated collection/menus, underground and the Sphinx. 1.8–1.9 TBD pending meeting.\n- Cross-game studio infrastructure and art/audio tooling may be shared as **capabilities**. Do not merge game repositories or let one game's release process mutate another game's source.\n- Release hard gate remains start/movement/nonblank, version isolation, traceable source/rollback; feature-specific promises must be accompanied by evidence or clearly documented as incomplete. Jank allowed. Empty progress claims are not.\n\n## End-of-milestone handoff contract\nEach release produces a `STUDIO-REPORT.md` with **feature IDs** shipped, actual game code/assets, 15–30 second defining clip if practical, automated results, creator concerns, open work, exclusions, deferred features, source SHA, stable playable URL, rollback and next version dependencies. A Producer's meeting minutes may add new design **proposals** and open risks, not rewrite approved scope without explicit authorization.\n"
+      },
+      "cataclysm_roadmap": {
+        "reference": "game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md",
+        "excerpt": "# CATACLYSM — ROADMAP FROM 1.1 TO 2.0\n## 2.0 destination: THE CATACOMBS\n**Product vision approved for planning:** 13 November 2026. **1.1 scope approved:** 13 November 2026, [executive studio issue #82](https://github.com/BoRHeX/kbc-rpg-prototype/issues/82). **Status:** approved brief, not proof that 1.1 production ran or that a new release exists. Never modify frozen 1.0 or trigger legacy 1.0 pipelines.\n\n> Survive. Upgrade. Explore. Laugh. Run. Try again. Every run should give the player a different story — including surprising losses. One-handed movement remains the ONLY direct gameplay control.\n\n## Version boundary — frozen 1.0\n\n**Cataclysm 1.0 — The Catastrophe** is the original finished milestone, preserved at `release/cataclysm-1.0-the-catastrophe-20261113`, source snapshot `1c2af2239dd1be6083d8df127580513dff6d3b55`. Existing playable URLs:\n- Main game: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-0-major/\n- Level 100 / Night 99 laboratory: https://borhex.github.io/kbc-rpg-prototype/cataclysm-100-lab/\n\n**Never develop 1.1 in either 1.0 game directory.** A branch protects historical source, but a live GitHub Pages URL is mutable if `main` redeploys changed files. Before the first 1.1 code change, create independent `docs/cataclysm-1-1/` and `docs/cataclysm-1-1-lab/` or equivalent versioned paths, copy the exact 1.0 baseline, configure publishing to touch only those paths, and regression-test the two 1.0 URLs. Freeze a playable URL as well as a Git ref. Do not trigger existing legacy 1.0 animation pipelines by editing their request files.\n\n## Immutable game DNA\n\n- A white cat surviving a city overrun by zombie / monster cats; distinct pursuing, dashing, dodging, ranged, mutant, caster, elite and boss behaviors.\n- Movement-only input: drag/joystick or WASD, automatic targeting, automatic companion skills, context-sensitive encounters. Menu, pause and upgrade choices remain interface actions, not combat controls.\n- Random upgrade cards, meaningful weapons/perks, fish, upgrades, rare magnets/rage/beacons, enemy waves, bosses, music and distinctive cat dialogue.\n- Four unique active companion **slots**, not more. Companions have opinions, movement, special abilities and personality. A fused pair occupies one slot.\n- Fast protagonist mobility: the main cat may vastly outrun its companions. The squad must catch up gracefully, not teleport continuously or impose a speed limit.\n- Preserve a readable, fair mobile game with humorous surprises and multiple viable solo-cat, weapon, squad, economy and exploration builds.\n- **Animation is performance, not foot-ground simulation.** The player never demanded ground-contact physics. Exaggerated, illustrated, readable full-body acting is the goal. Physical floor planting is optional art direction, never an acceptance requirement.\n\n## Release roadmap\n\n| Version | Name | Release-defining experience | Deliberately NOT in this release |\n|---|---|---|---|\n| **1.1** | **EVERYTHING DRAWN** | Original illustrated quadrupedal white cat with **independent auto-aiming tail gun** (no directional body frames); expressive idle/run/hurt/adrenaline/rage/shield; all companions shoot except melee Brawler; significantly denser weak-zombie waves; 6+ meaningful new upgrades; cohesive UI/VFX and lightweight title shell. | No three-gun slots, new companion roster, companion evolution, new world systems or 1000-night campaign. |\n| **1.2** | **NINE LIVES** | Nine lives separate from HP, fair revival and rare life rewards, stronger perk/card depth and survivability choices while retaining the 1.1 tail-gun combat layout. | The three-slot two-hand-plus-tail loadout (reserved for 2.0), new companion roster, biome simulation. |\n| **1.3** | **FELINE COMPANY** | 8 new companions (16 total), actual fish-eating autonomy, companion level progression/evolutions, first pair fusions; 4 active slots remain. | World-map overhaul, fishing economy. |\n| **1.4** | **THE UNSEEN CITY** | Known seeded districts, non-gameplay world map, in-run arrows to valuable items only, zone kill counters, provoked area bosses and rare extra lives, DPS-gate waves unlocking areas. | Full-length 1000-night final balancing. |\n| **1.5** | **HOOK, LINE & CATNIP** | Fishing rod, fishing spots, bait, fishing risks/rewards, special catches, jackpot counter and strategic resource scarcity. | Endless mode. |\n| **1.6** | **MUTATIONS AFTER MIDNIGHT** | More genuinely distinct enemies, elite/boss evolutions, biome hazards, combinations and counterplay; more voiced/lettered contextual dialogue and adaptive soundtrack. | Final three-hour endurance tuning. |\n| **1.7** | **THE LONG NIGHT** | 1000-night campaign structure, checkpoint/resume, three-hour-class runs, pacing and performance stabilization; unlock Endless Mode. | Claims of full 2.0 completion. |\n| **2.0** | **THE CATACOMBS** | Full three-weapon loadout (two hands plus tail, separately upgradeable), unified menu, discovered world map, deep underground biomes, companion fusion gallery, evolution codex, major endgame events and the Sphinx; polish all integrated systems. | Unbounded scope creep or another engine rewrite. |\n\nThese are outcome gates, not a promise of fixed dates or a mandate to write every subsystem before playable releases. Each version is a separate playable milestone and can be revised based on real test evidence.\n\n### 1.1 — EVERYTHING DRAWN (APPROVED; executive issue #82)\n\n**Authoritative change dated 13 November 2026:** The owner replaced the previous eight-way directional hero with a **cute quadrupedal white cat** whose **drawn tail-mounted firearm alone rotates, tracks targets and shoots**. The body is no longer an eight-facing pistol-character. The original 1.1 visual overhaul remains important, but this approval also explicitly includes **seven shooting companions, denser zombie hordes and more upgrade choices**. This section and [issue #82](https://github.com/BoRHeX/kbc-rpg-prototype/issues/82) supersede the earlier hero animation instructions. Original 1.0 remains frozen.\n\n**Hero art direction:** establish a coherent real illustrated/painted asset family with one canonical body, an independently aimed jointed tail/gun and visible four-leg running gait; keep expression, blinks, reactive ears and a cute readable silhouette at gameplay scale. Avoid algorithmic placeholder shapes, duplicated hero bodies and eight-way directional body atlases. A reproducible texture-producing rig is acceptable **only if the visible result looks drawn and alive**. Tail aiming and recoil must not freeze leg animation or rotate the body to face enemies.\n\n**Required protagonist states:** idle, run (slow-to-fast cadence), hurt with recovery, adrenaline, rage/feral, shield (idle and moving), plus existing death/restart behavior. Expressions, poses and timing must genuinely differ; tinting one still frame does not satisfy the brief. Existing automatic targeting/movement controls remain. Projectiles and muzzle flash originate at the moving tail gun, not invisible paw pistols. **One tail gun in 1.1; two hand weapons plus tail arrive at 2.0**, not 1.2.\n\n**Companions:** the eight are Shooter, Healer, Tank, Brawler, Sniper, Engineer, Trapper and Bard. Every one **except Brawler** acquires targets and fires visible, effective ranged attacks; Brawler remains melee-only. Healing, tank protection, engineer turrets, trapper snares, bard support and all other defining specialties remain intact. Balance combined firepower so a four-member squad does not trivialize the horde. Four unique active companion slots and permanent allies remain.\n\n**Zombies and upgrades:** prioritize **many ordinary weak zombies over fewer inflated-health zombies**. Increase ordinary wave spawn/active density visibly versus frozen 1.0, with meaningful recovery rhythm, offscreen spawning, readable elite/boss tells and performance-bounded caps. Use a deterministic same-stage count comparison (target around 2× where device performance allows, not an unconditional unbounded spawn target). Add **at least six** real, eligible upgrades with observable effects on tail firing, mobility, shielding/recovery and squad synergy; preserve current choice logic and existing upgrade effects, never create impossible cards or extra direct combat controls. Three random choices remain the 1.1 baseline.\n\n**Drawn presentation:** keep the earlier aspiration for coherent original character/follower/enemy art, UI cards, encounter panels, muzzle flashes, dialogue, illustrated VFX, lightweight title/start/settings shell and visual hierarchy, without creating later-version map, fishing, fusion or weapon-economy features.\n\n**1.1 acceptance and delivery:** independent art review of **actual animated gameplay** at ~48px, genuine tail-muzzle targeting during motion, six visibly distinct states, 7/8 allies ranged and Brawler melee, stronger horde density with sensible weak-mob health, 6+ functioning upgrades, and unchanged 1.0 content. Run deterministic unit/mechanic checks, real-browser landscape/portrait mobile tests, source/live hash checks and hardware playtests. Aim for 60 FPS, target ≥30 sustained FPS on representative real Samsung hardware; Chrome alone cannot certify hardware FPS. Make `docs/cataclysm-1-1/` (plus versioned lab if needed) and do NOT edit either original 1.0 game directory or URL. No publish without independent QA and accepted candidate. The creator decides final artistic acceptance.\n\n**Studio preflight:** the old mobile route targets `docs/cataclysm/` with limited asset scope; the old autonomous route targets `docs/preview/`; the existing art workflow was designed for the historical 1.0 anatomy. Therefore, a **versioned artifact and orchestration route** must be established before issuing production triggers; do not pretend an issue alone starts code generation. Keep a single shared orchestrator, independent art specialist and one release chain; do not proliferate version-specific legacy workflows.\n\n### 1.2 — NINE LIVES\n\n**Nine lives are a separate pool from HP.** HP can be damaged/healed during a life. On zero HP, lose one of the nine lives and revive after a short safe reset; at zero remaining lives, the run ends. No infinite invulnerability chain or death that resets all XP. Make extra lives rare, valuable, visible, and cap/recovery rules explicit. Boss-earned +1 lives arrive with 1.4, not via ordinary mob farming.\n\n**Perks:** upgrade selections stay random; build-specific perks can unlock a fourth or fifth card, rerolls and unusual tail-weapon/follower interactions. Do not make the best build always simply faster firing. Balanced solo-cat and companion-heavy strategies must survive.\n\n### 1.3 — FELINE COMPANY\n\nKeep the current eight **Shooter, Healer, Tank, Brawler, Sniper, Engineer, Trapper, Bard**. Add eight genuinely different cats (working names and identities, creative director may refine the art/lore):\n- **Angler:** catches fish, hunts special bait, sometimes brings danger to a fishing spot.\n- **Scout:** identifies useful off-screen pickups and ambush approaches.\n- **Alchemist:** eats fish to brew unstable buffs and enemy debuffs.\n- **Salvager:** transforms abandoned props and scrap into devices.\n- **Saboteur:** uses decoys, blinds enemies, disrupts dangerous casters.\n- **Stormcaller:** channels crowd-control arcs and electrifies wet areas.\n- **Courier:** very fast rescue, pickups and **feeding other companions** rather than returning all fish to the player.\n- **Hexcat:** curses enemy traits, counters elite evolutions, creates risk/reward debuffs.\n\n**Companion economy and autonomy:** companions forage and **eat their own fish**; they do not automatically turn their catch into player currency. Ordinary mob fish drops become rarer. Player XP is still earnable without monopolizing fish. Fish from bosses, fishing, caches and encounter objectives sustains both strategies. Each cat switches among follow, attack, feed, escape, protect, forage, rest, recover, joke and squad-formation states contextually. No new manual squad orders. Companions have individual pacing; a fast player can outrun them, triggering clever catch-up behavior.\n\n**Levels and evolution:** start with clear per-companion Level 1→3 progression from actual work, fish consumption and special events; Level 3 unlocks an identity-defining evolution, not only +10% damage. Unlocking Level 3 does not force fusion. Two Level 3 cats with an eligible bond may combine, occupy **one** of the four active slots, and free one slot for another recruit. Both component cats are committed to the fusion until its defined end/reversal; no duplicate free companions.\n\n**Signature fusion:** Level 3 **Engineer + Level 3 Shooter → MECHA CREW**. The Engineer builds and maintains a mobile mecha, Shooter climbs in and mows down zombie crowds, with deployment, boarding, ammunition/heat, breakdown and repair animations. This is one squad member (one slot), but its output must have balanced cost/downtime. Other possible first-release fusions: **Angler + Trapper → Trawl Team** (nets and rare catches), **Scout + Sniper → Spotter Pair** (long-range weak-point marking), **Bard + Stormcaller → Thunder Chorus** (rhythmic AOE). Show fusion as an illustrated performance.\n\n### 1.4 — THE UNSEEN CITY\n\n**The world is known by the game but not fully exposed during a run.** Generate a coherent seeded city/district topology with connected roads, obstacles, opportunities and area/biome boundaries. Show a beautiful *world map in the menu or between runs*, recording discovered districts and unlocks. During active play there is **no conventional minimap**; show only a small smart off-screen arrow to the nearest reachable valuable **magnet, rage or beacon** (with icon/distance), so players still explore. Avoid arrows pointing through locked areas or screen clutter.\n\n**Area boss logic:** surviving and defeating a threshold of enemies in a zone provokes that area's guardian. An optional risky in-world action (entering a beacon circle rather than a button) can accelerate the provocation. Each unique eligible boss can rarely restore **+1 life** when provoked and defeated; reward is once-per-unique-area-boss per run to prevent farming. If near maximum life capacity, a valuable alternate reward should appear. Nine lives are meaningful, not infinite via repeated boss farms.\n\n**DPS checks and unlocked areas:** periodic rising-pressure zombie waves test the current build, with visible countdowns, elite telegraphs and reasonable escape corridors. Passing opens another district or route. Failing has legible consequences — temporary containment, escalating hazard, missed shortcut — rather than a permanent unwinnable softlock. Scale wave budgets to stage + build without punishing high DPS instantly or spawning mobs inside the viewport.\n\n### 1.5 — HOOK, LINE & CATNIP\n\n**Fishing is a risky exploration mechanic, not a separate mandatory minigame with new combat buttons.** Discover fishing spots in the city and later underground. Enter and remain in the spot briefly to cast automatically; movement away cancels or reels in, preserving movement-only play. Rod, line and bait are buildable/upgradeable via random cards. Worm, glowing fishbone, royal catnip and other special baits change catch tables, danger and companion interest. A giant catch may be a treasure, mutant or enemy ambush.\n\n**Jackpot counter:** an original fish-and-combo scoring lane rewards exceptional catches, stylish near-death escapes and boss provocations; high j"
+      },
+      "studio_audit": {
+        "reference": "game_factory/STUDIO_AUDIT_2026_11_13.md",
+        "excerpt": "# BoRHeZ Games Studio — GitHub automation audit\n**Date:** 2026-11-13. **Repository:** `BoRHeX/kbc-rpg-prototype`. **Scope:** actual `.github/workflows/*.yml` trigger definitions, production scripts, recent workflow results. **Status:** read-only audit/documentation; no game or CI logic changes in this report.\n\n## Executive finding\n\nThe repository currently contains **46 workflow YAML files**. They are not 46 cooperating agents. A smaller set performs useful work; the rest are specialized, older, experimental, recovery, or 1.0-only paths. Multiple independently built orchestration pipelines target related Cataclysm assets, which explains duplicate releases, fragile compatibility tests, Pages collisions and heavy manual repair.\n\n**The studio is a collection of triggered GitHub jobs, not a continuously running autonomous team.** Most start only when a file changes or somebody dispatches a workflow. One scheduled workflow is configured to inspect gameplay videos twice a day, subject to credentials/Actions availability.\n\n## Actual autonomous capabilities\n\n| Capability | Implemented entry point | What it can actually do | Trigger and limit |\n|---|---|---|---|\n| New mobile game or scoped update | `mobile-game-studio.yml` / `mobile_jobs.py` | Validate request; 3 independent game ideas when creating, Critic compares them, Producer selects; for updates, five planning roles; Codex implements HTML/CSS/JS; independent Chrome/mobile tests; a single repair attempt; AI QA; artifact hash + delivery receipt | `game_factory/requests/current.json`, manual `workflow_dispatch`, or video `repository_dispatch`; **one job at a time** |\n| Small mobile-game publication | `mobile-game-delivery.yml`, `games-hub-pages.yml` | Verify accepted source/hashes; deploy full `docs/` site to Pages; verify live game or dashboard bytes; preserve URLs and build history | accepted delivery dispatch, file changes, or manual |\n| Separate Cataclysm creative council | `autonomous-cataclysm.yml`, `autonomous_studio.py`, `plan_cycle.py` | Five AI role calls, bounded coding, independent browser gate, at most one coding repair and QA; publish if accepted | manual or a change to `game_factory/STUDIO_TRIGGER.md` |\n| Art & Animation Department | `art-animation-department.yml` | Analyze a reference image; AI artist writes texture assets and integration; test frame mechanics and Chrome; multimodal art review; at most two isolated revisions; protected merge and deploy | changing `game_factory/art_department/jobs/active.json` or manual dispatch |\n| Image-to-animated-character experiments | `reference-animation-studio.yml` + `reference-animation-delivery.yml` | Read a repo/Drive reference; attempt raster anchor/sprite production and acceptance; pass accepted art to publisher | manual or `game_factory/requests/reference_animation.json`; needs suitable API/Drive access |\n| Gameplay video reviewer | `gameplay-video-review.yml`, `video_pipeline.py`, `video_bridge.py` | Select newest or explicit private Drive video; FFmpeg processing, transcription, sampled image review; create QA report; if actionable, create a validated studio update request and dispatch the Mobile Studio | **cron `20 6,18 * * *`** = 06:20 and 18:20 UTC, or manual/explicit file request; requires working Google/OAI secrets |\n| CI/test enforcement | `game-factory-tests.yml`, `cataclysm-major-playtest-qa.yml`, `reference-animation-infrastructure-qa.yml` and specialized tests | Unit tests, 8-browser-viewport tests, image/asset checks, wave/score contracts, generated QA artifacts, failure logs | targeted pushes and pull requests; **passing some checks does not mean the whole suite passed** |\n\nThe video workflow's configured schedule is twice daily, despite an older README that describes a once-daily time. GitHub secret *values and current Drive connectivity were not verified in this audit*; a configured trigger is not proof that it succeeds.\n\n## Roles and memory — what is real\n\nThe shared mobile planning roles are **Designer, Researcher, Engineer, Critic, Producer** plus a separate coding agent and QA reviewer. They run API calls and GitHub Actions jobs when invoked; this is not a persistent 25-agent mind. They can create real code, tests, artifacts and releases. Some planning uses three competing proposals; updates use a feedback-driven council.\n\n`agent_memory.py` defines an SQLite agent/event ledger for roles, decisions, evidence and conversation IDs. The Mobile Studio stores that database in temporary `artifacts/mobile/memory.sqlite3` and intentionally excludes it from diagnostic upload. It **does** load up to three prior committed game-job receipts from `game_factory/results` into planning evidence, and workflows can restore archived plans/candidates. This is useful but **not a complete persistent, cross-run studio memory or shared autonomous world model**. Durable history comes mainly from Git, results, briefs, and artifacts that have not expired.\n\nThe art workflow can genuinely generate new reference-based assets, but past Cataclysm results show that frame counts and IK physics can pass mechanical checks while **actual phone-size animation still appears weak**. Human artistic acceptance remains necessary.\n\n## What it does NOT do reliably or automatically\n\n- It does not keep writing and publishing games indefinitely without a trigger, except that the **scheduled video-review trigger could initiate a new update chain** when credentials work and actionable footage is found.\n- It does not automatically upload to YouTube, read arbitrary future recordings, or guarantee private video was analyzed fully; image review samples frames.\n- It does not ensure that 46 workflow files constitute 46 truly independent role workers operating concurrently.\n- It does not guarantee all agents share persistent context across runs. Old READMEs, current manifests and active code paths can disagree.\n- It does not guarantee new art is beautiful just because the CSS, atlas hashes or IK coordinates pass.\n- It does not automatically know that Cataclysm 1.0 is frozen; version boundaries must be enforced in the active studio target.\n- It does not have one clearly authoritative release pipeline for Cataclysm: several older launch, recovery, art and Pages workflows remain present.\n\n## Verified recent outcomes and risks\n\n1. **Frozen source:** commit `1c2af2239dd1be6083d8df127580513dff6d3b55` pinned to `release/cataclysm-1.0-the-catastrophe-20261113`. The 1.0 campaign and Night99 lab were released for the owner's playtesting. **Branch immutability is NOT live-URL immutability.** Public `/cataclysm-1-0-major/` and `/cataclysm-100-lab/` are served by Pages from `main`, so an unguarded future deploy can change them.\n2. **Dashboard publication verified:** `games-hub-pages.yml` run [43496530675](https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/43496530675) succeeded and verified live dashboard bytes. 1.0 and Level100 play URLs are prominently pinned.\n3. **Independent 1.0 major QA has an unresolved failing test:** run [43483632625](https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/43483"
+      },
+      "cataclysm_12_report": {
+        "reference": "docs/cataclysm-1-2/STUDIO-REPORT.md",
+        "excerpt": "# Cataclysm 1.2 — NINE LIVES\n\nImplemented playable candidate, 14 November 2026. Art acceptance and Chrome phone playtest remain pending. All edits are inside `docs/cataclysm-1-2/`.\n\n## Play and source trace\n\n- Independent entry: [Play 1.2](./index.html). Intended Pages URL: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-2/ — **not published or live-verified in this run**.\n- Fork: existing illustrated `docs/cataclysm-1-1/` at repository HEAD `352b3e9e30ce11fd871f8266ad7094a06a5a898d`. Previous playable/rollback URL: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-1/ . Baseline remains untouched.\n- [SOURCE-TRACE.json](./SOURCE-TRACE.json) records runtime hashes and differences from 1.1. No commit, branch or PR was created: the strict directory-only write boundary excludes `.git`; the delivered candidate is the untracked version directory. No deployment or legacy pipeline was triggered. Tracking: [issue 85](https://github.com/BoRHeX/kbc-rpg-prototype/issues/85).\n- [PRODUCTION-PLAN.md](./PRODUCTION-PLAN.md) records sequential Producer → Design → Engineering → Art/Audio → Integration → QA responsibilities and dependencies.\n\n## Shipped behavior\n\n- New runs start at Night 1, Level 1, 3 HP and **exactly nine lives**. Normal damage/healing uses HP. Each lethal HP event consumes one life once. Eight returns are possible before the ninth death ends the run, unless the rare recovery succeeds.\n- Death visibly freezes the world for **0.9 seconds**, shows an afterlife postal notice and cat banter, and plays a falling cue. Automatic return restores **60% maximum HP** and **2.8 seconds** of movement-enabled protection with a visible glow/countdown and rising cue. Pausing/backgrounding also freezes the transition and grace. Last life changes the HUD and banter.\n- Revive retains the same XP, level, perks, fish, companions/ranks, pickups, kills, wave/night and encounter ledgers. No enemies are killed or rewards duplicated by revival. Only hostile projectiles within 110 world pixels are removed. Restart resets the run, card unlocks, reward eligibility and nine lives.\n- Phone HUD has a numeric `LIVES n / 9`, nine pips, loss animation, last-life border/text and a separate live announcement. HP cards explicitly say they do not add lives. Reduced-motion mode removes the loss animation.\n- Rare recovery: **one 18% lottery at 180 active seconds**, automatically claimed and announced, maximum **nine current lives**. At the cap it gives **+0.5 maximum HP and 0.5 healing** instead. Checked/claimed flags survive revival; no enemy, boss, pickup or repeated timer can farm it. Rule is disclosed in the pause guide. This is a timed windfall rather than a new exploration system.\n- Three unique random upgrade offers initially; **Curiosity pays rent** unlocks four and grants one reroll; **Five brain cells**, eligible only afterward, unlocks five and grants one reroll. Two starting tokens; existing earned drops remain. Rerolls spend exactly one token and change at least one card identity, not just ordering. Repeatable core cards prevent empty pools. All cards remain frozen decisions; the fifth card scrolls on narrow screens.\n- Twelve new perks: Curiosity, Five brain cells, Loaded yarn dice (+3 rerolls, twice); Emergency cardboard box (80% return HP, +1s grace); Purr therapy (0.06 HP/s after 8s unharmed, doubled solo); Bubble appointment (1.1s protection every 18 active seconds); Porcelain menace (+40% tail damage, ×0.75 max/current HP, twice); Return to zoom (+10% speed, +0.4s grace); Table for one (+30% tail damage and 15% mitigation only while alone); Group purr insurance (+0.025 HP/s per ally after 8s unharmed); Last laugh (+60% tail damage on last life); Haunted tail (+2 piercing for eight active seconds after return). All other new perks are single purchases.\n- Preserved approved illustrated cat textures, enemies, seven ranged companion roles, melee Brawler, four unique slots, wave/boss systems, auto skills, music and voice system. Found and repaired a copied-baseline gap: the illustrated body bypassed the old renderer's gun. The existing drawn tail/pistol is now rendered over that body, with world-space aim and a shared muzzle formula for either body facing. No new weapons, companions, evolutions, map or fishing.\n\n## Reproduce and test\n\n1. Serve the repository with any static server, open `/docs/cataclysm-1-2/`, press Play and drag or use WASD. Shooting is automatic. Lose HP normally by standing in enemy contact; watch lives decrease separately from HP and the safe return timer. Repeat through zero; Play Again starts at nine.\n2. Level up by collecting XP/fish. Choose Curiosity, then Five brain cells when randomly offered. Spend reroll tokens and compare card identities. Add Loaded yarn dice for more tokens. Escape during a decision leaves the decision frozen.\n3. For quick deterministic reproduction, open `?qa=nine-lives&seed=123`, then in DevTools use `CATA_12_QA.lethal()` while running; it refuses another hit during transition/grace. `CATA_12_QA.offer()` opens cards; `CATA_12_QA.choose('curiosity')` selects an eligible fixture card, followed by another offer and `choose('omniscience')`. `CATA_12_QA.reward()` tests the one-shot reward including its cap. These mutation helpers exist **only** under the explicit QA query. Normal play uses the real lottery.\n4. Run `node docs/cataclysm-1-2/qa/runtime.cjs`. It executes all shipped modules with local PNG/manifest loading against a DOM/canvas double. It checks full startup, render calls, movement, actual enemy-projectile HP/death, nine deaths, frozen transition/decision clocks, grace, retained progress, game over/restart, caps, repeat reward prevention, 3/4/5 offers, reroll exhaustion, companion eligibility, perk effect math, timed shield/piercing expiry and tail muzzle agreement. Result: **PASS**, see [runtime-results.json](./qa/runtime-results.json). This does not certify browser rendering.\n5. Chrome phone smoke command: `node docs/cataclysm-1-2/qa/chrome-smoke.cjs`. Requires installed Playwright and Chromium (`CHROME_PATH` can override). Tests 390×844 and 844×390, touch movement, nonblank pixels, runtime/asset errors, revive, frozen cards, reroll and fifth-card reachability; writes screenshots/results under `qa/chrome-evidence/`. `RECORD=1` also records an approximately 20-second portrait WebM, requiring Playwright's ffmpeg.\n\n## Tradeoffs / known jank / missing evidence\n\n- **Chrome smoke and gameplay video could not run here.** Installed Chromium aborts before creating a page because its crashpad socket receives `Operation not permitted`; even local server sockets are denied. No screenshots, video, real-phone FPS or visual approval are claimed. The browser smoke program is supplied, but acceptance still needs Chrome portrait/landscape and creator playtesting.\n- Returns happen at the death position, preserving the world; the finite grace lets you escape instead of teleporting/erasing enemies. A stationary cat can die again afterward. This is intentional. Perks can add short protection windows, but revival itself cannot chain indefinitely.\n- "
+      },
+      "peach_bounce": {
+        "reference": "game_factory/results/peach-orbital-guidance-03-pass2.json",
+        "excerpt": "{\n  \"request\": {\n    \"id\": \"peach-orbital-guidance-03-pass2\",\n    \"game\": \"studio-original-001\",\n    \"mode\": \"update\",\n    \"title\": \"Peach Bounce 0.3 \\u2014 trajectory guide and 3-orbit slingshot\",\n    \"prompt\": \"SECOND PEACH BOUNCE 0.3 PASS \\u2014 preserve the version exactly 0.3 and stable docs/games/studio-original-001 public URL. This is targeted physics+visual control polish, NOT 0.4, NOT a redesign of resource economy or UI. The player explicitly says 0.3 is exactly the game desired, but needs an always-on indicator of where the probe WILL fly, and slightly more intentional probe control. Previous accepted job peach-gravity-sling-03 is live; build on its latest released source. Do not modify any other game, factory, workflow, or dashboard.\\n\\nOBSERVED SOURCE DEFICIENCY: current game.js stores a trail of already travelled positions p.trail but does not integrate/draw future predicted trajectory. Player cannot infer the gravitational path or know how to intercept with moving ship.\\n\\n1. CONSTANT LIVE FLIGHT FORECAST. Predict next meaningful segment of trajectory in the REAL 0.3 arena (e.g. 2-5 simulated seconds / until collision/trigger/escape, finite bounded number of points). Use current probe x/y/vx/vy, current ship position and the SAME force law and fixed-step numerical integration as authoritative game; for forecasts, clearly assume ship stays in current position unless being dragged. Recompute frequently as ship moves and during flight; render a thin dashed/glowing future curve with directional markers, separate and visually distinguishable from the historical tail. Mark projected ship crash red, safe banking/trigger green/blue, escape orange, fruit crossings subtly. Reuse same coordinate transform, clip to arena, manage performance and reduced-motion setting. Do not draw a purely artistic path unrelated to what occurs. During the controlled 3-orbit mode, represent orbital turns and release direction predictively, not a misleading free-flight forecast. Optionally forecast beyond release to useful fruit/exit horizon.\\n\\n2. REAR TRIGGER FOR CONTROLLED ORBIT. Mark a distinct, readable 'ORBIT / SLING' catch zone ASTERN/BEHIND the ship \\u2014 physically below it in portrait view (positive canvas y), visibly separated from ship's damaging inner collider, and inside the lower playfield so the player can guide a returning/falling probe through it. Trigger is directional: probe must actually CROSS into this zone on a suitable incoming/downward path; no activation from standing still, no repeat triggers during one captured sequence. Preserve normal damage if a probe hits the actual ship rather than the catch zone. No user tap button required: movement of ship is the control.\\n\\n3. EXACTLY THREE FAST ORBITS AND PREDICTABLE RELEASE. A successfully caught probe enters one guided slingshot mode, travels the actual visible geometric orbit around the ship at a safe radius outside collision radius and within the safe banking/deposit annulus (not snapping across screen). It completes exactly 3 full revolutions in a short readable duration (suggest ~1.5-2.5 s total; Producer tunes) with a clear progress cue (e.g. ORBIT 1/3, 2/3, 3/3), then leaves tangentially on a predictable direction/velocity. Initial transition can smoothly blend onto capture circle; avoid a visually discontinuous teleport. The release orientation should be visibly marked before release; make direction depend on a stable understandable aiming rule such as ship position relative to playfield/fruit target or landing approach direction (Producer choose and document), so ship movement provides meaningful tactical control. Avoid automatic omniscient homing that eliminates fruit puzzle; launch still must be steered by player. On release physics resumes normally with same gravity model, speed bounded and angled to create a viable high-field trajectory; the probe may miss if poorly aligned. Reset/replay should reproduce capture and angle under equal inputs.\\n\\n4. RESOURCE INTEGRITY AND SAFETY. While captured, same existing probe retains cargo, identity, counts, and wave "
+      },
+      "old_roadmap": {
+        "reference": "game_factory/CATACLYSM_1_0_ROADMAP.md",
+        "excerpt": "# Cataclysm — progression toward 1.0 (living roadmap)\n\n## Authorized release: 2026-11-11 — Cataclysm 1.0: The Catastrophe\n\nThe creator explicitly requested the existing Studio to produce 1.0 using the NEW private 0.9 recording `cataclysm__review-07.mp4`. The current request is the comprehensive binding work order; the older hypotheses below do not narrow it. This is separate from Flame Game Studio. One on-demand release with existing bounded repair; no new schedules.\n\n**2026-11-11 QA correction:** Run `43087177881` processed the review and passed all eight browser viewports but was rejected for incomplete release scope. Complete releases now use a fixed 25-requirement ledger and four sequential source-preserving passes: foundation -> evolution -> builds -> presentation. Critic/Producer coordinate interfaces without voting requirements out. Each pass checkpoints exact candidate bytes; full-scope QA may request one bounded content continuation. A rejected candidate stays recoverable and cannot be published. Ordinary small-game jobs retain their existing route.\n\n**Source/delivery:** `docs/cataclysm/` is the newer illustrated 0.9 primary game with physical world, original audio, fullscreen and eight companions. Compare accepted `docs/preview/` director/city-encounter/reward additions read-only and carry compatible improvements forward. Preserve that archive and the earlier graphics archive. Publish 1.0 at `/cataclysm/` after independent QA, updating only primary dashboard labels.\n\n**Remember the full agreed vision:**\n\n- **3–6–9/world:** endless downward scrolling biome chunks; changes about every three minutes; meaningful milestones; rising shadow after player level 9; level-99 boss defeated nine times with tracked endgame progress. Resolve the earlier luck/dance biome influence against the new review and state the rule without inventing a prior agreement.\n- **Enemies:** bounded threat/cost director, fair wave/recovery rhythm; modular legs/tentacles, torso, arms and heads/abilities; readable flying/phasing variants; fusion -> vulnerable cocoon -> mutant with real inherited traits, bounded combinations and exact parent/reward accounting.\n- **Builds:** viable main-cat, squad and equipment routes with tactical synergies. Eight distinct permanent companions, four unique active maximum. Random unlocks among upgrades; after four suppress unowned unlocks but retain owned upgrades. Preserve full roguelite pool, Cat's Catch, relics/abilities; keep removed aura menu removed.\n- **Exploration:** new enemies/pickups spawn outside viewport with a margin; exceptionally rare magnets and collectible boosts; much longer magnet effect. Preserve collisions, navigation, rewards, recovery and city events. Avoid empty pacing gaps or sudden retaliatory spawns.\n- **Presentation:** alive main cat, distinct squad/enemy silhouettes, readable fusion/biomes, simplified colorful poses (12-FPS animation with smooth movement), restrained particles/depth, original adaptive hard-rock/DnB buildup/drops and dubstep bosses. Preserve mute/volume and browser audio startup.\n- **Mobile:** landscape-first single-screen HUD/actions/fullscreen and all three upgrade choices; correct touch scaling, portrait fallback, no scrolling/studio tabs. Freeze combat and simulation clocks for pause/choices.\n\n**Done means tested:** council agrees interfaces before code; coder implements the complete explicit scope, not merely two small proposals. QA traces each requirement to checks or names a release blocker. Exercise real touch input, eight browser viewports, long survival across biomes, deterministic fusion/traits/spawns/budgets, squad offer gating, equipment synergy, shadow and accelerated "
+      }
+    },
+    "ledger": {
+      "versions": [
+        {
+          "version": "1.0",
+          "name": "THE CATASTROPHE",
+          "phase": "historical",
+          "description": "Preserve original music, score, art, allies, boss/endgame and separate test URL.",
+          "requirements": [
+            "CAT-10-01",
+            "CAT-10-02"
+          ]
+        },
+        {
+          "version": "1.1",
+          "name": "EVERYTHING DRAWN",
+          "phase": "candidate",
+          "description": "Main cat and squad art, tail aim, weak zombie hordes.",
+          "requirements": [
+            "CAT-11-01",
+            "CAT-11-02",
+            "CAT-11-03",
+            "CAT-11-04",
+            "CAT-11-05",
+            "CAT-11-06"
+          ]
+        },
+        {
+          "version": "1.2",
+          "name": "NINE LIVES",
+          "phase": "candidate",
+          "description": "Survival and richer random card choices.",
+          "requirements": [
+            "CAT-12-01",
+            "CAT-12-02",
+            "CAT-12-03",
+            "CAT-12-04",
+            "CAT-12-05"
+          ]
+        },
+        {
+          "version": "1.3",
+          "name": "FELINE COMPANY",
+          "phase": "approved_next",
+          "description": "Eight NEW cats, levels, evolution and fusion; this must precede or be explicitly separated from 1.4.",
+          "requirements": [
+            "CAT-13-01",
+            "CAT-13-02",
+            "CAT-13-03",
+            "CAT-13-04",
+            "CAT-13-05",
+            "CAT-13-06",
+            "CAT-13-07",
+            "CAT-13-08",
+            "CAT-13-09",
+            "CAT-13-10",
+            "CAT-13-11"
+          ]
+        },
+        {
+          "version": "1.4",
+          "name": "THE UNSEEN CITY",
+          "phase": "approved_future",
+          "description": "Seeded districts and tactical exploration without a minimap.",
+          "requirements": [
+            "CAT-14-01",
+            "CAT-14-02",
+            "CAT-14-03",
+            "CAT-14-04",
+            "CAT-14-05",
+            "CAT-14-06",
+            "CAT-14-07",
+            "CAT-14-08",
+            "CAT-14-09",
+            "CAT-14-10"
+          ]
+        },
+        {
+          "version": "1.5",
+          "name": "HOOK, LINE & CATNIP",
+          "phase": "approved_future",
+          "description": "Fishing and fish as contested tactical economy.",
+          "requirements": [
+            "CAT-15-01",
+            "CAT-15-02",
+            "CAT-15-03",
+            "CAT-15-04",
+            "CAT-15-05",
+            "CAT-15-06",
+            "CAT-15-07"
+          ]
+        },
+        {
+          "version": "1.6",
+          "name": "MUTATIONS AFTER MIDNIGHT",
+          "phase": "approved_future",
+          "description": "Expanded threat ecology and biome/boss variations.",
+          "requirements": [
+            "CAT-16-01",
+            "CAT-16-02",
+            "CAT-16-03",
+            "CAT-16-04",
+            "CAT-16-05",
+            "CAT-16-06",
+            "CAT-16-07",
+            "CAT-16-08",
+            "CAT-16-09"
+          ]
+        },
+        {
+          "version": "1.7",
+          "name": "THE LONG NIGHT",
+          "phase": "approved_future",
+          "description": "1000-night campaign, checkpoints and Endless Mode.",
+          "requirements": [
+            "CAT-17-01",
+            "CAT-17-02",
+            "CAT-17-03",
+            "CAT-17-04",
+            "CAT-17-05",
+            "CAT-17-06",
+            "CAT-17-07"
+          ]
+        },
+        {
+          "version": "1.8",
+          "name": "UNASSIGNED — COUNCIL PROPOSAL",
+          "phase": "not_approved",
+          "description": "Intentionally unscheduled slot; studio may propose content/integration emphasis at roundtable.",
+          "requirements": [
+            "CAT-18-01",
+            "CAT-18-02"
+          ]
+        },
+        {
+          "version": "1.9",
+          "name": "UNASSIGNED — COUNCIL PROPOSAL",
+          "phase": "not_approved",
+          "description": "Intentionally unscheduled slot; studio may propose final integration/polish gate at roundtable.",
+          "requirements": [
+            "CAT-19-01",
+            "CAT-19-02"
+          ]
+        },
+        {
+          "version": "2.0",
+          "name": "THE CATACOMBS",
+          "phase": "approved_destination",
+          "description": "Complete unified adventure and Sphinx finale.",
+          "requirements": [
+            "CAT-20-01",
+            "CAT-20-02",
+            "CAT-20-03",
+            "CAT-20-04",
+            "CAT-20-05",
+            "CAT-20-06",
+            "CAT-20-07",
+            "CAT-20-08",
+            "CAT-20-09"
+          ]
+        }
+      ],
+      "future_features": [
+        {
+          "id": "CAT-13-01",
+          "feature": "Add eight distinct new roles: Angler, Scout, Alchemist, Salvager, Saboteur, Stormcaller, Courier, Hexcat"
+        },
+        {
+          "id": "CAT-13-02",
+          "feature": "All 16 distinct companion identities: drawn mobile sprites/animations, combat/support, banter, role SFX"
+        },
+        {
+          "id": "CAT-13-03",
+          "feature": "AI states follow/attack/protect/escape/forage/feed/rest/recover/joke/reposition; no direct commands"
+        },
+        {
+          "id": "CAT-13-04",
+          "feature": "Companions EAT their own fish; reduced ordinary mob fish drops; player retains alternative XP sources"
+        },
+        {
+          "id": "CAT-13-05",
+          "feature": "Individual Levels 1→3 using real actions and food; clear progression HUD and identity-defining Level-3 evolutions"
+        },
+        {
+          "id": "CAT-13-06",
+          "feature": "Allow eligible dual Level-3 pair fusion in ONE of four companion slots, with complete accounting"
+        },
+        {
+          "id": "CAT-13-07",
+          "feature": "Engineer + Shooter => deployable MECHA CREW: boarding, heat, ammunition, repair, breakdown, powerful-but-balanced horde attack"
+        },
+        {
+          "id": "CAT-13-08",
+          "feature": "Optional fusions from roadmap: Angler+Trapper, Scout+Sniper, Bard+Stormcaller, if appropriate budget"
+        },
+        {
+          "id": "CAT-13-09",
+          "feature": "Companions adapt to fast solo cat rather than teleport constantly or impose movement cap"
+        },
+        {
+          "id": "CAT-13-10",
+          "feature": "Integrate visual effects, animation states, companion SFX/music cues and persistent story dialogue"
+        },
+        {
+          "id": "CAT-13-11",
+          "feature": "Test 16 roster unlock eligibility, four-slot cap, fish accounting, fusion state/recovery, visual identity"
+        },
+        {
+          "id": "CAT-14-01",
+          "feature": "Seeded interconnected districts, roads, geography, obstacles and repeatable topology"
+        },
+        {
+          "id": "CAT-14-02",
+          "feature": "World map/city discovery shown BETWEEN runs or from main menu; not a standard in-play minimap"
+        },
+        {
+          "id": "CAT-14-03",
+          "feature": "In-game off-screen arrow only to reachable magnet/rage/beacon with distance and category"
+        },
+        {
+          "id": "CAT-14-04",
+          "feature": "Zone kill counters, guardian provocation, unique local bosses, optional risky beacon triggers"
+        },
+        {
+          "id": "CAT-14-05",
+          "feature": "Provoked unique area bosses may rarely give +1 LIFE once per eligible boss, never grindable"
+        },
+        {
+          "id": "CAT-14-06",
+          "feature": "DPS-check waves: countdown, escalating pressure, area unlocking, readable enemy telegraph"
+        },
+        {
+          "id": "CAT-14-07",
+          "feature": "Failing DPS check costs opportunity/creates hazard but never permanent softlock"
+        },
+        {
+          "id": "CAT-14-08",
+          "feature": "Zone visuals: destructible/interactive props, skyline, districts, weather, lighting, original ambience/music"
+        },
+        {
+          "id": "CAT-14-09",
+          "feature": "Tie companion Scout/Courier/Angler and future exploration roles to district navigation without bypassing 1.3"
+        },
+        {
+          "id": "CAT-14-10",
+          "feature": "Test seeded routes, accessible pickup arrows, travel loops, triggers, rewards, 30+ FPS representative browser"
+        },
+        {
+          "id": "CAT-15-01",
+          "feature": "Discover/enter fishing spot; automatic cast while stationary; move away to cancel without button"
+        },
+        {
+          "id": "CAT-15-02",
+          "feature": "Unlock rods, bait types and casting upgrades through random cards"
+        },
+        {
+          "id": "CAT-15-03",
+          "feature": "Risk/reward catch tables include special rare catches, treasure, mutant, dangerous encounters"
+        },
+        {
+          "id": "CAT-15-04",
+          "feature": "Rebalance ordinary fish drops versus companion appetites, exploration caches, bosses and fishing"
+        },
+        {
+          "id": "CAT-15-05",
+          "feature": "Jackpot counter for catches, near-death maneuvers, combat/combo feats; no runaway score exploits"
+        },
+        {
+          "id": "CAT-15-06",
+          "feature": "Character fishing animation, line/water effects and original audio cues, mobile HUD clarity"
+        },
+        {
+          "id": "CAT-15-07",
+          "feature": "Test deterministic catch outcome accounting, fish depletion, bait effects and solo/squad economies"
+        },
+        {
+          "id": "CAT-16-01",
+          "feature": "Distinct enemy concepts: Mimic Strays, Bell-Ringers, Roof Pouncers, Necro-Groomers, Pack Leaders, Feral fish thieves"
+        },
+        {
+          "id": "CAT-16-02",
+          "feature": "Actual differentiated melee/ranged/caster/flying/phasing enemies; not color swaps"
+        },
+        {
+          "id": "CAT-16-03",
+          "feature": "Fusion/convergence => cocoon => inherited mutant traits with fair counters and reward accounting"
+        },
+        {
+          "id": "CAT-16-04",
+          "feature": "Preserve/expand nine distinct bosses, six elite and three super-elite archetypes, boss tells and unique attacks"
+        },
+        {
+          "id": "CAT-16-05",
+          "feature": "More terrain hazards, encounter variety, meaningful biome differences"
+        },
+        {
+          "id": "CAT-16-06",
+          "feature": "Adaptive original hard-rock/DnB/electronic musical layers and boss hooks with controls for volume/mute"
+        },
+        {
+          "id": "CAT-16-07",
+          "feature": "Dialogue between hero, new companions, fusions and enemies; contextual jokes"
+        },
+        {
+          "id": "CAT-16-08",
+          "feature": "Drawn/animated sprites with death/attack/special states, particles/telegraphs bound by phone performance"
+        },
+        {
+          "id": "CAT-16-09",
+          "feature": "Test horde budget, counterplay, mob AI, animation memory and audio scheduler"
+        },
+        {
+          "id": "CAT-17-01",
+          "feature": "Build 1000-night story in ten chapters, ~3-hour-class target with distinct milestones and encounters"
+        },
+        {
+          "id": "CAT-17-02",
+          "feature": "Checkpoint/save/resume including current chapter, lives, build, squad, fish, map/zone and RNG"
+        },
+        {
+          "id": "CAT-17-03",
+          "feature": "Save version migration, corruption repair and phone-background safety"
+        },
+        {
+          "id": "CAT-17-04",
+          "feature": "Endless Mode unlocked ONLY after complete designed campaign, bounded spawns and records"
+        },
+        {
+          "id": "CAT-17-05",
+          "feature": "Deepen meaningful late-run upgrades, elites/boss phase strategy, not just longer monotony"
+        },
+        {
+          "id": "CAT-17-06",
+          "feature": "Test accelerated 1000-night progress, 30-minute endurance, memory/audio/bullet budgets, resume on Android"
+        },
+        {
+          "id": "CAT-17-07",
+          "feature": "Distinct chapter environments, new themes/stingers and crescendo to finale"
+        },
+        {
+          "id": "CAT-20-01",
+          "feature": "One quadrupedal hero with TWO independently upgradeable hand guns + independently auto-aiming tail gun: three equipped weapons"
+        },
+        {
+          "id": "CAT-20-02",
+          "feature": "Visible, readable three-weapon shooting, upgrade individuality and movement-only direct combat"
+        },
+        {
+          "id": "CAT-20-03",
+          "feature": "Unified title/menu, pause/options, discovered city world map OUTSIDE active play, equipment/collections UI"
+        },
+        {
+          "id": "CAT-20-04",
+          "feature": "Boneyard/catacomb underground biomes with fresh enemy ecology, physics/effects and traversal"
+        },
+        {
+          "id": "CAT-20-05",
+          "feature": "Companion evolution/fusion gallery and character codex; enemy/boss bestiary and fish/bait/jackpot records"
+        },
+        {
+          "id": "CAT-20-06",
+          "feature": "Sphinx final boss with unique readable mechanics, music, original illustrated stages and earned resolution"
+        },
+        {
+          "id": "CAT-20-07",
+          "feature": "Fully compatible 1000-night campaign, checkpointing and Endless Mode unlock"
+        },
+        {
+          "id": "CAT-20-08",
+          "feature": "Viable solo/squad/fused/weapon strategies and many play histories per seed"
+        },
+        {
+          "id": "CAT-20-09",
+          "feature": "Published versioned playable release and full field/visual/audio/Android QA evidence"
+        }
+      ]
+    },
+    "flame_readme": "# BoRHeX Flame Game Studio\n\n**I.C.E. / The Flame Game** — a lightweight mobile-browser combustion game, plus the future autonomous production system that builds it.\n\n## Autonomous production\nOne production brief now starts team selection, coordinated multi-file implementation, integration, executable gameplay checks, visual review against the approved reference, bounded automatic repair and verified preview publication. Layouts, coordinates, art, animation and UI can evolve together. The operator supplies the job and receives the outcome. See [production operation](studio/production/README.md) and [the active decision](memory/decisions/ADR-0007-autonomous-production.md).\n\n## Current status — Coastal Jungle art preview\nThe Operator expands the accepted tall-platformer foundation into three physical contracts. Backyard requires an intake-shield diagnosis/repair and air adjustment; Warehouse requires freeing and testing a seized draft linkage; Heat-Hold remains a clean-combustion temperature challenge. Each job requires inspection, physical work, adjustment, verification and a stable hold. All calibrated tools are available without purchases.\n\nThe published preview connects six department contributions: six character animation clips, four authored biome environments with real process effects, contextual persistent operator narrative, four original composer themes, their adaptive arrangements, and synchronized mechanical/process/mission cues. The environment proposal was recovered from a source-review scope deadlock and is accepted only through integrated executable checks.\n\nThe game includes analog/alternate-handed/D-pad controls, native fullscreen, physical valve-wheel and damper-lever close-ups with detents and stops, live diagnostics, operator assistance, three transactional save slots/autosave, recovery/migration, pause/options/equipment menu and portrait/landscape support. World presentation stays 18 FPS, flame 24 FPS; fixed simulation and audio scheduling remain independent.\n\nThe Coastal Jungle art preview is published at https://borhex.github.io/flame-game-studio/. It adds Pacific sunset/ocean/ridge/jungle parallax, coastal workshop windows, an open outdoor steel frame, textured equipment and enclosed process-lit furnace ports. All 88 Node tests, department acceptance checks and the complete real-touch Chrome route passed in PR #44 CI #43203489574 and again in Pages release #43203983688. All three contracts were won without purchases, including physical repairs, local NPC assistance, save/reload and corrupt-slot backup recovery. Physical Samsung comfort, audio mix and sustained-performance acceptance remain pending; they are not inferred from CI. See [the art-wave evidence](memory/evidence/acceptance/coastal-jungle-art-01.md), [Pass Two baseline evidence](memory/evidence/acceptance/pass-two-operator-02.md) and [living roadmap](design/roadmap.md).\n\nProduction jobs now run Producer → selected departments → Integrator → executable and visual verification → automatic repair → verified preview promotion and deployment. The Pass Two baseline integrated five new specialist PRs plus a recovered environment contribution. The resumed art wave used two further bounded jobs (USD 0.566484 total); the background passed its studio run, while the foreground proposal was preserved after a source-review rejection and accepted only through supervised integration and independent executable checks. No schedules, permanent background agents, automatic paid task loops or changes to the separate Cataclysm experiment.\n\nRun locally with Node 22+:\n\n    npm test\n    npm run studio:dry-run\n    npm run browser:smoke\n\nFor playing:\n\n    python3 -m http.server 8765\n\nThen open http://localhost:8765/game/ on the same computer. The earlier isolated experiment remains at /prototypes/flame-lab/.\n\n## Playtest distribution\nThe branch workflow runs independent tests and uploads the game files plus mobile screenshot as GitHub Actions artifacts. The **separate** Pages preview workflow attempts to deploy the game at the repository's standard GitHub Pages URL. If Pages has not been enabled, the owner must select Settings → Pages → Build and deployment → GitHub Actions. A GitHub Pages success check, not the presence of a workflow, confirms a publicly usable preview.\n\n## Boundaries\n- This repository is independent of BoRHeX/kbc-rpg-prototype. Do not edit the existing experimental BoRHeZ Games Studio.\n- The production stack (TypeScript + Phaser / custom flame renderer) remains a measured decision, not an installed dependency.\n- Provider credentials, budgets and CI stay outside generated product changes. On-demand production jobs may promote independently tested and visually accepted development previews under ADR-0007.\n- Source simulation is dimensionless gameplay design, **never real equipment guidance**.\n- Reviewed development previews may integrate changes after independent tests. A game release requires an actual phone playtest and independent acceptance.\n\n## Next gate\nCollect the user's physical-phone review of the verified",
+    "flame_roadmap": "# Living delivery roadmap — 12 November 2026\n\n## Pass One — accepted foundation\nThe user accepted the tall industrial platformer/hub on an actual phone. Movement, jumping, ladders, following camera, pilot/main combustion, three prototype contracts and procedural process audio established the foundation. The source history preserves the earlier verification/recovery work. This was not evidence of a finished campaign.\n\n## Pass Two — The Operator engineering complete; published for phone review\n- [x] Analog joystick, thumb-side choice, D-pad fallback, minimum 44px visible touch controls, keyboard support and native fullscreen.\n- [x] Physical fuel-wheel rotation and air/draft lever dragging, detents, slider/key alternatives, travel stops, optional haptics and proximity checks.\n- [x] Backyard: inspect, secure loose intake shield, adjust real air flow, verify and hold. Crosswind affects the actual solver and is reduced by the repair.\n- [x] Warehouse: inspect restricted draft, free jammed linkage, test restored travel, verify and hold. Nearby operator assistance respects mechanical limits and authority.\n- [x] Heat-Hold retained as a playable third clean-combustion/temperature contract; all three have no-purchase completion paths with the calibrated kit.\n- [x] Three save slots/autosave, schema migration, semantic validation, transactional backup, corrupt-save recovery, failed-write coverage and mid-ladder position restoration.\n- [x] Pause/options/equipment menu, optional help, live diagnostic gauges, objective order/beacons, contextual warnings, clear outcome/reward/failure reasons and completion marks.\n- [x] Contextual narrative and persistent independent/assisted branches connected to real operator actions and contract outcomes.\n- [x] Six authored 18 FPS character clips with event markers, four distinct biome layer sets, reduced-effects support and protected foreground weather.\n- [x] Four original thematic scores and adaptive instrument layers, bounded Web Audio scheduling, event-synchronized mechanical/process/repair/mission cues, music/effects controls and suspension.\n- [x] Full integrated real-touch Chrome route passed: all three no-purchase completed contracts, both physical repairs, wheel/lever drags, NPC assistance, save/reload, corrupt-slot recovery, pause, fullscreen, cancelled joystick and portrait/landscape/foldable layouts. PR #42 run #43138219173 and release run #43138763886.\n- [x] Verified merge 41b8f8eba9b3c80af345d64c446d0a9fbe327068 published; live browser confirmed title The Operator · Pass Two, release marker pass-two-operator-02, new pause menu and no game-source console errors. Frozen candidate branch playtest/pass-two-operator-02; rollback playtest/pre-operator-02.\n- [ ] User physical Samsung review: touch comfort, real fullscreen, readable flame diagnosis, audio mix, sustained performance, reload recovery and both polished contracts.\n\nFive accepted new specialist PRs and a recovered environment contribution form this production wave. All 25 roles previously completed advisory sessions; those are not represented as 25 code implementations. The environment source-review failure was caused by demanding read-only consumer edits; the integrated acceptance suite must prove real process effects before release. The unresolved older ICE-ROLE-08 request was not duplicated and must not overwrite the independently integrated close-up on later arrival.\n\n## Coastal Jungle art wave — published after studio restart\n- [x] Two bounded model jobs executed against the existing Pass Two game plan; total settled model cost USD 0.566484.\n- [x] Environment run 43200536364 delivered original coastal sunset, Pacific ocean, ridges and jungle depth; its source passed unit/mobile/department verification.\n- [x] Foreground run 43200672399 preserved its art after a source-review rejection. Supervised integration resolved the review ambiguity, added direct furnace/exhaust checks and connected the artwork; this is not relabeled as a successful model run.\n- [x] Outdoor opaque wall opened into a steel frame; boiler art lowered to reveal the skyline; workshop windows show the coast. Scene geometry, controls, saved coordinates and combustion math are unchanged.\n- [x] All 88 tests, existing production checks and complete Chrome touch route passed on PR #44 head 6df00dee2a00a32bf942999f99d56d5ef66d1be7, run 43203489574.\n- [x] Reviewed merge e1ee9d741123b73ba1fc1db2db29b13805dd1896 published through Pages run 43203983688; live title/ice-art marker and renderer content verified.\n- [ ] Physical Samsung visual/comfort/audio/performance acceptance remains a player observation.\n\n## Pass Three — campaign (not started)\n- [ ] Seven or more authored jobs, equipment-gated access and career progression.\n- [ ] Broader biomes, operator authority, cutscenes, story consequences and richer original adaptive orchestra.\n- [ ] Campaign balance, no-optional-upgrade solvability, save migration and mobile performance.\n\n## Pass Four — final game (not started)\n- [ ] Story, Challenge and Puzzle modes.\n- [ ] Characters, optional abilities/perks, secrets, one-time finale and multiple endings.\n- [ ] Final mobile acceptance and distribution decision.\n\nPaid work remains bounded by the durable ledger ($2/run, $5/day, $50 cumulative), single worker, finite corrections and isolated tests. No schedule or unbounded automatic continuation. Keep BoRHeX/kbc-rpg-prototype unchanged.\n",
+    "references": [
+      "https://github.com/BoRHeX/kbc-rpg-prototype/issues/46",
+      "https://github.com/BoRHeX/kbc-rpg-prototype/issues/82",
+      "https://github.com/BoRHeX/kbc-rpg-prototype/issues/85",
+      "https://github.com/BoRHeX/flame-game-studio"
+    ]
+  },
+  "opening": {
+    "responses": {
+      "producer": {
+        "role": "producer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_07c0f445c90d0af5016af879f36d0c87d197a8c1e8c91e0405",
+        "statement": {
+          "position": "Given the extensive roadmap and current production state, the priority should remain firmly on completing 1.3 FELINE COMPANY before initiating 1.4 THE UNSEEN CITY. This order respects declared dependencies and ensures companion autonomy, levels, evolution, and fusion systems are stable and tested before the complex seeded city and DPS-check zones are introduced.",
+          "best_studio_strength": "The studio has a robust, traceable production constitution and automated multi-role workflows that enforce clear version boundaries, independent visual/art checks, and evidence-backed QA pipelines. These governance structures provide disciplined scope management and traceable proof of delivered milestones.",
+          "overlooked_problem": "The current pipelines contain 46 workflow files, many duplicated or legacy, which complicates integration and release reliability, risking accidental overwrites of frozen 1.0 assets and unstable publishing of candidate versions. This fragmentation is a governance risk for milestone reliability and sustained sustainable workload.",
+          "grounded_evidence_reference": "The 2026-11-13 BoRHeZ studio audit highlights the multiplicity of overlapping workflows causing fragile compatibility tests and manual repair burden, notably that 1.0 directories remain mutable in live URLs despite freeze requirements.",
+          "unusual_new_idea": "Introduce a lightweight middleware layer that enforces immutable deployment paths and automates legacy workflow cleanup by classifying and deprecating overlapping pipelines. This would reduce manual oversight and allow cleaner, more sustainable release gates, especially ensuring immutable 1.0 URLs and preventing accidental rework.",
+          "cross_game_synergy": "Reusing autonomous multi-role AI agents and visual acceptance tooling from the Flame Game Studio to enhance automated art and gameplay checks in Cataclysm milestones can improve delivery confidence and reduce manual acceptance effort. Sharing tooling and metrics across studios for verified phone-scale animation and play quality is valuable.",
+          "concrete_recommendation": "Proceed to complete Cataclysm 1.3 FELINE COMPANY fully, with rigorous independent playtesting and accompanied art acceptance. Then begin exploratory design spikes for 1.4 THE UNSEEN CITY as a separate design effort without yet integrating companions onto the city map, ensuring no silent deletion or regressive features. Simultaneously, aggressively consolidate and simplify GitHub workflows targeting Cataclysm to a minimal essential set, explicitly lock original 1.0 URLs, and establish a signed-off production release pipeline.",
+          "counterargument": "The owner’s desire for an early 1.4 to see world map and DPS gate features is understandable; however, prematurely building 1.4 without stable companion foundation risks complex bugs, visual incoherence, and poorly tested mechanics that may necessitate expensive rewrites or deferred rework in 1.3. The roadmap’s explicit dependency sequencing should not be bypassed.",
+          "question_for_colleague": "Given the fragmented and legacy workflow situation, what are the immediate risks and work effort estimates to safely consolidate and enforce release immutability for Cataclysm 1.0 and 1.1 live URLs? Can we measure the regression risks of current overlap?",
+          "take_on_1_3_before_1_4": "Strictly validate and lock down 1.3 FELINE COMPANY features—especially companion behaviors, fish autonomy, level progression, and fusion mechanics—before attempting any meaningful design or code integration of 1.4. This maintains engineering sanity, stabilizes dependencies, and preserves the game identity pillars mandated in the constitution."
+        }
+      },
+      "designer": {
+        "role": "designer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_08c7fa23cd3e4b02016af879f32f4c87d1ba677adcefd44a0b",
+        "statement": {
+          "position": "Given the current approved roadmap and tested 1.2 milestone, Cataclysm's next major expansion, 1.3 FELINE COMPANY, should be prioritized strictly before 1.4 THE UNSEEN CITY to avoid risking integration and complexity overhead. The core new gameplay elements in 1.3—especially companion AI autonomy, fish-eating resource economy, companion levels, evolutions, and fusion mechanics—are foundational prerequisites for 1.4’s zone navigation, district discovery, and boss mechanics that depend on these companions and resource states. Reordering or rushing 1.4 before 1.3 would create gaps in context, risk blocking companion system bugs from early detection, and increase player confusion with unbalanced features.",
+          "best_studio_strength": "BoRHeZ studio excels in explicit, detailed verifiable milestone planning combined with automated CI workflows, art validation pipelines, and linked QA smoke testing on real devices. This disciplined production process prevents scope creep, enforces source and build isolation, and ensures live gameplay verification before release, which keeps the fast-evolving Cataclysm project stable and reproducible.",
+          "overlooked_problem": "The studio’s current automation and agent memory systems do not provide durable cross-version persistent player state models or integrated companion AI telemetry. This increases risk when implementing the complex companion autonomy and fusion systems in 1.3, potentially causing delayed bug detection and balancing issues that only appear deeply intertwined with 1.4’s world map and DPS gate features.",
+          "grounded_evidence_reference": "The official production constitution and 1.1 to 2.0 roadmap explicitly state '1.3 FELINE COMPANY is the primary 1.4 prerequisite because zone and fish systems should understand those agents.' The 1.2 STUDIO-REPORT shows the code and playtested nine lives survival system but no world map or companion autonomy yet.",
+          "unusual_new_idea": "Introduce a lightweight simultaneous companion telemetry and AI behavior logging feature during 1.3 development. This would record in-run companion actions, fish economy transactions, fusion states, and AI decisions linked to player movement speed and squad formation. Such logs, with optional anonymized uploads, could flag real moment-to-moment issues or suboptimal AI pacing before 1.4 overlays the complex city map world, preventing large integration surprises and aiding tuning.",
+          "cross_game_synergy": "Leverage production lessons and tooling from the Flame Game Studio's verified multi-department coordinated animation and environment sequencing to enhance Cataclysm's companion animation and emergent interactions. The Flame Game’s approach to deterministic incremental playable milestone releases with integrated original music and adaptive audio can guide Cataclysm’s increasing companion diversity and adaptive zone music layers in 1.3 and beyond.",
+          "concrete_recommendation": "Focus all available resources to complete a fully playable, stable 1.3 Feline Company milestone with comprehensive companion AI, fish economy, and fusion mechanics demonstrated and tested on physical devices before triggering 1.4 The Unseen City production. Establish the companion-memory telemetry logs as an experimental branch to gather early data. Schedule independent artistic validation of companion animations at actual mobile viewport scales to avoid prior frame-density gaps.",
+          "counterargument": "One might argue accelerating 1.4 before fully building 1.3 could provide early feedback on world map usability and area boss mechanics, informing companion evolution design. However, without stable companion behavior and resource economy, 1.4 features risk being underspecified and will likely require heavy refactoring after 1.3 stabilization, extending total production time and introducing avoidable risk.",
+          "question_for_colleague": "Given the complexity of companion autonomy and the claimed limitations of current agent persistent memory, how can we most effectively debug and tune emergent companion behaviors across long play sessions without overwhelming QA bandwidth? Could selective replay recording or staged telemetry help here?",
+          "take_on_1_3_before_1_4": "The studio constitution and roadmap clearly designate 1.3 as not only a prerequisite but a foundation for 1.4. 1.3 enables companion autonomous behavior and resource economy necessary for the district topology and guided exploration in 1.4. Ignoring this sequence risks unstable or incomplete 1.4 features that depend on companion AI maturity. It is both a design and technical sequencing imperative to defer 1.4 until 1.3 is playable and accepted."
+        }
+      },
+      "engineer": {
+        "role": "engineer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0890f0e31d5b6dde016af879f32fa887d193f0ad347fa21110",
+        "statement": {
+          "position": "The Cataclysm studio roadmap is sound with a clear upgrade path from 1.1 through 2.0, but urgency for 1.4 THE UNSEEN CITY is misplaced without completing 1.3 FELINE COMPANY first. The companion system expansion in 1.3 is a hard prerequisite for many 1.4 features, especially zone navigation and companion-linked exploration roles. Skipping or rushing 1.4 prematurely risks major rework or broken game states due to missing companion autonomy and fusion mechanics.",
+          "best_studio_strength": "The studio excels at rigorous, compartmentalized version control and milestone definition, with thorough independent QA and clear role ownership for game systems, art, narrative, audio, and performance engineering. The modular production pipeline and explicit version boundaries protect prior releases and enable isolated testing and rollback.",
+          "overlooked_problem": "The current approval push for 1.4 neglects that key companion-related mechanics from 1.3 (fish eating autonomy, companion levels, evolution, fusion) are missing from the codebase. Without these, designed 1.4 city-district navigation and exploration mechanics relying on companion roles become effectively inaccessible or unsupported, risking partial feature implementation and wasted effort.",
+          "grounded_evidence_reference": "The Constitution (game_factory/CATACLYSM_STUDIO_CONSTITUTION.md) states 1.3 FELINE COMPANY must precede or be explicitly separated from 1.4, reinforcing that the companion fish autonomy and evolution systems are vital prerequisites. The 1.3 requirements (#CAT-13-01 through #CAT-13-11) concretely address companion AI and fusion, whereas 1.4's zone/district map (#CAT-14-01 through #CAT-14-10) ties into companion roles and navigation. The latest playable 1.2 candidate reports do not include 1.3 systems; the 1.4 plan notes it can be prototyped early but not deployed without companions.",
+          "unusual_new_idea": "Introduce a lightweight companion simulation fallback in the 1.4 design spike, enabling basic companion presence without full 1.3 systems to unblock early city exploration testing. This simulation would approximate companion fish economy and behaviors sufficiently to validate 1.4 features in isolation, preserving iterative progress without skipping the full 1.3 delivery.",
+          "cross_game_synergy": "Mechanics from the Flame Game’s physical and procedural simulation expertise (notably automating environmental context and process status) could inform Cataclysm’s dynamic zone and encounter system in 1.4, improving distributed AI signaling and crowd control. Sharing modular AI state machines or event-driven resource tracking could unify companion and enemy behaviors across studios.",
+          "concrete_recommendation": "Formally defer 1.4 THE UNSEEN CITY full milestone production until 1.3 FELINE COMPANY is delivered, verified, and integrated. Until then, focus on completing and stabilizing companion AI states, fish eating autonomies, level progression, and fusion mechanics in 1.3. For exploratory design work, apply the recommended companion simulation stub approach to prototype 1.4 map systems. This preserves roadmap integrity, respects dependency order, and avoids rework.",
+          "counterargument": "A design spike or partial prototyping of 1.4 before 1.3 might accelerate feedback and identify unforeseen city design problems early, preventing late-stage redesigns. However, this benefits only a narrow design subset and risks wasted development if companion features prove too complex or trigger significant mechanic changes during 1.3 completion.",
+          "question_for_colleague": "What are the current technical blockers delaying 1.3 companion AI and fusion completion, and can any partial companion functionality be exposed early to support incremental 1.4 exploration features without full fusion support?",
+          "take_on_1_3_before_1_4": "1.3 FELINE COMPANY must precede 1.4 THE UNSEEN CITY as an enforced studio policy. Delivering 1.4 without 1.3 features weakens overall game cohesion and risks losing the companion-driven identity essential to exploration and survival mechanics. The constitution and roadmap both explicitly state the dependency; studio coordination and iteration pacing should reflect this priority."
+        }
+      },
+      "studio_architect": {
+        "role": "studio_architect",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_03c09c43a5907fc1016af879fa44b087d19db6c1f61000532b",
+        "statement": {
+          "position": "The studio's architectural complexity, specifically the proliferation of 46 specialized yet overlapping GitHub workflows for Cataclysm alone, presents both flexibility and fragility. Despite clear role ownership and planned milestones, the lack of a singular authoritative release pipeline and incomplete persistent memory across agents threaten predictable autonomous production and version integrity.",
+          "best_studio_strength": "Clear role-based responsibility segmentation combined with a traceable immutable roadmap and ledger (as in the Cataclysm Constitution) enables disciplined scope control and accountability for releases, which is essential for multi-agent coordination and prevent scope creep.",
+          "overlooked_problem": "The absence of a robust, shared, durable long-term memory across autonomous AI agents impairs consistent state awareness and decision continuity; moreover, multiple orphaned or legacy CI workflows create collision risks and manual maintenance overhead that increase fragility and release risks.",
+          "grounded_evidence_reference": "The studio audit (game_factory/STUDIO_AUDIT_2026_11_13.md) documents 46 workflows with overlapping purposes, no single canonical Cataclysm release pipeline, and memory stored fleetingly in ephemeral SQLite files excluded from uploads, restricting global shared knowledge.",
+          "unusual_new_idea": "Introduce a centralized persistent 'Studio Knowledge Graph' service, versioned and queryable by all agents, storing definitive roadmap states, feature statuses, decisions, and approved deliverables. This would replace ephemeral memory and reduce reliance on file-based coordination, enabling more autonomous, less brittle AI orchestration.",
+          "cross_game_synergy": "Establish shared CI/CD orchestrator templates and artifact versioning standards across BoRHeZ and Flame studios to reduce duplicated infrastructure and merge redundant workflows while respecting independent codebases and release timelines, improving cost efficiency and tooling consistency.",
+          "concrete_recommendation": "Consolidate and rationalize GitHub workflows into a few clear, role-aligned pipelines with enforced version boundaries, adopting an explicit 'release gate' artifact and immutable URLs for each milestone (e.g., 1.0, 1.1, etc.). Implement persistent centralized memory storage linked to Git hashes and issue tracking for all agents to consult and update reliably during planning and delivery.",
+          "counterargument": "Some fragmentation is intentional for flexibility, experimental pipelines and isolated art/animation integration jobs; this reduces risk of a catastrophic all-in-one failure and allows incremental, experimental innovation without blocking main releases.",
+          "question_for_colleague": "Given the deadline pressure for 1.4 and the complexity of integrating 1.3 features, could the existing pipeline support a stable partial build of 1.4 as a design spike without triggering fusion or full companion system regression? What are the current risks and workaround costs?",
+          "take_on_1_3_before_1_4": "Following explicit roadmap governance, 1.3 (Feline Company) must precede or be deliberately separated from 1.4 (The Unseen City) because 1.4's new world map and zone systems rely on the companion and fish systems introduced in 1.3. Skipping 1.3 or rushing 1.4 integration risks massive rework, unstable AI behaviors, and inconsistent game states."
+        }
+      },
+      "art_director": {
+        "role": "art_director",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0f6807280d454623016af879fb08f087d1aff947695f458547",
+        "statement": {
+          "position": "The current milestone sequencing for Cataclysm prioritizes 1.3 FELINE COMPANY before moving to 1.4 THE UNSEEN CITY, which appears well justified given the deep companion system dependencies. The 1.3 update introduces significant core companion AI, fish economy autonomy, companion evolution, and fusion mechanics which are foundational for the zone and map exploration systems planned in 1.4. Proceeding to 1.4 without a robust companion behavior baseline risks disconnected gameplay and integration complexity.",
+          "best_studio_strength": "BoRHeZ studio's strength lies in meticulous scoped milestone definitions, with each version treating features as bounded deliverables including cross-checked artwork, animation, AI, and gameplay integration. The studio's disciplined use of immutable versioned directories and live QA evidence, coupled with a clear requirement ledger and an independent art/animation role system, ensures that art assets and gameplay mechanics remain tightly coherent at every step.",
+          "overlooked_problem": "One potentially overlooked problem is the lack of explicit playable vertical slice or integrated test coverage that demonstrates the combined 1.3 companion fish economy and fusion systems actually functioning prior to 1.4 start. While 1.4 depends on the previous system, the absence of partial playable explorations or integration spikes may delay uncovering complex emergent bugs in companion autonomy or slot management when merged with seeded city districts and DPS checks.",
+          "grounded_evidence_reference": "The Cataclysm 1.3 feature sets (CAT-13-01 through CAT-13-11) explicitly mandate full companion roster art, autonomous fish-eating economy, leveling and evolution, paired fusion with slot accounting, and mecha crew deployable fusion, which the 1.4 roadmap references as prerequisite for district navigation and companion role interactions (CAT-14-09). Past studio reports (docs/cataclysm-1-2/STUDIO-REPORT.md) confirm 1.2 only adjusted core survival without companion expansions, verifying 1.3's foundational role.",
+          "unusual_new_idea": "Propose crafting a minimal, isolated vertical slice prototype that inserts a single 1.3 companion fusion entity with autonomous fish eating and limited AI into a simplified seeded city district (from 1.4). This limited integration test would reveal fusion slot conflicts, fish resource contention, and basic map traversal without full DPS gates or multiple companions. Automating such a hybrid prototype may unlock earlier discovery of complex interplay and streamline 1.4 development.",
+          "cross_game_synergy": "The drawing style and animation approach established in Cataclysm 1.1 and 1.2 — with distinct drawn quadrupedal white cat sprites, expressive idle/run/adrenaline states, and independently rotating tail guns — shares a stylistic coherence that could enrich Flame Game's art vocabulary if reused or referenced. Flame's layered biome parallax and character clips might inspire richer environmental storytelling in Cataclysm’s unseen city districts, suggesting potential shared tooling for animated environment assets.",
+          "concrete_recommendation": "Before triggering 1.4 THE UNSEEN CITY production, mandate a dedicated integration QA phase to validate the 1.3 FELINE COMPANY companion AI, fish economy, fusion slot logic, and animation states working synchronously in a representative seeded environment test. Capture a playable vertical slice prototype and representative gameplay videos analyzed by the pipeline. This step aligns with the studio constitution's insistence on tested, playable releases before milestone production and avoids premature expansion that could cause regressions or art incoherence.",
+          "counterargument": "One might argue that deferring 1.4 postpones visible world and exploration enhancements the owner desires, possibly slowing player engagement. Also, running limited spikes might consume valuable development budget and time that could be invested directly in 1.4's full district design and DPS waves. However, the roadmap itself designates 1.3 companions as a prerequisite, so skipping formal integration risks unstable or incomplete feature delivery.",
+          "question_for_colleague": "What are the current progress and observable challenges in companion animation and fusion state persistence testing? Have any partial 1.3 vertical slice candidates been prototyped that can be reused or extended for a lightweight 1.4 exploration spike? How confident are the art and animation teams that companion fusion animations meet the live 48px phone viewport quality standard before merging with 1.4 environments?",
+          "take_on_1_3_before_1_4": "Firmly support developing and stabilizing 1.3 FELINE COMPANY first to establish robust companion AI autonomy, fish economy, evolution and fusion systems. These mechanics are structurally embedded in 1.4's tactical district exploration and guarded DPS wave challenges. Skipping or rushing 1.3 risks downstream integration failures, confusing player experience, and incoherent art/animation states. The roadmap and studio constitution explicitly organize milestone sequencing this way, emphasizing two separate playable milestones rather than overlapping development."
+        }
+      },
+      "animator": {
+        "role": "animator",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0a257bfb068d3763016af879fb10f887d1952a8fb48f926f2d",
+        "statement": {
+          "position": "Cataclysm 1.3 FELINE COMPANY introduces critical companion complexity—autonomous fish-eating, Levels 1–3 evolution, and the first fusion mechanic (Engineer+Shooter Mecha Crew)—which is foundational for the subsequent 1.4 THE UNSEEN CITY map/world interaction. Skipping or rushing 1.3 risks undermining 1.4's compound companion navigation, fusion, and ecosystem synergy and could break narrative continuity and player agency building. Therefore, 1.3 should be the primary immediate milestone, with 1.4 as a follow-on design spike only after 1.3's core gameplay is stable and accepted.",
+          "best_studio_strength": "The studio excels at modular, verifiable, and traceable milestone development, backed by a detailed constitution and versioned source evidence. The multi-role AI workflow, automated QA, visual/animation rejection checks, and methodical feature dependency ledger allow managing complex, layered systems without regressions, particularly suited for the Cataclysm companion-heavy evolving gameplay.",
+          "overlooked_problem": "The current scheduling pressure for 1.4 risks ignoring that key companion behaviors—fish autonomy, feeding states, fusion, and evolved AI states—are unimplemented/unbuilt in 1.3. Without concrete playable 1.3 companions properly realized and tested, the 1.4 city navigation with district dependencies and off-screen arrow guidance may misrepresent or prematurely hard-code companion roles and fish economy, leading to brittle or incoherent player experience.",
+          "grounded_evidence_reference": "The Cataclysm Studio Constitution and approved 1.1-to-2.0 roadmap specify 1.3 FELINE COMPANY as a required prerequisite for 1.4 (section 'Sequencing, dependency and conflict'), highlighting companion AI states, fish autonomy and fusion as 1.3 deliverables (e.g., CAT-13-01 through CAT-13-11) and warning that 1.4 'must not quietly delete companion integration.' The 1.2 NINE LIVES delivery report confirms no companions or fusion systems are implemented yet, underscoring 1.3's essential transitional role.",
+          "unusual_new_idea": "Leverage the existing autonomous multi-agent AI framework to implement a real-time dynamic tutorial or guided companion 'fusion showcase' within 1.3, enabling players to understand fusion mechanics interactively early on. This could enhance player engagement and reduce learning friction before 1.4’s complex city exploration, thus improving retention and gameplay depth.",
+          "cross_game_synergy": "The Flame Game Studio’s autonomous production and multi-role AI orchestration showcase a robust pipeline for integrating complex animations with interactive stateful gameplay. Techniques from Flame’s physically driven animated clips and coordinated environment layers could inform Cataclysm’s companion animations and fusion sequences, improving visual coherence and performance at phone-realistic scale.",
+          "concrete_recommendation": "Proceed immediately with scoped 1.3 FELINE COMPANY milestone production focused on: companion AI states, fish-eating autonomy, Level 3 evolution unlocks, fusion mechanics (Mecha Crew and optional pairings), companion speed catch-up behavior, and integrated visual/audio cues. Only after clear playable 1.3 integration and creator acceptance, initiate 1.4 THE UNSEEN CITY as a design spike test, carefully ensuring companion systems are fully respected and not bypassed or removed.",
+          "counterargument": "One might argue that since 1.4 THE UNSEEN CITY includes a non-gameplay world map and off-screen arrows, which can be prototyped independently, initiating 1.4 ahead of 1.3 allows earlier exploration of emergent map design and city mechanics without waiting for companion fusion details. However, this risks misalignment between the map’s companion integration assumptions and the yet-undefined companion systems in 1.3.",
+          "question_for_colleague": "Given the importance of companion fish autonomy and fusion in 1.3, do we have sufficient animation and AI anchor references to support a vertical slice including the Mecha Crew fusion and companion feeding behaviors? Are there current blockers in art or animation pipelines that we might underestimate in scheduling 1.3 before 1.4?",
+          "take_on_1_3_before_1_4": "Strictly enforced: The approved roadmap and studio constitution mandate completing 1.3 FELINE COMPANY before any meaningful 1.4 THE UNSEEN CITY production begins. 1.3’s delivery of companion mechanics and fish-based progression underpins the exploration and tactical navigation systems in 1.4. Skipping or parallelizing development risks destabilizing key gameplay loops, narrative continuity, and integration tests."
+        }
+      },
+      "composer": {
+        "role": "composer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_01b9dd9e85c63e5b016af879ff757087d19a5c502186b1036a",
+        "statement": {
+          "position": "Prioritize completing 1.3 FELINE COMPANY before initiating 1.4 THE UNSEEN CITY to maintain roadmap integrity and preserve companion integration foundations.",
+          "best_studio_strength": "The studio excels in detailed, layered milestone definitions with strict scope discipline and comprehensive traceable evidence capturing integration, animation, audio, and gameplay testing.",
+          "overlooked_problem": "Rushing into 1.4 risks undermining the foundational companion AI, evolution, and fusion systems defined in 1.3, which 1.4 explicitly depends on, potentially breaking game continuity and require costly rework.",
+          "grounded_evidence_reference": "The Cataclysm 1.1 to 2.0 roadmap and constitution explicitly state that 1.3 companion systems must precede 1.4 content to ensure fish/autonomy and companion behavior compatibility (CAT-13-09, CAT-14-09).",
+          "unusual_new_idea": "Introduce adaptive audio cues tied to companion fusion states in 1.3 as a prototype for later 1.4 zone/guardian ambiance shifts, creating cross-version audio continuity and enhancing emotional investment.",
+          "cross_game_synergy": "Apply Flame Game's procedural adaptive music sequencing expertise to dynamically vary Cataclysm's soundtrack layering during DPS checks and boss provocations in 1.4 for heightened tension and release.",
+          "concrete_recommendation": "Defer 1.4 milestone initiation until 1.3 reaches stable playable candidate status with fully integrated companion autonomy, fusion, and fish economy systems, verified by independent QA and creator approval.",
+          "counterargument": "Early 1.4 spike might identify design issues ahead of costly 1.3 integration, enabling earlier risk mitigation; however, this must be a non-destructive design spike without removing 1.3 companion features.",
+          "question_for_colleague": "How can we best instrument and synchronize companion fusion audio themes to maximize player sensory feedback and recognition without overwhelming adaptive music layering complexity?",
+          "take_on_1_3_before_1_4": "Maintaining mandated sequencing ensures clean codebase, consistent companion behavior, and stable studio workflows; jumping to 1.4 prematurely introduces high integration risk and could regress companion-related gameplay."
+        }
+      },
+      "narrative": {
+        "role": "narrative",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0cd13f2a77914960016af87a01f45487d18b72a2cf14df8ce3",
+        "statement": {
+          "position": "The studio has progressed solidly through Cataclysm 1.1 and 1.2, realizing distinct animation and gameplay depth, yet the move to 1.4 THE UNSEEN CITY before 1.3 FELINE COMPANY is risky. 1.3 adds crucial companion autonomy and fusion systems that underpin 1.4’s exploration and district mechanics. Skipping or rushing 1.3 risks foundational misalignments and brittle integration. The studio should honor the approved roadmap as a scaffold, not a bureaucratic check.",
+          "best_studio_strength": "BoRHeZ’s strength lies in its rigorous and transparent versioned milestone approach, explicit agent role separation, and traceable production and testing artifacts—ensuring accountability, replayability, and measurable progress. The detailed enumeration of companions, upgrade cards, and animation states helps maintain cohesive world identity.",
+          "overlooked_problem": "The current risk is the lack of a robust shared persistent memory across autonomous agents and workflows, leading to context loss and possible regression or duplicated effort. This is visible in multiple overlapping workflows and legacy pipelines that threaten consistency, creates fragile releases and complicate integration between the heavy companion autonomy planned at 1.3 and world systems in 1.4.",
+          "grounded_evidence_reference": "The studio constitution states that 1.3 FELINE COMPANY must be completed or explicitly separated before 1.4 THE UNSEEN CITY (CAT-13 and CAT-14 requirements). Audit finds 46 largely non-coordinated GitHub workflows, and 1.2 STUDIO-REPORT.md lacks physical phone smoke and Chrome phone playtests, risking unnoticed regressions (Refs: game_factory/CATACLYSM_STUDIO_CONSTITUTION.md, studio_audit report, docs/cataclysm-1-2/STUDIO-REPORT.md).",
+          "unusual_new_idea": "Introduce an integrated persistent cross-agent knowledge base or event-sourcing ledger that actively flags version misalignments and enforces pipeline coherence automatically prior to milestone triggers. For example, a shared 'companion state schema' validator to detect when 1.4 map features touch unimplemented 1.3 companion AI states, preventing premature cross-version merge conflicts.",
+          "cross_game_synergy": "Since Flame Game Studio also produces original character animation clips, biome layers, adaptive music, and narrative integration, leveraging its robust end-to-end verified production pipeline (with physical phone playtests) could improve Cataclysm’s art and animation validation. A shared asset and QA framework might reduce redundant pipelines and raise visual acceptance confidence for Cataclysm versions.",
+          "concrete_recommendation": "Delay full production of 1.4 THE UNSEEN CITY release until 1.3 FELINE COMPANY is completed and independently verified, given explicit roadmap dependencies. Invest in unifying and pruning GitHub workflows into a single authoritative pipeline for Cataclysm versions, ensuring persistent state sharing and signaling for version dependencies. Consider technical debt paydown before ambitious 1.4 world map complexity additions. Initiate physical phone playtests and independent art acceptance urgently for 1.2 candidate.",
+          "counterargument": "Arguably, a design spike for 1.4 could proceed before 1.3 to explore world map concepts and DPS gates, as non-gameplay prototype or separate branch. This could unearth architecture needs early and reduce total time, as long as 1.3 companion integration remains isolated and clearly marked experimental. Also, over-stringent gating risks stifling creative iteration.",
+          "question_for_colleague": "Given that companions have integral AI autonomy and progression needed for 1.4’s navigation and zone systems, in your view, can 1.4’s core emergent gameplay be meaningfully trialed without at least partial companion systems from 1.3? What minimal subset of 1.3 features would unlock productive 1.4 design without full completion?",
+          "take_on_1_3_before_1_4": "1.3 FELINE COMPANY’s companion autonomy, fish economy and fusion mechanics form the backbone for 1.4’s district navigation and tactical exploration. The standing constitution requires a clean separation or completion of 1.3 before 1.4 deployment to avoid unstable integration. Skipping or overlapping these phases risks cascading regressions and compromises the strategic layering of content complexity. Adhering to the sequence supports maintainable progress and player experience continuity."
+        }
+      },
+      "qa_lead": {
+        "role": "qa_lead",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0753af4f7316666e016af87a042ae087d1821376df3cbc4c5e",
+        "statement": {
+          "position": "The studio should prioritize completing 1.3 FELINE COMPANY before initiating 1.4 THE UNSEEN CITY, despite the owner’s desire for 1.4 soon. This respects the explicit roadmap dependencies, preserves integration integrity, and avoids risking regression or incomplete companion support in 1.4.",
+          "best_studio_strength": "BoRHeZ Games Studio demonstrates solid multi-role coordination with detailed traceability and versioned release management. Its rigorous independent QA on each milestone (e.g., 1.2’s Nine Lives) and multi-agent review workflows ensure stable releases and artistically coherent results.",
+          "overlooked_problem": "There is a notable risk that rushing 1.4 without full 1.3 companion integration and fish economy could break game continuity and invalidate prior investments in companion AI, evolution, and fusion mechanics. This challenge is underemphasized in roadmap discussions but critical based on the constitution’s sequencing requirements.",
+          "grounded_evidence_reference": "The studio constitution and roadmap explicitly state that 1.3 FELINE COMPANY must precede or be clearly and separately handled before 1.4 THE UNSEEN CITY (see CAT-13-01 to CAT-13-11 and CAT-14-01 to CAT-14-10 features). Independent QA on 1.2 showed full testing reliance on companion slots and mechanics intact from 1.1, evidencing safe sequencing need.",
+          "unusual_new_idea": "Introduce an explicit 1.3 ‘companion-lite’ design spike or stub-release to support 1.4 early exploration mode without full integration — allowing some city map and zone mechanics to be tested while preserving companion continuity separately.",
+          "cross_game_synergy": "Given Flame Game Studio’s demonstrated robust autonomous production and layered adaptive audio/visual integration, techniques from its bounded autonomous production pipeline could be adapted to accelerate deterministic auxiliary testing for Cataclysm’s 1.3 companion AI states and fusion performance.",
+          "concrete_recommendation": "Before approving 1.4 production trigger, mandate a fully playable 1.3 candidate delivery including all 16 companions, fusion logic, fish autonomy, and companion-level progression verified by Chrome mobile playtest and independent QA with preserved source and rollbacks.",
+          "counterargument": "The owner’s preference for 1.4 soon is understandable for fresh content and world exploration; however, proceeding early risks significant technical debt and unstable experience, with possible regressions that require more expensive fixes later.",
+          "question_for_colleague": "What is the current level of completeness and playtest stability of 1.3 companion autonomies and fusion states? Are there actionable blockers preventing at least a playable 1.3 candidate that justifies holding 1.4 back further?",
+          "take_on_1_3_before_1_4": "1.3 must be completed first or at least deployed as a confirmed stable separate branch before starting 1.4. This respects the agreed roadmap, preserves companion slot integrity, and ensures the city world can interact correctly with companion mechanics like fish economy and fusion."
+        }
+      },
+      "contrarian": {
+        "role": "contrarian",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_060eff6f8f9e1956016af87a050c3487d1b8fc381a2730261f",
+        "statement": {
+          "position": "The current roadmap's strict sequencing of 1.3 FELINE COMPANY before 1.4 THE UNSEEN CITY is overly rigid and risks delaying the much-wanted 1.4. Given 1.4 can be explored as a design spike, a parallel lightweight implementation or prototype should be considered to maintain momentum and player engagement.",
+          "best_studio_strength": "The studio excels in detailed roadmapping and strict version isolation combined with deep automated testing and evidence-based decisions, ensuring high traceability and preserving game identity across updates.",
+          "overlooked_problem": "There is insufficient attention to cross-version integration complexity; specifically, how the advanced companion AI and fusion mechanics from 1.3 will interact with the new seeded districts and DPS check waves in 1.4. This integration risk is not explicitly addressed in either postponing or decoupling the releases.",
+          "grounded_evidence_reference": "The CATACLYSM_1_1_TO_2_0_ROADMAP.md explicitly states that 1.3 FELINE COMPANY is the primary prerequisite for 1.4 THE UNSEEN CITY because zone and fish systems must recognize the new companion roles, yet 1.4 can be explored as a design spike before 1.3. This is a current tension in sequencing (see '## Sequencing, dependency and conflict').",
+          "unusual_new_idea": "Introduce a '1.3-lite' or partial companion framework that implements core companion AI and fish-eating autonomy in minimal form, enabling 1.4 development and testing to proceed independently with limited fusion and level progression features deferred.",
+          "cross_game_synergy": "Leverage the Flame Game Studio's autonomous production and animation pipeline expertise to accelerate iterative art and animation integration for Cataclysm 1.4’s world map and city assets, allowing faster visual fidelity improvements without full companion system dependency.",
+          "concrete_recommendation": "Approve a parallel exploratory 1.4 design spike branch with dummy companions or simplified companion state stubs to allow early world map and DPS wave mechanic testing. Maintain 1.3 full companion development as its own milestone, with integration tests scheduled once 1.4 core map features stabilize. Adjust milestones to explicitly reflect this split to reduce blocking delays.",
+          "counterargument": "Separating 1.4 from full 1.3 companion integration risks delivering a disjointed player experience or wasting effort on map systems that must be heavily refactored. The current plan ensures a consistent and fully compatible ecosystem of companions and world mechanics, preserving design coherence.",
+          "question_for_colleague": "Given the complexity of companion AI and fusion in 1.3, is there a feasible minimal subset of companion functionality that would be sufficient to enable serious testing of 1.4’s world map and DPS gating without compromising feature integrity?",
+          "take_on_1_3_before_1_4": "While 1.3 FELINE COMPANY introduces compelling companions and gameplay depth, it may not need full completion before initiating 1.4 THE UNSEEN CITY's foundational seed-based city map and DPS check systems development. A staged approach with partial companion support in 1.4 could reduce scheduling risk while keeping both milestones productive and aligned."
+        }
+      }
+    },
+    "errors": {}
+  },
+  "challenge": {
+    "responses": {
+      "producer": {
+        "role": "producer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0a693ae2d81932d5016af87a0ab53c87d1a39430006aea62ed",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "You propose initiating a parallel 1.4 design spike with minimal or dummy companion AI to maintain momentum, but this risks creating work that might be heavily refactored or discarded later because 1.4's core mechanics explicitly depend on stable companion autonomy and fusion from 1.3. This approach undervalues the roadmap's sequencing rationale and the studio constitution's enforced dependencies, potentially increasing integration risk and technical debt.",
+          "agreement_with": "contrarian's recognition that a lightweight or partial companion subset might enable earlier 1.4 exploration and that iterative art/animation integration from Flame Game's pipeline could accelerate visual fidelity improvements.",
+          "changed_mind_about": null,
+          "new_unnoticed_insight": "The Animator's suggestion of a real-time dynamic tutorial or guided companion 'fusion showcase' embedded in 1.3 could enhance player engagement and ease the transition into 1.4, possibly serving as a practical partial integration point to test fusion mechanics earlier than full 1.3 completion.",
+          "proposed_experiment": "Develop a minimal vertical slice prototype incorporating a single companion fusion entity with limited autonomous fish-eating and AI behaviors (as proposed by Art Director), embedded within a simplified seeded city district environment modeled after 1.4. This prototype would serve both as a test of integration complexities and as an early fusion mechanic tutorial, uniting Animator and Art Director ideas.",
+          "cross_game_opportunity": "Leverage Flame Game Studio's autonomous multi-role AI agents, animation orchestration, and adaptive audio pipelines to support Cataclysm's companion AI telemetry and fusion animation synchrony, accelerating reliable integration of milestones between 1.3 and 1.4.",
+          "revised_1_3_vs_1_4_sequence": "Strictly complete and stabilize 1.3 FELINE COMPANY—including companion AI autonomy, fish economy, evolution, and fusion—before fully initiating 1.4 THE UNSEEN CITY milestone. However, allow scoped exploratory design spikes and lightweight integration prototypes that incorporate partial companion fusion elements to validate complex cross-milestone dependencies and reduce surprises.",
+          "evidence_to_collect": [
+            "Quantitative regression risk metrics and integration overhead estimates from consolidating current legacy and overlapping workflows impacting 1.0 and 1.1 immutable release paths (Producer's question).",
+            "Companion AI telemetry logs and replay recordings gathered experimentally during 1.3 development to measure bug frequency, behavior anomalies, and tuning effort (Designer and QA suggestions).",
+            "Playtest stability and completeness data for 1.3 companion AI autonomy, fusion behaviors, and fish economy under real-device conditions (QA Lead and Animator).",
+            "Partial vertical slice prototype performance and integration test results involving limited companion fusion in seeded 1.4 city districts, including animation quality assurance at target mobile viewport scales (Art Director and Animator).",
+            "Feasibility and resource cost assessment for consolidating GitHub workflows into minimal essential pipelines enforcing immutable versioned releases aligned with the production constitution (Producer and Studio Architect)."
+          ]
+        }
+      },
+      "designer": {
+        "role": "designer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0ff0a180a101b6eb016af87a0ab88087d1b10eb64b59b88fbd",
+        "statement": {
+          "challenge_to": "Contrarian",
+          "challenge": "While your proposal for a parallel lightweight 1.4 design spike with dummy companions or partial companion framework aims to maintain development momentum and player engagement, it risks creating a fractured gameplay experience and wasted engineering effort if the core companion AI and fusion mechanics from 1.3 are unstable or ill-defined. Premature 1.4 content may necessitate costly rewrites after 1.3 finalization, undercutting overall production efficiency and player retention consistency.",
+          "agreement_with": "I concur with the Producer's and Studio Architect's emphasis on consolidating and simplifying the fragmented workflows to reduce integration risk and accidental regressions, which will benefit all milestone stability. Likewise, the Animator's idea for a dynamic tutorial or fusion showcase in 1.3 is a useful engagement innovation that could be preserved in early 1.4 content.",
+          "changed_mind_about": "The Contrarian's insight on leveraging a partial companion subset to unblock some 1.4 design space without full 1.3 delivery prompts reconsideration of how minimal the viable companion AI core might be, if rigorously scoped, to allow early city map mechanics testing without full feature lock-in.",
+          "new_unnoticed_insight": "Several colleagues highlight the critical deficiency of a persistent, centralized studio knowledge or state service that would enable better cross-agent memory and version coordination, currently missing and complicating milestone dependencies—this could be a key infrastructure improvement to mitigate sequencing risks and support safer parallel exploration.",
+          "proposed_experiment": "Prototype a minimal 'companion simulation stub' that implements only the fish-eating autonomy and basic AI roles sufficient to support 1.4 world map navigation and DPS gating tests, while formally deferring full evolutionary and fusion mechanics until 1.3 completion. Evaluate integration complexity, player experience fidelity, and bug incidence compared to current sequential approach.",
+          "cross_game_opportunity": "Adapt Flame Game Studio’s autonomous multi-role AI agents and verified animation sequencing pipelines to create shared tooling for companion AI telemetry logging and integrated art acceptance, enabling efficient cross-studio QA workflows and stable milestone releases for both Cataclysm and Flame Game projects.",
+          "revised_1_3_vs_1_4_sequence": "Establish a formal dual-track with 1.3 FELINE COMPANY as the foundational milestone delivering full companion AI and fusion systems, accompanied by a gated, isolated 1.4 THE UNSEEN CITY exploratory branch relying on companion simulation stubs only. Production release of 1.4 remains strictly post-1.3 completion, but early design feedback on seeded city and DPS mechanics is permitted with constrained demo scope and clear isolation.",
+          "evidence_to_collect": "Detailed regression metrics and test results comparing full 1.3 companion integration builds versus partial companion stub prototypes in 1.4 branches; telemetry data on companion AI and fusion behaviors across extended play sessions; workflow compilation and release stability reports focusing on current pipeline fragmentation and immutability enforcement; playtest feedback on user comprehension and engagement with dynamic fusion tutorials and minimal companion states in early 1.4 content."
+        }
+      },
+      "engineer": {
+        "role": "engineer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0fbf7c4f6684c40a016af87a0ab88087d1b479e125d8b16233",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "While I acknowledge the contrarian's useful idea of a '1.3-lite' partial companion framework to unblock 1.4 exploration, I challenge the presumption that partial companion support is sufficient to meaningfully test 1.4's world map and DPS gating. Core fusion mechanics and companion AI autonomy influence companion roles central to 1.4 navigation and gameplay, and oversimplifying these risks extensive rework and integration bugs later.",
+          "agreement_with": "I agree with contrarian's recognition that rigid sequencing risks schedule delays and that a parallel exploratory 1.4 design spike might maintain momentum and player engagement if carefully scoped and isolated.",
+          "changed_mind_about": "I have reconsidered that a limited simulation fallback companion system during 1.4 exploration spikes (as the engineer suggested) may be viable if explicitly scoped as non-final and does not substitute for full 1.3 systems before full 1.4 production.",
+          "new_unnoticed_insight": "The animator and art director’s proposal of creating an isolated minimal vertical slice incorporating limited 1.3 companion fusion and fish autonomy in a simplified 1.4 seeded district could serve as an early integrated test that balances partial exposure with dependency constraints, something not fully emphasized in current sequencing debates.",
+          "proposed_experiment": "Run a controlled vertical slice prototype embedding a single companion fusion entity with autonomous fish-eating within a minimal 1.4 district environment to identify fusion slot conflicts and fish resource contention before full 1.3 delivery. Measure stability, visual coherence, and integration risk using automated QA and player telemetry.",
+          "cross_game_opportunity": "Adopt Flame Game Studio’s autonomous multi-role AI orchestration and adaptive audio-visual integration techniques to iterate companion AI states and fusion animations for Cataclysm 1.3 and 1.4, improving production efficiency and visual fidelity at phone scale.",
+          "revised_1_3_vs_1_4_sequence": "Maintain 1.3 FELINE COMPANY as the baseline prerequisite fully completed and verified before official 1.4 THE UNSEEN CITY milestone production begins. Allow exploratory 1.4 design spike branches with explicit 'companion-lite' simulation stubs or isolated minimal vertical slices for early world map and DPS wave mechanics testing. Avoid conflating exploratory spikes with full milestone delivery to preserve roadmap integrity.",
+          "evidence_to_collect": "Gather detailed playtest telemetry from vertical slice prototypes combining limited companion fusion and map exploration, track animation and fusion slot handling at phone realistic scale, document stable companion autonomy and fusion mechanic completions in 1.3 candidate, and audit legacy workflows consolidation progress to prevent deployment regressions before launching 1.4 full production."
+        }
+      },
+      "studio_architect": {
+        "role": "studio_architect",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0a03f23f1fe3ab8e016af87a0f5f0c87d1aaebeee950dcaa83",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "While your proposal to initiate a parallel 1.4 design spike using a '1.3-lite' partial companion framework sounds appealing for maintaining momentum and reducing scheduling risk, it underestimates the significant integration and design risks highlighted by multiple roles. Starting 1.4 production without a stable companion foundation risks costly rework, incoherent gameplay, and broken identity pillars, as the full companion AI, fusion, and fish economy systems are deeply coupled with the 1.4 world map and DPS mechanics. Truncated companion functionalities may not faithfully represent emergent interactions, leading to misleading early design feedback and fragmented player experience.",
+          "agreement_with": "contrarian",
+          "new_unnoticed_insight": "The contrarian’s idea of a '1.3-lite' or companion simulation fallback to partially unblock 1.4 exploratory development could serve as a controlled experimental prototype if carefully scoped and isolated. This could allow early visual and mechanics tests of the city map and DPS gates with stubbed companions, preserving milestone separation while avoiding total roadblock on 1.4 exploration.",
+          "proposed_experiment": "Implement a tightly scoped 1.4 design spike branch integrating a minimal companion stub that simulates simplified fish economy and fusion states without full AI autonomy or level progression. Evaluate its fidelity to representative companion interactions and measure emergent bugs or gameplay incoherence when combined with seeded city districts and DPS gating. Assess developer and QA effort reduction versus risk of misleading early design conclusions.",
+          "cross_game_opportunity": "Leverage Flame Game Studio’s autonomous multi-role AI agent orchestration and deterministic animation pipelines to accelerate development and testing of companion stubs and city map modules. Shared standards for modular AI state machines and resource tracking could improve cross-studio tool reuse and enable partial feature simulation with lower technical debt.",
+          "revised_1_3_vs_1_4_sequence": "Maintain the strict sequencing mandating full 1.3 completion before 1.4 production triggers for mainline delivery and stable roadmap adherence. Parallel exploratory 1.4 design spikes may proceed in isolated branches with companion stubs only under strict separation and with explicit technical gate controls to prevent accidental feature cross-contamination or premature merges.",
+          "evidence_to_collect": "Measure integration defect incidence and rework frequency between 1.3 companion features and 1.4 city mechanics in current prototypes. Collect QA bandwidth and regression risk data when running partial companion AI stubs vs. full companion system. Identify blocker artifacts or gaps in animation and AI pipelines that undermine the feasibility of a minimal '1.3-lite' companion simulation supporting early 1.4 design."
+        }
+      },
+      "art_director": {
+        "role": "art_director",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_009fe1612d6e113a016af87a0fdb3c87d1a0cc519bde168a68",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "Your proposal for a parallel exploratory 1.4 design spike using dummy or minimal companion stubs risks undermining art and animation coherence by decoupling key companion fusion and fish economy visuals that fundamentally shape 1.4's tactical exploration identity. While partial functional stubs might help early system integration, the art and animation teams require representative fully animated fusion states and companion autonomy assets at phone viewport scale to validate aesthetic and interaction fidelity. Proceeding without these could create costly refactoring or visual inconsistency which your plan underestimates.",
+          "agreement_with": "contrarian's idea of introducing a '1.3-lite' minimal core companion framework to enable earlier 1.4 integration is a pragmatic middle ground that recognizes the scheduling pressure and potential to unblock early city map iteration without fully skipping 1.3 milestones.",
+          "changed_mind_about": "I acknowledge that a narrowly scoped, art-sensitive partial vertical slice combining some 1.3 companion fusion presence within simplified seeded city districts could accelerate early bug detection and visual integration validation before full 1.4 integration, rather than waiting for complete 1.3 milestone delivery.",
+          "new_unnoticed_insight": "The absence of any modular or incremental playable vertical slice combining companion fusion mechanics inside representative 1.4 environments is a critical gap; building a lightweight hybrid prototype now could surface emergent interaction problems early and reduce risk of expensive downstream refactor, balancing QA effort against early visual-artistic correctness.",
+          "proposed_experiment": "Develop a minimal integration prototype embedding a single 1.3 companion fusion entity with autonomous fish-eating and limited AI inside a simplified 1.4 seeded city district stub without DPS wave complexity. Automate visual and animation state capture at phone viewport scale for early artistic and animation QA feedback.",
+          "cross_game_opportunity": "Reuse Cataclysm’s stylized companion art and animation quadrupedal cat sprites with rotating tail guns as inspiring assets in Flame Game Studio’s layered biome and animation systems, enabling a shared cross-studio style vocabulary that enhances both studios’ visual storytelling and tooling for animated environment assets.",
+          "revised_1_3_vs_1_4_sequence": "Maintain primary milestone delivery order with 1.3 FELINE COMPANY complete first but introduce a controlled partial hybrid 1.3-1.4 vertical slice prototype phase during late 1.3 development. This prototype serves as an integration playground supporting early 1.4 city and companion system exploratory testing without diverging the main codebase or compromising milestone boundary discipline.",
+          "evidence_to_collect": "Collect playtest videos and automated QA logs from the hybrid vertical slice prototype focusing on companion fusion animation states in simplified seeded city districts. Gather animation performance metrics at 48px phone viewport scale and fish economy resource flow correctness. Track integration bugs or slot conflict occurrence and evaluate art and animation team confidence on partial fusion representation quality to inform safe further 1.4 design spike progress."
+        }
+      },
+      "animator": {
+        "role": "animator",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_028f5beb562d77a0016af87a1054f087d1923b829919bbed2d",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "While your proposal for a parallel exploratory 1.4 design spike using dummy or simplified companion states aims to accelerate development and maintain player engagement, it risks undermining core game identity by decoupling essential companion autonomy and fusion mechanics integral to 1.4's design. The lack of concrete 1.3 companion AI risks producing brittle, incoherent gameplay or expensive refactors later.",
+          "agreement_with": "contrarian’s recognition that a minimal '1.3-lite' or partial companion framework could enable some independent 1.4 progress and early feedback is a useful idea to explore, provided it does not bypass full companion feature implementation or produce untested regressions.",
+          "changed_mind_about": "I am open to considering lightweight companion simulation stubs for 1.4 design spikes, as suggested by engineer and contrarian, rather than a hard lockout on any 1.4 progress before full 1.3 completion, as long as this experimental path respects stable version boundaries and prevents premature removal or silent disabling of core companion features.",
+          "new_unnoticed_insight": "Introducing a dynamic, real-time fusion mechanic tutorial or guided showcase inside 1.3 (animator’s proposal) could simultaneously advance animation pipeline validation and player onboarding, smoothing transition into 1.4 without risking integration issues.",
+          "proposed_experiment": "Develop a vertical slice prototype embedding a minimal 1.3 companion fusion entity with autonomous fish-eating and limited AI into a simplified seeded district for 1.4 (art director’s idea). Use this as a controlled environment to detect animation fusion slot conflicts and resource contention, using existing image-reference animation pipelines to verify motion coherence at phone viewport scale.",
+          "cross_game_opportunity": "Leverage Flame Game Studio’s mature autonomous multi-role AI and animation clip orchestration frameworks to prototype companion fusion sequences, animation pacing, and adaptive environment layering for Cataclysm’s 1.3 and 1.4 milestones, potentially sharing tooling for animation tests and verified phone-scale visual acceptance.",
+          "revised_1_3_vs_1_4_sequence": "Prioritize completing fully playable and tested 1.3 FELINE COMPANY milestone including companion AI autonomy, fish economy, Level 3 evolution, and fusion mechanics, with integrated player-facing fusion tutorials. Following creator acceptance and independent QA, initiate a tightly scoped 1.4 THE UNSEEN CITY design spike using companion simulation stubs and vertical slice prototypes to reduce risk without merging full companion systems prematurely.",
+          "evidence_to_collect": "1. Playtest stability and animation fidelity data on companion fusion sequences from the current 1.3 pipeline. 2. Regression risk metrics of GitHub workflow consolidation impacting immutable URLs and release consistency for 1.0/1.1. 3. Telemetry logs capturing emergent companion AI behavior and fusion state transitions during long play sessions under 1.3 candidate builds. 4. Analysis of partial companion simulation stubs effectiveness in enabling meaningful 1.4 world map and DPS gating tests without full companion fusion dependency."
+        }
+      },
+      "composer": {
+        "role": "composer",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_01fab7ae488c2a47016af87a13df5c87d1a3f28e38b355e565",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "Your proposal to start a parallel exploratory 1.4 design spike with dummy or simplified companion stubs underestimates the integration complexity and design dependency risks. The 1.4 district navigation and DPS gating features intricately rely on mature companion autonomy and fish economy systems established in 1.3. Bypassing or simplifying these risks incoherent gameplay and costly rewrites, which the studio's constitution and roadmap explicitly advise against.",
+          "agreement_with": "I recognize your useful insight to explore design spikes and consider lightweight companion frameworks for early prototyping, which could help reduce waiting time for initial 1.4 feedback and mitigate some risk if properly isolated and non-destructive.",
+          "changed_mind_about": "I now see some merit in cautiously developing partial or simulated companion states to unblock incremental 1.4 exploration design, provided this is emphatically separated from full production and maintains a clean integration boundary with 1.3 milestone deliverables.",
+          "new_unnoticed_insight": "Integrating adaptive audio cues tied specifically to companion fusion states in 1.3 can serve as an early testbed for seamless audio-visual continuity into 1.4’s complex city and ambiance systems, providing a unifying player sensory thread across milestones.",
+          "proposed_experiment": "Create a minimal vertical slice prototype embedding a single fused companion with autonomous fish-eating and corresponding adaptive audio cues within a simplified seeded district environment from 1.4, to reveal fusion slot conflicts, fish resource contention, and audio-visual integration challenges without full 1.4 load.",
+          "cross_game_opportunity": "Leverage Flame Game Studio’s procedural adaptive music sequencing and autonomous multi-role AI frameworks to enhance Cataclysm’s adaptive audio layers and companion AI orchestration, accelerating QA and reducing manual acceptance effort across milestones.",
+          "revised_1_3_vs_1_4_sequence": "Maintain strict completion and independent verification of 1.3 FELINE COMPANY prior to full production of 1.4, but permit isolated, non-disruptive exploratory 1.4 design spikes utilizing partial or simulated companion systems. Ensure rigorous boundaries and rollback capacity to prevent premature integration or regression.",
+          "evidence_to_collect": [
+            "Prototype playtest data from the minimal vertical slice with companion fusion and adaptive audio cues in a simplified 1.4 district environment.",
+            "Telemetry from companion AI behavior logging during 1.3 to establish baseline fusion and autonomy stability.",
+            "Performance and stability metrics comparing full 1.3 milestones against partial companion function stubs used in exploratory 1.4 builds.",
+            "QA reports on integration conflicts or regressions arising from partial 1.4 designs accessing incomplete 1.3 companion data.",
+            "Player sensory feedback and emotional engagement metrics tied to adaptive audio cues linked to companion fusion states."
+          ]
+        }
+      },
+      "narrative": {
+        "role": "narrative",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0d67bfaea1be5a08016af87a15972087d18023553cefd6c047",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "While I appreciate your push for momentum via a parallel 1.4 design spike with simplified companion states, I challenge the assumption that a '1.3-lite' companion framework can sufficiently support meaningful 1.4 world map and DPS wave testing. Given the documented heavy dependency on companion autonomy, fish-eating economy, and fusion mechanics (CAT-13-01 to CAT-13-11), partial or dummy companions risk producing false positives in map navigation and tactical challenges, leading to wasted rework and player confusion. A loosely coupled 1.4 might neglect subtle emergent behaviors critical to city exploration, thereby undermining core gameplay identity.",
+          "agreement_with": "contrarian's recognition that strict sequencing delays 1.4 and the suggestion to explore a parallel design spike to maintain engagement is thoughtful; it highlights valid scheduling pressures and offers a creative compromise to reduce delays without full feature skipping.",
+          "changed_mind_about": null,
+          "new_unnoticed_insight": "The art director's idea of crafting a minimal vertical slice combining a single fully functioning 1.3 companion fusion entity into a simplified 1.4 seeded city environment offers a promising middle ground — enabling early integration testing without waiting for full 1.3 completion. This focused hybrid prototype could reveal key fusion slot and map traversal conflicts pragmatically.",
+          "proposed_experiment": "Develop an isolated vertical slice prototype embedding one 1.3 companion fusion AI with autonomous fish-eating into a simplified seeded city map from 1.4 districts. Assess emergent gameplay coherence, fusion slot conflicts, resource contention, and animation fidelity at phone viewport scale. Use findings to guide phased 1.4 expansion while ensuring foundational dependencies remain intact.",
+          "cross_game_opportunity": "Leverage Flame Game Studio’s autonomous multi-agent AI orchestration and verified incremental milestone release pipelines to improve Cataclysm’s automated testing and animation integration, particularly for companion AI and fusion animations across evolving zones. Sharing adaptive procedural audio and layered environmental assets could further enhance cross-studio asset reuse and streamline iteration.",
+          "revised_1_3_vs_1_4_sequence": "Maintain 1.3 FELINE COMPANY as a firm milestone prerequisite for full 1.4 THE UNSEEN CITY milestone release, but permit limited, well-contained 1.4 design spikes employing partial or stubbed companion features. Prioritize producing a minimal hybrid prototype integrating fundamental 1.3 companion AI and fusion mechanics into a simplified 1.4 seeded environment to validate key technical and gameplay interactions early and reduce costly late rework.",
+          "evidence_to_collect": "Compile playtest data on 1.3 companion AI autonomy, fusion states, and fish-eating behaviors for stable, reproducible sessions. Audit existing workflows to identify overlaps complicating version isolation. Collect metrics from the proposed vertical slice prototype regarding resource conflicts, animation synchronization, and gameplay consistency on real devices (physical phone playtests). Gather telemetry logs of companion AI interactions and fusion sequences to detect emergent bugs or pacing issues prior to expanding 1.4 development."
+        }
+      },
+      "qa_lead": {
+        "role": "qa_lead",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_0f916693d29cfc5d016af87a160cb887d194a73c9705f40778",
+        "statement": {
+          "challenge_to": "contrarian",
+          "challenge": "Your proposal to parallelize 1.4 THE UNSEEN CITY development using a '1.3-lite' or partial companion framework underestimates the risk of substantial rework and player confusion due to incomplete companion AI, fish economy, and fusion mechanics that 1.4 explicitly depends on. While exploring 1.4 early is appealing, skipping or minimizing 1.3 integration risks breaking core gameplay loops and violates the studio constitution's milestone sequencing, which was established to mitigate these exact risks.",
+          "agreement_with": "contrarian's highlight of the value of exploratory 1.4 design spikes using dummy companions or simplified systems as a low-risk approach aligns with similar suggestions from engineer and qa_lead, which could allow early feedback without compromising stable milestone delivery.",
+          "changed_mind_about": "I recognize a nuanced benefit in designing a lightweight 1.4 exploratory branch with stubs to unblock early testing and gather design feedback, provided this remains explicitly separated from full 1.4 production and does not merge prematurely before 1.3 completion.",
+          "new_unnoticed_insight": "The art_director's idea of creating a minimal vertical slice prototype combining a single 1.3 companion fusion entity with a simplified 1.4 city district could serve as a concrete proof-of-concept to detect fusion slot conflicts and map traversal issues early, thereby blending design and QA validation approaches across milestones.",
+          "proposed_experiment": "Develop a sandbox prototype integrating a single companion fusion from 1.3 with a limited seeded city district element from 1.4. This prototype would enable live testing of core mechanical interactions such as fish resource contention and fusion slot management in a controlled environment, gathering gameplay telemetry and visual QA evidence to inform the full 1.3 and 1.4 integration sequence.",
+          "cross_game_opportunity": "Leverage Flame Game Studio's established autonomous multi-role AI agents and verified incremental milestone release techniques, as well as their procedural adaptive music sequencing, to enhance Cataclysm's companion behavior testing and audio-visual integration both in 1.3 completion and the planned 1.4 DPS and zone mechanics.",
+          "revised_1_3_vs_1_4_sequence": "Maintain the constitution-mandated strict sequencing requiring full completion and stable playtest sign-off of 1.3 FELINE COMPANY before initiating any full 1.4 THE UNSEEN CITY milestone production. Allow parallel, isolated 1.4 design spikes or prototypes that employ dummy companions or limited companion simulations strictly as exploratory work without merging into production branches until 1.3 is complete.",
+          "evidence_to_collect": [
+            "Quantitative regression risk metrics during workflow consolidation to safely lock immutable 1.0 and 1.1 URLs, as requested by producer.",
+            "Playtest stability reports and Chrome mobile device test results confirming companion autonomy and fusion systems completeness and reliability from 1.3 development.",
+            "Telemetry logs from companion AI behavior and fish economy transactions during 1.3 test runs to detect bugs or pacing inefficiencies prior to 1.4 integration.",
+            "Gameplay video captures and QA validation artifacts from the proposed minimal vertical slice fusion-city prototype to verify interaction integrity and art animation quality at relevant phone viewport scale.",
+            "Audit and measurement of current GitHub workflow duplication, manual maintenance overhead, and collision risks to estimate refactoring effort required for safe consolidated release pipelines.",
+            "Prototype results from 1.4 exploratory design spike with dummy companion stubs validating how minimal companion functions enable meaningful world map and DPS gating tests."
+          ]
+        }
+      },
+      "contrarian": {
+        "role": "contrarian",
+        "model": "gpt-4.1-mini",
+        "response_id": "resp_06509d543feb89d6016af87a1a6ab887d1a24ab733064f1db8",
+        "statement": {
+          "challenge_to": "producer",
+          "challenge": "Your position on strictly completing 1.3 before starting 1.4 underestimates the risks of integration complexity that arise once both milestones begin their merge; nor do you sufficiently address how advanced companion AI and fusion from 1.3 will interact with seeded district and DPS check systems in 1.4. This risk causes an implicit dependency bottleneck that could make strict linear sequencing inefficient and inflexible.",
+          "agreement_with": "I concur with your identification of workflow fragmentation as a significant governance risk, especially the mutable 1.0 assets problem and excessive duplicated pipelines that degrade milestone reliability. Your proposal for a middleware layer enforcing immutable deployment paths and automatic legacy workflow cleanup is a novel and practical solution to reduce release fragility.",
+          "changed_mind_about": "I see more value now in explicit independent exploratory design spikes for 1.4 that do not fully embed 1.3 companions, mitigating risk of silent changes or regressions, a nuance you clearly articulate that tempers a hard-stop approach.",
+          "new_unnoticed_insight": "The current discourse overlooks the latent value of a composable '1.3-lite' partial companion framework that allows 1.4 development in parallel with minimal companion AI and fish economy, acting as a contract layer to prevent heavy refactoring while accelerating iteration.",
+          "proposed_experiment": "Establish a parallel 1.4 design spike branch implementing a minimal dummy companion subsystem with basic fish autonomy and no fusion to test core city map and DPS mechanics early, while maintaining separate robust 1.3 companion milestone production; monitor integration complexity and composability issues.",
+          "cross_game_opportunity": "BoRHeZ should leverage Flame Game Studio’s autonomous AI production pipeline and animation integration frameworks to accelerate 1.4's art fidelity and world building in parallel with companion core 1.3 development, exploiting Flame’s proven methods to reduce duplicated pipelines and systemic redundancy.",
+          "revised_1_3_vs_1_4_sequence": "Adopt a staggered milestone approach: continue dedicated full companion system completion in 1.3 while initiating lightweight 1.4 design spikes with stub companions to unblock early exploration and zone design feedback without bypassing core 1.3 dependencies. Fully integrate after companion AI maturity is confirmed.",
+          "evidence_to_collect": [
+            "Quantitative risk analysis of integration points between 1.3 companion AI/fusion states and 1.4 seeded districts/DPS mechanics",
+            "Technical feasibility reports on partial companion dummy implementations enabling meaningful 1.4 simulation",
+            "Regression metrics from workflow consolidation effort showing impact on release reliability and immutability enforcement",
+            "QA playtest data comparing player experience coherence in parallel 1.4 prototype with stub companions versus full 1.3 integration",
+            "Cross-studio tooling reuse assessments detailing Flame Game pipeline benefits for Cataclysm 1.4 art and animation"
+          ]
+        }
+      }
+    },
+    "errors": {}
+  },
+  "synthesis": {
+    "role": "producer",
+    "model": "gpt-4.1-mini",
+    "response_id": "resp_076b6b4af416efef016af87a1f766c87d191ef474677132acf",
+    "statement": {
+      "central_findings": [
+        "There is unanimous agreement that Cataclysm 1.3 FELINE COMPANY, including full companion AI autonomy, fish economy, evolution, and fusion mechanics, must be completed and stabilized before full production milestone of 1.4 THE UNSEEN CITY.",
+        "The studio has robust production governance structures, including detailed constitution, role separation, traceable milestone definitions, and automated multi-role QA pipelines, which provide good scope control and milestone traceability.",
+        "The current infrastructure is fragmented, with 46 mostly overlapping or legacy GitHub workflows causing release fragility, integration complexity, mutable 1.0 assets in live URLs, and significant manual maintenance overhead.",
+        "Companion AI telemetry and persistent memory across autonomous AI agents is lacking, increasing risk of delayed bug discovery and tuning difficulty for complex companion behaviors central to 1.3 and 1.4 dependencies.",
+        "Exploratory 1.4 design spikes are supported in isolated branches with simulated or '1.3-lite' partial companion stubs that do not compromise milestone sequencing, enabling early city map and DPS mechanic feedback without risking integration regressions.",
+        "Cross-studio synergy with Flame Game Studio’s autonomous multi-role AI pipelines, animation orchestration, and adaptive audio sequencing is seen as a valuable opportunity to improve companion AI telemetry, art validation, and adaptive soundtrack layering.",
+        "Proposals to build minimal vertical slice prototypes combining limited 1.3 companion fusion entities in simplified 1.4 seeded city districts emerged as a pragmatic middle ground to reduce risk while adhering to strict roadmap sequencing.",
+        "The owner’s request for 1.4 soon is acknowledged but universally weighed against constitutional sequencing priorities and the risk of unstable or incomplete companion features causing technical debt or costly rewrites.",
+        "A middleware or centralized persistent memory service is proposed to improve coordination among autonomous studio agents and enforce immutable version boundaries during release pipelines.",
+        "Adaptive audio cues linked to companion fusion states in 1.3 are proposed as a prototype for 1.4 ambiance continuity, illustrating integrative cross-milestone audio-visual design."
+      ],
+      "explicit_disagreements": [
+        {
+          "from": "contrarian",
+          "to": "producer and majority",
+          "position": "Advocates for initiating a parallel 1.4 design spike with minimal or dummy companion AI to maintain momentum and player engagement, arguing strict sequencing is too rigid and introduces scheduling inefficiency.",
+          "challenge": "Claims rigid linear milestone sequencing risks ineffective integration bottlenecks and schedule stalls, suggesting a staged, partial companion AI framework could unblock 1.4 exploration earlier.",
+          "counterargument": "Most others caution this risks producing incoherent gameplay, expensive rewrites, and broken integration due to deep companion AI and fusion dependencies articulated in the roadmap and constitution."
+        }
+      ],
+      "studio_infrastructure_changes": [
+        "Consolidate and rationalize the 46 overlapping GitHub workflows into a minimal essential set with explicit version boundaries and enforced immutable artifact URLs, especially locking original 1.0 assets to prevent accidental overwrites.",
+        "Introduce a middleware or centralized persistent 'Studio Knowledge Graph' service versioned and queryable by all autonomous agents to replace ephemeral memory stores and improve cross-agent state awareness and coordination.",
+        "Adopt shared CI/CD orchestrator templates and artifact versioning standards with Flame Game Studio to reduce duplicated infrastructure and improve cross-studio tooling consistency.",
+        "Implement companion AI telemetry and persistent behavior logging to support long play session debugging and tuning, linked to player actions, companion states, and resource transactions.",
+        "Integrate adaptive audio cue systems tied to companion fusion states as cross-version continuity mechanisms starting in 1.3 milestone production."
+      ],
+      "cross_game_findings": [
+        "Flame Game Studio’s autonomous multi-role AI agent orchestration, deterministic animation sequencing, and layered environment/music frameworks are excellent synergies to improve Cataclysm’s companion AI validation, animation integration, and adaptive audio layering.",
+        "Shared tooling between studios for phone-scale visual acceptance, animation QA, and autonomous testing pipelines can reduce duplicated engineering effort.",
+        "Flame Game’s procedural adaptive music sequencing provides a relevant model to implement dynamic soundtrack layering responding to companion fusion states and DPS events in Cataclysm milestones.",
+        "Cross-studio adoption of modular AI state machines and event-driven resource tracking can unify companion and enemy behavior handling, easing integration complexity."
+      ],
+      "proposals_for_1_8_and_1_9": [],
+      "1_3_to_1_4_sequence": "Strict adherence to completing 1.3 FELINE COMPANY prior to initiating full 1.4 THE UNSEEN CITY milestone production. Parallel 1.4 design spikes using companion stubs or '1.3-lite' simulation frameworks are permitted only as isolated exploratory efforts without merging into production or risking regression. Vertical slice prototypes embedding minimal companion fusion entities in simplified 1.4 seeded city districts are recommended to validate integration risks early and reduce costly rework.",
+      "prioritized_actions": [
+        {
+          "owner": "Studio Architect and CI/CD Team",
+          "action": "Consolidate all Cataclysm GitHub workflows, removing duplicates and legacy pipelines; enforce immutable release artifact paths especially for frozen 1.0 and 1.1 URLs.",
+          "why": "Reduces fragile integration points, prevents accidental asset overwrites, improves milestone release reliability and sustainable workload management.",
+          "prerequisite": "Inventory of all current workflows; code freeze on 1.0 asset directories."
+        },
+        {
+          "owner": "Engineering and AI Teams",
+          "action": "Develop a centralized persistent memory or knowledge graph service accessible by all autonomous agents, encoding roadmap states, feature statuses, and versioned deliverables.",
+          "why": "Ensures consistent cross-agent coordination, persistent state tracking, enabling safer parallel exploratory spikes and better integration oversight.",
+          "prerequisite": "Specification of data schema for knowledge graph; integration with version control commits and issue tracking."
+        },
+        {
+          "owner": "QA Lead and Designer",
+          "action": "Implement companion AI telemetry logging capturing moment-to-moment companion actions, fish economy transactions, fusion states, and player-squad dynamics during 1.3 development builds.",
+          "why": "Permits early detection of emergent bugs, pacing issues, and aids tuning without overwhelming manual QA, improving milestone stability.",
+          "prerequisite": "Instrumentation of companion AI with logging hooks and anonymized telemetry pipeline."
+        },
+        {
+          "owner": "Art Director and Animator",
+          "action": "Create a minimal vertical slice prototype embedding a single 1.3 companion fusion entity with autonomous fish-eating behavior into a simplified 1.4 seeded city district stub.",
+          "why": "Surface integration, fusion slot conflicts, fish resource contention, and animation coherence before full 1.4 milestone commitment, reducing risk and expensive rework.",
+          "prerequisite": "Stable 1.3 fusion AI base; simplified 1.4 seeded district layout; automated visual/animation QA pipeline."
+        },
+        {
+          "owner": "Composer",
+          "action": "Develop adaptive audio cues synchronized with companion fusion states for 1.3 to prototype cross-milestone audio continuity extending into 1.4.",
+          "why": "Enhances player sensory feedback and emotional investment, tying companion mechanics and world ambiance tightly.",
+          "prerequisite": "Defined audio parameter interfaces for companion states; integration with companion AI telemetry."
+        },
+        {
+          "owner": "Producer and Studio Governance",
+          "action": "Enforce roadmap discipline mandating full 1.3 completion before official 1.4 milestone production begins; permit only isolated, controlled exploratory 1.4 design spikes with strict boundaries.",
+          "why": "Preserves game identity, reduces costly integration rework, and ensures player experience coherence aligned with the studio constitution.",
+          "prerequisite": "Clear milestone gating criteria and branching policies; communication with all role leads."
+        }
+      ],
+      "creator_decisions_required": [
+        "Approval of the middleware persistent knowledge graph architecture and allocation of engineering resources for its implementation.",
+        "Authorization to suspend or refactor legacy pipelines during GitHub workflow consolidation with temporary tolerance for disruptions.",
+        "Final mandate on milestone sequencing discipline — whether to permit exploratory 1.4 spikes with companion stubs in parallel with 1.3 full delivery.",
+        "Governance on telemetry privacy, data retention policies, and integration of companion AI behavior logging across milestones.",
+        "Flagging acceptable scope and feature sets for the minimal vertical slice prototype mixing 1.3 companion fusion with 1.4 city districts."
+      ],
+      "unresolved_evidence": [
+        "Quantitative regression risk metrics and cost estimations for consolidating and locking immutable release URL paths for Cataclysm 1.0 and 1.1 assets.",
+        "Current completeness, playtest stability, and blocker analysis on 1.3 companion AI autonomy, fusion mechanisms, fish economy, and Level 3 evolution (evaluation of readiness to trigger 1.4).",
+        "Effectiveness and fidelity assessment of partial companion simulation stubs in supporting meaningful 1.4 exploratory design spikes without full 1.3 system dependency.",
+        "QA and playtest data on hybrid vertical slice prototypes embedding minimal 1.3 companion fusion entities in simplified seeded city districts (performance, integration bugs, animation fidelity).",
+        "Long-duration companion AI telemetry logs from experimental 1.3 builds to detect emergent behavior bugs and tuning challenges related to fusion and fish autonomy.",
+        "Measurement of manual maintenance overhead and collision rates causing fragility in current overlapping workflows, to estimate cost/benefit of consolidation.",
+        "Player sensory feedback and emotional engagement metrics related to prototype adaptive audio cues tied to companion fusion states."
+      ]
+    }
+  },
+  "source_sha": "6f3153944c7c682abb66e302f5189882c8f967b890fb119a038d2ed5fc889d31",
+  "real_agent_calls": 21,
+  "creator_has_approved_proposals": false,
+  "game_source_changed": false
+}
