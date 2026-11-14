@@ -113,7 +113,7 @@ def create_report(transcript, frames, seconds, recording_name):
       "Include up to six SHORT verbatim GAMEPLAY quotes with timecodes only when provably present in provided transcript; no private/personal remarks. " "Keep segments inside the recording duration and do not claim to know unobserved events. "
       "Use spoken transcript and sampled visual frames as different evidence sources. "
       "No automatic code merge or publishing.\nDuration: "+str(seconds)+
-      "\nTranscript: "+json.dumps(transcript,ensure_ascii=False)[:40000]+
+      "\nTranscript: "+json.dumps(transcript,ensure_ascii=False)[:120000]+
       "\nVisual observations: "+frames)
     result=client.chat.completions.create(model="gpt-4.1-mini",
         messages=[{"role":"user","content":prompt}],max_tokens=2400)
