@@ -113,7 +113,9 @@ def api_call(role,phase,payload,max_output=1800,json_mode=False):
           "1.8 and 1.9 need concrete proposals, not placeholders. "
           "Risk/cost matters but should not erase the game's fun. "
           "Do not be swayed by the previous council's majority; challenge its reasoning. "
-          "Respond in free-form text. Do not force JSON."
+          "In your first round: eight numbered release-specific sentences (one each), "
+          "then 2-4 substantive specialty paragraphs and one controversial idea. "
+          "Keep the total under 900 words, using free-form text. Do not force JSON."
         )
     elif phase=="debate":
         instruction=(
@@ -123,7 +125,8 @@ def api_call(role,phase,payload,max_output=1800,json_mode=False):
           "specific version-to-version tradeoff or improvement. Discuss what should "
           "be built FIRST in 1.3 and what can be explored from 1.4 concurrently. "
           "Offer one integration surprise nobody noticed. If creative, use code, symbols "
-          "or Chinese characters naturally. Write free-form plain text, not JSON."
+          "or Chinese characters naturally. Keep your actual response under 650 words, "
+          "write free-form plain text, not JSON."
         )
     else:
         instruction=(
@@ -144,6 +147,8 @@ def api_call(role,phase,payload,max_output=1800,json_mode=False):
           "Never invent consensus: accurately summarize role disagreements and alternatives. "
           "Provide imaginative but feasible detail about new music/art/content each version. "
           "Explicitly enumerate 2.0 final integration requirements in major_2_0. "
+          "Be concise: use short but specific phrases per field; target 2-3 focused "
+          "sentences per release field so all 8 release entries fit. "
           "Respond JSON object only. Use clear English for decision usability."
         )
     body={"model":MODEL,"store":False,"instructions":foundation+" "+instruction,
@@ -158,13 +163,19 @@ def api_call(role,phase,payload,max_output=1800,json_mode=False):
         msg=e.read(500).decode("utf-8",errors="replace")
         raise RuntimeError("OpenAI HTTP "+str(e.code)+": "+msg) from None
     status=result.get("status")
-    if status!="completed": raise RuntimeError(role+" "+phase+" incomplete: "+str(status))
+    if status not in ("completed","incomplete"):
+        raise RuntimeError(role+" "+phase+" invalid provider status: "+str(status))
+    reason=(result.get("incomplete_details") or {}).get("reason")
+    if status=="incomplete" and reason!="max_output_tokens":
+        raise RuntimeError(role+" "+phase+" incomplete for non-budget reason: "+str(reason))
     output="".join(piece.get("text","") for message in result.get("output",[])
       if message.get("type")=="message" for piece in message.get("content",[])
       if piece.get("type")=="output_text")
     if not output.strip(): raise RuntimeError(role+" "+phase+" had no visible statement")
     data={"role":role,"stage":phase,"model":MODEL,"provider_response_id":result.get("id"),
-          "text":output,"usage":result.get("usage"),"verified_complete":True}
+          "text":output,"usage":result.get("usage"),
+          "verified_complete":status=="completed",
+          "truncation_reason":reason if status=="incomplete" else None}
     if json_mode:
         answer=json.loads(output)
         if not isinstance(answer,dict): raise ValueError("Producer did not return an object")
@@ -269,7 +280,7 @@ def main():
     if packet["master_ledger"]["product_identity"]["intermediate_updates"]!=ORDER:
         raise SystemExit("Incorrect explicit 1.69 custom release order")
     opening=concurrent_round("opening",
-      {r:{"evidence":packet,"unique_role_mandate":mission} for r,mission in ROLES.items()},1750)
+      {r:{"evidence":packet,"unique_role_mandate":mission} for r,mission in ROLES.items()},3000)
     if len(opening["responses"])<11: raise SystemExit("Too few real independently generated roadmap proposals")
     first={r:v["text"] for r,v in opening["responses"].items()}
     debate=concurrent_round("debate",
@@ -277,7 +288,7 @@ def main():
           "your_own_prior_opinion":first[r],
           "all_real_opening_statements":first,
           "your_specialty":mission}
-       for r,mission in ROLES.items() if r in first},1450)
+       for r,mission in ROLES.items() if r in first},2400)
     second={r:v["text"] for r,v in debate["responses"].items()}
     if len(second)<10: raise SystemExit("Too few real peer discussions")
     producer=None
@@ -308,6 +319,8 @@ def main():
        "model":MODEL,"evidence":packet,
        "opening":opening,"debate":debate,"producer_roadmap":producer,
        "all_languages_permitted":True,
+       "some_opening_or_debate_responses_truncated":any(
+            not a["verified_complete"] for a in list(opening["responses"].values())+list(debate["responses"].values())),
        "creator_has_approved_new_mechanics":False,"game_files_modified":False,
        "source_packet_sha256":hashlib.sha256(json.dumps(packet,sort_keys=True).encode()).hexdigest()}
     report(record)
