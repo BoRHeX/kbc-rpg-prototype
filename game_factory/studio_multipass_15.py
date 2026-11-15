@@ -173,12 +173,12 @@ def result():
     old=ROOT/"docs/cataclysm-1-4/game.js"
     new=GAME/"game.js"
     if not new.is_file() or new.stat().st_size<1000:
-        flags.append("Missing active 1.4 game.js")
+        flags.append("Missing active 1.5 game.js")
     if new.is_file() and old.is_file() and sha(new)==sha(old):
-        flags.append("1.4 game.js identical to 1.3: no implemented mechanics")
+        flags.append("1.5 game.js identical to 1.4: no implemented mechanics")
     idx=GAME/"index.html"
     if not idx.is_file() or "1.5" not in idx.read_text(encoding="utf8",errors="replace"):
-        flags.append("No 1.4 identity in game index")
+        flags.append("No 1.5 identity in game index")
     produced=[x for x in images.get("images",[]) if x.get("status")=="GENERATED"]
     if not produced:
         flags.append("No original raster art produced (ART-BLOCKED)")
@@ -225,16 +225,16 @@ def candidate_page():
     <style>body{{margin:auto;padding:2rem 1rem;max-width:45rem;background:#071821;color:#e7f2ee;font:16px/1.65 system-ui}}
     a{{color:#73d9cc}}.pill{{border:1px solid #debd78;border-radius:20px;padding:4px 12px;display:inline-block}}
     section{{padding:1rem;background:#0e2730;border:1px solid #234e55;border-radius:12px}}</style>
-    <h1>CATACLYSM 1.4 · HOOK, LINE & CATNIP</h1>
+    <h1>CATACLYSM 1.5 · HOOK, LINE & CATNIP</h1>
     <p class="pill">EXPERIMENTAL — {status}</p><p>This is the evolving single Cataclysm game.
-    Failed tests do not delete the build. This candidate has not replaced 1.3.</p>
-    <p><a href="../cataclysm-1-5/">Open the actual 1.4 candidate game</a></p>
-    <p><a href="../cataclysm-1-4/">Play the previous 1.3 release</a></p>
+    Failed tests do not delete the build. This candidate has not replaced the previous 1.4 build.</p>
+    <p><a href="../cataclysm-1-5/">Open the actual 1.5 candidate game</a></p>
+    <p><a href="../cataclysm-1-4/">Play previous 1.4 candidate</a></p><p><a href="../cataclysm-1-3/">Earlier 1.3 rollback</a></p>
     <section><h2>Known limitations</h2><ul>{issues}</ul></section>
     <p><a href="../cataclysm-1-5/STUDIO/FINAL_REPORT.md">Development report</a> ·
     <a href="../cataclysm-1-5/STUDIO/CANDIDATE_STATUS.json">Machine-readable QA status</a> ·
     <a href="../cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json">Real illustration evidence</a></p>
-    <p>Run {html.escape(str(doc['run']))}. The old stable game remains untouched.</p>
+    <p>Run {html.escape(str(doc['run']))}. Previous versions remain untouched; this candidate is not stable.</p>
     </html>"""
     (destination/"index.html").write_text(page,encoding="utf8")
     return doc
