@@ -1,0 +1,109 @@
+{
+  "producer": "OpenAI Images API (real binary output)",
+  "model": "gpt-image-2.5-flare",
+  "requested_max_images": 3,
+  "made_at_utc": "2026-11-15T15:08:18.889019+00:00",
+  "images": [
+    {
+      "name": "fishing_pond_world_atlas",
+      "background": "opaque",
+      "prompt": "Genuinely illustrated hand-painted TOP-DOWN mobile roguelite urban fishing location atlas, dark colorful flooded city in ruins. Multiple beautifully distinct usable tile-art environments: old flooded canal with quay, drainage pond, bright puddles in abandoned road, sewer grate with clear water, fishing spots with ripples, docked tiny skiff, cracked concrete and moss. Cozy and sinister cats versus undead mood. Painterly texture, readable 48px mobile composition, matching neon turquoise indigo and warm amber highlights of Cataclysm 1.5. Square packed sheet with clear separations. No letters, GUI, labels, captions or watermark. Real image art for game textures, not code shapes.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGB",
+      "size": [
+        1024,
+        1024
+      ],
+      "path": "art/generated/fishing_pond_world_atlas.png",
+      "bytes": 2382383,
+      "sha256": "32cf84bf4eb0e630a32b47bf5757c1eb3e79d32c50fd9911a61fd7465e46ddcb",
+      "usage": {
+        "input_tokens": 146,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 146
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 585
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "fishing_cat_gear_atlas",
+      "background": "transparent",
+      "prompt": "Original charming illustrated 2D TOP DOWN/three-quarter game sprite atlas on FULLY TRANSPARENT alpha, for a dark colorful mobile cat zombie-survival game. A small white four-legged cat fishing with a tiny improvised rod, line and hook, and independent detailed equipment illustrations: basic repaired rod, rare glowing fishbone hook, worm bait, royal green catnip bait, cast and reel poses, wet net full of cartoon fish, exaggerated jackpot shining treasure chest. Actual painted expressive character poses and intricate equipment, separated clearly in neat visual cells, room around each, no text, no borders, no backgrounds, no watermarks. Style feels hand illustrated rather than primitive boxes and circles.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/fishing_cat_gear_atlas.png",
+      "bytes": 1842692,
+      "sha256": "a9230824dccc9930c953793306160cee177dba96364eadd3a48129b93bf90dd0",
+      "usage": {
+        "input_tokens": 143,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 143
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 582
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "abyssal_catch_mutant_atlas",
+      "background": "transparent",
+      "prompt": "Real illustrated painterly 2D sprite sheet, FULLY TRANSPARENT alpha: legendary giant terrifying but funny MUTANT ZOMBIE FISH monster from abandoned city sewer, with glowing cyan eyes, ancient bone hook in jaws, green algae armor, oversized fins, and zombie-cat whiskers, shown in four DISTINCT full-body poses (lurking, hooked, lunging attack, stunned/defeated) arranged in 2x2 regions with generous separation. Strong mobile readable silhouette, painterly brush textures, dramatic dark turquoise gold-magenta accents. Suitable for top down cartoon-cat roguelite. NO letters, labels, background, decorative UI, frame lines or watermarks.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/abyssal_catch_mutant_atlas.png",
+      "bytes": 1780397,
+      "sha256": "d9ac10c7594d8a10a11bae3af1ba0b5e7e6be3a24c6f003c83902cfce34ad9dc",
+      "usage": {
+        "input_tokens": 142,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 142
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 581
+      },
+      "status": "GENERATED"
+    }
+  ],
+  "errors": [],
+  "status": "GENERATED",
+  "illustrated_asset_evidence": "Generated base64 PNG, validated PNG dimensions, file hash and alpha coverage; not procedural canvas shapes.",
+  "number_generated": 3
+}

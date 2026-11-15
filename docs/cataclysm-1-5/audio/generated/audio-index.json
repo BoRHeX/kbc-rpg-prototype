@@ -1,0 +1,510 @@
+{
+  "schema_version": 1,
+  "status": "PRODUCED_NOT_LISTENING_ACCEPTED",
+  "sample_rate": 44100,
+  "format": "PCM signed 16-bit little endian WAV",
+  "provenance": "Original deterministic additive/FM and filtered-noise synthesis authored in STUDIO/tools/compose_audio.py; no stock samples or recorded performers.",
+  "mix_policy": {
+    "new_voice_limit": 8,
+    "ambience_gain": 0.22,
+    "sfx_gain": 0.6,
+    "warning_duck_db": -6,
+    "use_existing_context": true,
+    "pause_suspend": true,
+    "unlock": "existing user gesture",
+    "music": "Preserve inherited main soundtrack; use at most one new ambience loop."
+  },
+  "assets": {
+    "beacon-hold": {
+      "path": "audio/generated/beacon-hold.wav",
+      "sha256": "adeaa9b4295ec923be44ddfeb121612aea1e705d30c94ff5db6087f46ccadd54",
+      "bytes": 70604,
+      "seconds": 0.8,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -14.16,
+      "rms_dbfs": -23.99,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 440
+        },
+        {
+          "time": 0.2667,
+          "frequency_hz": 554.37
+        },
+        {
+          "time": 0.5333,
+          "frequency_hz": 659.25
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "gate-begin": {
+      "path": "audio/generated/gate-begin.wav",
+      "sha256": "14d94a2de4ce55315378636d96d3896797bd4bdd8ec37feac929f337c89075b9",
+      "bytes": 88244,
+      "seconds": 1.0,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -14.0,
+      "rms_dbfs": -23.89,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 146.83
+        },
+        {
+          "time": 0.3333,
+          "frequency_hz": 220
+        },
+        {
+          "time": 0.6667,
+          "frequency_hz": 293.66
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "gate-pass": {
+      "path": "audio/generated/gate-pass.wav",
+      "sha256": "f82467496f82a7bb548eaab596199255760f09d2d30df26eb496c35ba37d200c",
+      "bytes": 114704,
+      "seconds": 1.3,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -14.07,
+      "rms_dbfs": -23.9,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 293.66
+        },
+        {
+          "time": 0.325,
+          "frequency_hz": 369.99
+        },
+        {
+          "time": 0.65,
+          "frequency_hz": 440
+        },
+        {
+          "time": 0.975,
+          "frequency_hz": 587.33
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "gate-fail": {
+      "path": "audio/generated/gate-fail.wav",
+      "sha256": "987a16cb58d5788e78faabd80214b85bc152ef4d9ec663ea6a79d94b1751fa5b",
+      "bytes": 105884,
+      "seconds": 1.2,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.92,
+      "rms_dbfs": -23.83,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 220
+        },
+        {
+          "time": 0.4,
+          "frequency_hz": 207.65
+        },
+        {
+          "time": 0.8,
+          "frequency_hz": 146.83
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "gate-relief": {
+      "path": "audio/generated/gate-relief.wav",
+      "sha256": "e5392bbaae82ef0b7915a5dca99fb9499a5fd14efd1f8fb0ca6389072b11e6d3",
+      "bytes": 176444,
+      "seconds": 2.0,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.82,
+      "rms_dbfs": -23.76,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 220
+        },
+        {
+          "time": 0.5,
+          "frequency_hz": 293.66
+        },
+        {
+          "time": 1.0,
+          "frequency_hz": 329.63
+        },
+        {
+          "time": 1.5,
+          "frequency_hz": 440
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "guardian-warning": {
+      "path": "audio/generated/guardian-warning.wav",
+      "sha256": "9cb7749dd516135d2b97146cf115323a53f1c6a52ce14b6d954611d95dfb903e",
+      "bytes": 132344,
+      "seconds": 1.5,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.84,
+      "rms_dbfs": -23.76,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 98
+        },
+        {
+          "time": 0.5,
+          "frequency_hz": 103.83
+        },
+        {
+          "time": 1.0,
+          "frequency_hz": 98
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "guardian-hit": {
+      "path": "audio/generated/guardian-hit.wav",
+      "sha256": "6b8e30945aeea0bbd5f7bb1cab9b3ca4050fa27345553f0da5e209c929f19f9f",
+      "bytes": 15920,
+      "seconds": 0.18,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -15.75,
+      "rms_dbfs": -24.95,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 130.81
+        },
+        {
+          "time": 0.09,
+          "frequency_hz": 98
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "guardian-defeat": {
+      "path": "audio/generated/guardian-defeat.wav",
+      "sha256": "b84dc3becc932eb918532f898ef91e75e091b72fd9c725d5f3eae310076396ef",
+      "bytes": 132344,
+      "seconds": 1.5,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.93,
+      "rms_dbfs": -23.85,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 196
+        },
+        {
+          "time": 0.375,
+          "frequency_hz": 293.66
+        },
+        {
+          "time": 0.75,
+          "frequency_hz": 392
+        },
+        {
+          "time": 1.125,
+          "frequency_hz": 587.33
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "life-recovery": {
+      "path": "audio/generated/life-recovery.wav",
+      "sha256": "cda8b28ffebf43c91c2eded09b989a0ad2ec6e84e2505ab7edee831483d864d3",
+      "bytes": 132344,
+      "seconds": 1.5,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.95,
+      "rms_dbfs": -23.85,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 440
+        },
+        {
+          "time": 0.375,
+          "frequency_hz": 554.37
+        },
+        {
+          "time": 0.75,
+          "frequency_hz": 659.25
+        },
+        {
+          "time": 1.125,
+          "frequency_hz": 880
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "route-found": {
+      "path": "audio/generated/route-found.wav",
+      "sha256": "6b3df36403678ede99aa391a4eb5989758c28a247e75101ce1af5450fd438d8d",
+      "bytes": 44144,
+      "seconds": 0.5,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -14.2,
+      "rms_dbfs": -24.02,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 587.33
+        },
+        {
+          "time": 0.25,
+          "frequency_hz": 880
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "guardian-intro": {
+      "path": "audio/generated/guardian-intro.wav",
+      "sha256": "07e4de3d369a32d9ee614c3b055cc923865c7f8c0bc0d4eebd9c76727c258ea7",
+      "bytes": 529244,
+      "seconds": 6.0,
+      "channels": 1,
+      "loop": false,
+      "loop_start_sample": null,
+      "loop_end_sample": null,
+      "peak_dbfs": -13.7,
+      "rms_dbfs": -23.68,
+      "events": [
+        {
+          "time": 0.0,
+          "frequency_hz": 98
+        },
+        {
+          "time": 0.75,
+          "frequency_hz": 146.83
+        },
+        {
+          "time": 1.5,
+          "frequency_hz": 155.56
+        },
+        {
+          "time": 2.25,
+          "frequency_hz": 130.81
+        },
+        {
+          "time": 3.0,
+          "frequency_hz": 98
+        },
+        {
+          "time": 3.75,
+          "frequency_hz": 196
+        },
+        {
+          "time": 4.5,
+          "frequency_hz": 146.83
+        },
+        {
+          "time": 5.25,
+          "frequency_hz": 98
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "district-cinder": {
+      "path": "audio/generated/district-cinder.wav",
+      "sha256": "64154e1455fd7375fb9bac3d2183f70e74741ff53f4a3a4fb9b38fbb65b829e0",
+      "bytes": 4233644,
+      "seconds": 24.0,
+      "channels": 2,
+      "loop": true,
+      "loop_start_sample": 0,
+      "loop_end_sample": 1058400,
+      "peak_dbfs": -23.78,
+      "rms_dbfs": -38.58,
+      "events": [
+        {
+          "time": 1.5,
+          "frequency_hz": 293.66,
+          "duration": 2.5
+        },
+        {
+          "time": 7.5,
+          "frequency_hz": 329.63,
+          "duration": 2.5
+        },
+        {
+          "time": 13.5,
+          "frequency_hz": 440,
+          "duration": 2.5
+        },
+        {
+          "time": 19.5,
+          "frequency_hz": 329.63,
+          "duration": 2.5
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "district-sluice": {
+      "path": "audio/generated/district-sluice.wav",
+      "sha256": "e415ba2c4e53baef5354c435894c304c6551cddaff0c30a8c70ae4bdd5f71382",
+      "bytes": 4233644,
+      "seconds": 24.0,
+      "channels": 2,
+      "loop": true,
+      "loop_start_sample": 0,
+      "loop_end_sample": 1058400,
+      "peak_dbfs": -23.72,
+      "rms_dbfs": -38.58,
+      "events": [
+        {
+          "time": 1.5,
+          "frequency_hz": 440,
+          "duration": 2.5
+        },
+        {
+          "time": 7.5,
+          "frequency_hz": 392,
+          "duration": 2.5
+        },
+        {
+          "time": 13.5,
+          "frequency_hz": 329.63,
+          "duration": 2.5
+        },
+        {
+          "time": 19.5,
+          "frequency_hz": 293.66,
+          "duration": 2.5
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "district-ember": {
+      "path": "audio/generated/district-ember.wav",
+      "sha256": "0a05d751592637c3201223e236bf901361cbf0307b859987aec0bdf97b5ac455",
+      "bytes": 4233644,
+      "seconds": 24.0,
+      "channels": 2,
+      "loop": true,
+      "loop_start_sample": 0,
+      "loop_end_sample": 1058400,
+      "peak_dbfs": -23.41,
+      "rms_dbfs": -38.58,
+      "events": [
+        {
+          "time": 1.5,
+          "frequency_hz": 146.83,
+          "duration": 2.5
+        },
+        {
+          "time": 7.5,
+          "frequency_hz": 220,
+          "duration": 2.5
+        },
+        {
+          "time": 13.5,
+          "frequency_hz": 196,
+          "duration": 2.5
+        },
+        {
+          "time": 19.5,
+          "frequency_hz": 164.81,
+          "duration": 2.5
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    },
+    "district-terminus": {
+      "path": "audio/generated/district-terminus.wav",
+      "sha256": "8a7ccbe6cac842321475cb03d18d6e7f9afb618caecdf2c6262baa9e0ed15415",
+      "bytes": 4233644,
+      "seconds": 24.0,
+      "channels": 2,
+      "loop": true,
+      "loop_start_sample": 0,
+      "loop_end_sample": 1058400,
+      "peak_dbfs": -23.72,
+      "rms_dbfs": -38.58,
+      "events": [
+        {
+          "time": 1.5,
+          "frequency_hz": 440,
+          "duration": 2.5
+        },
+        {
+          "time": 7.5,
+          "frequency_hz": 369.99,
+          "duration": 2.5
+        },
+        {
+          "time": 13.5,
+          "frequency_hz": 329.63,
+          "duration": 2.5
+        },
+        {
+          "time": 19.5,
+          "frequency_hz": 293.66,
+          "duration": 2.5
+        }
+      ],
+      "listening_status": "NOT_AUDITIONED",
+      "verification": "PCM header, peak/RMS and boundary checks only"
+    }
+  },
+  "budget": {
+    "download_bytes": 18476796,
+    "max_active_ambience_pcm_bytes": 8467200,
+    "load_policy": "Lazy-load one district buffer; short cues can preload after audio unlock. WAV masters retained; no compressed codec dependency."
+  },
+  "cataclysm_1_5_supplement": {
+    "index": "fishing-audio-index.json",
+    "status": "PARTIAL_PREPARED_NOT_RUNTIME_INTEGRATED",
+    "report": "STUDIO/ANIMATION_AUDIO_REPORT.md",
+    "note": "Existing entries are inherited 1.4; separate supplemental index describes new Pass03 media."
+  }
+}

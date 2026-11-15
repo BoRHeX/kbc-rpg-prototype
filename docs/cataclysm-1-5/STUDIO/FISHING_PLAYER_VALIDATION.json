@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "draw_calls": 160,
+  "scope": "descriptor timing and finite Canvas arguments under test double; not browser pixels"
+}
