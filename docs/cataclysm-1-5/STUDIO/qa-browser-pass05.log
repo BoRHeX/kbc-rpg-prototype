@@ -1,0 +1,58 @@
+(node:10) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+browserType.launch: Timeout 15000ms exceeded.
+Call log:
+[2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/tmp/playwright_chromiumdev_profile-ywbD6x --remote-debugging-pipe --no-startup-window[22m
+[2m  - <launched> pid=21[22m
+[2m  - [pid=21][err] [21:21:1115/151930.314223:ERROR:third_party/crashpad/crashpad/util/linux/socket.cc:45] setsockopt: Operation not permitted (1)[22m
+[2m  - [pid=21][err] [21:21:1115/151930.329028:FATAL:components/crash/core/app/crashpad_linux.cc:268] Check failed: client.StartHandler(handler_path, *database_path, metrics_path, url, annotations, arguments, false, false, attachments, preserve_handles).[22m
+[2m  - [pid=21][err] #0 0x55b58b745f72 base::debug::CollectStackTrace()[22m
+[2m  - [pid=21][err] #1 0x55b58b73035e base::debug::StackTrace::StackTrace()[22m
+[2m  - [pid=21][err] #2 0x55b58b66292c logging::LogMessage::Flush()[22m
+[2m  - [pid=21][err] #3 0x55b58b6627fc logging::LogMessage::~LogMessage()[22m
+[2m  - [pid=21][err] #4 0x55b58b64b0f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()[22m
+[2m  - [pid=21][err] #5 0x55b58b64addb logging::CheckNoreturnError::~CheckNoreturnError()[22m
+[2m  - [pid=21][err] #6 0x55b58f9b7984 crash_reporter::internal::PlatformCrashpadInitialization()[22m
+[2m  - [pid=21][err] #7 0x55b58f9b30c2 crash_reporter::InitializeCrashpad()[22m
+[2m  - [pid=21][err] #8 0x55b58433b6af ChromeMainDelegate::PreSandboxStartup()[22m
+[2m  - [pid=21][err] #9 0x55b58b62e4dc content::ContentMainRunnerImpl::Initialize()[22m
+[2m  - [pid=21][err] #10 0x55b58b62c13c content::RunContentProcess()[22m
+[2m  - [pid=21][err] #11 0x55b58b62c587 content::ContentMain()[22m
+[2m  - [pid=21][err] #12 0x55b58433937d ChromeMain[22m
+[2m  - [pid=21][err] #13 0x7fd79aa2a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)[22m
+[2m  - [pid=21][err] #14 0x7fd79aa2a28b __libc_start_main[22m
+[2m  - [pid=21][err] #15 0x55b58433902a _start[22m
+[2m  - [pid=21][err][22m
+[2m  - [pid=21][err] Received signal 6[22m
+[2m  - [pid=21][err] #0 0x55b58b745f72 base::debug::CollectStackTrace()[22m
+[2m  - [pid=21][err] #1 0x55b58b73035e base::debug::StackTrace::StackTrace()[22m
+[2m  - [pid=21][err] #2 0x55b58b7459d8 base::debug::(anonymous namespace)::StackDumpSignalHandler()[22m
+[2m  - [pid=21][err] #3 0x7fd79aa45330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)[22m
+[2m  - [pid=21][err] #4 0x7fd79aa9ec0c pthread_kill[22m
+[2m  - [pid=21][err] #5 0x7fd79aa4527e gsignal[22m
+[2m  - [pid=21][err] #6 0x7fd79aa288ff abort[22m
+[2m  - [pid=21][err] #7 0x55b58b71f165 base::debug::BreakDebuggerAsyncSafe()[22m
+[2m  - [pid=21][err] #8 0x55b58b663473 base::RepeatingCallback<>::Run()[22m
+[2m  - [pid=21][err] #9 0x55b58b663335 logging::LogMessage::HandleFatal()[22m
+[2m  - [pid=21][err] #10 0x55b58b662f27 logging::LogMessage::Flush()[22m
+[2m  - [pid=21][err] #11 0x55b58b6627fc logging::LogMessage::~LogMessage()[22m
+[2m  - [pid=21][err] #12 0x55b58b64b0f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()[22m
+[2m  - [pid=21][err] #13 0x55b58b64addb logging::CheckNoreturnError::~CheckNoreturnError()[22m
+[2m  - [pid=21][err] #14 0x55b58f9b7984 crash_reporter::internal::PlatformCrashpadInitialization()[22m
+[2m  - [pid=21][err] #15 0x55b58f9b30c2 crash_reporter::InitializeCrashpad()[22m
+[2m  - [pid=21][err] #16 0x55b58433b6af ChromeMainDelegate::PreSandboxStartup()[22m
+[2m  - [pid=21][err] #17 0x55b58b62e4dc content::ContentMainRunnerImpl::Initialize()[22m
+[2m  - [pid=21][err] #18 0x55b58b62c13c content::RunContentProcess()[22m
+[2m  - [pid=21][err] #19 0x55b58b62c587 content::ContentMain()[22m
+[2m  - [pid=21][err] #20 0x55b58433937d ChromeMain[22m
+[2m  - [pid=21][err] #21 0x7fd79aa2a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)[22m
+[2m  - [pid=21][err] #22 0x7fd79aa2a28b __libc_start_main[22m
+[2m  - [pid=21][err] #23 0x55b58433902a _start[22m
+[2m  - [pid=21][err]   r8: 00002378000b4fea  r9: 0000000000000361 r10: 0000000000000008 r11: 0000000000000246[22m
+[2m  - [pid=21][err]  r12: 0000000000000006 r13: 000000000000044b r14: 0000000000000016 r15: 00007ffde7e080a0[22m
+[2m  - [pid=21][err]   di: 0000000000000015  si: 0000000000000015  bp: 00007ffde7e07f50  bx: 0000000000000015[22m
+[2m  - [pid=21][err]   dx: 0000000000000006  ax: 0000000000000000  cx: 00007fd79aa9ec0c  sp: 00007ffde7e07f10[22m
+[2m  - [pid=21][err]   ip: 00007fd79aa9ec0c efl: 0000000000000246 cgf: 002b000000000033 erf: 0000000000000000[22m
+[2m  - [pid=21][err]  trp: 0000000000000000 msk: 0000000000000000 cr2: 0000000000000000[22m
+[2m  - [pid=21][err] [end of stack trace][22m
+

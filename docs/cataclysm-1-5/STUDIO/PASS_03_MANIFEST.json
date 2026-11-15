@@ -1,0 +1,146 @@
+{
+  "version": "1.5",
+  "pass": "03",
+  "status": "PARTIAL_MEDIA_PREPARED",
+  "runtime_integrated": false,
+  "browser_verified": false,
+  "listening_accepted": false,
+  "report": "STUDIO/ANIMATION_AUDIO_REPORT.md",
+  "files": [
+    {
+      "path": "STUDIO/ANIMATION_AUDIO_REPORT.md",
+      "bytes": 8646,
+      "sha256": "45b4433be1bba888d37bed2351c50fcfef55e5332901ca9c6dd51f47e8608922"
+    },
+    {
+      "path": "STUDIO/FISHING_MEDIA_BUILD.json",
+      "bytes": 1176,
+      "sha256": "ab1de9df983c975ccd1f292f560be5dbe7e793484b392af647431fdba7ce31b7"
+    },
+    {
+      "path": "STUDIO/FISHING_MEDIA_VALIDATION.json",
+      "bytes": 3705,
+      "sha256": "d2dcc4301988f1c98ef3b541984358c2601d3e0a95b43b4ad0f6bf6bd27f2959"
+    },
+    {
+      "path": "STUDIO/FISHING_PLAYER_VALIDATION.json",
+      "bytes": 142,
+      "sha256": "bfd1442cf358561604d10fe86ba9f3b394678c1be434d82333d1e4b1cbf69ba8"
+    },
+    {
+      "path": "STUDIO/tools/prepare_fishing_media.py",
+      "bytes": 11884,
+      "sha256": "64af9483c1e65202fc12729cc22387aab6a7a96196b802fe08c7199c592eeace"
+    },
+    {
+      "path": "STUDIO/tools/validate_fishing_media.py",
+      "bytes": 2711,
+      "sha256": "644eda867ffa83b2871eb05eaea75452aeee9bee05bb2974e77d217ee200a7f5"
+    },
+    {
+      "path": "art/animated/fishing-cat-mobile.png",
+      "bytes": 246476,
+      "sha256": "38f5f78c0a87dd13a2455d3a0fcb6eece4a6f3d1424b96a4b09dc4b03c46dae7"
+    },
+    {
+      "path": "art/animated/fishing-cat-strip.png",
+      "bytes": 875853,
+      "sha256": "ab1d6752f8e21aeab77ac4733f6f1cd3ad5415b81b1642c9926a1702ef3a3c62"
+    },
+    {
+      "path": "art/animated/fishing-frame-index.json",
+      "bytes": 18687,
+      "sha256": "55bd24bb32e214f02a581e8bea492638eef4fcfa29b331413b7b975c2d3f35d0"
+    },
+    {
+      "path": "art/animated/fishing-gear-mobile.png",
+      "bytes": 144544,
+      "sha256": "d339ae0f6de3396f6c0baaddee9c9c64bfa59d32e2583862cceb9a11a7a5d58a"
+    },
+    {
+      "path": "art/animated/fishing-gear-strip.png",
+      "bytes": 534418,
+      "sha256": "66060cca330957fc04577c2efdfa99d75ea923eef0576313caafb38814bb55d4"
+    },
+    {
+      "path": "art/animated/fishing-locations-mobile.png",
+      "bytes": 208117,
+      "sha256": "15914aaf09a87ed2959d3edb1c454e37ffbf9feb6b2a37d03d71e3f22a848b89"
+    },
+    {
+      "path": "art/animated/fishing-locations-strip.png",
+      "bytes": 817232,
+      "sha256": "6cb4f6135f7932d37685487885912478bcf57db6a09c243a15fcaefab067f674"
+    },
+    {
+      "path": "art/animated/fishing-mutant-mobile.png",
+      "bytes": 156857,
+      "sha256": "2e4bea919cd2de852aab31d97e3bf9595dce705c93dc461f0c4b621d54692a16"
+    },
+    {
+      "path": "art/animated/fishing-mutant-strip.png",
+      "bytes": 575978,
+      "sha256": "20208f24b138bb5dd846947ade7babebdb60967f7b9524899f31040f105f1794"
+    },
+    {
+      "path": "art/animated/fishing-preview.html",
+      "bytes": 2327,
+      "sha256": "da29142666b71f7964df42257e19da8b1623d638c0e74428a2dd383e04336c13"
+    },
+    {
+      "path": "art/animated/fishing-sprite-player.js",
+      "bytes": 2246,
+      "sha256": "9e80d2a5982c0b03c9deafdb3b9298e7c5044580fb18fc28ac1bac5f4c0a62eb"
+    },
+    {
+      "path": "art/animated/frame-index.json",
+      "bytes": 24720,
+      "sha256": "f235c5d2d22402e9a54fa73f308242391c58991b6441c64418fc0342bd14ce8e"
+    },
+    {
+      "path": "audio/generated/audio-index.json",
+      "bytes": 13513,
+      "sha256": "9580d165b328ddbe50df235f34ad21e3cbedbcd2d047c8d33550a07e50b0d83c"
+    },
+    {
+      "path": "audio/generated/fishing-ambush-tension.wav",
+      "bytes": 141164,
+      "sha256": "084e6d7e24fd4b6963c4b925e0c2e91d941d316d42baf65481560686850597e8"
+    },
+    {
+      "path": "audio/generated/fishing-audio-index.json",
+      "bytes": 5099,
+      "sha256": "ecbfb24b5e3f259cc8be5674e99cded7486f4af98f0ca46a61535a4b594a173e"
+    },
+    {
+      "path": "audio/generated/fishing-bite-warning.wav",
+      "bytes": 24300,
+      "sha256": "c0be2e5171c624f7803b0974d7fe597eafef47ab1fd83c734fb94f08b21c840f"
+    },
+    {
+      "path": "audio/generated/fishing-cast-splash.wav",
+      "bytes": 30914,
+      "sha256": "f084e736fee284b1aa2afb5b4dad1192d82efff9cdaaa97bd2e02c0f5c3f384f"
+    },
+    {
+      "path": "audio/generated/fishing-jackpot.wav",
+      "bytes": 105884,
+      "sha256": "25ee1d2f5df517a7a159c1c83a4100630612e44eebbd43019199b851de540e5c"
+    },
+    {
+      "path": "audio/generated/fishing-rare-catch.wav",
+      "bytes": 66194,
+      "sha256": "58a9234b4cd8bc8c31f5e3d7eff85101c56a775ff7c864f5581594e3ca1c2ef8"
+    },
+    {
+      "path": "audio/generated/fishing-reel.wav",
+      "bytes": 44144,
+      "sha256": "70978cbd696c4970c51d436cab7ad622efc532c3258adf977a7f6a14e285fe16"
+    },
+    {
+      "path": "audio/generated/fishing-water-ambience.wav",
+      "bytes": 352844,
+      "sha256": "d45cd8f2386a87cef11c59899860135a1ca96599ad614356b2d08aa30e6924cd"
+    }
+  ]
+}

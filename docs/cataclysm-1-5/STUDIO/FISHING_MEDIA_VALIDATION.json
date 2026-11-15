@@ -1,0 +1,129 @@
+{
+  "status": "PASS",
+  "scope": "file integrity, source/frame bounds, nonempty frames, animation references, PCM format/non-silence/no clipping/loop endpoints",
+  "not_verified": [
+    "browser decode/drawing",
+    "audio listening",
+    "mobile performance",
+    "clean alpha edge composition",
+    "runtime gameplay integration"
+  ],
+  "checks": [
+    {
+      "path": "art/generated/fishing_pond_world_atlas.png",
+      "sha256": "32cf84bf4eb0e630a32b47bf5757c1eb3e79d32c50fd9911a61fd7465e46ddcb",
+      "result": "PASS"
+    },
+    {
+      "path": "art/generated/fishing_cat_gear_atlas.png",
+      "sha256": "a9230824dccc9930c953793306160cee177dba96364eadd3a48129b93bf90dd0",
+      "result": "PASS"
+    },
+    {
+      "path": "art/generated/abyssal_catch_mutant_atlas.png",
+      "sha256": "d9ac10c7594d8a10a11bae3af1ba0b5e7e6be3a24c6f003c83902cfce34ad9dc",
+      "result": "PASS"
+    },
+    {
+      "path": "art/animated/fishing-cat-strip.png",
+      "sha256": "02579829de96203cda06b05a725d3a5b87bf795ea83bab1ee3775b3583693f56",
+      "result": "PASS",
+      "frames": 7
+    },
+    {
+      "path": "art/animated/fishing-gear-strip.png",
+      "sha256": "66060cca330957fc04577c2efdfa99d75ea923eef0576313caafb38814bb55d4",
+      "result": "PASS",
+      "frames": 6
+    },
+    {
+      "path": "art/animated/fishing-mutant-strip.png",
+      "sha256": "c0396d9c7bce759ca288f2884c72dd1bf8e00223f762cd567351ab9ac0f3429e",
+      "result": "PASS",
+      "frames": 4
+    },
+    {
+      "path": "art/animated/fishing-locations-strip.png",
+      "sha256": "6cb4f6135f7932d37685487885912478bcf57db6a09c243a15fcaefab067f674",
+      "result": "PASS",
+      "frames": 5
+    },
+    {
+      "path": "audio/generated/fishing-water-ambience.wav",
+      "sha256": "d45cd8f2386a87cef11c59899860135a1ca96599ad614356b2d08aa30e6924cd",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 7227.990736434739,
+      "end_samples": [
+        0,
+        0
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-cast-splash.wav",
+      "sha256": "f084e736fee284b1aa2afb5b4dad1192d82efff9cdaaa97bd2e02c0f5c3f384f",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 3374.2798996438137,
+      "end_samples": [
+        0,
+        0
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-bite-warning.wav",
+      "sha256": "c0be2e5171c624f7803b0974d7fe597eafef47ab1fd83c734fb94f08b21c840f",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 9673.718017792531,
+      "end_samples": [
+        0,
+        0
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-reel.wav",
+      "sha256": "70978cbd696c4970c51d436cab7ad622efc532c3258adf977a7f6a14e285fe16",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 6586.274575357109,
+      "end_samples": [
+        0,
+        -1
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-rare-catch.wav",
+      "sha256": "58a9234b4cd8bc8c31f5e3d7eff85101c56a775ff7c864f5581594e3ca1c2ef8",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 6918.894625225991,
+      "end_samples": [
+        0,
+        -1
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-jackpot.wav",
+      "sha256": "25ee1d2f5df517a7a159c1c83a4100630612e44eebbd43019199b851de540e5c",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 6284.792155648542,
+      "end_samples": [
+        0,
+        0
+      ]
+    },
+    {
+      "path": "audio/generated/fishing-ambush-tension.wav",
+      "sha256": "084e6d7e24fd4b6963c4b925e0c2e91d941d316d42baf65481560686850597e8",
+      "result": "PASS",
+      "peak_pcm": 25558,
+      "rms_pcm": 5572.777386542323,
+      "end_samples": [
+        0,
+        0
+      ]
+    }
+  ]
+}

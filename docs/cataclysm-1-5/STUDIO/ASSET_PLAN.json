@@ -1,0 +1,3360 @@
+{
+  "schema_version": 1,
+  "title": "CATACLYSM 1.5 — HOOK, LINE & CATNIP",
+  "pass": "01_CONCEPT",
+  "date": "2026-11-15",
+  "status": "SPECIFICATION_ONLY",
+  "baseline": "docs/cataclysm-1-4/",
+  "allowed_edit_root": "docs/cataclysm-1-5/",
+  "concept": "STUDIO/CONCEPT.md",
+  "new_original_image_limit": 3,
+  "authority": {
+    "latest": "Owner-approved 1.5 scope and 15 November 1.4 playtest",
+    "ledger": "game_factory/CATACLYSM_MASTER_LEDGER.json",
+    "standing_policy": "game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md",
+    "policy_conflict": "Owner order overrides older 1.3 baseline and per-asset approval wording; no stable promotion"
+  },
+  "feature_coverage": [
+    {
+      "id": "CAT-15-01",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Seeded places and movement timing",
+      "test_contracts": [
+        "T01",
+        "T02",
+        "T09"
+      ]
+    },
+    {
+      "id": "CAT-15-02",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Cards and kit",
+      "test_contracts": [
+        "T03",
+        "T08"
+      ]
+    },
+    {
+      "id": "CAT-15-03",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Catch and danger tables",
+      "test_contracts": [
+        "T03",
+        "T06"
+      ]
+    },
+    {
+      "id": "CAT-15-04",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Economy and bounded challenge",
+      "test_contracts": [
+        "T04",
+        "T07"
+      ]
+    },
+    {
+      "id": "CAT-15-05",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Separate jackpot",
+      "test_contracts": [
+        "T05"
+      ]
+    },
+    {
+      "id": "CAT-15-06",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Illustration and sound direction",
+      "test_contracts": [
+        "T02",
+        "T09"
+      ]
+    },
+    {
+      "id": "CAT-15-07",
+      "status": "specified_not_implemented_by_this_pass",
+      "spec_section": "Test contracts",
+      "test_contracts": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10"
+      ]
+    }
+  ],
+  "source_inventory": {
+    "status": "Read-only inventory of actual predecessor files; hashes computed in Pass01, no copy or new authorship claim",
+    "baseline_code": [
+      {
+        "path": "docs/cataclysm-1-4/game.js",
+        "sha256": "1896d2459051d663a6ffbb3bc940a97599cb97b3c857d27899a5f0062b3585fc"
+      },
+      {
+        "path": "docs/cataclysm-1-4/company.js",
+        "sha256": "3e247add1ffe2a03906cadb140515d2d0c64770262cd9f62698fdccef99e10ee"
+      },
+      {
+        "path": "docs/cataclysm-1-4/score.js",
+        "sha256": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a"
+      },
+      {
+        "path": "docs/cataclysm-1-4/campaign.js",
+        "sha256": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6"
+      },
+      {
+        "path": "docs/cataclysm-1-4/hero-illustrated.js",
+        "sha256": "7854f76e67cccf67b1eb6a1432ffb6d9ac7ba884d8d1766f805089d48faca7b4"
+      },
+      {
+        "path": "docs/cataclysm-1-4/company-presentation.js",
+        "sha256": "4e1722b411100c8f1b5c11334674c100e4927b21daee755b00eef7c489d9bf4c"
+      }
+    ],
+    "assets": [
+      {
+        "source_path": "docs/cataclysm-1-4/art/alley-king-run.png",
+        "relative_path": "art/alley-king-run.png",
+        "bytes": 63793,
+        "sha256": "c49e78b3a5c751b1e7e51dcb1bf70acab5bffeee03fc72f4c1dc117e1a04246f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-alley-moss.png",
+        "relative_path": "art/animated/city-alley-moss.png",
+        "bytes": 53382,
+        "sha256": "96c2be859d3fec1e99a23e32824192faa988953cf0e5357f2a4fe47eff3ebfec",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          74,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-archway.png",
+        "relative_path": "art/animated/city-archway.png",
+        "bytes": 71734,
+        "sha256": "d7eb6ad7ba8850d6aed626534814822fe25e1fa130e4ea439f4cdb43f5e2fa3f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          130,
+          190
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-asphalt.png",
+        "relative_path": "art/animated/city-asphalt.png",
+        "bytes": 20826,
+        "sha256": "49a6b03c7e49a2b99d6d86c17e3f4959f40664ee9b2e47ff897447145b0c204c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          90,
+          86
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-crossing.png",
+        "relative_path": "art/animated/city-crossing.png",
+        "bytes": 25079,
+        "sha256": "2f2d89fbf937071bf1aef05b749a32ecc601f2f7da81323400bacbe65ccfd2ed",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          90,
+          95
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-moss-ground.png",
+        "relative_path": "art/animated/city-moss-ground.png",
+        "bytes": 22254,
+        "sha256": "967241ecdb59f62703e9a4868e48f633782be88dd50c35d21536543b32657636",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          89,
+          86
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-paving-blue.png",
+        "relative_path": "art/animated/city-paving-blue.png",
+        "bytes": 23705,
+        "sha256": "47347478ae2705b9c1889b81697b95de7a649f2fa8f6c721637b66e2b9af006f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          90,
+          86
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-paving-grey.png",
+        "relative_path": "art/animated/city-paving-grey.png",
+        "bytes": 22793,
+        "sha256": "65631d34c1d299ab0127e58408f06a1f81037256d3a5d72da10f09f708fcccc7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          92,
+          86
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-shop-neon.png",
+        "relative_path": "art/animated/city-shop-neon.png",
+        "bytes": 75197,
+        "sha256": "2ad167f4bd02981492174c22ec26e7b3c546a8c7b816ce17b5f2bb99bc73030f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          143,
+          178
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-shop-warm.png",
+        "relative_path": "art/animated/city-shop-warm.png",
+        "bytes": 90983,
+        "sha256": "d307b113d7eb7d5f810ea5fc4b7a2c53cc690b752aab8c291debc5e6373f8153",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          174,
+          181
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-water.png",
+        "relative_path": "art/animated/city-water.png",
+        "bytes": 21830,
+        "sha256": "d8a31798e08e484889599357ae908a1362c72e7a6d513e3a7aa38a71791bb1b7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          86,
+          86
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-waterfront.png",
+        "relative_path": "art/animated/city-waterfront.png",
+        "bytes": 93101,
+        "sha256": "3c2c319def496caadffaf8194867016a7d0950c8bba73d79c883028c7420508e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          138,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/city-wet-street.png",
+        "relative_path": "art/animated/city-wet-street.png",
+        "bytes": 90526,
+        "sha256": "43f2efeda7312e969fc0cf020bc44fe00da1da4cba1f596938d223722a8fbf03",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          123,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-attack-0.png",
+        "relative_path": "art/animated/guardian-attack-0.png",
+        "bytes": 69425,
+        "sha256": "9828fd149156466e50202a0070f23a94d6c6153ca4aca2ecffe6bb1e148fcdee",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-attack-1.png",
+        "relative_path": "art/animated/guardian-attack-1.png",
+        "bytes": 69424,
+        "sha256": "29ca2a83e6ed50510843cbf511a46721d2bf4dfc90f0d038b3e525a7b3c234bd",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-frames.png",
+        "relative_path": "art/animated/guardian-frames.png",
+        "bytes": 323294,
+        "sha256": "8d1035fb878cc2bd4d20954739fa3b4192446f626df724907dbd51dbde5f139c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2048,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-hit-0.png",
+        "relative_path": "art/animated/guardian-hit-0.png",
+        "bytes": 84901,
+        "sha256": "194c8a7ab6243bab9a82c07442518eb3896654b809edee4c6a49644e648aab62",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-hit-1.png",
+        "relative_path": "art/animated/guardian-hit-1.png",
+        "bytes": 84897,
+        "sha256": "4786de07d21036e096b074abeb330287c2f38b526314f6f9980b3706f267313a",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-idle-0.png",
+        "relative_path": "art/animated/guardian-idle-0.png",
+        "bytes": 84450,
+        "sha256": "80cbbbdafee1795542fb67370978a767d3b59a0a44dd3f54489eb2871bf76c5a",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-idle-1.png",
+        "relative_path": "art/animated/guardian-idle-1.png",
+        "bytes": 84450,
+        "sha256": "c4663492b83e52baa6b38595ec11d744eb97e39a983a3666470990b926c07b5e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-stalk-0.png",
+        "relative_path": "art/animated/guardian-stalk-0.png",
+        "bytes": 74091,
+        "sha256": "ff12f627a8644342844eefbb076a0dd262066608692376c5fa4fb17aedafcf36",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/guardian-stalk-1.png",
+        "relative_path": "art/animated/guardian-stalk-1.png",
+        "bytes": 74097,
+        "sha256": "ca146ce5561dde9173fd53f2295e8c28d79688b8756b031200a6f54f108cb512",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-frames.png",
+        "relative_path": "art/animated/mecha-frames.png",
+        "bytes": 394472,
+        "sha256": "a614f462ef75ddee673698b284aa39471849dfcb8c6fad0ec2a7f1335645424a",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2048,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-overheat-0.png",
+        "relative_path": "art/animated/mecha-overheat-0.png",
+        "bytes": 100314,
+        "sha256": "2e048fede964afffd98e3fd4cb5cf60ca0e223b670e0b54a043d3032d9af5c7e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-overheat-1.png",
+        "relative_path": "art/animated/mecha-overheat-1.png",
+        "bytes": 100306,
+        "sha256": "8b9cb94225b0fdc4443c1592f71748788dc1b528c7a4232b56cbea8d57809ce0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-repair-0.png",
+        "relative_path": "art/animated/mecha-repair-0.png",
+        "bytes": 94597,
+        "sha256": "ad2137468c7e3c9b5f425d024fc6533b41be5dd3ac83c39a538e9392e526e32d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-repair-1.png",
+        "relative_path": "art/animated/mecha-repair-1.png",
+        "bytes": 94600,
+        "sha256": "1647a81f2317a56eaccf05605eae8604de30e31f8c4b4dace8bdfa4bfd1ac185",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-shoot-0.png",
+        "relative_path": "art/animated/mecha-shoot-0.png",
+        "bytes": 95841,
+        "sha256": "834c508cd6eab6d9cbf84a494d4ca9f4044cbb204cc549078976885eeb120725",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-shoot-1.png",
+        "relative_path": "art/animated/mecha-shoot-1.png",
+        "bytes": 95842,
+        "sha256": "a13f5bb7d2af6da8f270ba0cd0888da0043654fb1f53f73793132d500260f171",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-walk-0.png",
+        "relative_path": "art/animated/mecha-walk-0.png",
+        "bytes": 92414,
+        "sha256": "a2252eee998d3cae3cd64deec7877c53763863713375bb3578dc86e5ae6f57a8",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/animated/mecha-walk-1.png",
+        "relative_path": "art/animated/mecha-walk-1.png",
+        "bytes": 92417,
+        "sha256": "5afdea79d3807d65323e642a73694e56440c6912d759d7d1b77d9f9897430458",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          256,
+          256
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/bard-run.png",
+        "relative_path": "art/bard-run.png",
+        "bytes": 123265,
+        "sha256": "ff7d38efe2b843aaa709d2f171cffc27a69443cd2fb574b351d1a06a87e88ac3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/blight-run.png",
+        "relative_path": "art/blight-run.png",
+        "bytes": 72091,
+        "sha256": "51398665fcd18f79565c3850ecc88e5ce12ffa93684dcbce07d3a514df70ba6e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/brawler-run.png",
+        "relative_path": "art/brawler-run.png",
+        "bytes": 107450,
+        "sha256": "79126411c9ac440520c3d12478e639aa59c133f9eadf71149d73061eb673d242",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/cards/fish.svg",
+        "relative_path": "art/cards/fish.svg",
+        "bytes": 962,
+        "sha256": "5748a43560eb947bcac55e96f30587bbfc0bc32fba050047e941b31995eef7b2",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/cards/fleet.svg",
+        "relative_path": "art/cards/fleet.svg",
+        "bytes": 879,
+        "sha256": "fe8c1d1528267cc4d88808567fc091f3eabfe8babbba3c4bfb3aa031513b38f3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/cards/prism.svg",
+        "relative_path": "art/cards/prism.svg",
+        "bytes": 939,
+        "sha256": "ac1b8dbf266e9b6e411f7e4f49f7566f4df6d7d7c7fd40a0fd69063a4fd7ced0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/cards/ward.svg",
+        "relative_path": "art/cards/ward.svg",
+        "bytes": 930,
+        "sha256": "171f957b7cbad70f225b0caf756326655968947c906dd27d9dfc66c2e8995bfb",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/cards/weapon.svg",
+        "relative_path": "art/cards/weapon.svg",
+        "bytes": 919,
+        "sha256": "6439722d53da8b5d0b6977a302fdd017e65aa75d2c5091dadb3bee8c2c8c773e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/bard/attack.png",
+        "relative_path": "art/characters/bard/attack.png",
+        "bytes": 95781,
+        "sha256": "896409b3e2dccb86095427c8c0584951a4c9ede0363077dfb7116a7c5910ce89",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/bard/hit.png",
+        "relative_path": "art/characters/bard/hit.png",
+        "bytes": 90116,
+        "sha256": "766cf1190cd10c79b0c58952690fb72d918a1ad150a48e357f3542a63b584fb0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/bard/special.png",
+        "relative_path": "art/characters/bard/special.png",
+        "bytes": 91886,
+        "sha256": "cf501a7fcec1dc3281c3248e3a9f1186ff2454601cc9b1c1c48ebf3153266295",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/brawler/attack.png",
+        "relative_path": "art/characters/brawler/attack.png",
+        "bytes": 87623,
+        "sha256": "ed2dcbed85db67c5aa8f005e47f2e7949bdbcaa2ae127d23939459e7a5418122",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/brawler/hit.png",
+        "relative_path": "art/characters/brawler/hit.png",
+        "bytes": 81208,
+        "sha256": "32a4913c7112931b135c5bfce05a5d7c2377acc4cbf91cdc029875b6c91c6583",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/brawler/special.png",
+        "relative_path": "art/characters/brawler/special.png",
+        "bytes": 85780,
+        "sha256": "710818c918feeb5309380df5f0268f562a741982f513180535384b42e1ae08ce",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/engineer/attack.png",
+        "relative_path": "art/characters/engineer/attack.png",
+        "bytes": 98626,
+        "sha256": "0b8e52b58897694be6c7dcfb7928607ae04d68bc2e5a6333f79184f9be20ca50",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/engineer/hit.png",
+        "relative_path": "art/characters/engineer/hit.png",
+        "bytes": 91213,
+        "sha256": "1b889c88230f2d7f173ed6b604aa1e807b51a477bb2d58561ec3f525d37d547a",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/engineer/special.png",
+        "relative_path": "art/characters/engineer/special.png",
+        "bytes": 101526,
+        "sha256": "98d47dd2b24fce445c50654c1986252b7277880e971e7183c92f091d3188442d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/healer/attack.png",
+        "relative_path": "art/characters/healer/attack.png",
+        "bytes": 84693,
+        "sha256": "1436f9dca4d3dfc47963ec31c4bed40a87b9d5f1b1262a0b5bd91bae0f4e183f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/healer/hit.png",
+        "relative_path": "art/characters/healer/hit.png",
+        "bytes": 84081,
+        "sha256": "342fedcd7850e0719484117e3d09059f08265b4dae95eec2fb2b087a748f09a6",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/healer/special.png",
+        "relative_path": "art/characters/healer/special.png",
+        "bytes": 91424,
+        "sha256": "956da0f8f1ad04a786d4954ec30592fdd300fa6d35ad9343bd323aa22fe86d78",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/adrenaline.png",
+        "relative_path": "art/characters/hero/adrenaline.png",
+        "bytes": 96251,
+        "sha256": "94c1851d3f9b0b66885566fd670ea689a733083ecc02e86fbca2f0646587cc20",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/aim.png",
+        "relative_path": "art/characters/hero/aim.png",
+        "bytes": 84585,
+        "sha256": "a1274f6079befa9572ddd7f4796313e115ea7d340a0ecff4b53ff667ebe37b12",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/anchor.png",
+        "relative_path": "art/characters/hero/anchor.png",
+        "bytes": 1414745,
+        "sha256": "2d9e979f75d15701b1f9a7ca25869657a3d3361250136e95dfda3e43212be790",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/adrenaline-fire.png",
+        "relative_path": "art/characters/hero/articulated-v1/adrenaline-fire.png",
+        "bytes": 746197,
+        "sha256": "31faff4688822e5831e767b6800c71c98b2a44803454fb756817fcca359ab6ef",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/adrenaline.png",
+        "relative_path": "art/characters/hero/articulated-v1/adrenaline.png",
+        "bytes": 686596,
+        "sha256": "27afec15b8aaeb07511a6b7595320fe507b74fb0ff424f169b46dcb40b3bec71",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/attack.png",
+        "relative_path": "art/characters/hero/articulated-v1/attack.png",
+        "bytes": 470827,
+        "sha256": "e0ae854e5835ffe4134ed3cd94a34f522f4ea030c8423eab32b17f5995aeef50",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/feral-fire.png",
+        "relative_path": "art/characters/hero/articulated-v1/feral-fire.png",
+        "bytes": 746649,
+        "sha256": "2a3eae281a749343db05536cf6dc922967378f5dad2cc34488f2ba98f082a601",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/feral.png",
+        "relative_path": "art/characters/hero/articulated-v1/feral.png",
+        "bytes": 685003,
+        "sha256": "c7919e9fc29b14434fbdf41b03d0757fb21c269c92826975563ea1556d51ae61",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/hit.png",
+        "relative_path": "art/characters/hero/articulated-v1/hit.png",
+        "bytes": 548145,
+        "sha256": "51b9a3752f3f96b570e79a3d48a9c09a875eaa2be70ceab68271a36b4c8b01cb",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/idle.png",
+        "relative_path": "art/characters/hero/articulated-v1/idle.png",
+        "bytes": 625077,
+        "sha256": "936d6bceac311dbefeef5291c9990f64d4065ab2fe1a8588676b2f095ab60e7f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/recover.png",
+        "relative_path": "art/characters/hero/articulated-v1/recover.png",
+        "bytes": 541383,
+        "sha256": "f1459e3d84003e034fd29976787106df41856c281e4dea62b3deaa95f250a09c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/run-fire.png",
+        "relative_path": "art/characters/hero/articulated-v1/run-fire.png",
+        "bytes": 749015,
+        "sha256": "d4f72c950ebc45a7ebbe0695f1b7fac33e6208c0f6b57e9c41e0345ddc5bd5e6",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/articulated-v1/run.png",
+        "relative_path": "art/characters/hero/articulated-v1/run.png",
+        "bytes": 688440,
+        "sha256": "9a2f7df5f1d7bc2f791c4c508ffe931a382eb2e46adf3fc356bae3b9b4b318b5",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/attack.png",
+        "relative_path": "art/characters/hero/attack.png",
+        "bytes": 95800,
+        "sha256": "b424ccf255041eafe87bce9ddefd718b51194af30f1632b0fbdcc201cae976f2",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/directed-attack.png",
+        "relative_path": "art/characters/hero/directed-attack.png",
+        "bytes": 198217,
+        "sha256": "1079bc3c99a3ee8bc54f9ad7c5d76c62479a04005c09c0f7e787018d8f79fe2d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          6144,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/directed-idle.png",
+        "relative_path": "art/characters/hero/directed-idle.png",
+        "bytes": 154874,
+        "sha256": "6ba4c9e54e376f9ed4efba4ab94cb85b5071ac32a1574342bcefa438f77ddcc7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          4608,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/directed-run.png",
+        "relative_path": "art/characters/hero/directed-run.png",
+        "bytes": 175923,
+        "sha256": "10e348f57af28a786d86c2b584ffed5b10b2dcc9b26588f75bae1c654547414d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          6144,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/feral.png",
+        "relative_path": "art/characters/hero/feral.png",
+        "bytes": 105240,
+        "sha256": "ca236cf4ba5d660fdd133da2ce425d3a90dd20e5df620a835d54ae179aaf9fe3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/hero-ik-rig-v1/calf.png",
+        "relative_path": "art/characters/hero/hero-ik-rig-v1/calf.png",
+        "bytes": 1737,
+        "sha256": "691bb5c6b4700fede0f41d6ced0b6f365d13d3854006e406adb73a0810c9b9f7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          18,
+          34
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/hero-ik-rig-v1/paw.png",
+        "relative_path": "art/characters/hero/hero-ik-rig-v1/paw.png",
+        "bytes": 1141,
+        "sha256": "de382ba93edd594401002b82de054662959f874a2c9653b5106c92608d3f941f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          24,
+          16
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/hero-ik-rig-v1/thigh.png",
+        "relative_path": "art/characters/hero/hero-ik-rig-v1/thigh.png",
+        "bytes": 1679,
+        "sha256": "91ff320755d625e9453a3d9d4eb529edec3fd2affe99bad2c2dbfcce7bf16825",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          20,
+          32
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/hero-ik-rig-v1/torso.png",
+        "relative_path": "art/characters/hero/hero-ik-rig-v1/torso.png",
+        "bytes": 239604,
+        "sha256": "1c80c5f1185da3fb9ad30f0c28638517c058192dc7f68fa1a5b71e523a010a8b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          384,
+          768
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/hit.png",
+        "relative_path": "art/characters/hero/hit.png",
+        "bytes": 75307,
+        "sha256": "a74239549b3d650416a6640530d3e330348e924367a0d8f69d51c77d237b6c1d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/idle.png",
+        "relative_path": "art/characters/hero/idle.png",
+        "bytes": 74056,
+        "sha256": "5f55caaf5c71cca7c1ff38c93d4f11f201fc5eaf7d7866073a0893c2f66c57cc",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/hero/run.png",
+        "relative_path": "art/characters/hero/run.png",
+        "bytes": 89832,
+        "sha256": "8484512d0f3b14727673cfc02128058d08fd84f6e39f204fc2b409b70714b64d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/shooter/attack.png",
+        "relative_path": "art/characters/shooter/attack.png",
+        "bytes": 74696,
+        "sha256": "9f49d7503225ee3cac34bbe76c788e66e37ed4df3287ad0fa7c988033045cb07",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/shooter/hit.png",
+        "relative_path": "art/characters/shooter/hit.png",
+        "bytes": 81442,
+        "sha256": "df4cbd1a069a3e84d0fc8905e0b27cd18c0a63e5afd0bff33046e814c208c31f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/shooter/special.png",
+        "relative_path": "art/characters/shooter/special.png",
+        "bytes": 78524,
+        "sha256": "9e66718eddbf22d5b7526f8b9f52394ae0e70020a31ccbbb0d80873ee519d643",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/sniper/attack.png",
+        "relative_path": "art/characters/sniper/attack.png",
+        "bytes": 79291,
+        "sha256": "fbde97896ab9e3b1d7a948ba29928014806e442aa8a3c904a03fbd60fc514c60",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/sniper/hit.png",
+        "relative_path": "art/characters/sniper/hit.png",
+        "bytes": 79185,
+        "sha256": "2209a9e39fcd1da51a16f0cc948304a02201d3c865fd226577fb26146339cf73",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/sniper/special.png",
+        "relative_path": "art/characters/sniper/special.png",
+        "bytes": 79343,
+        "sha256": "5bc00a7160be37e09eec01813988e3e92e71db6a933dbaee9c066d1d737a092d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/tank/attack.png",
+        "relative_path": "art/characters/tank/attack.png",
+        "bytes": 92610,
+        "sha256": "39f685fa74f8e227af98b0e3866c66f5feeeafa7c9c14bd3ef01f8d1b2f6aed7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/tank/hit.png",
+        "relative_path": "art/characters/tank/hit.png",
+        "bytes": 84403,
+        "sha256": "87fb36b0d0cb3a53532454bade2da4ac46a3ef5c0824dd11e82c6170728bce7a",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/tank/special.png",
+        "relative_path": "art/characters/tank/special.png",
+        "bytes": 94012,
+        "sha256": "be1000bc52db743f9ac1e25ae5b23cd22896765377ec5226d0b99c281ba6ab8d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/trapper/attack.png",
+        "relative_path": "art/characters/trapper/attack.png",
+        "bytes": 94029,
+        "sha256": "5c6222d8da40ac31a182ba147d9c460296fc0f98a79856eabe2923d27d741cdb",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/trapper/hit.png",
+        "relative_path": "art/characters/trapper/hit.png",
+        "bytes": 87557,
+        "sha256": "a3f3a0fb7255db95326d189e062c9f19aed4cad97b715ff5eeaf11cda606e904",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/characters/trapper/special.png",
+        "relative_path": "art/characters/trapper/special.png",
+        "bytes": 88629,
+        "sha256": "61268a97c7fd574ac4b9b6ff1b7df684dd333e6c68bd14731036ae79e95d9f97",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          768,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/dasher-run.png",
+        "relative_path": "art/dasher-run.png",
+        "bytes": 61865,
+        "sha256": "653dc671d768ac2732b0e51f9db572d6fd025a3b481cdb6bff9460367f6648bd",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/dreadnought-run.png",
+        "relative_path": "art/dreadnought-run.png",
+        "bytes": 76154,
+        "sha256": "e9a2994948e84e104f31ea5012164a5a6fed25cfe4b2f3755f4262884140e1a6",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/echo-reaper-run.png",
+        "relative_path": "art/echo-reaper-run.png",
+        "bytes": 62919,
+        "sha256": "6d5d43c62e517989e4a502f57be6fcc1141042b0c0c71e1821d361d54f06f893",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/engineer-run.png",
+        "relative_path": "art/engineer-run.png",
+        "bytes": 126276,
+        "sha256": "67ee78fe58c3316764e4153a494c60a9829917d2634b16963d37559c205fee9f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/generated/city_district_atlas.png",
+        "relative_path": "art/generated/city_district_atlas.png",
+        "bytes": 2132611,
+        "sha256": "50229823ce1b3b78f531db8cb5c9f2b7166499eac4a51b777d23e2030f150f1c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/generated/guardian_boss_atlas.png",
+        "relative_path": "art/generated/guardian_boss_atlas.png",
+        "bytes": 1802559,
+        "sha256": "dc90d63a934ff414d97687c9e058de9b83a7625b5a3b037977fd8000a5a45898",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/generated/mecha_and_companion_atlas.png",
+        "relative_path": "art/generated/mecha_and_companion_atlas.png",
+        "bytes": 1937738,
+        "sha256": "634b1273ea7863c4c9110b6e185d02263e42e6c9346fc95e81f01896559cf536",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/ghost-run.png",
+        "relative_path": "art/ghost-run.png",
+        "bytes": 61383,
+        "sha256": "c24628b52f82902a4ddd02307578ef42e121344fc6f654ce380d0e13137da955",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/grave-herald-run.png",
+        "relative_path": "art/grave-herald-run.png",
+        "bytes": 62559,
+        "sha256": "4fcbe60091f6b51b7dd3e30a6bd5bbb4af4ce67eafa030f6519991f8b5f31e81",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/ground-0.png",
+        "relative_path": "art/ground-0.png",
+        "bytes": 236663,
+        "sha256": "1d05d1eba36c2fcf70d53bb753dc2cb7253c40e03b3c3df923555186ea69e978",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          300,
+          300
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/ground-1.png",
+        "relative_path": "art/ground-1.png",
+        "bytes": 194480,
+        "sha256": "b581c93ab80bcb303d334d4552f6f90fe824f777cff610d3fef65193b6254c8f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          300,
+          300
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/ground-2.png",
+        "relative_path": "art/ground-2.png",
+        "bytes": 185932,
+        "sha256": "f0bebf8317488ffe554787f1d3884bb64ed19d2c8a37eed1b9ce2c83792c7130",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          300,
+          300
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/ground-3.png",
+        "relative_path": "art/ground-3.png",
+        "bytes": 192332,
+        "sha256": "b978b3b70ba232be8bec4b073b01e55a284a5a7c0b813390c880862cce88f1f4",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          300,
+          300
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/healer-run.png",
+        "relative_path": "art/healer-run.png",
+        "bytes": 117904,
+        "sha256": "1d9cc6ed90b73c0d8d2ee34d7ecc4ec86d4f7587ddcabe50eb63d6d23f928742",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-adrenaline.png",
+        "relative_path": "art/hero-adrenaline.png",
+        "bytes": 172066,
+        "sha256": "65686777b3ce54d2aeb8ecc3343a4dd28d0c6b8216dfdf0ea62b1db2a705fb99",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-attack.png",
+        "relative_path": "art/hero-attack.png",
+        "bytes": 111060,
+        "sha256": "00dc426524cfdd84660484daed4b75669266e46bf6f3e02419cb13dbe2877250",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-feral.png",
+        "relative_path": "art/hero-feral.png",
+        "bytes": 115409,
+        "sha256": "d64005f29db0a76db1ca7b88ae1824f80789494a024871c74d5e98fb66fac3d9",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-hit.png",
+        "relative_path": "art/hero-hit.png",
+        "bytes": 198866,
+        "sha256": "82cf24a816cd09bc63d88a9d20629d1213aecf4e7f726a63259fd6d10ed17f86",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-idle.png",
+        "relative_path": "art/hero-idle.png",
+        "bytes": 112596,
+        "sha256": "60d5e35cc880db4754a5a4a63d1952224e5a9f9faa2c4b4c332feb726138b6b3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hero-run.png",
+        "relative_path": "art/hero-run.png",
+        "bytes": 138749,
+        "sha256": "e5a80b95b328cab4d8e243e80f0bedf706bc6e185adfb59c8eb21720438e3d8b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          2304,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/hexer-run.png",
+        "relative_path": "art/hexer-run.png",
+        "bytes": 67815,
+        "sha256": "4beeb2c2d5c76f24ff16378784c75627ebbfe093b9b008fe19253259f80a0224",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/adrenaline.png",
+        "relative_path": "art/illustrated/adrenaline.png",
+        "bytes": 55509,
+        "sha256": "34f500062e690d6d56488e0facb41a8d8e9956c552d3f93eec7422efbc9d1f4d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/crouch.png",
+        "relative_path": "art/illustrated/crouch.png",
+        "bytes": 39658,
+        "sha256": "4e827fd9f60d4e6f72f3a5c237a7bb2d99f76bb0db5b7dbf5078563fe6283092",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/feral.png",
+        "relative_path": "art/illustrated/feral.png",
+        "bytes": 67358,
+        "sha256": "c435ded363b183b691823944ab8c4c80337fff3357a0d6fd0a0cf7188b4dc3c2",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/hurt.png",
+        "relative_path": "art/illustrated/hurt.png",
+        "bytes": 42387,
+        "sha256": "564df08b8a282a5bcf9896f87b9dcf9f3e6f8bcbf52ccbf60f8b4932ea74ca9e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/idle.png",
+        "relative_path": "art/illustrated/idle.png",
+        "bytes": 44898,
+        "sha256": "f352b8bf61e62da8f1541a4d515be9ceeb8479759e32414a0b124c9738a00f39",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/joy.png",
+        "relative_path": "art/illustrated/joy.png",
+        "bytes": 41146,
+        "sha256": "110db509cc07c53e9509adbb778896af2a357768fdf3f9b4601403ebad11c469",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/pounce.png",
+        "relative_path": "art/illustrated/pounce.png",
+        "bytes": 43165,
+        "sha256": "e8596bee00de03037e030c754aa3380f1e4edc3d66dec396ee561532c5de8ece",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/sleep.png",
+        "relative_path": "art/illustrated/sleep.png",
+        "bytes": 46790,
+        "sha256": "2b56e5ee7baf93beac9ca1d747d4c5a7d7841b63d7860fe2a5f0aad7f738d3e0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/sprint.png",
+        "relative_path": "art/illustrated/sprint.png",
+        "bytes": 41074,
+        "sha256": "a8a09225dfe57dfe7022b387bd1d9a223a1d95429b2f6dc5527187619c832843",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/startled.png",
+        "relative_path": "art/illustrated/startled.png",
+        "bytes": 47786,
+        "sha256": "43740a10935b58ff30008a90bf336a3376ab972a549a291891db61183e332c4e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/illustrated/walk.png",
+        "relative_path": "art/illustrated/walk.png",
+        "bytes": 46517,
+        "sha256": "5c8678d95937104c9caacb2a98859ecd6ad509b7b8ca67d1fd02bc845895b427",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          224
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/iron-titan-run.png",
+        "relative_path": "art/iron-titan-run.png",
+        "bytes": 68041,
+        "sha256": "7323b16e73aa85bb7bae3ae3f0a08ae9c2c2fe51791a6a6e5fd0519652aa3161",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/jawbreaker-run.png",
+        "relative_path": "art/jawbreaker-run.png",
+        "bytes": 70717,
+        "sha256": "d58f676f81a63f4026adeb44d54466e5510bc36f83df3e77d9b82a47a1803752",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/moth-queen-run.png",
+        "relative_path": "art/moth-queen-run.png",
+        "bytes": 83294,
+        "sha256": "ed57eeb97e98bbfad6a93bad3ec8bb6236eb9e808c6574dd493d10e799c3d26d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/neon-siren-run.png",
+        "relative_path": "art/neon-siren-run.png",
+        "bytes": 60020,
+        "sha256": "3224b34330701adb28ffed46bc3ed0be26011078a3ad9776592fe7ff9e55c1fc",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/orbiter-run.png",
+        "relative_path": "art/orbiter-run.png",
+        "bytes": 76766,
+        "sha256": "731209bb39330b402046816b9deaa9fea67ad5001e87321d7997debf1343df4b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/plague-empress-run.png",
+        "relative_path": "art/plague-empress-run.png",
+        "bytes": 75601,
+        "sha256": "1a2535464689c392327097d4eeadecd39b95aa40cc9c5fb2b60e7936b16fbd79",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/prop-building.png",
+        "relative_path": "art/prop-building.png",
+        "bytes": 139086,
+        "sha256": "aa334bfed7460a4b7408ff6e643dd9171cb8f5b1f6b21e31994da0895a93feb8",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          288
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/prop-car.png",
+        "relative_path": "art/prop-car.png",
+        "bytes": 119155,
+        "sha256": "04ed744f2eccc740190dcdb5fe5d934de82847833150777987332dd3d484dc3e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          288
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/prop-dumpster.png",
+        "relative_path": "art/prop-dumpster.png",
+        "bytes": 122766,
+        "sha256": "fd1124cf24369793687ec1193613d15a837a4d0fbd5660afca589e370f1b8c6b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          288,
+          288
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/pulse-drone-run.png",
+        "relative_path": "art/pulse-drone-run.png",
+        "bytes": 56281,
+        "sha256": "ddb920ca66f0fb504f540a847cdacaa9c5c0aade531973b89ad1eb4b3f670936",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/references/hero-illustrated-pose-sheet.png",
+        "relative_path": "art/references/hero-illustrated-pose-sheet.png",
+        "bytes": 1858285,
+        "sha256": "0a75fe26622ef11bdf805e1a84eabbd4cf91c6ff173effcebbba6731a90c80f0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1448,
+          1086
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/review-cast.png",
+        "relative_path": "art/review-cast.png",
+        "bytes": 291231,
+        "sha256": "c9d5d3c181e8db441f5d9733e859f1b018d787f4e22f4f3385c83dbf4c35475d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1000,
+          725
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/rust-butcher-run.png",
+        "relative_path": "art/rust-butcher-run.png",
+        "bytes": 71942,
+        "sha256": "af36469fa2358470205863e6b55cc77b1940fb884b75ef79b2d6817f1cfabdbc",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/scrapper-run.png",
+        "relative_path": "art/scrapper-run.png",
+        "bytes": 68057,
+        "sha256": "5c17cf26c5a75823fdde133a460cd368eb851157cfa49755e45a9937fd8c5ad6",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/shambler-run.png",
+        "relative_path": "art/shambler-run.png",
+        "bytes": 63416,
+        "sha256": "4509a2c22ea37223c904b0c6ca6fd7a5bf67f882fbd2963e5dddbbf59417184c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/shooter-run.png",
+        "relative_path": "art/shooter-run.png",
+        "bytes": 101762,
+        "sha256": "e95f8802501d5d3bebc025d19882ad18083b66a3704f443c294d3aa305aaac97",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/sniper-run.png",
+        "relative_path": "art/sniper-run.png",
+        "bytes": 111915,
+        "sha256": "f91c2d4299c8709f03fb7751ad442fcbecd465aa07d2d711f89b6e825e444545",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/stalker-run.png",
+        "relative_path": "art/stalker-run.png",
+        "bytes": 59827,
+        "sha256": "a5b850bab47e0e0182967975e2892fbd18037aff98fedde54af3a0d73eda4e3b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/storm-magus-run.png",
+        "relative_path": "art/storm-magus-run.png",
+        "bytes": 57439,
+        "sha256": "706ae9f89910c5e04310ff94b4f392c5fc662c9c9707357ac057e5492a1e0ce4",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/summoner-run.png",
+        "relative_path": "art/summoner-run.png",
+        "bytes": 63203,
+        "sha256": "6818ea0eeff6498a708267a5aeea2c835644588cf98b0ffd4d8eef1009272e32",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/tank-run.png",
+        "relative_path": "art/tank-run.png",
+        "bytes": 123248,
+        "sha256": "ae65ae2f1660d89c5fed273f1565beadae249e3d4722046db0350da895ac8d88",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/the-catastrophe-run.png",
+        "relative_path": "art/the-catastrophe-run.png",
+        "bytes": 77509,
+        "sha256": "3fa922038160bb7b290fec402b1a2f4d177cd60b4d26040510ff2dc2d12d41ec",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/trapper-run.png",
+        "relative_path": "art/trapper-run.png",
+        "bytes": 112323,
+        "sha256": "7e2003bdbbba1922bf3c3a5a28b366373988d50e43354686801e26ed0dd45d7b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          1152,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/venom-oracle-run.png",
+        "relative_path": "art/venom-oracle-run.png",
+        "bytes": 66306,
+        "sha256": "5700db548ac09922f9d77667ddd042f00fb7197bcb16a5ed65eb70f9db4cbe55",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/void-harbinger-run.png",
+        "relative_path": "art/void-harbinger-run.png",
+        "bytes": 65376,
+        "sha256": "76ee89976cd55f751d31685fa78ec6bd8f69a2aa0871abcc824571fd56eca32f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/volt-hydra-run.png",
+        "relative_path": "art/volt-hydra-run.png",
+        "bytes": 61940,
+        "sha256": "702c09e4e3f61b0ceff5779fd3f6a994345fee9ccec87b835abe371efcbff050",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/watcher-run.png",
+        "relative_path": "art/watcher-run.png",
+        "bytes": 67951,
+        "sha256": "9896d55f22ebb05bf3bf119a4f816cacbe930885b16131e9b8248812fa74eeae",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/art/weaver-run.png",
+        "relative_path": "art/weaver-run.png",
+        "bytes": 69714,
+        "sha256": "d1ad9b9c8cf467aec9b7be44d4514f5ab333b1118dd8219317f22c3e75bb0e04",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance",
+        "dimensions": [
+          576,
+          96
+        ]
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/beacon-hold.wav",
+        "relative_path": "audio/generated/beacon-hold.wav",
+        "bytes": 70604,
+        "sha256": "adeaa9b4295ec923be44ddfeb121612aea1e705d30c94ff5db6087f46ccadd54",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/district-cinder.wav",
+        "relative_path": "audio/generated/district-cinder.wav",
+        "bytes": 4233644,
+        "sha256": "64154e1455fd7375fb9bac3d2183f70e74741ff53f4a3a4fb9b38fbb65b829e0",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/district-ember.wav",
+        "relative_path": "audio/generated/district-ember.wav",
+        "bytes": 4233644,
+        "sha256": "0a05d751592637c3201223e236bf901361cbf0307b859987aec0bdf97b5ac455",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/district-sluice.wav",
+        "relative_path": "audio/generated/district-sluice.wav",
+        "bytes": 4233644,
+        "sha256": "e415ba2c4e53baef5354c435894c304c6551cddaff0c30a8c70ae4bdd5f71382",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/district-terminus.wav",
+        "relative_path": "audio/generated/district-terminus.wav",
+        "bytes": 4233644,
+        "sha256": "8a7ccbe6cac842321475cb03d18d6e7f9afb618caecdf2c6262baa9e0ed15415",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/gate-begin.wav",
+        "relative_path": "audio/generated/gate-begin.wav",
+        "bytes": 88244,
+        "sha256": "14d94a2de4ce55315378636d96d3896797bd4bdd8ec37feac929f337c89075b9",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/gate-fail.wav",
+        "relative_path": "audio/generated/gate-fail.wav",
+        "bytes": 105884,
+        "sha256": "987a16cb58d5788e78faabd80214b85bc152ef4d9ec663ea6a79d94b1751fa5b",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/gate-pass.wav",
+        "relative_path": "audio/generated/gate-pass.wav",
+        "bytes": 114704,
+        "sha256": "f82467496f82a7bb548eaab596199255760f09d2d30df26eb496c35ba37d200c",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/gate-relief.wav",
+        "relative_path": "audio/generated/gate-relief.wav",
+        "bytes": 176444,
+        "sha256": "e5392bbaae82ef0b7915a5dca99fb9499a5fd14efd1f8fb0ca6389072b11e6d3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/guardian-defeat.wav",
+        "relative_path": "audio/generated/guardian-defeat.wav",
+        "bytes": 132344,
+        "sha256": "b84dc3becc932eb918532f898ef91e75e091b72fd9c725d5f3eae310076396ef",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/guardian-hit.wav",
+        "relative_path": "audio/generated/guardian-hit.wav",
+        "bytes": 15920,
+        "sha256": "6b8e30945aeea0bbd5f7bb1cab9b3ca4050fa27345553f0da5e209c929f19f9f",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/guardian-intro.wav",
+        "relative_path": "audio/generated/guardian-intro.wav",
+        "bytes": 529244,
+        "sha256": "07e4de3d369a32d9ee614c3b055cc923865c7f8c0bc0d4eebd9c76727c258ea7",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/guardian-warning.wav",
+        "relative_path": "audio/generated/guardian-warning.wav",
+        "bytes": 132344,
+        "sha256": "9cb7749dd516135d2b97146cf115323a53f1c6a52ce14b6d954611d95dfb903e",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/life-recovery.wav",
+        "relative_path": "audio/generated/life-recovery.wav",
+        "bytes": 132344,
+        "sha256": "cda8b28ffebf43c91c2eded09b989a0ad2ec6e84e2505ab7edee831483d864d3",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      },
+      {
+        "source_path": "docs/cataclysm-1-4/audio/generated/route-found.wav",
+        "relative_path": "audio/generated/route-found.wav",
+        "bytes": 44144,
+        "sha256": "6b3df36403678ede99aa391a4eb5989758c28a247e75101ce1af5450fd438d8d",
+        "origin": "inherited_1.4_not_new_1.5",
+        "status": "source_file_present_not_runtime_or_visual_acceptance"
+      }
+    ],
+    "reference_manifests": [
+      "../cataclysm-1-4/STUDIO/IMAGE_MANIFEST.json",
+      "../cataclysm-1-4/art/animated/frame-index.json",
+      "../cataclysm-1-4/audio/generated/audio-index.json"
+    ],
+    "runtime_audio": [
+      "Inherited soundtrack and role/Mecha/event synthesis in game.js remain code-generated sound, not newly recorded tracks"
+    ],
+    "known_debt": [
+      "One guardian painting shared by four identities",
+      "Opaque stretched city crops; not seamless tiles or transparent collision props",
+      "Independent Mecha build/board crew art incomplete",
+      "Eight new-role bodies remain aliases with overlays",
+      "Prior audio not listening-approved; browser and hardware limits remain"
+    ]
+  },
+  "new_original_atlases": [
+    {
+      "id": "city-fishing",
+      "feature_ids": [
+        "CAT-15-01",
+        "CAT-15-06"
+      ],
+      "status": "planned_not_generated",
+      "exists_as_1_5_asset": false,
+      "output_path": "art/generated/city-fishing-water-docks-atlas.png",
+      "sha256": null,
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "PNG RGBA",
+      "layout": {
+        "columns": 4,
+        "rows": 4,
+        "cell_size": 512,
+        "padding_min": 32
+      },
+      "reference_source_paths": [
+        "../cataclysm-1-4/art/references/hero-illustrated-pose-sheet.png",
+        "../cataclysm-1-4/art/illustrated/idle.png",
+        "../cataclysm-1-4/art/generated/city_district_atlas.png",
+        "../cataclysm-1-4/art/generated/mecha_and_companion_atlas.png"
+      ],
+      "prompt": "Original painted Cataclysm game illustration, dark plum ink outlines, soft gouache shading, warm upper-left light, cream fur and muted teal/brass/rust palette. Top-down street world with shallow three-quarter front faces. Match supplied inherited hero and city references. No labels, text, watermark, grid lines, opaque checkerboard, stock icons, photorealism, pixel art or humanoid cat. Deliver one actual 2048x2048 RGBA PNG, 4 by 4 cells of 512 pixels. Transparent margins at least 32px per cell, no subject crosses a cell. Local city pocket scenes with transparent outer margins; retain fixed plank/stone texture scale. First four cells include water and shore together; later water/trim components are optional derivatives, never double-draw water. No four giant ground squares. Row-major cell content: 1: Compact irregular masonry sewer pond, dry front apron, two open side escapes, teal water; 2: Canal water pocket with descending stone edge and clear dry casting stair; 3: Weathered short wooden fishing wharf with rust rail fragments, two dry approaches; 4: Small industrial runoff basin, broken pipe, safe wide apron, no toxic gameplay implied; 5: Isolated irregular painted water patch with quiet ripple, transparent perimeter; 6: Same water outline with displaced highlights, no change of geometry; 7: Same outline larger ripple, consistent lighting; 8: Same outline receding ripple; 9: Short intact dock connector, fixed grain scale, transparent edges; 10: Painted curved stone shoreline trim, no ground square; 11: Cream and coral bobber floating, painted small ripple; 12: Same bobber dipping with splash; 13: Small asymmetric water entry splash; 14: Short painted wake, no baked fishing line; 15: Rust drain pipe prop with visible outlet and transparent background; 16: Small illustrated bobber sign with no writing, no HUD frame",
+      "cells": [
+        {
+          "id": "sewer-basin",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "description": "Compact irregular masonry sewer pond, dry front apron, two open side escapes, teal water",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "canal-stair",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "description": "Canal water pocket with descending stone edge and clear dry casting stair",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "city-wharf",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "description": "Weathered short wooden fishing wharf with rust rail fragments, two dry approaches",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "runoff-pool",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "description": "Small industrial runoff basin, broken pipe, safe wide apron, no toxic gameplay implied",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "water-a",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "description": "Isolated irregular painted water patch with quiet ripple, transparent perimeter",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "water-b",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "description": "Same water outline with displaced highlights, no change of geometry",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "water-c",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "description": "Same outline larger ripple, consistent lighting",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "water-d",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "description": "Same outline receding ripple",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "dock-plank",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "description": "Short intact dock connector, fixed grain scale, transparent edges",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "shore-trim",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "description": "Painted curved stone shoreline trim, no ground square",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bobber-idle",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "description": "Cream and coral bobber floating, painted small ripple",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bobber-bite",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "description": "Same bobber dipping with splash",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "cast-splash",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "description": "Small asymmetric water entry splash",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "reel-wake",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "description": "Short painted wake, no baked fishing line",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "sewer-pipe",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "description": "Rust drain pipe prop with visible outlet and transparent background",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "spot-marker",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "description": "Small illustrated bobber sign with no writing, no HUD frame",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.5
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        }
+      ],
+      "acceptance": [
+        "Real decodable binary PNG with service provenance and SHA-256",
+        "Record actual dimensions/alpha pixel counts; no baked checkerboard or cross-cell overlap",
+        "Inspect light/dark compositing and actual phone scale",
+        "Record deviations; never assume requested cells or anchors were actually delivered"
+      ],
+      "on_failure": "Preserve original/errors, mark missing or ART-BLOCKED; no code-drawn replacement claimed as completed illustration"
+    },
+    {
+      "id": "cat-fishing",
+      "feature_ids": [
+        "CAT-15-02",
+        "CAT-15-06"
+      ],
+      "status": "planned_not_generated",
+      "exists_as_1_5_asset": false,
+      "output_path": "art/generated/quadruped-fishing-cat-gear-atlas.png",
+      "sha256": null,
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "PNG RGBA",
+      "layout": {
+        "columns": 4,
+        "rows": 4,
+        "cell_size": 512,
+        "padding_min": 32
+      },
+      "reference_source_paths": [
+        "../cataclysm-1-4/art/references/hero-illustrated-pose-sheet.png",
+        "../cataclysm-1-4/art/illustrated/idle.png",
+        "../cataclysm-1-4/art/generated/city_district_atlas.png",
+        "../cataclysm-1-4/art/generated/mecha_and_companion_atlas.png"
+      ],
+      "prompt": "Original painted Cataclysm game illustration, dark plum ink outlines, soft gouache shading, warm upper-left light, cream fur and muted teal/brass/rust palette. Top-down street world with shallow three-quarter front faces. Match supplied inherited hero and city references. No labels, text, watermark, grid lines, opaque checkerboard, stock icons, photorealism, pixel art or humanoid cat. Deliver one actual 2048x2048 RGBA PNG, 4 by 4 cells of 512 pixels. Transparent margins at least 32px per cell, no subject crosses a cell. Same original white quadruped hero in every body cell, single independently rendered tail gun reserved as an unpainted runtime layer. Keep rear tail root accessible, no duplicate tail or weapon. Rod held by harness and body lean, no human hands. Body baseline y=448. Line is runtime physics and must not be baked into art. Row-major cell content: 1: White four-legged cat planted, gear harness, rod resting in harness socket; 2: Same quadruped crouches and loads rod back with harness lever, all paws readable; 3: Same cat leans forward rod released overhead, no hand or humanoid stance; 4: Same cat crouched patiently beside bent rod, face alert; 5: Same cat ears perk and braces as rod tip tugs; 6: Same cat pulls body back against harness reel, four paws planted; 7: Same cat shifts weight forward during reel, same anatomy; 8: Same cat stepping away as harness rod folds, no immobile pose; 9: Same cat delighted with raised forepaw and other three supporting paws; 10: Same cat low braced silhouette, no second gun; 11: Separate short bamboo-and-brass rod, reel, no baked line; 12: Separate reinforced brass rod, matching grip/socket; 13: Plain reusable lure, cream body and dull hook; 14: Original pink worm curled on hook, readable silhouette; 15: Glowing teal fishbone bait, soft bounded glow; 16: Rare violet royal catnip sprig with gold tie",
+      "cells": [
+        {
+          "id": "idle",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "description": "White four-legged cat planted, gear harness, rod resting in harness socket",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "windup",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "description": "Same quadruped crouches and loads rod back with harness lever, all paws readable",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "cast",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "description": "Same cat leans forward rod released overhead, no hand or humanoid stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "wait",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "description": "Same cat crouched patiently beside bent rod, face alert",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bite",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "description": "Same cat ears perk and braces as rod tip tugs",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "reel-a",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "description": "Same cat pulls body back against harness reel, four paws planted",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "reel-b",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "description": "Same cat shifts weight forward during reel, same anatomy",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "cancel",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "description": "Same cat stepping away as harness rod folds, no immobile pose",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "celebrate",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "description": "Same cat delighted with raised forepaw and other three supporting paws",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "tension",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "description": "Same cat low braced silhouette, no second gun",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "rod-base",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "description": "Separate short bamboo-and-brass rod, reel, no baked line",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "rod-upgrade",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "description": "Separate reinforced brass rod, matching grip/socket",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bait-plain",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "description": "Plain reusable lure, cream body and dull hook",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bait-worm",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "description": "Original pink worm curled on hook, readable silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bait-fishbone",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "description": "Glowing teal fishbone bait, soft bounded glow",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "bait-royal",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "description": "Rare violet royal catnip sprig with gold tie",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        }
+      ],
+      "acceptance": [
+        "Real decodable binary PNG with service provenance and SHA-256",
+        "Record actual dimensions/alpha pixel counts; no baked checkerboard or cross-cell overlap",
+        "Inspect light/dark compositing and actual phone scale",
+        "Record deviations; never assume requested cells or anchors were actually delivered"
+      ],
+      "on_failure": "Preserve original/errors, mark missing or ART-BLOCKED; no code-drawn replacement claimed as completed illustration"
+    },
+    {
+      "id": "legendary-fish",
+      "feature_ids": [
+        "CAT-15-03",
+        "CAT-15-05",
+        "CAT-15-06"
+      ],
+      "status": "planned_not_generated",
+      "exists_as_1_5_asset": false,
+      "output_path": "art/generated/legendary-mutant-catch-atlas.png",
+      "sha256": null,
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "PNG RGBA",
+      "layout": {
+        "columns": 4,
+        "rows": 4,
+        "cell_size": 512,
+        "padding_min": 32
+      },
+      "reference_source_paths": [
+        "../cataclysm-1-4/art/references/hero-illustrated-pose-sheet.png",
+        "../cataclysm-1-4/art/illustrated/idle.png",
+        "../cataclysm-1-4/art/generated/city_district_atlas.png",
+        "../cataclysm-1-4/art/generated/mecha_and_companion_atlas.png"
+      ],
+      "prompt": "Original painted Cataclysm game illustration, dark plum ink outlines, soft gouache shading, warm upper-left light, cream fur and muted teal/brass/rust palette. Top-down street world with shallow three-quarter front faces. Match supplied inherited hero and city references. No labels, text, watermark, grid lines, opaque checkerboard, stock icons, photorealism, pixel art or humanoid cat. Deliver one actual 2048x2048 RGBA PNG, 4 by 4 cells of 512 pixels. Transparent margins at least 32px per cell, no subject crosses a cell. One original Lanternjaw identity, consistent anatomy/materials across first eight cells, no generic recolored guardian cat. Fish remains humorous and dangerous. Floor baseline y=448 for landed poses. Last eight cells are reward and warning cutouts. Row-major cell content: 1: Legendary giant Lanternjaw mutant fish, asymmetric salvage crown, teal scales, pale belly, luminous lure, planted fins; 2: Same exact fish inflates gills, bright lure and broad warning silhouette; 3: Same fish lunges forward with mouth open, fins visible, whole subject inside cell; 4: Same fish lands, mouth closed and fins spread, vulnerable pose; 5: Same fish recoils with face and crown consistent; 6: Same fish exhausted on side, no gore, no reward painted in; 7: Same fish breaking water with separable transparent splash; 8: Same fish small victorious catch presentation, no text or frame; 9: Original small silver street sardine, whole silhouette; 10: Rare Lantern Koi with luminous whiskers and gold-teal scales; 11: Small rust-and-brass city salvage tin, closed; 12: Same tin open with discrete coins, no lettering; 13: Distinct ornate catnip cache with violet seal, closed; 14: Same cache open with fishbone gold tokens, no score text; 15: Isolated matching fin cutting water, for warning; 16: Tall threatening water splash silhouette without new enemy species",
+      "cells": [
+        {
+          "id": "mutant-idle",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "description": "Legendary giant Lanternjaw mutant fish, asymmetric salvage crown, teal scales, pale belly, luminous lure, planted fins",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-warn",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "description": "Same exact fish inflates gills, bright lure and broad warning silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-lunge",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "description": "Same fish lunges forward with mouth open, fins visible, whole subject inside cell",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-recover",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "description": "Same fish lands, mouth closed and fins spread, vulnerable pose",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-hit",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "description": "Same fish recoils with face and crown consistent",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-defeat",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "description": "Same fish exhausted on side, no gore, no reward painted in",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-surface",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "description": "Same fish breaking water with separable transparent splash",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-trophy",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "description": "Same fish small victorious catch presentation, no text or frame",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "normal-fish",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "description": "Original small silver street sardine, whole silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "rare-koi",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "description": "Rare Lantern Koi with luminous whiskers and gold-teal scales",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "treasure-closed",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "description": "Small rust-and-brass city salvage tin, closed",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "treasure-open",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "description": "Same tin open with discrete coins, no lettering",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "jackpot-closed",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "description": "Distinct ornate catnip cache with violet seal, closed",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "jackpot-open",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "description": "Same cache open with fishbone gold tokens, no score text",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "mutant-fin",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "description": "Isolated matching fin cutting water, for warning",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        },
+        {
+          "id": "ambush-splash",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "description": "Tall threatening water splash silhouette without new enemy species",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ],
+          "actual_rect": null,
+          "actual_anchor_review": "pending_pass03"
+        }
+      ],
+      "acceptance": [
+        "Real decodable binary PNG with service provenance and SHA-256",
+        "Record actual dimensions/alpha pixel counts; no baked checkerboard or cross-cell overlap",
+        "Inspect light/dark compositing and actual phone scale",
+        "Record deviations; never assume requested cells or anchors were actually delivered"
+      ],
+      "on_failure": "Preserve original/errors, mark missing or ART-BLOCKED; no code-drawn replacement claimed as completed illustration"
+    }
+  ],
+  "runtime_derivatives": {
+    "status": "planned_not_produced",
+    "root": "art/fishing/",
+    "frame_descriptor": "art/fishing/frame-index.json",
+    "requested_world_sizes": {
+      "cat": [
+        48,
+        64
+      ],
+      "city_pocket": [
+        256,
+        384
+      ],
+      "mutant": [
+        112,
+        144
+      ]
+    },
+    "required_fields": [
+      "source_path",
+      "source_sha256",
+      "source_rect",
+      "output_path",
+      "output_sha256",
+      "alpha_bounds",
+      "pivot",
+      "rod_tip",
+      "line_endpoint",
+      "tail_root",
+      "water_polygon",
+      "dry_apron",
+      "collision_polygon",
+      "world_size",
+      "state",
+      "duration_seconds",
+      "loop",
+      "derivation"
+    ],
+    "irrelevant_fields": "Use null with reason when anchor/geometry does not apply",
+    "pose_policy": "Distinct source poses may be generated; mesh/flip/translate frames are derived motion, not additional paintings",
+    "timelines_seconds": {
+      "stationary_dwell": 0.25,
+      "windup": 0.8,
+      "cast": 0.35,
+      "wait_min": 2.5,
+      "wait_max": 5,
+      "reel": 0.65,
+      "recover": 0.45,
+      "cancel_visual_tail_max": 0.25
+    },
+    "reduced_motion": "Readable held poses and static ripple; retain state timing and hazard warnings",
+    "memory": {
+      "source_decoded_mib": 48,
+      "target_runtime_added_mib_max": 24,
+      "target_transfer_mib_max": 6,
+      "measured": false
+    },
+    "loader": "Lazy decode cropped derivatives, not all 2048px originals; preserve existing actor-pack validation or add separate validated adapter"
+  },
+  "new_audio": {
+    "status": "planned_no_files_produced",
+    "format": "44100Hz 16-bit PCM WAV mono SFX; optional mono loop",
+    "root": "audio/fishing/",
+    "assets": [
+      {
+        "id": "water-lap",
+        "output_path": "audio/fishing/water-lap.wav",
+        "duration_seconds_target": 4.0,
+        "loop": true,
+        "trigger": "quiet loop only during active fishing",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "cast",
+        "output_path": "audio/fishing/cast.wav",
+        "duration_seconds_target": 0.35,
+        "loop": false,
+        "trigger": "cast commitment",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "reel",
+        "output_path": "audio/fishing/reel.wav",
+        "duration_seconds_target": 0.65,
+        "loop": false,
+        "trigger": "automatic reel; stop on cancel",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "cancel",
+        "output_path": "audio/fishing/cancel.wav",
+        "duration_seconds_target": 0.25,
+        "loop": false,
+        "trigger": "movement cancel tail",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "bite",
+        "output_path": "audio/fishing/bite.wav",
+        "duration_seconds_target": 0.18,
+        "loop": false,
+        "trigger": "bite state entry",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "rare-catch",
+        "output_path": "audio/fishing/rare-catch.wav",
+        "duration_seconds_target": 0.7,
+        "loop": false,
+        "trigger": "resolved rare reward",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "jackpot",
+        "output_path": "audio/fishing/jackpot.wav",
+        "duration_seconds_target": 1.2,
+        "loop": false,
+        "trigger": "once per cache reward",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "ambush-warning",
+        "output_path": "audio/fishing/ambush-warning.wav",
+        "duration_seconds_target": 1.0,
+        "loop": false,
+        "trigger": "legal warned entry, precedes spawn",
+        "sha256": null,
+        "status": "planned_not_composed"
+      },
+      {
+        "id": "mutant-lunge",
+        "output_path": "audio/fishing/mutant-lunge.wav",
+        "duration_seconds_target": 0.45,
+        "loop": false,
+        "trigger": "lunge release",
+        "sha256": null,
+        "status": "planned_not_composed"
+      }
+    ],
+    "method": "Original authored composition/synthesis or documented original recording in Pass03; preserve source recipe and provenance, no stock/original ambiguity",
+    "manifest_fields": [
+      "path",
+      "sha256",
+      "method",
+      "source_recipe",
+      "sample_rate",
+      "channels",
+      "duration_seconds",
+      "peak_dbfs",
+      "rms_dbfs",
+      "loop_points",
+      "listening_status"
+    ],
+    "mix": "Existing context and master/music/FX buses, maximum 4 simultaneous fishing voices within inherited overall cap; warnings priority, duck fishing loop 6dB; preserve soundtrack, mute, pause and restart cleanup",
+    "acceptance": [
+      "Non-silent unclipped headers and waveform check",
+      "Browser decode and actual trigger audit",
+      "Listen with music on/off and quiet mobile mix; numerical tests alone do not pass listening"
+    ]
+  },
+  "mechanic_parameters": {
+    "status": "proposed_not_runtime_config",
+    "spot_count": 8,
+    "attempts_per_spot": 3,
+    "risk_tiers": 4,
+    "catch_column_order": [
+      "normal",
+      "rare",
+      "treasure",
+      "jackpot_cache",
+      "mutant",
+      "ambush"
+    ],
+    "base_weights": {
+      "plain": [
+        66,
+        8,
+        8,
+        1,
+        5,
+        12
+      ],
+      "worm": [
+        62,
+        14,
+        8,
+        1,
+        5,
+        10
+      ],
+      "glowing_fishbone": [
+        45,
+        20,
+        12,
+        3,
+        8,
+        12
+      ],
+      "royal_catnip": [
+        30,
+        25,
+        16,
+        5,
+        12,
+        12
+      ]
+    },
+    "risk_transfer_normal_to_ambush_per_tier": 4,
+    "line_transfer_ambush_to_normal_per_rank": 2,
+    "max_line_rank": 2,
+    "max_rod_rank": 2,
+    "jackpot_caps": {
+      "total": 10000,
+      "fishing": 6000,
+      "guardian_escape": 4000
+    },
+    "ordinary_drop_chance_proposed": 0.16,
+    "ordinary_drop_chance_1_4": 0.22,
+    "timing_precedence": "Movement/damage cancel before catch completion; see concept for transactions and seeded ordinal consumption"
+  },
+  "test_contracts": [
+    {
+      "id": "T01",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T02",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T03",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T04",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T05",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T06",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T07",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T08",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T09",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    },
+    {
+      "id": "T10",
+      "status": "NOT_RUN_CONCEPT_ONLY",
+      "spec": "STUDIO/CONCEPT.md#test-contracts-and-pass-handoff--cat-15-07"
+    }
+  ],
+  "handoff": {
+    "pass02": [
+      "Validate real image tool/service and output pathway; never log secrets",
+      "Generate <=3 originals; record actual hashes, alpha, deviations and errors in STUDIO/IMAGE_MANIFEST.json",
+      "If unavailable mark ART-BLOCKED; preserve design and allow clearly labeled inherited/temporary integration"
+    ],
+    "pass03": [
+      "Check actual cells before crop; emit sprite/rig descriptors and real original audio",
+      "Record generated_pose versus derived_transform; actual durations, bounds and hashes"
+    ],
+    "pass04": [
+      "Continue 1.4 source, preserve inherited mechanics",
+      "Reachable geometry/spawn resolver before fishing ambushes",
+      "Atomic outcome/bait/ledger before jackpot and HUD",
+      "Record code differences and actual feature evidence"
+    ],
+    "pass05": [
+      "Execute deterministic production-function tests and real browser orientation checks",
+      "Preserve failures and report per-feature status in STUDIO/FINAL_REPORT.md",
+      "Try experimental candidate publication after integration without overwriting prior/default URLs"
+    ],
+    "artifact_policy": "Fresh isolated runner per Codex invocation, verified versioned artifact paths/hashes, archive before strict gates with always-run upload; five core plus <=3 justified extras",
+    "candidate_index": "docs/cataclysm-1-5-candidate/ reserved for later publishing pass; outside current allowed edits"
+  },
+  "deferred": [
+    "Other fusions",
+    "District redesign and richer seamless world art",
+    "Inherited missing guardian/crew illustrations beyond fishing cap",
+    "1.6 threat ecology and all later milestones"
+  ],
+  "evidence": {
+    "new_images_generated": 0,
+    "new_audio_files": 0,
+    "runtime_changed": false,
+    "mechanics_tested": false,
+    "browser_run": false,
+    "physical_samsung_tested": false,
+    "published": false,
+    "stable_promoted": false
+  }
+}

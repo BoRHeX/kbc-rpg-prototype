@@ -1,0 +1,77 @@
+[
+  {
+    "file": "company.js",
+    "matches_1_4": true,
+    "sha256": "3e247add1ffe2a03906cadb140515d2d0c64770262cd9f62698fdccef99e10ee"
+  },
+  {
+    "file": "game.js",
+    "matches_1_4": false,
+    "sha256": "5b925975a1a28ccbb558d518f3a24e922a6b669fa0c9e98b6aea762f96fca0eb"
+  },
+  {
+    "file": "campaign.js",
+    "matches_1_4": true,
+    "sha256": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6"
+  },
+  {
+    "file": "director.js",
+    "matches_1_4": true,
+    "sha256": "3ea4c38a434b3a7217cdda3f11e76f212c3e0a0da47c95fa1f89afcd7fc18484"
+  },
+  {
+    "file": "hero-rig-renderer.js",
+    "matches_1_4": true,
+    "sha256": "8d9c1647d38a014720a5af6d4b1e2adfe73a4b124bcc2d1c9befa20bb85e0e2c"
+  },
+  {
+    "file": "score.js",
+    "matches_1_4": true,
+    "sha256": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a"
+  },
+  {
+    "file": "hero-illustrated.js",
+    "matches_1_4": true,
+    "sha256": "7854f76e67cccf67b1eb6a1432ffb6d9ac7ba884d8d1766f805089d48faca7b4"
+  },
+  {
+    "file": "animation.js",
+    "matches_1_4": true,
+    "sha256": "78ba83d27616cc25d31616ebf3ea50cff3a8ec154d3e5c8461ea01593a6ccbbb"
+  },
+  {
+    "file": "cat-personality.js",
+    "matches_1_4": true,
+    "sha256": "11109686a56f2ca1f99469b46451be7a1fbc25f4dcd9d7b292f695ab5466f089"
+  },
+  {
+    "file": "follower-behavior.js",
+    "matches_1_4": true,
+    "sha256": "c4ccd6e85a65a8e3f7a8715e92bdb9dbd4fbecee7d4e5d130053eef29c41d7d8"
+  },
+  {
+    "file": "company-presentation.js",
+    "matches_1_4": true,
+    "sha256": "4e1722b411100c8f1b5c11334674c100e4927b21daee755b00eef7c489d9bf4c"
+  },
+  {
+    "file": "firestorm.js",
+    "matches_1_4": true,
+    "sha256": "2961c749a1dcbe6a228c75a421b8c1f44e32acf446178fcd215e32d99af68a49"
+  },
+  {
+    "file": "hero-kinematics.js",
+    "matches_1_4": true,
+    "sha256": "daad949ceeffa1aba503b62674ab556dbec94bc4a7b64949ff384cc5bf241381"
+  },
+  {
+    "file": "visuals.js",
+    "matches_1_4": true,
+    "sha256": "f9c52deb165464823da2f84b1bbc48ab169c114cb111d489795ce786796dd058"
+  },
+  {
+    "file": "hazards.js",
+    "matches_1_4": true,
+    "sha256": "5070549e9616dacb8be03dc8a8bd3f43d881aa3f7fafe78a0966efa446793e40"
+  }
+]

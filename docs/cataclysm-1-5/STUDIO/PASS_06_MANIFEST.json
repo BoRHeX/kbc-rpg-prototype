@@ -1,0 +1,34 @@
+{
+  "pass": "06",
+  "department": "Repair Department 1",
+  "status": "PARTIAL",
+  "browser": "BLOCKED before page creation",
+  "originals_preserved": true,
+  "files": {
+    "game.js": "018f01a3bc075c651fe1b5ffb85f8114500d7cb2bcdf80f4e69fa779175b0c9a",
+    "qa/runtime.cjs": "c6086906979adc07fbd0b72fcbd2a08fe0a6a7523f6392cc1a228f795f71cb1a",
+    "qa/runtime-results.json": "c70d569df0bae81678476ab8cdd4ba0d387d60df8e873dcb84048f40e180f4c8",
+    "STUDIO/tools/prepare_fishing_media.py": "621c49187297fa4b17e44ce873d13390c2005125613c1dd349862ecb8d14187a",
+    "STUDIO/FINAL_REPORT.md": "c8483fc8de1334dfc827eb3fdc00351bc95286ff54122d03b972113b505a12e6",
+    "STUDIO/EXTRA_PASS_REQUEST.json": "ef499200b4108dc74d6cf069af129c369fd648e6bf22943567f32f05e7d84c20",
+    "art/animated/fishing-frame-index.json": "3b4cbf2d5e990e23edc871e8ff71e77549d5dbdfa5431d9dd7216b4b584ed544",
+    "STUDIO/qa-runtime-pass06.log": "4b13510b1db30709dd888060606378efe2259e6acb5c53dc97f7a7aa2266eba4",
+    "STUDIO/qa-media-pass06.log": "e27bd8389b21fb5905e913635f4763004522aa408420953ceccf6548ae599058",
+    "STUDIO/qa-chrome-pass06.log": "fb6fb9970851536a73f3472c2ae0e743bf8c6593aedacaf6dd542b012dfbd2e9",
+    "STUDIO/alpha-preview-cat-pass06.png": "2532a8ec59703bc49ae81ad0d8b7d8b6114ceb673764c8bab750607afec10412",
+    "STUDIO/alpha-preview-mutant-pass06.png": "f02f9028dcf504fae7938b642c50f7487a23df2e0409ecb0ff9952a7f68493fc",
+    "art/animated/fishing-cat-strip.png": "02579829de96203cda06b05a725d3a5b87bf795ea83bab1ee3775b3583693f56",
+    "art/animated/fishing-cat-mobile.png": "e158499fba360490b66a29acfd084faf944acd7b0d188d787b3bd44b48df0ed4",
+    "art/animated/fishing-gear-strip.png": "66060cca330957fc04577c2efdfa99d75ea923eef0576313caafb38814bb55d4",
+    "art/animated/fishing-gear-mobile.png": "d339ae0f6de3396f6c0baaddee9c9c64bfa59d32e2583862cceb9a11a7a5d58a",
+    "art/animated/fishing-mutant-strip.png": "c0396d9c7bce759ca288f2884c72dd1bf8e00223f762cd567351ab9ac0f3429e",
+    "art/animated/fishing-mutant-mobile.png": "b3318d9244d18d17caa62ea521f3c831135c9fb32a609f9894acdb190926f8ce",
+    "art/animated/fishing-locations-strip.png": "6cb4f6135f7932d37685487885912478bcf57db6a09c243a15fcaefab067f674",
+    "art/animated/fishing-locations-mobile.png": "15914aaf09a87ed2959d3edb1c454e37ffbf9feb6b2a37d03d71e3f22a848b89"
+  },
+  "originals": {
+    "art/generated/fishing_pond_world_atlas.png": "32cf84bf4eb0e630a32b47bf5757c1eb3e79d32c50fd9911a61fd7465e46ddcb",
+    "art/generated/fishing_cat_gear_atlas.png": "a9230824dccc9930c953793306160cee177dba96364eadd3a48129b93bf90dd0",
+    "art/generated/abyssal_catch_mutant_atlas.png": "d9ac10c7594d8a10a11bae3af1ba0b5e7e6be3a24c6f003c83902cfce34ad9dc"
+  }
+}

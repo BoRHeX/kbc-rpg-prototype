@@ -1,0 +1,50 @@
+{
+  "source_pngs_verified": 3,
+  "sheets": 4,
+  "animations": 16,
+  "audio_files": 7,
+  "sources": [
+    {
+      "path": "art/generated/fishing_pond_world_atlas.png",
+      "sha256": "32cf84bf4eb0e630a32b47bf5757c1eb3e79d32c50fd9911a61fd7465e46ddcb",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_zero_fraction": 0.0,
+      "alpha_below_128_fraction": 0.0
+    },
+    {
+      "path": "art/generated/fishing_cat_gear_atlas.png",
+      "sha256": "a9230824dccc9930c953793306160cee177dba96364eadd3a48129b93bf90dd0",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        0,
+        254
+      ],
+      "alpha_zero_fraction": 0.2878446578979492,
+      "alpha_below_128_fraction": 0.6568498611450195
+    },
+    {
+      "path": "art/generated/abyssal_catch_mutant_atlas.png",
+      "sha256": "d9ac10c7594d8a10a11bae3af1ba0b5e7e6be3a24c6f003c83902cfce34ad9dc",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        0,
+        254
+      ],
+      "alpha_zero_fraction": 0.4347238540649414,
+      "alpha_below_128_fraction": 0.6101827621459961
+    }
+  ]
+}

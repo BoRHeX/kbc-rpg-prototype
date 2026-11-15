@@ -1,0 +1,203 @@
+{
+  "listening": false,
+  "files": [
+    {
+      "file": "audio/generated/beacon-hold.wav",
+      "seconds": 0.8,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6420,
+      "rms": 2070.2571455351763,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/district-cinder.wav",
+      "seconds": 24.0,
+      "channels": 2,
+      "sampleWidth": 2,
+      "peak": 2120,
+      "rms": 386.0684798097453,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/district-ember.wav",
+      "seconds": 24.0,
+      "channels": 2,
+      "sampleWidth": 2,
+      "peak": 2213,
+      "rms": 386.03707834414234,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/district-sluice.wav",
+      "seconds": 24.0,
+      "channels": 2,
+      "sampleWidth": 2,
+      "peak": 2136,
+      "rms": 386.0629189669296,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/district-terminus.wav",
+      "seconds": 24.0,
+      "channels": 2,
+      "sampleWidth": 2,
+      "peak": 2136,
+      "rms": 386.06257412732697,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-ambush-tension.wav",
+      "seconds": 3.2,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 5572.777386542323,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-bite-warning.wav",
+      "seconds": 0.5500226757369614,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 9673.718017792531,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-cast-splash.wav",
+      "seconds": 0.7,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 3374.2798996438137,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-jackpot.wav",
+      "seconds": 2.4,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 6284.792155648542,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-rare-catch.wav",
+      "seconds": 1.5,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 6918.894625225991,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-reel.wav",
+      "seconds": 1.0,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 6586.274575357109,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/fishing-water-ambience.wav",
+      "seconds": 8.0,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 25558,
+      "rms": 7227.990736434739,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/gate-begin.wav",
+      "seconds": 1.0,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6538,
+      "rms": 2094.126432437644,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/gate-fail.wav",
+      "seconds": 1.2,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6595,
+      "rms": 2108.8432531653493,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/gate-pass.wav",
+      "seconds": 1.3,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6488,
+      "rms": 2091.0053031777134,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/gate-relief.wav",
+      "seconds": 2.0,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6673,
+      "rms": 2124.740778917836,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/guardian-defeat.wav",
+      "seconds": 1.5,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6590,
+      "rms": 2103.4573382055537,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/guardian-hit.wav",
+      "seconds": 0.18,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 5347,
+      "rms": 1852.838450155165,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/guardian-intro.wav",
+      "seconds": 6.0,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6771,
+      "rms": 2145.9780266678044,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/guardian-warning.wav",
+      "seconds": 1.5,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6662,
+      "rms": 2126.229446440709,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/life-recovery.wav",
+      "seconds": 1.5,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6578,
+      "rms": 2103.7466946829095,
+      "nonSilentUnclipped": true
+    },
+    {
+      "file": "audio/generated/route-found.wav",
+      "seconds": 0.5,
+      "channels": 1,
+      "sampleWidth": 2,
+      "peak": 6389,
+      "rms": 2062.4492936967677,
+      "nonSilentUnclipped": true
+    }
+  ]
+}

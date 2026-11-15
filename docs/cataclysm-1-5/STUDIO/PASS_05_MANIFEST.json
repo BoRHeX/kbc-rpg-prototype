@@ -1,0 +1,73 @@
+{
+  "pass": "05",
+  "status": "PARTIAL",
+  "browser": "BLOCKED",
+  "created_utc": "2026-11-15T15:22:08.201046+00:00",
+  "files": [
+    {
+      "path": "game.js",
+      "sha256": "5b925975a1a28ccbb558d518f3a24e922a6b669fa0c9e98b6aea762f96fca0eb",
+      "bytes": 226739
+    },
+    {
+      "path": "index.html",
+      "sha256": "0cd4fe430c91b91e00b05450e349d2d49f1a443473b714460b1b65fd086496e8",
+      "bytes": 17153
+    },
+    {
+      "path": "qa/runtime.cjs",
+      "sha256": "a4639d6333112cda1c6b95b69a17ccc57b0c301d3698ad960218cc14cb4ab265",
+      "bytes": 29036
+    },
+    {
+      "path": "qa/chrome-smoke.cjs",
+      "sha256": "29202792c31a0e07fc050d81cd1a1075139e7d635ad961a9c24fb53766eb6219",
+      "bytes": 8890
+    },
+    {
+      "path": "qa/runtime-results.json",
+      "sha256": "3a08022ebf34b063c7c557ed834ce27e6552644816594f12b84ea87267721f04",
+      "bytes": 38829
+    },
+    {
+      "path": "STUDIO/FINAL_REPORT.md",
+      "sha256": "a37383ff19054c07e39e40feb1a4fc2eed712f227ea91198b8d57571aa270739",
+      "bytes": 13446
+    },
+    {
+      "path": "STUDIO/EXTRA_PASS_REQUEST.json",
+      "sha256": "a2de44ea32163463a201650b4ebcc8f12ec5fa31e42caefa06f58ac21758adb1",
+      "bytes": 706
+    },
+    {
+      "path": "STUDIO/BROWSER_QA.json",
+      "sha256": "84d845dddd51e74a03a38a8cfe71d862a59923dfd666868870a4f5fdf3e56a46",
+      "bytes": 469
+    },
+    {
+      "path": "STUDIO/qa-runtime-pass05.log",
+      "sha256": "4b13510b1db30709dd888060606378efe2259e6acb5c53dc97f7a7aa2266eba4",
+      "bytes": 2012
+    },
+    {
+      "path": "STUDIO/qa-media-pass05.log",
+      "sha256": "e27bd8389b21fb5905e913635f4763004522aa408420953ceccf6548ae599058",
+      "bytes": 66
+    },
+    {
+      "path": "STUDIO/qa-syntax-pass05.json",
+      "sha256": "ae554c6999208a34a91cbce11261d596b9463a9ad9041574688264aa93f38b96",
+      "bytes": 1196
+    },
+    {
+      "path": "STUDIO/qa-inheritance-pass05.json",
+      "sha256": "e340f9133ffeb3c0a5080477adb91cd3d206b879e215526006e3918c74df8050",
+      "bytes": 2177
+    },
+    {
+      "path": "STUDIO/qa-audio-pass05.json",
+      "sha256": "84a10a222611e0ee64bf0542605a1ef9b451a96822752429dfacbd7d50498725",
+      "bytes": 4864
+    }
+  ]
+}
