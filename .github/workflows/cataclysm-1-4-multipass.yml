@@ -30,6 +30,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate multipass Python and Chrome tool syntax
+        run: |
+          python -m py_compile game_factory/studio_multipass_14.py
+          node --check game_factory/cataclysm_14_browser.mjs
       - name: Ensure continuous baseline and stage directories
         shell: bash
         run: |
