@@ -1,0 +1,16 @@
+{
+  "company.js": {
+    "same_as_1_3": true,
+    "sha256": "3e247add1ffe2a03906cadb140515d2d0c64770262cd9f62698fdccef99e10ee"
+  },
+  "company-presentation.js": {
+    "same_as_1_3": true,
+    "sha256": "e9343f7d30e7e6ba21dcabd8bbcd4dae3e7b70725103e5ec6dcd23d3c2c0b346"
+  },
+  "hero-illustrated.js": {
+    "same_as_1_3": true,
+    "sha256": "7854f76e67cccf67b1eb6a1432ffb6d9ac7ba884d8d1766f805089d48faca7b4"
+  },
+  "hero_art_files_compared": 11,
+  "hero_art_mismatches": []
+}

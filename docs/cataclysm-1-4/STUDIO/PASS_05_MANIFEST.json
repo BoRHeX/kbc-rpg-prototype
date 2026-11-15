@@ -1,0 +1,91 @@
+{
+  "pass": "05",
+  "status": "PARTIAL",
+  "created_utc": "2026-11-15T13:20:03.260467+00:00",
+  "scope": "docs/cataclysm-1-4 only",
+  "browser_status": "BLOCKED before page creation in Chromium and Google Chrome",
+  "physical_samsung_tested": false,
+  "runtime_status": "PASS under DOM/canvas doubles",
+  "files": [
+    {
+      "path": "STUDIO/BROWSER_QA.json",
+      "bytes": 1192,
+      "sha256": "59a2ca6649613b76db325531f872a11752fc9362097feb6bea9fd6abe3bb5e43"
+    },
+    {
+      "path": "STUDIO/EXTRA_PASS_REQUEST.json",
+      "bytes": 430,
+      "sha256": "9878c272469388da0970e497b4b9d0ca71e5905586004dba02cd1fc38c3c2494"
+    },
+    {
+      "path": "STUDIO/FINAL_REPORT.md",
+      "bytes": 13579,
+      "sha256": "e79aa3d656acd089b58d50a54c8cabfff22abaa2f55eb77b3868ea53b5f2043a"
+    },
+    {
+      "path": "STUDIO/qa-assets-pass05.log",
+      "bytes": 1166,
+      "sha256": "170fc50b9195d9071542814ec97babc5110212b3f4edaecac5143a50b534f518"
+    },
+    {
+      "path": "STUDIO/qa-balance-pass05.json",
+      "bytes": 430,
+      "sha256": "85607913d52050e7db43634bfed0316452685df4ded21215ef0ba08798bbb988"
+    },
+    {
+      "path": "STUDIO/qa-chrome-pass05.log",
+      "bytes": 11810,
+      "sha256": "67e2b8b09d0c56f0b31e8eea8db1e6b721c68f50eb72ac62e93024372c5fa8cd"
+    },
+    {
+      "path": "STUDIO/qa-google-chrome-pass05.log",
+      "bytes": 4267,
+      "sha256": "7c56bc21d62e1a26fa3d966d76cfc77d8921a4c2c4dc1b667905e142d1db4116"
+    },
+    {
+      "path": "STUDIO/qa-inheritance-pass05.json",
+      "bytes": 474,
+      "sha256": "8f42250add1aa98d0394193c33aadaa967979e73cdd2f768a8ed4f3620756c1f"
+    },
+    {
+      "path": "STUDIO/qa-runtime-pass05.log",
+      "bytes": 1557,
+      "sha256": "206cd6fa1a600b043b54d528dbda862e04481c7e31ef06852634eff68f09e81b"
+    },
+    {
+      "path": "STUDIO/qa-syntax-pass05.json",
+      "bytes": 1175,
+      "sha256": "317e800003efcd4f7a0bb45b290ea4af96e657806a72982a2b4d0fbe619ec153"
+    },
+    {
+      "path": "game.css",
+      "bytes": 38781,
+      "sha256": "5499f70575c81c7bdc69bda1966aaba990feca9786d2b064b400689e278580ee"
+    },
+    {
+      "path": "game.js",
+      "bytes": 217690,
+      "sha256": "5be59d0918936a0081822c4ad44bbb239446e38d4f4cf5bd0e0c557830643ed7"
+    },
+    {
+      "path": "qa/chrome-smoke.cjs",
+      "bytes": 7789,
+      "sha256": "63316f1b76420b864329f5cee9b3d8ab96fd5637efb6a860977d5bb45f4689e1"
+    },
+    {
+      "path": "qa/runtime-results.json",
+      "bytes": 30110,
+      "sha256": "18f1a0f8df89f6405978b94c75fd17704b7ec99d8c2a576342b10b39b9a33eee"
+    },
+    {
+      "path": "qa/runtime.cjs",
+      "bytes": 22429,
+      "sha256": "c74fcbc54dafee3618c43db67b0362cbef6764fe03fa3028b94ccbb28abffa01"
+    }
+  ],
+  "notes": [
+    "Original images preserved and hashes revalidated",
+    "INTEGRATION_SHA256.txt describes the preceding pass; use this manifest for post-polish hashes",
+    "No publication or stable promotion attempted"
+  ]
+}

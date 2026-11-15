@@ -1,0 +1,1441 @@
+{
+  "schema_version": 1,
+  "stage": "PASS-01",
+  "milestone": "1.4 THE UNSEEN CITY",
+  "status": "CONCEPT_READY_ART_NOT_GENERATED",
+  "scope": "Concept/asset specifications only; no runtime implementation or new raster/audio service output in this pass.",
+  "source_audit": "SOURCE_AUDIT.json",
+  "concept": "CONCEPT.md",
+  "visual_samples": "REFERENCE_BOARD.html",
+  "baseline": "docs/cataclysm-1-3",
+  "candidate": "docs/cataclysm-1-4",
+  "requirements": [
+    "CAT-14-01",
+    "CAT-14-02",
+    "CAT-14-03",
+    "CAT-14-04",
+    "CAT-14-05",
+    "CAT-14-06",
+    "CAT-14-07",
+    "CAT-14-08",
+    "CAT-14-09",
+    "CAT-14-10"
+  ],
+  "generation_contract": {
+    "next_pass": "PASS-02",
+    "service": "direct OpenAI image-generations API",
+    "model": "gpt-image-2.5-flare",
+    "maximum_actual_generated_pngs": 3,
+    "api_access_validated": false,
+    "model_and_size_validated": false,
+    "no_silent_model_substitution": true,
+    "originals_immutable": true,
+    "image_manifest": "STUDIO/IMAGE_MANIFEST.json",
+    "required_manifest_fields": [
+      "status",
+      "requested_model",
+      "actual_model_if_returned",
+      "request_timestamp_utc",
+      "request_id_if_returned",
+      "file",
+      "byte_count",
+      "width",
+      "height",
+      "alpha_analysis",
+      "sha256",
+      "error_if_any"
+    ],
+    "secrets_in_manifest": false
+  },
+  "existing_inventory": {
+    "count": 110,
+    "per_png_records": "SOURCE_AUDIT.json#/existing_pngs",
+    "note": "Includes inactive legacy alternatives; existence is not proof runtime loads every file. No inherited PNG is credited as original 1.4 art.",
+    "groups": [
+      {
+        "id": "hero",
+        "paths": "art/illustrated/*.png",
+        "actual_count": 11,
+        "dimensions": [
+          288,
+          224
+        ],
+        "use": "Preserve quadruped whole-cat art and independent tail weapon"
+      },
+      {
+        "id": "old-environment",
+        "paths": [
+          "art/ground-0.png",
+          "art/ground-1.png",
+          "art/ground-2.png",
+          "art/ground-3.png",
+          "art/prop-building.png",
+          "art/prop-car.png",
+          "art/prop-dumpster.png"
+        ],
+        "use": "Inherited fallback only, explicitly partial for new city art"
+      },
+      {
+        "id": "old-roster",
+        "paths": [
+          "art/actor-packs.json",
+          "art/characters/",
+          "art/*-run.png"
+        ],
+        "use": "Original eight role packs plus existing enemies and historical hero alternatives; inspect loader before replacing"
+      },
+      {
+        "id": "new-role-aliases",
+        "kind": "code_overlays_on_inherited_PNGs",
+        "file": "company-presentation.js",
+        "needs_new_illustration": true,
+        "in_three_image_budget": false,
+        "note": "No eight bespoke painted role sheets; acknowledged inherited art debt"
+      },
+      {
+        "id": "old-mecha",
+        "kind": "code_drawn_chassis_with_inherited_crew",
+        "file": "company-presentation.js",
+        "replacement": "mecha-crew"
+      }
+    ]
+  },
+  "districts": [
+    {
+      "id": "D0",
+      "name": "Cinder Court",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        2680,
+        2680
+      ],
+      "template": "two-brick-loops",
+      "guardian": "bellkeeper",
+      "kill_threshold": 60,
+      "landmark": "tram-shelter",
+      "palette": [
+        "#15232D",
+        "#493442",
+        "#DA9569"
+      ],
+      "interaction": "one-shot six-value fish locker; 1s proximity hold"
+    },
+    {
+      "id": "D1",
+      "name": "Sluice Market",
+      "origin": [
+        2680,
+        0
+      ],
+      "size": [
+        2680,
+        2680
+      ],
+      "template": "two-canals-three-bridges-each-plus-towpath",
+      "guardian": "mother-dredge",
+      "kill_threshold": 90,
+      "landmark": "pump-house",
+      "palette": [
+        "#15232D",
+        "#315B58",
+        "#79D8D2"
+      ],
+      "interaction": "sluice lever lowers optional fourth crossing; required bridges unchanged"
+    },
+    {
+      "id": "D2",
+      "name": "Ember Depot",
+      "origin": [
+        0,
+        2680
+      ],
+      "size": [
+        2680,
+        2680
+      ],
+      "template": "staggered-furnaces-two-cross-routes",
+      "guardian": "kiln-mother",
+      "kill_threshold": 120,
+      "landmark": "repair-gantry",
+      "palette": [
+        "#15232D",
+        "#674436",
+        "#DA9569"
+      ],
+      "interaction": "six-hit breakable shortcut pallet; telegraphed vent never closes both exits"
+    },
+    {
+      "id": "D3",
+      "name": "Glass Terminus",
+      "origin": [
+        2680,
+        2680
+      ],
+      "size": [
+        2680,
+        2680
+      ],
+      "template": "plaza-colonnades-two-bypass-loops",
+      "guardian": "last-conductor",
+      "kill_threshold": 150,
+      "landmark": "clock-canopy",
+      "palette": [
+        "#15232D",
+        "#524B70",
+        "#F2E8D4"
+      ],
+      "interaction": "2s landmark circle provokes guardian; no action button"
+    }
+  ],
+  "scene_map": {
+    "world_bounds": [
+      0,
+      0,
+      5360,
+      5360
+    ],
+    "spawn": [
+      1340,
+      1340
+    ],
+    "portal_width": 320,
+    "minimum_alley_width": 200,
+    "bridge_width": 240,
+    "portals": [
+      {
+        "id": "G01",
+        "districts": [
+          "D0",
+          "D1"
+        ],
+        "center": [
+          2680,
+          1340
+        ],
+        "stage": 1
+      },
+      {
+        "id": "G02",
+        "districts": [
+          "D0",
+          "D2"
+        ],
+        "center": [
+          1340,
+          2680
+        ],
+        "stage": 1
+      },
+      {
+        "id": "G13",
+        "districts": [
+          "D1",
+          "D3"
+        ],
+        "center": [
+          4020,
+          2680
+        ],
+        "stage": 2
+      },
+      {
+        "id": "G23",
+        "districts": [
+          "D2",
+          "D3"
+        ],
+        "center": [
+          2680,
+          4020
+        ],
+        "stage": 2
+      }
+    ],
+    "topology_rule": "Two local loops per district, connected city cycle. Unlock endpoint district via check or relief, then automatically open edges to already unlocked neighbors. No guardian kill required for access."
+  },
+  "navigation": {
+    "layout_version": "city-v1",
+    "seed": "uint32",
+    "feature_hash": "FNV-1a UTF-8 city-v1|decimalSeed|districtId|purpose",
+    "prng": "LCG imul(1664525,state)+1013904223 >>> 0",
+    "grid_units": 40,
+    "grid_dimensions": [
+      134,
+      134
+    ],
+    "neighbors": "cardinal",
+    "inflation": "actual actor radius + 8 units",
+    "distance": "clear start attachment + Dijkstra path length + clear target attachment",
+    "update_hz": 5,
+    "eligible_target_kinds": [
+      "magnet",
+      "rage",
+      "beacon"
+    ],
+    "selection": "nearest reachable by route distance, stable ID tie break",
+    "display_meters": "ceil(route_world_units / 40)",
+    "arrow": "safe-rectangle ray intersection toward first visible route waypoint; halo only if target directly visible and clear",
+    "minimap_during_active_or_paused_run": false,
+    "world_map_locations": [
+      "title menu",
+      "post-run"
+    ],
+    "geometry_authority": "same authored solids/gate revisions for collision, pathing, targets and actor projection"
+  },
+  "gates": {
+    "stages": [
+      {
+        "stage": 1,
+        "quota": 24,
+        "seconds": 30
+      },
+      {
+        "stage": 2,
+        "quota": 36,
+        "seconds": 35
+      },
+      {
+        "stage": 3,
+        "quota": 48,
+        "seconds": 40,
+        "use": "optional still-locked alternate shortcut only"
+      }
+    ],
+    "activation": "1.5s near-side beacon hold + 3s warning",
+    "quota_counts": "unique tagged attempt enemy deaths from any player-owned damage",
+    "retry_delay_seconds": 20,
+    "first_retry_quota_factor": 0.75,
+    "relief_after_failed_or_abandoned_attempts": 2,
+    "relief_survive_seconds": 20,
+    "relief_preserved_on_life_loss": true,
+    "failure": "miss shortcut/cache, 10s warned local vent pressure with retreat kept open",
+    "normal_cache_fish_value": 6,
+    "relief_cache_fish_value": 0,
+    "scale_to_live_dps": false,
+    "numbers_status": "initial tuning fixtures, not playtested"
+  },
+  "guardians": {
+    "ids": [
+      "bellkeeper",
+      "mother-dredge",
+      "kiln-mother",
+      "last-conductor"
+    ],
+    "pose_order": [
+      "idle",
+      "warning",
+      "attack",
+      "stagger"
+    ],
+    "automatic_thresholds": [
+      60,
+      90,
+      120,
+      150
+    ],
+    "early_trigger": "2s landmark hold after 15s local survival",
+    "warning_seconds": 8,
+    "unique_per_run": true,
+    "encounter_serialization": "existing special encounter manager; defer to campaign finale",
+    "guaranteed_fish_value": 4,
+    "life": {
+      "replace_legacy_180s_lottery": true,
+      "potentially_eligible_bosses_per_run": 1,
+      "chance": 0.18,
+      "max_rewards_per_run": 1,
+      "cap": 9,
+      "at_cap": "+0.5 max HP and matching heal",
+      "determinism": "separate seed-derived eligibility and roll; consume record before effects; revival retains record; same-seed restart repeats result"
+    }
+  },
+  "image_requests": [
+    {
+      "id": "city-environment",
+      "status": "needs_new_illustration",
+      "exists": false,
+      "generated_sha256": null,
+      "output_path": "art/generated/city-environment-atlas.png",
+      "requested_model": "gpt-image-2.5-flare",
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "png",
+      "requested_alpha": "RGBA mixed floor/object alpha",
+      "availability_verified": false,
+      "reference_paths": [
+        "art/references/hero-illustrated-pose-sheet.png",
+        "art/illustrated/idle.png",
+        "art/ground-0.png",
+        "art/prop-building.png"
+      ],
+      "cells": [
+        {
+          "id": "cinder-ground",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "kind": "opaque_floor",
+          "description": "Seamless rain-dark brick/asphalt surface, small repairs, no curbs or structures",
+          "alpha": "opaque",
+          "pivot_normalized": [
+            0.5,
+            1
+          ]
+        },
+        {
+          "id": "sluice-ground",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "kind": "opaque_floor",
+          "description": "Seamless damp towpath stone material, jade staining, no water holes or structures",
+          "alpha": "opaque",
+          "pivot_normalized": [
+            0.5,
+            1
+          ]
+        },
+        {
+          "id": "ember-ground",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "kind": "opaque_floor",
+          "description": "Seamless soot asphalt and broad muted copper grit, no hot hazard marks",
+          "alpha": "opaque",
+          "pivot_normalized": [
+            0.5,
+            1
+          ]
+        },
+        {
+          "id": "terminus-ground",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "kind": "opaque_floor",
+          "description": "Seamless cracked station paving, violet grey and ivory repairs, low contrast",
+          "alpha": "opaque",
+          "pivot_normalized": [
+            0.5,
+            1
+          ]
+        },
+        {
+          "id": "brick-block",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Painted brick tenement, zinc roof, warm small windows, broad real masonry detail",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "canal-bank",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Stone canal retaining-bank segment with dark jade water on outer side, modular straight edges",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "furnace",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Copper brick furnace with broad flue and dark cooling vents, sturdy constructed silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "glass-planter",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Cracked thick glass station planter, pale leaves, low readable silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "bridge",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Overhead dry stone footbridge, 240 world units wide when placed, two railings with clear deck",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "locker",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Closed fish locker with ivory fish relief icon, weathered slatted wood; no lettering",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "pallet-intact",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Splintered wooden pallet barricade tied with red rope, visibly breakable",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "pallet-broken",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "kind": "transparent_prop",
+          "description": "Same pallet as prior cell now collapsed into low harmless planks, matching palette/scale",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "tram-shelter",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "kind": "transparent_landmark",
+          "description": "Bent copper tram shelter, curved chipped enamel roof and brass hanging bell",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "pump-house",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "kind": "transparent_landmark",
+          "description": "Jade brass pump house with large readable sluice wheel on front",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "repair-gantry",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "kind": "transparent_landmark",
+          "description": "Painted red steel repair gantry with chain and warm task lamp, open under arch",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "clock-canopy",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "kind": "transparent_landmark",
+          "description": "Violet glass station canopy with visibly cracked ivory clock face, no numbers or letters",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        }
+      ],
+      "prompt": "Original painted game illustration compatible with the supplied Cataclysm white quadruped reference: dark plum ink contours, soft gouache material shading, broad phone-readable silhouettes, warm upper-left light. Overhead street world with shallow three-quarter prop front faces, no isometric grid. No photorealism, pixel art, voxel, infographic boxes, stock icons, text, captions, watermark or drawn grid lines. Deliver a single 2048x2048 RGBA PNG in a precisely separated 4-column x 4-row atlas, 512x512 cells, row-major order. Transparent object cells have at least 32 pixels clear padding; whole subject entirely in its own cell. Object feet/contact baseline y=448 within cell. No baked checkerboard or opaque background behind cutouts. First row consists of four edge-to-edge opaque seamless material paintings. Remaining twelve cells are isolated transparent painted props/landmarks, all geometrically coherent with overhead streets. Ground stays dark and quiet; real brush texture and material detail on props.  Row-major cells: 1: Seamless rain-dark brick/asphalt surface, small repairs, no curbs or structures; 2: Seamless damp towpath stone material, jade staining, no water holes or structures; 3: Seamless soot asphalt and broad muted copper grit, no hot hazard marks; 4: Seamless cracked station paving, violet grey and ivory repairs, low contrast; 5: Painted brick tenement, zinc roof, warm small windows, broad real masonry detail; 6: Stone canal retaining-bank segment with dark jade water on outer side, modular straight edges; 7: Copper brick furnace with broad flue and dark cooling vents, sturdy constructed silhouette; 8: Cracked thick glass station planter, pale leaves, low readable silhouette; 9: Overhead dry stone footbridge, 240 world units wide when placed, two railings with clear deck; 10: Closed fish locker with ivory fish relief icon, weathered slatted wood; no lettering; 11: Splintered wooden pallet barricade tied with red rope, visibly breakable; 12: Same pallet as prior cell now collapsed into low harmless planks, matching palette/scale; 13: Bent copper tram shelter, curved chipped enamel roof and brass hanging bell; 14: Jade brass pump house with large readable sluice wheel on front; 15: Painted red steel repair gantry with chain and warm task lamp, open under arch; 16: Violet glass station canopy with visibly cracked ivory clock face, no numbers or letters.",
+      "acceptance": [
+        "actual decodable PNG and real API provenance",
+        "actual dimensions, SHA-256 and alpha usability recorded",
+        "no cell overlap, labels, checkerboard or cut-off limbs",
+        "review on light and dark background at actual phone scale"
+      ],
+      "on_failure": "ART-BLOCKED for this atlas; preserve errors and any surviving original; never substitute code shapes as completed illustration."
+    },
+    {
+      "id": "feline-guardians",
+      "status": "needs_new_illustration",
+      "exists": false,
+      "generated_sha256": null,
+      "output_path": "art/generated/feline-guardian-atlas.png",
+      "requested_model": "gpt-image-2.5-flare",
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "png",
+      "requested_alpha": "RGBA transparent cutouts",
+      "availability_verified": false,
+      "reference_paths": [
+        "art/references/hero-illustrated-pose-sheet.png",
+        "art/illustrated/idle.png"
+      ],
+      "cells": [
+        {
+          "id": "bellkeeper-idle",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; watchful planted stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "bellkeeper-warning",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; large unmistakable pre-attack equipment windup",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "bellkeeper-attack",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; committed attack follow-through with all limbs visible, no projectile baked in",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "bellkeeper-stagger",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; recoiling exposed vulnerable face, equipment still consistent",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "mother-dredge-idle",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; watchful planted stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "mother-dredge-warning",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; large unmistakable pre-attack equipment windup",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "mother-dredge-attack",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; committed attack follow-through with all limbs visible, no projectile baked in",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "mother-dredge-stagger",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; recoiling exposed vulnerable face, equipment still consistent",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "kiln-mother-idle",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; watchful planted stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "kiln-mother-warning",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; large unmistakable pre-attack equipment windup",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "kiln-mother-attack",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; committed attack follow-through with all limbs visible, no projectile baked in",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "kiln-mother-stagger",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; recoiling exposed vulnerable face, equipment still consistent",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "last-conductor-idle",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; watchful planted stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "last-conductor-warning",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; large unmistakable pre-attack equipment windup",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "last-conductor-attack",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; committed attack follow-through with all limbs visible, no projectile baked in",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "last-conductor-stagger",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "kind": "guardian_pose",
+          "description": "Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; recoiling exposed vulnerable face, equipment still consistent",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        }
+      ],
+      "prompt": "Original painted game illustration compatible with the supplied Cataclysm white quadruped reference: dark plum ink contours, soft gouache material shading, broad phone-readable silhouettes, warm upper-left light. Overhead street world with shallow three-quarter prop front faces, no isometric grid. No photorealism, pixel art, voxel, infographic boxes, stock icons, text, captions, watermark or drawn grid lines. Deliver a single 2048x2048 RGBA PNG in a precisely separated 4-column x 4-row atlas, 512x512 cells, row-major order. Transparent object cells have at least 32 pixels clear padding; whole subject entirely in its own cell. Object feet/contact baseline y=448 within cell. No baked checkerboard or opaque background behind cutouts. Each row is ONE distinct feline guardian in four coherent poses: idle, warning, attack, stagger. All four have recognizable cat anatomy with faces/paws, not generic monsters or recolored copies. Match each row anatomy, equipment, scale and floor anchor across poses. First row bellkeeper; second mother-dredge; third kiln-mother; fourth last-conductor.  Row-major cells: 1: Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; watchful planted stance; 2: Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; large unmistakable pre-attack equipment windup; 3: Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; committed attack follow-through with all limbs visible, no projectile baked in; 4: Rangy soot-grey feline, chipped brass tram bell harness, coral conductor scarf, long asymmetric tail bearing a small bell; recoiling exposed vulnerable face, equipment still consistent; 5: Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; watchful planted stance; 6: Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; large unmistakable pre-attack equipment windup; 7: Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; committed attack follow-through with all limbs visible, no projectile baked in; 8: Broad moss-furred feline dock custodian, rope collar, wicker dredging basket, pale glass eyes, heavy wet fur; recoiling exposed vulnerable face, equipment still consistent; 9: Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; watchful planted stance; 10: Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; large unmistakable pre-attack equipment windup; 11: Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; committed attack follow-through with all limbs visible, no projectile baked in; 12: Stocky copper tabby feline, glazed ceramic shoulder guards, soot paws, coal shovel tail brace, face visible; recoiling exposed vulnerable face, equipment still consistent; 13: Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; watchful planted stance; 14: Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; large unmistakable pre-attack equipment windup; 15: Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; committed attack follow-through with all limbs visible, no projectile baked in; 16: Tall violet-black feline station custodian, cracked station-clock mantle, ivory whiskers, lantern on long tail; recoiling exposed vulnerable face, equipment still consistent.",
+      "acceptance": [
+        "actual decodable PNG and real API provenance",
+        "actual dimensions, SHA-256 and alpha usability recorded",
+        "no cell overlap, labels, checkerboard or cut-off limbs",
+        "review on light and dark background at actual phone scale"
+      ],
+      "on_failure": "ART-BLOCKED for this atlas; preserve errors and any surviving original; never substitute code shapes as completed illustration."
+    },
+    {
+      "id": "mecha-crew",
+      "status": "needs_new_illustration",
+      "exists": false,
+      "generated_sha256": null,
+      "output_path": "art/generated/mecha-crew-atlas.png",
+      "requested_model": "gpt-image-2.5-flare",
+      "requested_dimensions": [
+        2048,
+        2048
+      ],
+      "requested_format": "png",
+      "requested_alpha": "RGBA transparent cutouts",
+      "availability_verified": false,
+      "reference_paths": [
+        "art/references/hero-illustrated-pose-sheet.png",
+        "art/illustrated/idle.png",
+        "art/engineer-run.png",
+        "art/shooter-run.png"
+      ],
+      "cells": [
+        {
+          "id": "build-a",
+          "row": 0,
+          "column": 0,
+          "requested_rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Mecha partly assembled, clear brass hydraulic legs and open teal torso, no crew attached",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "build-b",
+          "row": 0,
+          "column": 1,
+          "requested_rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same completed rescue Mecha crouched for boarding, exposed cockpit, no crew attached",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "walk-a",
+          "row": 0,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same assembled Mecha with Engineer and Shooter visible in cockpit, left leg forward",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "walk-b",
+          "row": 0,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            0,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same machine/crew/scale, right leg forward, same baseline",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "fire",
+          "row": 1,
+          "column": 0,
+          "requested_rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same machine and visible crew braced, single cannon recoiled, no baked muzzle flash",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "overheat",
+          "row": 1,
+          "column": 1,
+          "requested_rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same machine stopped, open radiator fins, crew concerned, no opaque smoke cloud",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "repair",
+          "row": 1,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same machine kneeling with exposed access panel, Engineer visible using wrench, Shooter waiting",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "ready",
+          "row": 1,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            512,
+            512,
+            512
+          ],
+          "kind": "machine_pose",
+          "description": "Same machine upright ready and both crew seated, clean silhouette",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "engineer-stand",
+          "row": 2,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1024,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Separate feline Engineer with ochre workwear, goggles and wrench, ready stance",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "engineer-climb",
+          "row": 2,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1024,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Engineer mid-climb, extended forepaw, matching clothing",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "engineer-wrench-a",
+          "row": 2,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1024,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Engineer leaning with wrench raised",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "engineer-wrench-b",
+          "row": 2,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1024,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Engineer wrench turned, matching anatomy",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "shooter-stand",
+          "row": 3,
+          "column": 0,
+          "requested_rect": [
+            0,
+            1536,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Separate feline Shooter with olive scarf and compact carbine, no hero replacement",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "shooter-climb",
+          "row": 3,
+          "column": 1,
+          "requested_rect": [
+            512,
+            1536,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Shooter mid-climb, carbine slung",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "shooter-seated",
+          "row": 3,
+          "column": 2,
+          "requested_rect": [
+            1024,
+            1536,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Shooter seated, paws on controls",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "id": "shooter-fire",
+          "row": 3,
+          "column": 3,
+          "requested_rect": [
+            1536,
+            1536,
+            512,
+            512
+          ],
+          "kind": "crew_pose",
+          "description": "Same separate Shooter braced at controls, no painted projectiles",
+          "alpha": "transparent_cutout",
+          "pivot_normalized": [
+            0.5,
+            0.875
+          ]
+        }
+      ],
+      "prompt": "Original painted game illustration compatible with the supplied Cataclysm white quadruped reference: dark plum ink contours, soft gouache material shading, broad phone-readable silhouettes, warm upper-left light. Overhead street world with shallow three-quarter prop front faces, no isometric grid. No photorealism, pixel art, voxel, infographic boxes, stock icons, text, captions, watermark or drawn grid lines. Deliver a single 2048x2048 RGBA PNG in a precisely separated 4-column x 4-row atlas, 512x512 cells, row-major order. Transparent object cells have at least 32 pixels clear padding; whole subject entirely in its own cell. Object feet/contact baseline y=448 within cell. No baked checkerboard or opaque background behind cutouts. Detailed constructed brass and muted teal walking rescue Mecha, rivets, hydraulic joints, rounded cat-ear cockpit canopy, one single cannon. Crew are an ochre Engineer with goggles/wrench and olive-scarf Shooter. Full painted machine in first eight cells, individual crew in last eight. Full states already contain crew only where specified; separate crew used for boarding overlays, never double-draw them over occupied cockpit. Leg/torso proportions and canopy must match across cells. Mechanical surface detail is painted, not a flat box silhouette.  Row-major cells: 1: Mecha partly assembled, clear brass hydraulic legs and open teal torso, no crew attached; 2: Same completed rescue Mecha crouched for boarding, exposed cockpit, no crew attached; 3: Same assembled Mecha with Engineer and Shooter visible in cockpit, left leg forward; 4: Same machine/crew/scale, right leg forward, same baseline; 5: Same machine and visible crew braced, single cannon recoiled, no baked muzzle flash; 6: Same machine stopped, open radiator fins, crew concerned, no opaque smoke cloud; 7: Same machine kneeling with exposed access panel, Engineer visible using wrench, Shooter waiting; 8: Same machine upright ready and both crew seated, clean silhouette; 9: Separate feline Engineer with ochre workwear, goggles and wrench, ready stance; 10: Same separate Engineer mid-climb, extended forepaw, matching clothing; 11: Same separate Engineer leaning with wrench raised; 12: Same separate Engineer wrench turned, matching anatomy; 13: Separate feline Shooter with olive scarf and compact carbine, no hero replacement; 14: Same separate Shooter mid-climb, carbine slung; 15: Same separate Shooter seated, paws on controls; 16: Same separate Shooter braced at controls, no painted projectiles.",
+      "acceptance": [
+        "actual decodable PNG and real API provenance",
+        "actual dimensions, SHA-256 and alpha usability recorded",
+        "no cell overlap, labels, checkerboard or cut-off limbs",
+        "review on light and dark background at actual phone scale"
+      ],
+      "on_failure": "ART-BLOCKED for this atlas; preserve errors and any surviving original; never substitute code shapes as completed illustration."
+    }
+  ],
+  "new_ui_code_native_allowed": [
+    {
+      "id": "guidance",
+      "kind": "arrow/icon/distance text, HUD countdown, map graph labels",
+      "note": "Code UI is allowed; must not be represented as painted environment/character artwork"
+    },
+    {
+      "id": "telegraphs",
+      "kind": "bounded circles/cones/lanes and hit particles",
+      "note": "Overlay genuine illustrated actors; do not replace them"
+    }
+  ],
+  "animation_handoff": {
+    "pass": "PASS-03",
+    "output_root": "art/animated/",
+    "report": "STUDIO/ANIMATION_AUDIO_REPORT.md",
+    "minimum_descriptor_fields": [
+      "source_path",
+      "source_sha256",
+      "source_rect",
+      "output_path",
+      "output_dimensions",
+      "alpha_bounds",
+      "pivot",
+      "world_size",
+      "state",
+      "duration_seconds",
+      "loop",
+      "derivation"
+    ],
+    "guardian_pose_count_each": 4,
+    "mecha_machine_poses": 8,
+    "crew_poses": 8,
+    "derived_motion_label": "derived_transform",
+    "painted_pose_label": "generated_pose",
+    "new_loader_constraint": "Existing actor-packs validator expects 96px cells. Emit validated derivative strips or use separate adapter; never insert a raw 512-cell atlas spec into old validator.",
+    "alpha_policy": "Record IHDR plus actual transparent/intermediate/opaque pixel counts and visual fringe review. Extraction must preserve original and document algorithm.",
+    "memory_target_added_decoded_mib": 64,
+    "source_decode_mib_at_requested_size": 48
+  },
+  "audio": {
+    "status": "needs_original_composition_and_files",
+    "output_root": "audio/generated/",
+    "master_format": "44.1kHz PCM WAV, stereo loops / mono SFX",
+    "music_policy": "Retain inherited soundtrack; new original district ambience as quiet layer, not duplicate main track",
+    "loops": [
+      {
+        "id": "d0-ambience",
+        "seconds": 24,
+        "bpm": 80,
+        "bars": 8
+      },
+      {
+        "id": "d1-ambience",
+        "seconds": 24,
+        "bpm": 80,
+        "bars": 8
+      },
+      {
+        "id": "d2-ambience",
+        "seconds": 24,
+        "bpm": 80,
+        "bars": 8
+      },
+      {
+        "id": "d3-ambience",
+        "seconds": 24,
+        "bpm": 80,
+        "bars": 8
+      }
+    ],
+    "guardian_intro_seconds": 6,
+    "sfx": [
+      "beacon-hold",
+      "guardian-provoke",
+      "gate-begin",
+      "gate-pass",
+      "gate-fail",
+      "gate-relief",
+      "guardian-warning",
+      "guardian-hit",
+      "guardian-defeat",
+      "rare-life",
+      "route-found"
+    ],
+    "sfx_seconds_range": [
+      0.15,
+      1.5
+    ],
+    "relief_stinger_seconds": 2,
+    "new_voice_limit": 8,
+    "duck_ambience_db": 6,
+    "reuse_existing": [
+      "food",
+      "Mecha build/board/ready/breakdown/repair"
+    ],
+    "manifest_fields": [
+      "path",
+      "sha256",
+      "duration",
+      "sample_rate",
+      "channels",
+      "composition_method",
+      "loop_points",
+      "listening_result"
+    ],
+    "recorded_voice_promised": false
+  },
+  "deferred_or_out_of_scope": [
+    "Eight missing bespoke 1.3 new-role state sheets remain inherited debt; not claimed delivered by these three atlases",
+    "Optional Trawl Team/Spotter Pair/Thunder Chorus fusions",
+    "1.5 bait and active fishing economy",
+    "1.6 new threat species",
+    "1.7 1000-night checkpoints",
+    "2.0 three guns, underground, Sphinx",
+    "Workflow changes, candidate dashboard publication and stable promotion during Pass 01"
+  ],
+  "acceptance_status": {
+    "art_service_tested": false,
+    "new_art_completed": false,
+    "runtime_changed": false,
+    "browser_run": false,
+    "physical_samsung_tested": false
+  },
+  "handoff": [
+    "PASS-02 verifies request support, generates <=3 actual PNGs, creates truthful IMAGE_MANIFEST.json or ART-BLOCKED records",
+    "PASS-03 verifies source/crops/alpha, makes actual derivative sprites and original audio; preserves blocked status",
+    "PASS-04 integrates actual assets and mechanics with full 1.3 source continuity",
+    "PASS-05 performs independent Chrome portrait/landscape and regression QA, archives any failures; no stable promotion"
+  ]
+}

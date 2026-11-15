@@ -1,0 +1,1112 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "base_url": "../../",
+  "sources": [
+    {
+      "path": "art/generated/city_district_atlas.png",
+      "sha256": "50229823ce1b3b78f531db8cb5c9f2b7166499eac4a51b777d23e2030f150f1c",
+      "size": [
+        1024,
+        1024
+      ],
+      "producer": "OpenAI Images API (real binary output)",
+      "model": "gpt-image-2.5-flare"
+    },
+    {
+      "path": "art/generated/guardian_boss_atlas.png",
+      "sha256": "dc90d63a934ff414d97687c9e058de9b83a7625b5a3b037977fd8000a5a45898",
+      "size": [
+        1024,
+        1024
+      ],
+      "producer": "OpenAI Images API (real binary output)",
+      "model": "gpt-image-2.5-flare"
+    },
+    {
+      "path": "art/generated/mecha_and_companion_atlas.png",
+      "sha256": "634b1273ea7863c4c9110b6e185d02263e42e6c9346fc95e81f01896559cf536",
+      "size": [
+        1024,
+        1024
+      ],
+      "producer": "OpenAI Images API (real binary output)",
+      "model": "gpt-image-2.5-flare"
+    }
+  ],
+  "textures": {
+    "guardian": {
+      "path": "art/animated/guardian-frames.png",
+      "size": [
+        2048,
+        256
+      ],
+      "sha256": "8d1035fb878cc2bd4d20954739fa3b4192446f626df724907dbd51dbde5f139c",
+      "bytes": 323294,
+      "decoded_bytes": 2097152
+    },
+    "mecha": {
+      "path": "art/animated/mecha-frames.png",
+      "size": [
+        2048,
+        256
+      ],
+      "sha256": "a614f462ef75ddee673698b284aa39471849dfcb8c6fad0ec2a7f1335645424a",
+      "bytes": 394472,
+      "decoded_bytes": 2097152
+    },
+    "city.wet-street": {
+      "path": "art/animated/city-wet-street.png",
+      "size": [
+        123,
+        256
+      ],
+      "sha256": "43f2efeda7312e969fc0cf020bc44fe00da1da4cba1f596938d223722a8fbf03",
+      "bytes": 90526,
+      "decoded_bytes": 125952,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        469,
+        8,
+        185,
+        385
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.crossing": {
+      "path": "art/animated/city-crossing.png",
+      "size": [
+        90,
+        95
+      ],
+      "sha256": "2f2d89fbf937071bf1aef05b749a32ecc601f2f7da81323400bacbe65ccfd2ed",
+      "bytes": 25079,
+      "decoded_bytes": 34200,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        669,
+        165,
+        90,
+        95
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.waterfront": {
+      "path": "art/animated/city-waterfront.png",
+      "size": [
+        138,
+        256
+      ],
+      "sha256": "3c2c319def496caadffaf8194867016a7d0950c8bba73d79c883028c7420508e",
+      "bytes": 93101,
+      "decoded_bytes": 141312,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        775,
+        0,
+        249,
+        463
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.shop-warm": {
+      "path": "art/animated/city-shop-warm.png",
+      "size": [
+        174,
+        181
+      ],
+      "sha256": "d307b113d7eb7d5f810ea5fc4b7a2c53cc690b752aab8c291debc5e6373f8153",
+      "bytes": 90983,
+      "decoded_bytes": 125976,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        8,
+        7,
+        174,
+        181
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.shop-neon": {
+      "path": "art/animated/city-shop-neon.png",
+      "size": [
+        143,
+        178
+      ],
+      "sha256": "2ad167f4bd02981492174c22ec26e7b3c546a8c7b816ce17b5f2bb99bc73030f",
+      "bytes": 75197,
+      "decoded_bytes": 101816,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        199,
+        7,
+        143,
+        178
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.alley-moss": {
+      "path": "art/animated/city-alley-moss.png",
+      "size": [
+        74,
+        256
+      ],
+      "sha256": "96c2be859d3fec1e99a23e32824192faa988953cf0e5357f2a4fe47eff3ebfec",
+      "bytes": 53382,
+      "decoded_bytes": 75776,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        140,
+        505,
+        91,
+        315
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.archway": {
+      "path": "art/animated/city-archway.png",
+      "size": [
+        130,
+        190
+      ],
+      "sha256": "d7eb6ad7ba8850d6aed626534814822fe25e1fa130e4ea439f4cdb43f5e2fa3f",
+      "bytes": 71734,
+      "decoded_bytes": 98800,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        239,
+        635,
+        130,
+        190
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.paving-blue": {
+      "path": "art/animated/city-paving-blue.png",
+      "size": [
+        90,
+        86
+      ],
+      "sha256": "47347478ae2705b9c1889b81697b95de7a649f2fa8f6c721637b66e2b9af006f",
+      "bytes": 23705,
+      "decoded_bytes": 30960,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        8,
+        833,
+        90,
+        86
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.asphalt": {
+      "path": "art/animated/city-asphalt.png",
+      "size": [
+        90,
+        86
+      ],
+      "sha256": "49a6b03c7e49a2b99d6d86c17e3f4959f40664ee9b2e47ff897447145b0c204c",
+      "bytes": 20826,
+      "decoded_bytes": 30960,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        108,
+        833,
+        90,
+        86
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.paving-grey": {
+      "path": "art/animated/city-paving-grey.png",
+      "size": [
+        92,
+        86
+      ],
+      "sha256": "65631d34c1d299ab0127e58408f06a1f81037256d3a5d72da10f09f708fcccc7",
+      "bytes": 22793,
+      "decoded_bytes": 31648,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        211,
+        833,
+        92,
+        86
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.moss-ground": {
+      "path": "art/animated/city-moss-ground.png",
+      "size": [
+        89,
+        86
+      ],
+      "sha256": "967241ecdb59f62703e9a4868e48f633782be88dd50c35d21536543b32657636",
+      "bytes": 22254,
+      "decoded_bytes": 30616,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        316,
+        833,
+        89,
+        86
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    },
+    "city.water": {
+      "path": "art/animated/city-water.png",
+      "size": [
+        86,
+        86
+      ],
+      "sha256": "d8a31798e08e484889599357ae908a1362c72e7a6d513e3a7aa38a71791bb1b7",
+      "bytes": 21830,
+      "decoded_bytes": 29584,
+      "source": "art/generated/city_district_atlas.png",
+      "source_rect": [
+        833,
+        833,
+        86,
+        86
+      ],
+      "opaque": true,
+      "seamless": false,
+      "kind": "static_illustrated_crop"
+    }
+  },
+  "frames": {
+    "guardian.idle.0": {
+      "texture": "guardian",
+      "rect": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-idle-0.png",
+      "reference_sha256": "80cbbbdafee1795542fb67370978a767d3b59a0a44dd3f54489eb2871bf76c5a",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        0,
+        0,
+        465,
+        505
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        27,
+        21,
+        228,
+        246
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "guardian.idle.1": {
+      "texture": "guardian",
+      "rect": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-idle-1.png",
+      "reference_sha256": "c4663492b83e52baa6b38595ec11d744eb97e39a983a3666470990b926c07b5e",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        0,
+        0,
+        465,
+        505
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        27,
+        19,
+        228,
+        244
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    },
+    "guardian.stalk.0": {
+      "texture": "guardian",
+      "rect": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-stalk-0.png",
+      "reference_sha256": "ff12f627a8644342844eefbb076a0dd262066608692376c5fa4fb17aedafcf36",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        470,
+        100,
+        554,
+        405
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        15,
+        80,
+        236,
+        247
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "guardian.stalk.1": {
+      "texture": "guardian",
+      "rect": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-stalk-1.png",
+      "reference_sha256": "ca146ce5561dde9173fd53f2295e8c28d79688b8756b031200a6f54f108cb512",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        470,
+        100,
+        554,
+        405
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        15,
+        78,
+        236,
+        245
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    },
+    "guardian.attack.0": {
+      "texture": "guardian",
+      "rect": [
+        1024,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-attack-0.png",
+      "reference_sha256": "9828fd149156466e50202a0070f23a94d6c6153ca4aca2ecffe6bb1e148fcdee",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        0,
+        510,
+        600,
+        514
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        16,
+        55,
+        244,
+        243
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "guardian.attack.1": {
+      "texture": "guardian",
+      "rect": [
+        1280,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-attack-1.png",
+      "reference_sha256": "29ca2a83e6ed50510843cbf511a46721d2bf4dfc90f0d038b3e525a7b3c234bd",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        0,
+        510,
+        600,
+        514
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        18,
+        53,
+        246,
+        241
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          2,
+          -2
+        ]
+      }
+    },
+    "guardian.hit.0": {
+      "texture": "guardian",
+      "rect": [
+        1536,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-hit-0.png",
+      "reference_sha256": "194c8a7ab6243bab9a82c07442518eb3896654b809edee4c6a49644e648aab62",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        600,
+        510,
+        424,
+        514
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        18,
+        214,
+        242
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "guardian.hit.1": {
+      "texture": "guardian",
+      "rect": [
+        1792,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/guardian-hit-1.png",
+      "reference_sha256": "4786de07d21036e096b074abeb330287c2f38b526314f6f9980b3706f267313a",
+      "source": "art/generated/guardian_boss_atlas.png",
+      "source_rect": [
+        600,
+        510,
+        424,
+        514
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        32,
+        16,
+        214,
+        240
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 80,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    },
+    "mecha.walk.0": {
+      "texture": "mecha",
+      "rect": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-walk-0.png",
+      "reference_sha256": "a2252eee998d3cae3cd64deec7877c53763863713375bb3578dc86e5ae6f57a8",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        0,
+        0,
+        512,
+        495
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        21,
+        26,
+        233,
+        238
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "mecha.walk.1": {
+      "texture": "mecha",
+      "rect": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-walk-1.png",
+      "reference_sha256": "5afdea79d3807d65323e642a73694e56440c6912d759d7d1b77d9f9897430458",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        0,
+        0,
+        512,
+        495
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        21,
+        24,
+        233,
+        236
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    },
+    "mecha.shoot.0": {
+      "texture": "mecha",
+      "rect": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-shoot-0.png",
+      "reference_sha256": "834c508cd6eab6d9cbf84a494d4ca9f4044cbb204cc549078976885eeb120725",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        512,
+        0,
+        512,
+        495
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        19,
+        33,
+        244,
+        245
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "mecha.shoot.1": {
+      "texture": "mecha",
+      "rect": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-shoot-1.png",
+      "reference_sha256": "a13f5bb7d2af6da8f270ba0cd0888da0043654fb1f53f73793132d500260f171",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        512,
+        0,
+        512,
+        495
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        21,
+        31,
+        246,
+        243
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          2,
+          -2
+        ]
+      }
+    },
+    "mecha.overheat.0": {
+      "texture": "mecha",
+      "rect": [
+        1024,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-overheat-0.png",
+      "reference_sha256": "2e048fede964afffd98e3fd4cb5cf60ca0e223b670e0b54a043d3032d9af5c7e",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        0,
+        495,
+        512,
+        529
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        25,
+        16,
+        229,
+        234
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "mecha.overheat.1": {
+      "texture": "mecha",
+      "rect": [
+        1280,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-overheat-1.png",
+      "reference_sha256": "8b9cb94225b0fdc4443c1592f71748788dc1b528c7a4232b56cbea8d57809ce0",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        0,
+        495,
+        512,
+        529
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        25,
+        14,
+        229,
+        232
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    },
+    "mecha.repair.0": {
+      "texture": "mecha",
+      "rect": [
+        1536,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-repair-0.png",
+      "reference_sha256": "ad2137468c7e3c9b5f425d024fc6533b41be5dd3ac83c39a538e9392e526e32d",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        512,
+        495,
+        512,
+        529
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        19,
+        31,
+        230,
+        237
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "cropped_generated_pose",
+      "transform": {
+        "translation_px": [
+          0,
+          0
+        ]
+      }
+    },
+    "mecha.repair.1": {
+      "texture": "mecha",
+      "rect": [
+        1792,
+        0,
+        256,
+        256
+      ],
+      "reference": "art/animated/mecha-repair-1.png",
+      "reference_sha256": "1647a81f2317a56eaccf05605eae8604de30e31f8c4b4dace8bdfa4bfd1ac185",
+      "source": "art/generated/mecha_and_companion_atlas.png",
+      "source_rect": [
+        512,
+        495,
+        512,
+        529
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        19,
+        29,
+        230,
+        235
+      ],
+      "pivot": [
+        128,
+        248
+      ],
+      "world_width": 96,
+      "derivation": "derived_transform",
+      "transform": {
+        "translation_px": [
+          0,
+          -2
+        ]
+      }
+    }
+  },
+  "animations": {
+    "guardian.idle": {
+      "frames": [
+        "guardian.idle.0",
+        "guardian.idle.1",
+        "guardian.idle.0"
+      ],
+      "durations_ms": [
+        350,
+        350,
+        350
+      ],
+      "loop": true,
+      "reduced_motion_frame": "guardian.idle.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "guardian.stalk": {
+      "frames": [
+        "guardian.stalk.0",
+        "guardian.stalk.1",
+        "guardian.stalk.0"
+      ],
+      "durations_ms": [
+        350,
+        350,
+        350
+      ],
+      "loop": true,
+      "reduced_motion_frame": "guardian.stalk.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "guardian.attack": {
+      "frames": [
+        "guardian.attack.0",
+        "guardian.attack.1",
+        "guardian.attack.0"
+      ],
+      "durations_ms": [
+        240,
+        120,
+        240
+      ],
+      "loop": false,
+      "reduced_motion_frame": "guardian.attack.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "guardian.hit": {
+      "frames": [
+        "guardian.hit.0",
+        "guardian.hit.1",
+        "guardian.hit.0"
+      ],
+      "durations_ms": [
+        240,
+        120,
+        240
+      ],
+      "loop": false,
+      "reduced_motion_frame": "guardian.hit.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "mecha.walk": {
+      "frames": [
+        "mecha.walk.0",
+        "mecha.walk.1",
+        "mecha.walk.0"
+      ],
+      "durations_ms": [
+        350,
+        350,
+        350
+      ],
+      "loop": true,
+      "reduced_motion_frame": "mecha.walk.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "mecha.shoot": {
+      "frames": [
+        "mecha.shoot.0",
+        "mecha.shoot.1",
+        "mecha.shoot.0"
+      ],
+      "durations_ms": [
+        240,
+        120,
+        240
+      ],
+      "loop": false,
+      "reduced_motion_frame": "mecha.shoot.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "mecha.overheat": {
+      "frames": [
+        "mecha.overheat.0",
+        "mecha.overheat.1",
+        "mecha.overheat.0"
+      ],
+      "durations_ms": [
+        350,
+        350,
+        350
+      ],
+      "loop": true,
+      "reduced_motion_frame": "mecha.overheat.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "mecha.repair": {
+      "frames": [
+        "mecha.repair.0",
+        "mecha.repair.1",
+        "mecha.repair.0"
+      ],
+      "durations_ms": [
+        350,
+        350,
+        350
+      ],
+      "loop": true,
+      "reduced_motion_frame": "mecha.repair.0",
+      "note": "Single illustrated pose with baked 2px translation; event state selects distinct paintings."
+    },
+    "guardian.demonstration": {
+      "frames": [
+        "guardian.idle.0",
+        "guardian.stalk.0",
+        "guardian.attack.0",
+        "guardian.hit.0",
+        "guardian.idle.0"
+      ],
+      "durations_ms": [
+        650,
+        500,
+        220,
+        650,
+        500
+      ],
+      "loop": true,
+      "reduced_motion_frame": "guardian.idle.0",
+      "note": "Inspection montage; runtime must select states from simulation, not play this loop in combat."
+    },
+    "mecha.demonstration": {
+      "frames": [
+        "mecha.walk.0",
+        "mecha.shoot.0",
+        "mecha.overheat.0",
+        "mecha.repair.0",
+        "mecha.walk.0"
+      ],
+      "durations_ms": [
+        650,
+        500,
+        220,
+        650,
+        500
+      ],
+      "loop": true,
+      "reduced_motion_frame": "mecha.walk.0",
+      "note": "Inspection montage; runtime must select states from simulation, not play this loop in combat."
+    }
+  },
+  "limitations": [
+    "One guardian identity, not four district guardians.",
+    "No separate crew, build or boarding paintings.",
+    "City crops are opaque, not seamless certified tiles or transparent props.",
+    "Derived motion is limited pose/transform animation, not painted directional gait."
+  ],
+  "budget": {
+    "runtime_texture_decoded_bytes": 5051904,
+    "runtime_texture_download_bytes": 1329176,
+    "policy": "Load texture sheets and city crops only; individual references and source atlases are authoring assets, not additional runtime loads."
+  }
+}

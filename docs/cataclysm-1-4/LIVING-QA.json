@@ -1,0 +1,582 @@
+{
+  "renderer": "Actual game catSprite + CATA_ART.draw + drawEngineerTurret, executed with local PNG dimensions in Node VM. Not browser capture.",
+  "directionalStates": {
+    "loaded": 3,
+    "failed": 0,
+    "total": 3,
+    "states": {
+      "run": true,
+      "idle": true,
+      "attack": true
+    }
+  },
+  "temporalCases": 64,
+  "framesPerCase": 4,
+  "allEightDirections": true,
+  "alwaysDirectedModernArtwork": true,
+  "reducedMotionStable": true,
+  "turretSkinsDiffer": true,
+  "turretFiringAndShutdownDiffer": true,
+  "pauseSpeechFrozen": true,
+  "heroLines": 159,
+  "speechHistory": [
+    {
+      "role": "hero",
+      "event": "start",
+      "text": "Nine lives. One very long evening.",
+      "at": 1
+    },
+    {
+      "role": "hero",
+      "event": "level",
+      "text": "I am becoming a problem with credentials.",
+      "at": 10
+    },
+    {
+      "role": "hero",
+      "event": "idle",
+      "text": "Every window looks occupied by yesterday.",
+      "at": 19
+    },
+    {
+      "role": "hero",
+      "event": "critical",
+      "text": "I can still move. That counts.",
+      "at": 29
+    },
+    {
+      "role": "hero",
+      "event": "healed",
+      "text": "That buys us another corner.",
+      "at": 49
+    },
+    {
+      "role": "hero",
+      "event": "idle",
+      "text": "When we get home, I am knocking ONE thing off a shelf.",
+      "at": 64
+    },
+    {
+      "role": "hero",
+      "event": "engineerFriend",
+      "text": "Please point the clever end away from my tail.",
+      "at": 74
+    },
+    {
+      "role": "hero",
+      "event": "wetStreet",
+      "text": "Canals. My least favourite kind of floor gap.",
+      "at": 89
+    },
+    {
+      "role": "engineer",
+      "event": "idle",
+      "text": "I built a clock. It says run.",
+      "at": 97
+    },
+    {
+      "role": "hero",
+      "event": "pressure",
+      "text": "Small steps. No panic.",
+      "at": 109
+    },
+    {
+      "role": "hero",
+      "event": "recovery",
+      "text": "Remember that exit. It worked.",
+      "at": 129
+    },
+    {
+      "role": "engineer",
+      "event": "idle",
+      "text": "That lamp owes me a spring.",
+      "at": 141
+    },
+    {
+      "role": "hero",
+      "event": "feral",
+      "text": "You wanted the difficult cat.",
+      "at": 149
+    },
+    {
+      "role": "hero",
+      "event": "adrenaline",
+      "text": "The street got slower. Useful.",
+      "at": 169
+    },
+    {
+      "role": "hero",
+      "event": "idle",
+      "text": "Quiet has terrible timing.",
+      "at": 177
+    },
+    {
+      "role": "engineer",
+      "event": "reply",
+      "text": "That voids the warranty.",
+      "at": 183
+    },
+    {
+      "role": "engineer",
+      "event": "late",
+      "text": "Morning is close. We still have work.",
+      "at": 191
+    }
+  ],
+  "browserStatus": "Blocked: sandbox denies socket creation/shutdown; Chromium aborts before page load. Portrait/landscape browser runtime and touch QA remain pending.",
+  "pixelEvidence": [
+    {
+      "direction": 0,
+      "buff": "normal",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        338,
+        449,
+        528
+      ]
+    },
+    {
+      "direction": 0,
+      "buff": "feral",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        781,
+        628,
+        750
+      ]
+    },
+    {
+      "direction": 0,
+      "buff": "adrenaline",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        781,
+        628,
+        750
+      ]
+    },
+    {
+      "direction": 0,
+      "buff": "overdrive",
+      "moving": false,
+      "differentPixelsAdjacent": [
+        861,
+        695,
+        838
+      ]
+    },
+    {
+      "direction": 2,
+      "buff": "normal",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        335,
+        437,
+        520
+      ]
+    },
+    {
+      "direction": 2,
+      "buff": "feral",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        709,
+        583,
+        708
+      ]
+    },
+    {
+      "direction": 2,
+      "buff": "adrenaline",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        709,
+        583,
+        708
+      ]
+    },
+    {
+      "direction": 2,
+      "buff": "overdrive",
+      "moving": false,
+      "differentPixelsAdjacent": [
+        792,
+        644,
+        792
+      ]
+    },
+    {
+      "direction": 4,
+      "buff": "normal",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        349,
+        455,
+        548
+      ]
+    },
+    {
+      "direction": 4,
+      "buff": "feral",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        765,
+        645,
+        752
+      ]
+    },
+    {
+      "direction": 4,
+      "buff": "adrenaline",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        765,
+        645,
+        752
+      ]
+    },
+    {
+      "direction": 4,
+      "buff": "overdrive",
+      "moving": false,
+      "differentPixelsAdjacent": [
+        859,
+        709,
+        832
+      ]
+    },
+    {
+      "direction": 6,
+      "buff": "normal",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        334,
+        425,
+        503
+      ]
+    },
+    {
+      "direction": 6,
+      "buff": "feral",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        696,
+        578,
+        693
+      ]
+    },
+    {
+      "direction": 6,
+      "buff": "adrenaline",
+      "moving": true,
+      "differentPixelsAdjacent": [
+        696,
+        578,
+        693
+      ]
+    },
+    {
+      "direction": 6,
+      "buff": "overdrive",
+      "moving": false,
+      "differentPixelsAdjacent": [
+        782,
+        640,
+        780
+      ]
+    }
+  ],
+  "fullGameVM": {
+    "environment": "Complete unmodified game modules with mocked DOM/canvas; not a browser or visual-layout test.",
+    "runs": [
+      {
+        "folder": "cataclysm-1-0-major",
+        "width": 390,
+        "height": 844,
+        "seconds": 11.99999999999978,
+        "mode": "running",
+        "adrenaline": 0,
+        "errors": 0,
+        "startNight": 1,
+        "startLevel": 1,
+        "pauseFrozen": true,
+        "touchInputResponsive": true,
+        "viewport": {
+          "width": 720,
+          "height": 1558.1538461538462,
+          "pixels": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "folder": "cataclysm-1-0-major",
+        "width": 844,
+        "height": 390,
+        "seconds": 11.99999999999978,
+        "mode": "running",
+        "adrenaline": 6.016666666666779,
+        "errors": 0,
+        "startNight": 1,
+        "startLevel": 1,
+        "pauseFrozen": true,
+        "touchInputResponsive": true,
+        "viewport": {
+          "width": 1558.1538461538462,
+          "height": 720,
+          "pixels": [
+            844,
+            390
+          ]
+        }
+      },
+      {
+        "folder": "cataclysm-100-lab",
+        "width": 390,
+        "height": 844,
+        "seconds": 11.99999999999978,
+        "mode": "running",
+        "adrenaline": 0,
+        "errors": 0,
+        "startNight": 1,
+        "startLevel": 1,
+        "pauseFrozen": true,
+        "touchInputResponsive": true,
+        "viewport": {
+          "width": 720,
+          "height": 1558.1538461538462,
+          "pixels": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "folder": "cataclysm-100-lab",
+        "width": 844,
+        "height": 390,
+        "seconds": 11.99999999999978,
+        "mode": "running",
+        "adrenaline": 6.016666666666779,
+        "errors": 0,
+        "startNight": 1,
+        "startLevel": 1,
+        "pauseFrozen": true,
+        "touchInputResponsive": true,
+        "viewport": {
+          "width": 1558.1538461538462,
+          "height": 720,
+          "pixels": [
+            844,
+            390
+          ]
+        }
+      }
+    ]
+  },
+  "existingCorrectiveChecks": [
+    {
+      "path": "cataclysm-1-0-major",
+      "earlyLevelUpsAtFish": [
+        6,
+        14,
+        24
+      ],
+      "lateThresholdMonotonic": true,
+      "ghostTelegraphEscapeAndSharedCooldown": true,
+      "animationSourceFrames": {
+        "hero:run": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:attack": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:hit": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:feral": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:adrenaline": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "shambler:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:hit": [
+          0,
+          96,
+          192,
+          288
+        ]
+      },
+      "pausedDialogueClock": 0,
+      "groundParity": true,
+      "spawnBudgetAndRoleBounds": true,
+      "projectileCap": 16,
+      "speechRevealAndPauseFreeze": true
+    },
+    {
+      "path": "cataclysm-100-lab",
+      "earlyLevelUpsAtFish": [
+        6,
+        14,
+        24
+      ],
+      "lateThresholdMonotonic": true,
+      "ghostTelegraphEscapeAndSharedCooldown": true,
+      "animationSourceFrames": {
+        "hero:run": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:attack": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:hit": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:feral": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:adrenaline": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "shambler:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:hit": [
+          0,
+          96,
+          192,
+          288
+        ]
+      },
+      "pausedDialogueClock": 0,
+      "groundParity": true,
+      "spawnBudgetAndRoleBounds": true,
+      "projectileCap": 16,
+      "speechRevealAndPauseFreeze": true
+    }
+  ]
+}
