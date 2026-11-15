@@ -1,0 +1,99 @@
+name: BoRHeZ Studio — autonomous multi-pass production council
+run-name: Studio Council · image-first passes and honest broken candidates
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/studio_meetings/2026-11-15-multipass-council/LAUNCH.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: borhez-multipass-council-20261115
+  cancel-in-progress: false
+jobs:
+  independent-council:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check creator commission and correct council script
+        run: |
+          set -euo pipefail
+          test -s game_factory/studio_meetings/2026-11-15-multipass-council/CREATOR_BRIEF.md
+          test -s game_factory/studio_meetings/2026-11-15-multipass-council/LAUNCH.md
+          test -s docs/cataclysm-1-3/STUDIO-REPORT.md
+          python -m py_compile game_factory/studio_multipass_council.py
+      - name: Real independent model calls, real cross-agent discussion and producer policy
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STUDIO_MEETING_MODEL: gpt-4.1-mini
+        run: python -m game_factory.studio_multipass_council
+      - name: Archive complete transcript before Git publication
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: borhez-studio-multipass-council-${{ github.run_id }}
+          path: |
+            game_factory/studio_meetings/2026-11-15-multipass-council/FULL_TRANSCRIPT.md
+            game_factory/studio_meetings/2026-11-15-multipass-council/FULL_TRANSCRIPT.json
+            game_factory/studio_meetings/2026-11-15-multipass-council/MULTIPASS_POLICY.md
+            game_factory/studio_meetings/2026-11-15-multipass-council/MULTIPASS_POLICY.json
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Verify actual roles, cross-agent dialogue and flexible passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          p=Path('game_factory/studio_meetings/2026-11-15-multipass-council')
+          for name in ('FULL_TRANSCRIPT.md','FULL_TRANSCRIPT.json','MULTIPASS_POLICY.md','MULTIPASS_POLICY.json'):
+              assert (p/name).is_file() and (p/name).stat().st_size>500, name
+          dialogue=json.loads((p/'FULL_TRANSCRIPT.json').read_text())
+          policy=json.loads((p/'MULTIPASS_POLICY.json').read_text())
+          assert len(dialogue['opening']['responses'])>=10
+          assert len(dialogue['debate']['responses'])>=10
+          assert dialogue['synthesis']['response_id']
+          assert 5 <= len(policy['passes']) <= 10
+          assert dialogue['did_start_1_4'] is False
+          paths=subprocess.check_output(['git','diff','--name-only','HEAD'],text=True).splitlines()
+          paths+=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          unexpected=[p for p in paths if not p.startswith('game_factory/studio_meetings/2026-11-15-multipass-council/')]
+          assert not unexpected,unexpected
+          print('Meeting discussion authentic; no game was built or changed.')
+          PY
+      - name: Commit meeting and proposed production policy for permanent studio memory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Production Council'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="council/studio-multipass-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add game_factory/studio_meetings/2026-11-15-multipass-council/FULL_TRANSCRIPT.* game_factory/studio_meetings/2026-11-15-multipass-council/MULTIPASS_POLICY.*
+          git -c core.whitespace=-trailing-space diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'Studio Council: multi-pass illustrated production, always-preserved candidates'
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "$branch" --title 'BoRHeZ multi-pass studio council: art assets, adaptive passes and broken candidates' --body 'Actual independently invoked 12-role first-round suggestions, actual replies, producer multi-pass design. Creator allows extra passes and candidate release even if broken, separately from stable promotion. Advisory meeting; no 1.4 runtime change or release.')"
+          gh pr merge "$pr" --squash --delete-branch
+          echo '### BoRHeZ Studio Multi-pass Council' >> "$GITHUB_STEP_SUMMARY"
+          echo "PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          echo 'https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-15-multipass-council/FULL_TRANSCRIPT.md' >> "$GITHUB_STEP_SUMMARY"
+          echo 'https://github.com/BoRHeX/kbc-rpg-prototype/blob/main/game_factory/studio_meetings/2026-11-15-multipass-council/MULTIPASS_POLICY.md' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No 1.4 development was triggered.' >> "$GITHUB_STEP_SUMMARY"
