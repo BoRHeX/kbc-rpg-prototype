@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "stage": "PASS-01",
+  "status": "CONCEPT_READY_ART_NOT_GENERATED",
+  "files": [
+    {
+      "path": "STUDIO/CONCEPT.md",
+      "bytes": 34079,
+      "sha256": "61093227ba18bedc4ad8dfb9e9372cd759871c0e145d247899c2c49b4e895da6"
+    },
+    {
+      "path": "STUDIO/ASSET_PLAN.json",
+      "bytes": 49157,
+      "sha256": "21899beebb70df0a41cb72086257c167d598db9a8b415b111cc511e5ca8edfd3"
+    },
+    {
+      "path": "STUDIO/SOURCE_AUDIT.json",
+      "bytes": 61476,
+      "sha256": "a0131ddf0220fa506e9ac15434af255bdad7a7b11d16667c872eb0a5b65eb82d"
+    },
+    {
+      "path": "STUDIO/REFERENCE_BOARD.html",
+      "bytes": 3645,
+      "sha256": "6a4dd18ce34b2330a6d331d1558374c730bdaf749b07754ec911831bef4b129f"
+    },
+    {
+      "path": "STUDIO/CONCEPT_CHECKS.json",
+      "bytes": 1142,
+      "sha256": "94651d5536c8ecab8c2de3d073e8e35c52bf09c63714dee57e3db1217c9ad2f9"
+    }
+  ],
+  "runtime_changes": false,
+  "art_generated": false,
+  "browser_tested": false,
+  "artifact_upload_or_commit_claimed": false,
+  "next_stage": "PASS-02 direct original image generation; write IMAGE_MANIFEST.json with real evidence or ART-BLOCKED."
+}

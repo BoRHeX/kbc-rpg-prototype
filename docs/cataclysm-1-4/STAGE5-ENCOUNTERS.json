@@ -1,0 +1,4320 @@
+{
+  "stage": 5,
+  "version": "1.0",
+  "status": "sandbox-verified; mandatory trusted Chrome and PR gates pending",
+  "generatedUTC": "2026-11-12T23:12:53.340363+00:00",
+  "method": "Actual unrendered game tick, 60Hz; fixed tier snapshots, earn/apply first offered upgrades; deterministic nearest-threat tangential dodge with stationary 1.6s per 7s. 39s early/mid/late windows, finale up to 180s. Host times are NOT browser FPS.",
+  "limitations": [
+    "One gameplay seed and one economy seed, representative fixed build snapshots, not a full human campaign playthrough.",
+    "LAB retains its stress-mode equipment, run scale, disabled hazards and milestone setup; campaign retains its normal mode rules. Compare builds within each mode.",
+    "Uptime is measured productive acting time / observed follower simulation time; turret productive time is reported separately. Zero casts remain zero.",
+    "Host simulation timings are not Chrome FPS. No browser screenshots or recordings claimed."
+  ],
+  "encounters": [
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 1,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 211,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 27,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 3,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 5,
+        "shots": 2,
+        "enemyShots": 0,
+        "particles": 25
+      },
+      "hostSimulationMs": 1916.1
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 1,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 177,
+        "components": {
+          "survival": 79,
+          "kills": 98,
+          "fish": 0,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 14,
+        "fish": 0,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 1,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 2,
+            "usefulSeconds": 12.63333333333354,
+            "stateSeconds": {
+              "following": 12.283333333333523,
+              "preparing": 3.6666666666666585,
+              "acting": 12.63333333333354,
+              "recovering": 7.0833333333333135,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.3239316239316262
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "preparing",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 3,
+            "usefulSeconds": 5.516666666666652,
+            "stateSeconds": {
+              "following": 29.39999999999961,
+              "preparing": 1.3666666666666667,
+              "guarding": 5.516666666666652,
+              "recovering": 2.716666666666662
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.14145299145299256
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 5,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 11,
+            "usefulSeconds": 2.6166666666666623,
+            "stateSeconds": {
+              "following": 21.216666666666743,
+              "aiming": 8.016666666666644,
+              "acting": 2.6166666666666623,
+              "recovering": 7.14999999999998
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.06709401709401694
+        }
+      ],
+      "peak": {
+        "enemies": 4,
+        "shots": 17,
+        "enemyShots": 0,
+        "particles": 50
+      },
+      "hostSimulationMs": 6871.4
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 1,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 211,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 27,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 3,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 1,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 2,
+            "usefulSeconds": 12.10000000000018,
+            "stateSeconds": {
+              "following": 13.000000000000226,
+              "preparing": 3.483333333333326,
+              "acting": 12.10000000000018,
+              "recovering": 7.0833333333333135,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.3102564102564119
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 2,
+            "interrupts": 3,
+            "aborts": 5,
+            "usefulSeconds": 1.5166666666666662,
+            "stateSeconds": {
+              "following": 32.516666666666104,
+              "preparing": 1.5833333333333326,
+              "interrupted": 1.3000000000000003,
+              "attacking": 1.5166666666666662,
+              "recovering": 2.083333333333331
+            },
+            "hits": {
+              "melee": 67,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.038888888888889445
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 21,
+            "usefulSeconds": 1.483333333333333,
+            "stateSeconds": {
+              "following": 16.216666666667027,
+              "aiming": 10.833333333333451,
+              "acting": 1.483333333333333,
+              "recovering": 10.033333333333411,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 16,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.03803418803418748
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 1,
+            "aborts": 16,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 23.349999999999955,
+              "building": 8.550000000000004,
+              "recovering": 6.666666666666648,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 21,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 18,
+        "enemyShots": 0,
+        "particles": 37
+      },
+      "hostSimulationMs": 6707.9
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 1,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 229,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 45,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 5,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 9,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 9,
+            "usefulSeconds": 14.16666666666695,
+            "stateSeconds": {
+              "following": 12.683333333333543,
+              "preparing": 3.9999999999999907,
+              "guarding": 14.16666666666695,
+              "recovering": 8.149999999999984
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.3632478632478662
+        },
+        {
+          "role": "trapper",
+          "state": "recovering",
+          "phase": "recovering",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 22,
+            "usefulSeconds": 2.583333333333329,
+            "stateSeconds": {
+              "following": 13.43333333333358,
+              "preparing": 8.466666666666667,
+              "recovering": 14.516666666666968,
+              "acting": 2.583333333333329
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.06623931623931521
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 6,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 7,
+            "usefulSeconds": 14.5000000000003,
+            "stateSeconds": {
+              "following": 16.800000000000328,
+              "preparing": 3.6166666666666587,
+              "recovering": 3.649999999999992,
+              "singing": 14.5000000000003,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 67,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.3717948717948737
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 2,
+        "enemyShots": 0,
+        "particles": 37
+      },
+      "hostSimulationMs": 4611.7
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 45,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 5.878,
+      "minHp": 5.878,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 572,
+        "components": {
+          "survival": 130,
+          "kills": 280,
+          "fish": 162,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 40,
+        "fish": 18,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 6,
+        "shots": 9,
+        "enemyShots": 20,
+        "particles": 99
+      },
+      "hostSimulationMs": 2694.7
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 45,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 13,
+      "minHp": 12,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 585,
+        "components": {
+          "survival": 130,
+          "kills": 266,
+          "fish": 189,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 38,
+        "fish": 21,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 1,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 4,
+            "usefulSeconds": 11.716666666666828,
+            "stateSeconds": {
+              "following": 13.383333333333578,
+              "preparing": 3.9166666666666576,
+              "acting": 11.716666666666828,
+              "recovering": 5.783333333333318,
+              "interrupted": 0.8666666666666677,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.3004273504273517
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 1,
+            "aborts": 6,
+            "usefulSeconds": 0.3,
+            "stateSeconds": {
+              "following": 33.34999999999939,
+              "treating": 2.499999999999996,
+              "recovering": 2.416666666666663,
+              "interrupted": 0.4333333333333333,
+              "acting": 0.3
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.007692307692307815
+        },
+        {
+          "role": "tank",
+          "state": "recovering",
+          "phase": "recovering",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 0,
+            "interrupts": 2,
+            "aborts": 8,
+            "usefulSeconds": 6.283333333333316,
+            "stateSeconds": {
+              "following": 23.48333333333328,
+              "interrupted": 0.8666666666666677,
+              "preparing": 3.1166666666666605,
+              "guarding": 6.283333333333316,
+              "recovering": 5.249999999999987
+            },
+            "hits": {
+              "melee": 32,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.16111111111111107
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 4,
+            "aborts": 20,
+            "usefulSeconds": 0.5166666666666666,
+            "stateSeconds": {
+              "following": 19.98333333333348,
+              "aiming": 8.566666666666672,
+              "acting": 0.5166666666666666,
+              "recovering": 8.199999999999987,
+              "interrupted": 1.733333333333332
+            },
+            "hits": {
+              "melee": 172,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.013247863247863197
+        }
+      ],
+      "peak": {
+        "enemies": 7,
+        "shots": 25,
+        "enemyShots": 9,
+        "particles": 139
+      },
+      "hostSimulationMs": 8577.4
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 45,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 6.628,
+      "minHp": 6.628,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 491,
+        "components": {
+          "survival": 130,
+          "kills": 280,
+          "fish": 81,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 40,
+        "fish": 9,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 6,
+          "protection": 0,
+          "stats": {
+            "casts": 14,
+            "specialCasts": 2,
+            "interrupts": 3,
+            "aborts": 3,
+            "usefulSeconds": 9.300000000000042,
+            "stateSeconds": {
+              "following": 17.466666666666956,
+              "preparing": 2.8666666666666614,
+              "acting": 9.300000000000042,
+              "recovering": 4.733333333333322,
+              "interrupted": 1.3000000000000003,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 5
+            }
+          },
+          "uptime": 0.23846153846153767
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 1,
+            "interrupts": 5,
+            "aborts": 4,
+            "usefulSeconds": 1.8333333333333317,
+            "stateSeconds": {
+              "following": 31.19999999999951,
+              "preparing": 1.866666666666665,
+              "interrupted": 2.166666666666664,
+              "attacking": 1.8333333333333317,
+              "recovering": 1.9333333333333313
+            },
+            "hits": {
+              "melee": 177,
+              "projectile": 4
+            }
+          },
+          "uptime": 0.04700854700854758
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 1,
+            "interrupts": 0,
+            "aborts": 13,
+            "usefulSeconds": 1.5333333333333328,
+            "stateSeconds": {
+              "following": 24.133333333333244,
+              "aiming": 6.983333333333314,
+              "acting": 1.5333333333333328,
+              "recovering": 6.349999999999983
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.03931623931623943
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 2,
+            "aborts": 9,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 29.28333333333295,
+              "building": 5.099999999999987,
+              "recovering": 3.7499999999999916,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 35,
+              "projectile": 1
+            }
+          },
+          "uptime": 0
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 27,
+        "enemyShots": 14,
+        "particles": 155
+      },
+      "hostSimulationMs": 7809.3
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 45,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 7,
+      "minHp": 7,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 563,
+        "components": {
+          "survival": 130,
+          "kills": 280,
+          "fish": 153,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 40,
+        "fish": 17,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 3,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 35.49999999999927,
+              "interrupted": 1.3000000000000003,
+              "treating": 0.9500000000000013,
+              "recovering": 1.2500000000000004
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2,
+              "player-hit": 1
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 5,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 8,
+            "usefulSeconds": 7.4666666666666455,
+            "stateSeconds": {
+              "following": 25.19999999999985,
+              "preparing": 2.533333333333329,
+              "interrupted": 0.8666666666666677,
+              "guarding": 7.4666666666666455,
+              "recovering": 2.933333333333328
+            },
+            "hits": {
+              "melee": 21,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.19145299145299177
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 4,
+            "aborts": 5,
+            "usefulSeconds": 0.6666666666666671,
+            "stateSeconds": {
+              "following": 30.88333333333286,
+              "interrupted": 1.733333333333332,
+              "preparing": 2.499999999999996,
+              "recovering": 3.21666666666666,
+              "acting": 0.6666666666666671
+            },
+            "hits": {
+              "melee": 60,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.017094017094017318
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 9,
+            "usefulSeconds": 4.049999999999991,
+            "stateSeconds": {
+              "following": 27.166666666666405,
+              "preparing": 4.033333333333324,
+              "singing": 4.049999999999991,
+              "recovering": 3.7499999999999916
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.10384615384615437
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 12,
+        "enemyShots": 11,
+        "particles": 106
+      },
+      "hostSimulationMs": 6441
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 85,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 21.582,
+      "minHp": 21,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 533,
+        "components": {
+          "survival": 177,
+          "kills": 203,
+          "fish": 153,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 29,
+        "fish": 17,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 5,
+        "shots": 16,
+        "enemyShots": 4,
+        "particles": 88
+      },
+      "hostSimulationMs": 3791.7
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 85,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 22,
+      "minHp": 21,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 447,
+        "components": {
+          "survival": 177,
+          "kills": 189,
+          "fish": 81,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 27,
+        "fish": 9,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 3,
+          "protection": 0,
+          "stats": {
+            "casts": 17,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 4,
+            "usefulSeconds": 10.666666666666776,
+            "stateSeconds": {
+              "following": 17.65000000000028,
+              "preparing": 3.1166666666666605,
+              "acting": 10.666666666666776,
+              "recovering": 4.233333333333324,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.2735042735042737
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 8,
+            "usefulSeconds": 2.7666666666666617,
+            "stateSeconds": {
+              "following": 30.49999999999955,
+              "preparing": 2.3999999999999964,
+              "guarding": 2.7666666666666617,
+              "recovering": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.07094017094017166
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 2,
+            "aborts": 11,
+            "usefulSeconds": 0.41666666666666663,
+            "stateSeconds": {
+              "following": 27.633333333333045,
+              "aiming": 5.499999999999986,
+              "acting": 0.41666666666666663,
+              "recovering": 4.583333333333322,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 22,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.01068376068376077
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 26,
+        "enemyShots": 3,
+        "particles": 120
+      },
+      "hostSimulationMs": 8668.9
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 85,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 21.582,
+      "minHp": 21,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 485,
+        "components": {
+          "survival": 177,
+          "kills": 182,
+          "fish": 126,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 26,
+        "fish": 14,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 6,
+          "protection": 0,
+          "stats": {
+            "casts": 14,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 7,
+            "usefulSeconds": 8.816666666666684,
+            "stateSeconds": {
+              "following": 18.750000000000217,
+              "preparing": 3.0833333333333273,
+              "acting": 8.816666666666684,
+              "recovering": 5.016666666666654,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.2260683760683753
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 4,
+            "aborts": 2,
+            "usefulSeconds": 0.24999999999999997,
+            "stateSeconds": {
+              "following": 35.14999999999929,
+              "preparing": 1.0333333333333345,
+              "interrupted": 1.733333333333332,
+              "attacking": 0.24999999999999997,
+              "recovering": 0.8333333333333343
+            },
+            "hits": {
+              "melee": 16,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.006410256410256526
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 1,
+            "interrupts": 3,
+            "aborts": 10,
+            "usefulSeconds": 1.100000000000001,
+            "stateSeconds": {
+              "following": 27.516666666666385,
+              "aiming": 4.983333333333321,
+              "acting": 1.100000000000001,
+              "recovering": 4.099999999999991,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.028205128205128445
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 8,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 31.31666666666617,
+              "building": 3.049999999999994,
+              "recovering": 3.3333333333333264,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 27,
+        "enemyShots": 5,
+        "particles": 129
+      },
+      "hostSimulationMs": 8526.9
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 85,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 13.75,
+      "minHp": 13.75,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 494,
+        "components": {
+          "survival": 177,
+          "kills": 182,
+          "fish": 135,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 26,
+        "fish": 15,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 3,
+            "aborts": 3,
+            "usefulSeconds": 0.2833333333333333,
+            "stateSeconds": {
+              "following": 34.08333333333268,
+              "treating": 2.083333333333331,
+              "acting": 0.2833333333333333,
+              "recovering": 1.2500000000000004,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2,
+              "player-hit": 2
+            }
+          },
+          "uptime": 0.0072649572649573875
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 6,
+            "usefulSeconds": 2.549999999999996,
+            "stateSeconds": {
+              "following": 30.633333333332875,
+              "preparing": 2.0166666666666644,
+              "interrupted": 1.3000000000000003,
+              "guarding": 2.549999999999996,
+              "recovering": 2.499999999999996
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 4
+            }
+          },
+          "uptime": 0.06538461538461608
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 5,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 34.64999999999932,
+              "preparing": 1.3666666666666667,
+              "recovering": 1.6833333333333322,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 4
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 5,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 8,
+            "usefulSeconds": 1.9666666666666646,
+            "stateSeconds": {
+              "following": 29.066666666666297,
+              "preparing": 3.9333333333333242,
+              "recovering": 3.1666666666666603,
+              "singing": 1.9666666666666646,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.05042735042735088
+        }
+      ],
+      "peak": {
+        "enemies": 8,
+        "shots": 17,
+        "enemyShots": 8,
+        "particles": 124
+      },
+      "hostSimulationMs": 5935.5
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 40.18,
+      "outcome": "won",
+      "hp": 5.382,
+      "minHp": 5.382,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002529,
+        "components": {
+          "survival": 199,
+          "kills": 1386,
+          "fish": 945,
+          "milestones": 999999999
+        },
+        "survivalPoints": 199.71116666649178,
+        "weightedKills": 198,
+        "fish": 105,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 17,
+        "shots": 15,
+        "enemyShots": 59,
+        "particles": 266
+      },
+      "hostSimulationMs": 40461.9
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 38.17,
+      "outcome": "won",
+      "hp": 16.595,
+      "minHp": 16.595,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002492,
+        "components": {
+          "survival": 189,
+          "kills": 1386,
+          "fish": 918,
+          "milestones": 999999999
+        },
+        "survivalPoints": 189.68833333316618,
+        "weightedKills": 198,
+        "fish": 102,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "interrupted",
+          "phase": "interrupted",
+          "ammo": 4,
+          "protection": 1.2500000000000009,
+          "stats": {
+            "casts": 10,
+            "specialCasts": 2,
+            "interrupts": 19,
+            "aborts": 0,
+            "usefulSeconds": 6.466666666666649,
+            "stateSeconds": {
+              "following": 0.16666666666666666,
+              "preparing": 1.8833333333333315,
+              "acting": 6.466666666666649,
+              "recovering": 1.866666666666665,
+              "reloading": 19.733333333333494,
+              "interrupted": 8.04999999999998
+            },
+            "hits": {
+              "melee": 1065,
+              "projectile": 68
+            }
+          },
+          "uptime": 0.16943231441047937
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.016666666666666993,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 18,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 29.94999999999958,
+              "interrupted": 7.799999999999978,
+              "treating": 0.41666666666666663
+            },
+            "hits": {
+              "melee": 1014,
+              "projectile": 72
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "guarding",
+          "phase": "acting",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 10,
+            "specialCasts": 2,
+            "interrupts": 6,
+            "aborts": 1,
+            "usefulSeconds": 29.183333333332957,
+            "stateSeconds": {
+              "following": 0.06666666666666667,
+              "preparing": 3.6666666666666585,
+              "guarding": 29.183333333332957,
+              "recovering": 2.6499999999999955,
+              "interrupted": 2.5999999999999956
+            },
+            "hits": {
+              "melee": 1188,
+              "projectile": 101
+            }
+          },
+          "uptime": 0.7646288209606967
+        },
+        {
+          "role": "sniper",
+          "state": "aiming",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0.3833333333333336,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 20,
+            "aborts": 11,
+            "usefulSeconds": 0.8833333333333344,
+            "stateSeconds": {
+              "following": 11.733333333333496,
+              "aiming": 11.800000000000166,
+              "recovering": 5.083333333333321,
+              "acting": 0.8833333333333344,
+              "interrupted": 8.666666666666677
+            },
+            "hits": {
+              "melee": 2078,
+              "projectile": 56
+            }
+          },
+          "uptime": 0.02314410480349328
+        }
+      ],
+      "peak": {
+        "enemies": 18,
+        "shots": 30,
+        "enemyShots": 66,
+        "particles": 274
+      },
+      "hostSimulationMs": 51598
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39.02,
+      "outcome": "won",
+      "hp": 6.371,
+      "minHp": 6.371,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002469,
+        "components": {
+          "survival": 193,
+          "kills": 1386,
+          "fish": 891,
+          "milestones": 999999999
+        },
+        "survivalPoints": 193.91283333316292,
+        "weightedKills": 198,
+        "fish": 99,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 1,
+          "protection": 0,
+          "stats": {
+            "casts": 20,
+            "specialCasts": 3,
+            "interrupts": 19,
+            "aborts": 0,
+            "usefulSeconds": 13.30000000000024,
+            "stateSeconds": {
+              "following": 0.16666666666666666,
+              "preparing": 4.216666666666657,
+              "acting": 13.30000000000024,
+              "recovering": 3.733333333333325,
+              "interrupted": 8.233333333333322,
+              "reloading": 9.366666666666712
+            },
+            "hits": {
+              "melee": 1376,
+              "projectile": 51
+            }
+          },
+          "uptime": 0.34087996582657376
+        },
+        {
+          "role": "brawler",
+          "state": "interrupted",
+          "phase": "interrupted",
+          "ammo": 0,
+          "protection": 1.1333333333333346,
+          "stats": {
+            "casts": 25,
+            "specialCasts": 2,
+            "interrupts": 25,
+            "aborts": 1,
+            "usefulSeconds": 16.716666666667,
+            "stateSeconds": {
+              "following": 0.7166666666666672,
+              "preparing": 6.933333333333314,
+              "attacking": 16.716666666667,
+              "recovering": 3.8833333333333244,
+              "interrupted": 10.766666666666781
+            },
+            "hits": {
+              "melee": 1643,
+              "projectile": 39
+            }
+          },
+          "uptime": 0.42844938060658233
+        },
+        {
+          "role": "sniper",
+          "state": "aiming",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0.08333333333333365,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 22,
+            "aborts": 10,
+            "usefulSeconds": 0.6833333333333338,
+            "stateSeconds": {
+              "following": 12.76666666666688,
+              "aiming": 12.30000000000019,
+              "recovering": 3.733333333333325,
+              "acting": 0.6833333333333338,
+              "interrupted": 9.533333333333387
+            },
+            "hits": {
+              "melee": 1717,
+              "projectile": 61
+            }
+          },
+          "uptime": 0.01751388295600152
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 22,
+            "aborts": 9,
+            "usefulSeconds": 0.13333333333333333,
+            "stateSeconds": {
+              "following": 14.76666666666698,
+              "building": 12.30000000000019,
+              "recovering": 2.28333333333333,
+              "acting": 0.13333333333333333,
+              "interrupted": 9.533333333333387
+            },
+            "hits": {
+              "melee": 2204,
+              "projectile": 77
+            }
+          },
+          "uptime": 0.003417343015805163
+        }
+      ],
+      "peak": {
+        "enemies": 17,
+        "shots": 31,
+        "enemyShots": 67,
+        "particles": 274
+      },
+      "hostSimulationMs": 52072.9
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 43.22,
+      "outcome": "won",
+      "hp": 8.338,
+      "minHp": 8.338,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002598,
+        "components": {
+          "survival": 214,
+          "kills": 1386,
+          "fish": 999,
+          "milestones": 999999999
+        },
+        "survivalPoints": 214.7868333331468,
+        "weightedKills": 198,
+        "fish": 111,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.5500000000000004,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 21,
+            "aborts": 2,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 32.633333333332764,
+              "interrupted": 9.100000000000032,
+              "treating": 0.7000000000000005,
+              "recovering": 0.7833333333333341
+            },
+            "hits": {
+              "melee": 1447,
+              "projectile": 80,
+              "player-hit": 2
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "recovering",
+          "phase": "recovering",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 12,
+            "specialCasts": 3,
+            "interrupts": 8,
+            "aborts": 2,
+            "usefulSeconds": 30.716666666666203,
+            "stateSeconds": {
+              "following": 0.08333333333333333,
+              "preparing": 4.566666666666656,
+              "guarding": 30.716666666666203,
+              "recovering": 4.383333333333323,
+              "interrupted": 3.4666666666666592
+            },
+            "hits": {
+              "melee": 1599,
+              "projectile": 118
+            }
+          },
+          "uptime": 0.7107597377554928
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 21,
+            "aborts": 12,
+            "usefulSeconds": 2.249999999999997,
+            "stateSeconds": {
+              "following": 16.766666666666996,
+              "preparing": 9.483333333333384,
+              "acting": 2.249999999999997,
+              "recovering": 5.616666666666652,
+              "interrupted": 9.100000000000032
+            },
+            "hits": {
+              "melee": 1723,
+              "projectile": 115
+            }
+          },
+          "uptime": 0.05206324720401025
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 2,
+            "interrupts": 18,
+            "aborts": 7,
+            "usefulSeconds": 18.400000000000237,
+            "stateSeconds": {
+              "following": 2.8666666666666614,
+              "preparing": 11.616666666666823,
+              "recovering": 2.533333333333329,
+              "singing": 18.400000000000237,
+              "interrupted": 7.799999999999978
+            },
+            "hits": {
+              "melee": 1113,
+              "projectile": 48
+            }
+          },
+          "uptime": 0.4257616660239124
+        }
+      ],
+      "peak": {
+        "enemies": 18,
+        "shots": 18,
+        "enemyShots": 71,
+        "particles": 271
+      },
+      "hostSimulationMs": 51222.6
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 1,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 195,
+        "components": {
+          "survival": 79,
+          "kills": 98,
+          "fish": 18,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 14,
+        "fish": 2,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 5,
+        "shots": 2,
+        "enemyShots": 0,
+        "particles": 36
+      },
+      "hostSimulationMs": 2098.9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 1,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 184,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 0,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 0,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 3,
+          "protection": 0,
+          "stats": {
+            "casts": 17,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 6,
+            "usefulSeconds": 10.533333333333436,
+            "stateSeconds": {
+              "following": 14.816666666666983,
+              "preparing": 3.2333333333333267,
+              "acting": 10.533333333333436,
+              "recovering": 7.0833333333333135,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.27008547008547
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 4,
+            "usefulSeconds": 5.633333333333319,
+            "stateSeconds": {
+              "following": 28.433333333333,
+              "preparing": 1.7999999999999985,
+              "guarding": 5.633333333333319,
+              "recovering": 3.133333333333327
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.14444444444444537
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 13,
+            "usefulSeconds": 2.466666666666663,
+            "stateSeconds": {
+              "following": 20.316666666666794,
+              "aiming": 9.516666666666719,
+              "acting": 2.466666666666663,
+              "recovering": 6.6999999999999815
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.0632478632478629
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 18,
+        "enemyShots": 0,
+        "particles": 36
+      },
+      "hostSimulationMs": 6709.9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 1,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 229,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 45,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 5,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 6,
+          "protection": 0,
+          "stats": {
+            "casts": 14,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 3,
+            "usefulSeconds": 8.966666666666692,
+            "stateSeconds": {
+              "following": 18.70000000000022,
+              "preparing": 2.583333333333329,
+              "acting": 8.966666666666692,
+              "recovering": 5.416666666666653,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.22991452991452926
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 1,
+            "interrupts": 2,
+            "aborts": 3,
+            "usefulSeconds": 1.3666666666666667,
+            "stateSeconds": {
+              "following": 33.449999999999385,
+              "preparing": 1.2833333333333337,
+              "interrupted": 0.8666666666666677,
+              "recovering": 2.033333333333331,
+              "attacking": 1.3666666666666667
+            },
+            "hits": {
+              "melee": 72,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.0350427350427356
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 17,
+            "usefulSeconds": 1.7166666666666655,
+            "stateSeconds": {
+              "following": 16.716666666667,
+              "aiming": 10.916666666666789,
+              "acting": 1.7166666666666655,
+              "recovering": 9.650000000000059
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.04401709401709341
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 17,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 23.049999999999972,
+              "building": 8.866666666666687,
+              "recovering": 7.0833333333333135
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 18,
+        "enemyShots": 0,
+        "particles": 37
+      },
+      "hostSimulationMs": 6181.6
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 1,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 3,
+      "minHp": 3,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 184,
+        "components": {
+          "survival": 79,
+          "kills": 105,
+          "fish": 0,
+          "milestones": 0
+        },
+        "survivalPoints": 79.17000000000068,
+        "weightedKills": 15,
+        "fish": 0,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 6,
+            "specialCasts": 1,
+            "interrupts": 0,
+            "aborts": 5,
+            "usefulSeconds": 7.949999999999977,
+            "stateSeconds": {
+              "following": 23.766666666666598,
+              "preparing": 2.2666666666666635,
+              "guarding": 7.949999999999977,
+              "recovering": 5.016666666666654
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.20384615384615384
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 10,
+            "usefulSeconds": 1.7666666666666653,
+            "stateSeconds": {
+              "following": 24.73333333333321,
+              "preparing": 4.499999999999989,
+              "recovering": 7.999999999999977,
+              "acting": 1.7666666666666653
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.045299145299145444
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 5,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 9,
+            "usefulSeconds": 4.999999999999988,
+            "stateSeconds": {
+              "following": 25.86666666666648,
+              "preparing": 3.949999999999991,
+              "recovering": 3.7499999999999916,
+              "singing": 4.999999999999988,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 26,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.1282051282051286
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 2,
+        "enemyShots": 0,
+        "particles": 28
+      },
+      "hostSimulationMs": 4056.9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 45,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 9.88,
+      "minHp": 9.88,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 484,
+        "components": {
+          "survival": 130,
+          "kills": 273,
+          "fish": 81,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 39,
+        "fish": 9,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 6,
+        "shots": 9,
+        "enemyShots": 20,
+        "particles": 80
+      },
+      "hostSimulationMs": 2650.6
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 45,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 12,
+      "minHp": 11.377,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 538,
+        "components": {
+          "survival": 130,
+          "kills": 273,
+          "fish": 135,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 39,
+        "fish": 15,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 1,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 4,
+            "usefulSeconds": 12.23333333333352,
+            "stateSeconds": {
+              "following": 13.050000000000228,
+              "preparing": 3.849999999999991,
+              "acting": 12.23333333333352,
+              "recovering": 6.099999999999984,
+              "interrupted": 0.4333333333333333,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.31367521367521545
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 1,
+            "aborts": 1,
+            "usefulSeconds": 0.2833333333333333,
+            "stateSeconds": {
+              "following": 36.96666666666585,
+              "interrupted": 0.4333333333333333,
+              "treating": 0.9000000000000011,
+              "acting": 0.2833333333333333,
+              "recovering": 0.41666666666666663
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.007264957264957419
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 0,
+            "interrupts": 1,
+            "aborts": 6,
+            "usefulSeconds": 3.5499999999999923,
+            "stateSeconds": {
+              "following": 30.56666666666621,
+              "interrupted": 0.4333333333333333,
+              "preparing": 1.949999999999998,
+              "guarding": 3.5499999999999923,
+              "recovering": 2.499999999999996
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.09102564102564194
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 12,
+            "usefulSeconds": 1.4499999999999997,
+            "stateSeconds": {
+              "following": 21.550000000000058,
+              "aiming": 8.266666666666657,
+              "acting": 1.4499999999999997,
+              "recovering": 6.866666666666648,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.037179487179487145
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 25,
+        "enemyShots": 11,
+        "particles": 84
+      },
+      "hostSimulationMs": 10044.4
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 45,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 10.379,
+      "minHp": 10.379,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 547,
+        "components": {
+          "survival": 130,
+          "kills": 273,
+          "fish": 144,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 39,
+        "fish": 16,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 4,
+          "protection": 0,
+          "stats": {
+            "casts": 16,
+            "specialCasts": 2,
+            "interrupts": 3,
+            "aborts": 3,
+            "usefulSeconds": 10.266666666666756,
+            "stateSeconds": {
+              "following": 15.63333333333369,
+              "preparing": 3.4166666666666594,
+              "acting": 10.266666666666756,
+              "recovering": 5.049999999999987,
+              "interrupted": 1.3000000000000003,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 4
+            }
+          },
+          "uptime": 0.2632478632478627
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 3,
+            "aborts": 6,
+            "usefulSeconds": 0.41666666666666663,
+            "stateSeconds": {
+              "following": 34.033333333332685,
+              "interrupted": 1.3000000000000003,
+              "preparing": 0.7500000000000007,
+              "recovering": 2.499999999999996,
+              "attacking": 0.41666666666666663
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 4
+            }
+          },
+          "uptime": 0.010683760683760864
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 6,
+            "aborts": 14,
+            "usefulSeconds": 1.566666666666666,
+            "stateSeconds": {
+              "following": 18.783333333333548,
+              "aiming": 8.349999999999994,
+              "acting": 1.566666666666666,
+              "recovering": 7.699999999999978,
+              "interrupted": 2.5999999999999956
+            },
+            "hits": {
+              "melee": 19,
+              "projectile": 6
+            }
+          },
+          "uptime": 0.040170940170939966
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 9,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 28.54999999999966,
+              "building": 5.399999999999986,
+              "recovering": 3.7499999999999916,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 9,
+              "projectile": 5
+            }
+          },
+          "uptime": 0
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 24,
+        "enemyShots": 15,
+        "particles": 80
+      },
+      "hostSimulationMs": 9168.2
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 45,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 11.377,
+      "minHp": 11.377,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 457,
+        "components": {
+          "survival": 130,
+          "kills": 273,
+          "fish": 54,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 39,
+        "fish": 6,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 2,
+            "aborts": 4,
+            "usefulSeconds": 0.3,
+            "stateSeconds": {
+              "following": 33.88333333333269,
+              "treating": 2.28333333333333,
+              "acting": 0.3,
+              "interrupted": 0.8666666666666677,
+              "recovering": 1.6666666666666656
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.007692307692307819
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 5,
+            "specialCasts": 1,
+            "interrupts": 3,
+            "aborts": 6,
+            "usefulSeconds": 9.566666666666721,
+            "stateSeconds": {
+              "following": 20.76666666666677,
+              "preparing": 2.8999999999999946,
+              "recovering": 4.466666666666656,
+              "interrupted": 1.3000000000000003,
+              "guarding": 9.566666666666721
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 7
+            }
+          },
+          "uptime": 0.24529914529914582
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 6,
+            "usefulSeconds": 0.26666666666666666,
+            "stateSeconds": {
+              "following": 34.383333333332665,
+              "preparing": 1.8499999999999983,
+              "recovering": 2.499999999999996,
+              "acting": 0.26666666666666666
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.0068376068376069556
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 8,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 11,
+            "usefulSeconds": 11.016666666666794,
+            "stateSeconds": {
+              "following": 17.750000000000274,
+              "preparing": 5.2166666666666535,
+              "singing": 11.016666666666794,
+              "recovering": 4.583333333333322,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.2824786324786331
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 9,
+        "enemyShots": 14,
+        "particles": 88
+      },
+      "hostSimulationMs": 5174.3
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 85,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 20.165,
+      "minHp": 20.165,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 465,
+        "components": {
+          "survival": 177,
+          "kills": 189,
+          "fish": 99,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 27,
+        "fish": 11,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 10,
+        "shots": 15,
+        "enemyShots": 8,
+        "particles": 135
+      },
+      "hostSimulationMs": 4090.9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 85,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 21,
+      "minHp": 21,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 458,
+        "components": {
+          "survival": 177,
+          "kills": 182,
+          "fish": 99,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 26,
+        "fish": 11,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 2,
+          "protection": 0,
+          "stats": {
+            "casts": 18,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 4,
+            "usefulSeconds": 11.90000000000017,
+            "stateSeconds": {
+              "following": 15.583333333333687,
+              "preparing": 3.483333333333326,
+              "acting": 11.90000000000017,
+              "recovering": 4.699999999999989,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.30512820512820554
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 38.99999999999907
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 0,
+            "interrupts": 1,
+            "aborts": 7,
+            "usefulSeconds": 2.3833333333333298,
+            "stateSeconds": {
+              "following": 31.299999999999503,
+              "preparing": 1.9666666666666646,
+              "guarding": 2.3833333333333298,
+              "recovering": 2.916666666666661,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.06111111111111181
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 19,
+            "usefulSeconds": 0.15,
+            "stateSeconds": {
+              "following": 24.53333333333322,
+              "aiming": 6.399999999999983,
+              "acting": 0.15,
+              "recovering": 7.916666666666644
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.0038461538461538615
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 30,
+        "enemyShots": 6,
+        "particles": 66
+      },
+      "hostSimulationMs": 9503.6
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 85,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 21,
+      "minHp": 21,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 481,
+        "components": {
+          "survival": 177,
+          "kills": 196,
+          "fish": 108,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 28,
+        "fish": 12,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 3,
+          "protection": 0,
+          "stats": {
+            "casts": 17,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 4,
+            "usefulSeconds": 10.616666666666774,
+            "stateSeconds": {
+              "following": 15.43333333333368,
+              "preparing": 3.133333333333327,
+              "acting": 10.616666666666774,
+              "recovering": 4.699999999999989,
+              "reloading": 4.24999999999999,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.272222222222222
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 2,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 37.9166666666658,
+              "preparing": 0.21666666666666665,
+              "interrupted": 0.8666666666666677
+            },
+            "hits": {
+              "melee": 14,
+              "projectile": 0
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 7,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 13,
+            "usefulSeconds": 3.9166666666666576,
+            "stateSeconds": {
+              "following": 15.450000000000347,
+              "aiming": 11.583333333333488,
+              "acting": 3.9166666666666576,
+              "recovering": 7.616666666666645,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.10042735042734899
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 1,
+            "aborts": 12,
+            "usefulSeconds": 1.016666666666668,
+            "stateSeconds": {
+              "following": 20.88333333333343,
+              "building": 10.383333333333429,
+              "recovering": 6.283333333333316,
+              "interrupted": 0.4333333333333333,
+              "acting": 1.016666666666668
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            },
+            "turretUsefulSeconds": 2.2166666666666637
+          },
+          "uptime": 0.026068376068375986
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 33,
+        "enemyShots": 5,
+        "particles": 75
+      },
+      "hostSimulationMs": 8904.3
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 85,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "outcome": "running",
+      "hp": 20.716,
+      "minHp": 20.582,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 440,
+        "components": {
+          "survival": 177,
+          "kills": 182,
+          "fish": 81,
+          "milestones": 0
+        },
+        "survivalPoints": 177.44999999982977,
+        "weightedKills": 26,
+        "fish": 9,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 2,
+            "aborts": 5,
+            "usefulSeconds": 0.2833333333333333,
+            "stateSeconds": {
+              "following": 33.29999999999939,
+              "interrupted": 0.8666666666666677,
+              "treating": 2.466666666666663,
+              "recovering": 2.083333333333331,
+              "acting": 0.2833333333333333
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 2
+            }
+          },
+          "uptime": 0.00726495726495738
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 0,
+            "interrupts": 0,
+            "aborts": 4,
+            "usefulSeconds": 2.549999999999996,
+            "stateSeconds": {
+              "following": 33.31666666666606,
+              "preparing": 1.4666666666666663,
+              "guarding": 2.549999999999996,
+              "recovering": 1.6666666666666656
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.0653846153846163
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 1,
+            "aborts": 5,
+            "usefulSeconds": 0.41666666666666663,
+            "stateSeconds": {
+              "following": 33.1499999999994,
+              "preparing": 2.916666666666661,
+              "acting": 0.41666666666666663,
+              "recovering": 2.083333333333331,
+              "interrupted": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.01068376068376085
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 10,
+            "usefulSeconds": 3.5833333333333255,
+            "stateSeconds": {
+              "following": 27.983333333333025,
+              "preparing": 3.26666666666666,
+              "singing": 3.5833333333333255,
+              "recovering": 4.166666666666657
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.09188034188034247
+        }
+      ],
+      "peak": {
+        "enemies": 6,
+        "shots": 15,
+        "enemyShots": 9,
+        "particles": 76
+      },
+      "hostSimulationMs": 5511.8
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 100,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39.27,
+      "outcome": "won",
+      "hp": 0.042,
+      "minHp": 0.042,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002552,
+        "components": {
+          "survival": 195,
+          "kills": 1386,
+          "fish": 972,
+          "milestones": 999999999
+        },
+        "survivalPoints": 195.15533333316196,
+        "weightedKills": 198,
+        "fish": 108,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 18,
+        "shots": 12,
+        "enemyShots": 75,
+        "particles": 245
+      },
+      "hostSimulationMs": 47074.9
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 100,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 37.28,
+      "outcome": "won",
+      "hp": 16.87,
+      "minHp": 16.87,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002596,
+        "components": {
+          "survival": 185,
+          "kills": 1386,
+          "fish": 1026,
+          "milestones": 999999999
+        },
+        "survivalPoints": 185.2981666665029,
+        "weightedKills": 198,
+        "fish": 114,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 4,
+          "protection": 0,
+          "stats": {
+            "casts": 17,
+            "specialCasts": 3,
+            "interrupts": 16,
+            "aborts": 0,
+            "usefulSeconds": 11.466666666666816,
+            "stateSeconds": {
+              "following": 0.21666666666666665,
+              "preparing": 3.649999999999992,
+              "acting": 11.466666666666816,
+              "recovering": 3.0333333333333274,
+              "reloading": 11.983333333333508,
+              "interrupted": 6.933333333333314
+            },
+            "hits": {
+              "melee": 1126,
+              "projectile": 63
+            }
+          },
+          "uptime": 0.3075547608404129
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 16,
+            "aborts": 2,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 28.63333333333299,
+              "interrupted": 6.933333333333314,
+              "treating": 0.8833333333333344,
+              "recovering": 0.8333333333333343
+            },
+            "hits": {
+              "melee": 1289,
+              "projectile": 74,
+              "player-hit": 1
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "guarding",
+          "phase": "acting",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 10,
+            "specialCasts": 2,
+            "interrupts": 6,
+            "aborts": 1,
+            "usefulSeconds": 27.399999999999725,
+            "stateSeconds": {
+              "following": 1.0000000000000013,
+              "preparing": 3.6666666666666585,
+              "guarding": 27.399999999999725,
+              "recovering": 2.6166666666666623,
+              "interrupted": 2.5999999999999956
+            },
+            "hits": {
+              "melee": 1070,
+              "projectile": 97
+            }
+          },
+          "uptime": 0.7349128296826091
+        },
+        {
+          "role": "sniper",
+          "state": "aiming",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 1.0666666666666682,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 21,
+            "aborts": 10,
+            "usefulSeconds": 0.850000000000001,
+            "stateSeconds": {
+              "following": 8.633333333333342,
+              "aiming": 14.533333333333635,
+              "recovering": 4.166666666666657,
+              "acting": 0.850000000000001,
+              "interrupted": 9.100000000000032
+            },
+            "hits": {
+              "melee": 2727,
+              "projectile": 92
+            }
+          },
+          "uptime": 0.022798390701832635
+        }
+      ],
+      "peak": {
+        "enemies": 18,
+        "shots": 30,
+        "enemyShots": 72,
+        "particles": 268
+      },
+      "hostSimulationMs": 51453
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 100,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 46.22,
+      "outcome": "won",
+      "hp": 11.289,
+      "minHp": 11.289,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002586,
+        "components": {
+          "survival": 229,
+          "kills": 1386,
+          "fish": 972,
+          "milestones": 999999999
+        },
+        "survivalPoints": 229.6968333331353,
+        "weightedKills": 198,
+        "fish": 108,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 5,
+          "protection": 0,
+          "stats": {
+            "casts": 21,
+            "specialCasts": 2,
+            "interrupts": 17,
+            "aborts": 1,
+            "usefulSeconds": 13.266666666666906,
+            "stateSeconds": {
+              "following": 1.566666666666666,
+              "preparing": 4.3666666666666565,
+              "acting": 13.266666666666906,
+              "recovering": 4.149999999999991,
+              "reloading": 15.50000000000035,
+              "interrupted": 7.366666666666646
+            },
+            "hits": {
+              "melee": 736,
+              "projectile": 63
+            }
+          },
+          "uptime": 0.28705373241976373
+        },
+        {
+          "role": "brawler",
+          "state": "attacking",
+          "phase": "acting",
+          "ammo": 0,
+          "protection": 0.5333333333333337,
+          "stats": {
+            "casts": 27,
+            "specialCasts": 3,
+            "interrupts": 28,
+            "aborts": 4,
+            "usefulSeconds": 17.816666666666936,
+            "stateSeconds": {
+              "following": 2.416666666666663,
+              "preparing": 8.333333333333327,
+              "attacking": 17.816666666666936,
+              "recovering": 5.516666666666652,
+              "interrupted": 12.133333333333516
+            },
+            "hits": {
+              "melee": 1920,
+              "projectile": 57
+            }
+          },
+          "uptime": 0.3855030652722706
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 24,
+            "aborts": 15,
+            "usefulSeconds": 1.0666666666666678,
+            "stateSeconds": {
+              "following": 20.383333333333457,
+              "aiming": 9.000000000000027,
+              "recovering": 5.366666666666653,
+              "acting": 1.0666666666666678,
+              "interrupted": 10.400000000000096
+            },
+            "hits": {
+              "melee": 2283,
+              "projectile": 53
+            }
+          },
+          "uptime": 0.023079697078975746
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.2500000000000003,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 25,
+            "aborts": 7,
+            "usefulSeconds": 0.19999999999999998,
+            "stateSeconds": {
+              "following": 22.266666666666683,
+              "building": 10.016666666666744,
+              "recovering": 2.8999999999999946,
+              "acting": 0.19999999999999998,
+              "interrupted": 10.833333333333451
+            },
+            "hits": {
+              "melee": 1159,
+              "projectile": 44
+            }
+          },
+          "uptime": 0.00432744320230795
+        }
+      ],
+      "peak": {
+        "enemies": 18,
+        "shots": 30,
+        "enemyShots": 62,
+        "particles": 242
+      },
+      "hostSimulationMs": 54699.6
+    },
+    {
+      "mode": "cataclysm-100-lab",
+      "night": 100,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 38.75,
+      "outcome": "won",
+      "hp": 14.692,
+      "minHp": 14.692,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002549,
+        "components": {
+          "survival": 192,
+          "kills": 1386,
+          "fish": 972,
+          "milestones": 999999999
+        },
+        "survivalPoints": 192.5874999998306,
+        "weightedKills": 198,
+        "fish": 108,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 17,
+            "aborts": 5,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 28.416666666666334,
+              "interrupted": 7.366666666666646,
+              "treating": 0.8833333333333344,
+              "recovering": 2.083333333333331
+            },
+            "hits": {
+              "melee": 1200,
+              "projectile": 89,
+              "player-hit": 3
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 10,
+            "specialCasts": 2,
+            "interrupts": 9,
+            "aborts": 2,
+            "usefulSeconds": 26.899999999999753,
+            "stateSeconds": {
+              "following": 1.2166666666666672,
+              "preparing": 4.116666666666657,
+              "guarding": 26.899999999999753,
+              "recovering": 2.6166666666666623,
+              "interrupted": 3.899999999999991
+            },
+            "hits": {
+              "melee": 1525,
+              "projectile": 109
+            }
+          },
+          "uptime": 0.6941935483870952
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 17,
+            "aborts": 11,
+            "usefulSeconds": 3.016666666666661,
+            "stateSeconds": {
+              "following": 9.700000000000061,
+              "preparing": 13.70000000000026,
+              "acting": 3.016666666666661,
+              "recovering": 4.966666666666654,
+              "interrupted": 7.366666666666646
+            },
+            "hits": {
+              "melee": 1624,
+              "projectile": 86
+            }
+          },
+          "uptime": 0.07784946236559068
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 19,
+            "specialCasts": 3,
+            "interrupts": 16,
+            "aborts": 4,
+            "usefulSeconds": 17.600000000000282,
+            "stateSeconds": {
+              "following": 2.1333333333333306,
+              "preparing": 10.000000000000076,
+              "recovering": 2.083333333333331,
+              "singing": 17.600000000000282,
+              "interrupted": 6.933333333333314
+            },
+            "hits": {
+              "melee": 1057,
+              "projectile": 47
+            }
+          },
+          "uptime": 0.45419354838710013
+        }
+      ],
+      "peak": {
+        "enemies": 18,
+        "shots": 15,
+        "enemyShots": 73,
+        "particles": 251
+      },
+      "hostSimulationMs": 38743.4
+    }
+  ],
+  "preTuningFinale": [
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "solo",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 16.87,
+      "outcome": "won",
+      "hp": 24.912,
+      "minHp": 24.912,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002467,
+        "components": {
+          "survival": 83,
+          "kills": 1386,
+          "fish": 999,
+          "milestones": 999999999
+        },
+        "survivalPoints": 83.82733333325551,
+        "weightedKills": 198,
+        "fish": 111,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [],
+      "peak": {
+        "enemies": 8,
+        "shots": 15,
+        "enemyShots": 14,
+        "particles": 246
+      },
+      "hostSimulationMs": 12167.2
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "balanced",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 18.53,
+      "outcome": "won",
+      "hp": 25.895,
+      "minHp": 25.895,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002503,
+        "components": {
+          "survival": 92,
+          "kills": 1386,
+          "fish": 1026,
+          "milestones": 999999999
+        },
+        "survivalPoints": 92.11066666658103,
+        "weightedKills": 198,
+        "fish": 114,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 0,
+          "protection": 0.26666666666666694,
+          "stats": {
+            "casts": 13,
+            "specialCasts": 1,
+            "interrupts": 5,
+            "aborts": 0,
+            "usefulSeconds": 8.466666666666667,
+            "stateSeconds": {
+              "following": 0.18333333333333332,
+              "preparing": 2.5666666666666624,
+              "acting": 8.466666666666667,
+              "recovering": 2.33333333333333,
+              "reloading": 2.8166666666666615,
+              "interrupted": 2.166666666666664
+            },
+            "hits": {
+              "melee": 134,
+              "projectile": 5
+            }
+          },
+          "uptime": 0.4568345323741011
+        },
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.4666666666666669,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 5,
+            "aborts": 0,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 16.150000000000365,
+              "interrupted": 2.166666666666664,
+              "treating": 0.21666666666666665
+            },
+            "hits": {
+              "melee": 54,
+              "projectile": 8
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "interrupted",
+          "phase": "interrupted",
+          "ammo": 0,
+          "protection": 1.1666666666666679,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 1,
+            "interrupts": 2,
+            "aborts": 0,
+            "usefulSeconds": 13.8333333333336,
+            "stateSeconds": {
+              "following": 0.05,
+              "preparing": 1.4666666666666663,
+              "guarding": 13.8333333333336,
+              "recovering": 2.416666666666663,
+              "interrupted": 0.7666666666666674
+            },
+            "hits": {
+              "melee": 95,
+              "projectile": 4
+            }
+          },
+          "uptime": 0.7464028776978456
+        },
+        {
+          "role": "sniper",
+          "state": "aiming",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 7,
+            "aborts": 7,
+            "usefulSeconds": 0.6666666666666671,
+            "stateSeconds": {
+              "following": 3.3666666666666596,
+              "aiming": 8.18333333333332,
+              "recovering": 3.2833333333333266,
+              "acting": 0.6666666666666671,
+              "interrupted": 3.0333333333333274
+            },
+            "hits": {
+              "melee": 373,
+              "projectile": 7
+            }
+          },
+          "uptime": 0.03597122302158282
+        }
+      ],
+      "peak": {
+        "enemies": 9,
+        "shots": 30,
+        "enemyShots": 20,
+        "particles": 289
+      },
+      "hostSimulationMs": 14751.5
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 18.07,
+      "outcome": "won",
+      "hp": 25.622,
+      "minHp": 25.622,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002446,
+        "components": {
+          "survival": 89,
+          "kills": 1386,
+          "fish": 972,
+          "milestones": 999999999
+        },
+        "survivalPoints": 89.79133333324988,
+        "weightedKills": 198,
+        "fish": 108,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "reloading",
+          "phase": "recovering",
+          "ammo": 0,
+          "protection": 0.13333333333333364,
+          "stats": {
+            "casts": 13,
+            "specialCasts": 1,
+            "interrupts": 3,
+            "aborts": 0,
+            "usefulSeconds": 8.550000000000004,
+            "stateSeconds": {
+              "following": 0.19999999999999998,
+              "preparing": 2.3833333333333298,
+              "acting": 8.550000000000004,
+              "recovering": 2.33333333333333,
+              "reloading": 3.299999999999993,
+              "interrupted": 1.3000000000000003
+            },
+            "hits": {
+              "melee": 46,
+              "projectile": 5
+            }
+          },
+          "uptime": 0.47324723247232514
+        },
+        {
+          "role": "brawler",
+          "state": "preparing",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0.5500000000000004,
+          "stats": {
+            "casts": 10,
+            "specialCasts": 1,
+            "interrupts": 11,
+            "aborts": 3,
+            "usefulSeconds": 6.16666666666665,
+            "stateSeconds": {
+              "following": 2.1333333333333306,
+              "preparing": 2.933333333333328,
+              "attacking": 6.16666666666665,
+              "recovering": 2.066666666666664,
+              "interrupted": 4.766666666666655
+            },
+            "hits": {
+              "melee": 607,
+              "projectile": 5
+            }
+          },
+          "uptime": 0.34132841328413266
+        },
+        {
+          "role": "sniper",
+          "state": "recovering",
+          "phase": "recovering",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 1,
+            "interrupts": 5,
+            "aborts": 5,
+            "usefulSeconds": 1.8999999999999981,
+            "stateSeconds": {
+              "following": 5.33333333333332,
+              "aiming": 5.466666666666653,
+              "recovering": 3.1999999999999935,
+              "acting": 1.8999999999999981,
+              "interrupted": 2.166666666666664
+            },
+            "hits": {
+              "melee": 124,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.10516605166051674
+        },
+        {
+          "role": "engineer",
+          "state": "acting",
+          "phase": "acting",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 6,
+            "aborts": 4,
+            "usefulSeconds": 0.36666666666666664,
+            "stateSeconds": {
+              "following": 6.549999999999982,
+              "building": 7.183333333333313,
+              "recovering": 1.3666666666666667,
+              "acting": 0.36666666666666664,
+              "interrupted": 2.5999999999999956
+            },
+            "hits": {
+              "melee": 115,
+              "projectile": 5
+            }
+          },
+          "uptime": 0.020295202952029568
+        }
+      ],
+      "peak": {
+        "enemies": 9,
+        "shots": 30,
+        "enemyShots": 15,
+        "particles": 241
+      },
+      "hostSimulationMs": 12353
+    },
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 100,
+      "build": "support",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 19.4,
+      "outcome": "won",
+      "hp": 25.313,
+      "minHp": 25.313,
+      "finalSpawned": 18,
+      "finalDefeated": 18,
+      "score": {
+        "total": 1000002426,
+        "components": {
+          "survival": 96,
+          "kills": 1386,
+          "fish": 945,
+          "milestones": 999999999
+        },
+        "survivalPoints": 96.4179999999103,
+        "weightedKills": 198,
+        "fish": 105,
+        "milestonePoints": 999999999,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": [
+          "night100"
+        ]
+      },
+      "followers": [
+        {
+          "role": "healer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.21666666666666695,
+          "stats": {
+            "casts": 0,
+            "specialCasts": 0,
+            "interrupts": 3,
+            "aborts": 2,
+            "usefulSeconds": 0,
+            "stateSeconds": {
+              "following": 16.666666666667002,
+              "interrupted": 1.3000000000000003,
+              "treating": 0.6000000000000002,
+              "recovering": 0.8333333333333343
+            },
+            "hits": {
+              "melee": 34,
+              "projectile": 6
+            }
+          },
+          "uptime": 0
+        },
+        {
+          "role": "tank",
+          "state": "preparing",
+          "phase": "preparing",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 7,
+            "specialCasts": 1,
+            "interrupts": 0,
+            "aborts": 4,
+            "usefulSeconds": 12.383333333333528,
+            "stateSeconds": {
+              "following": 0.19999999999999998,
+              "preparing": 2.6499999999999955,
+              "guarding": 12.383333333333528,
+              "recovering": 4.166666666666657
+            },
+            "hits": {
+              "melee": 34,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.6383161512027532
+        },
+        {
+          "role": "trapper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0.31666666666666693,
+          "stats": {
+            "casts": 3,
+            "specialCasts": 1,
+            "interrupts": 4,
+            "aborts": 12,
+            "usefulSeconds": 1.483333333333333,
+            "stateSeconds": {
+              "following": 4.633333333333322,
+              "preparing": 5.833333333333318,
+              "acting": 1.483333333333333,
+              "recovering": 5.716666666666652,
+              "interrupted": 1.733333333333332
+            },
+            "hits": {
+              "melee": 17,
+              "projectile": 6
+            }
+          },
+          "uptime": 0.07646048109965652
+        },
+        {
+          "role": "bard",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 4,
+            "specialCasts": 1,
+            "interrupts": 4,
+            "aborts": 3,
+            "usefulSeconds": 11.250000000000139,
+            "stateSeconds": {
+              "following": 1.7833333333333319,
+              "preparing": 2.966666666666661,
+              "recovering": 1.6666666666666656,
+              "singing": 11.250000000000139,
+              "interrupted": 1.733333333333332
+            },
+            "hits": {
+              "melee": 40,
+              "projectile": 7
+            }
+          },
+          "uptime": 0.5798969072164981
+        }
+      ],
+      "peak": {
+        "enemies": 10,
+        "shots": 18,
+        "enemyShots": 18,
+        "particles": 270
+      },
+      "hostSimulationMs": 14296.9
+    }
+  ],
+  "cooperationProbe": [
+    {
+      "mode": "cataclysm-1-0-major",
+      "night": 45,
+      "build": "damage",
+      "seed": 424242,
+      "directorSeed": 990100,
+      "seconds": 39,
+      "stationaryWindow": 3.4,
+      "outcome": "running",
+      "hp": 2.003,
+      "minHp": 2.003,
+      "finalSpawned": 0,
+      "finalDefeated": 0,
+      "score": {
+        "total": 538,
+        "components": {
+          "survival": 130,
+          "kills": 273,
+          "fish": 135,
+          "milestones": 0
+        },
+        "survivalPoints": 130.64999999988135,
+        "weightedKills": 39,
+        "fish": 15,
+        "milestonePoints": 0,
+        "ruleVersion": "cataclysm-1.0-score-1",
+        "awarded": []
+      },
+      "followers": [
+        {
+          "role": "shooter",
+          "state": "following",
+          "phase": "following",
+          "ammo": 4,
+          "protection": 0,
+          "stats": {
+            "casts": 16,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 3,
+            "usefulSeconds": 10.233333333333421,
+            "stateSeconds": {
+              "following": 16.31666666666702,
+              "preparing": 3.1999999999999935,
+              "acting": 10.233333333333421,
+              "recovering": 5.049999999999987,
+              "interrupted": 0.8666666666666677,
+              "reloading": 3.3333333333333264
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 3
+            }
+          },
+          "uptime": 0.26239316239316185
+        },
+        {
+          "role": "brawler",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 2,
+            "specialCasts": 2,
+            "interrupts": 2,
+            "aborts": 3,
+            "usefulSeconds": 0.6833333333333338,
+            "stateSeconds": {
+              "following": 35.34999999999928,
+              "preparing": 0.850000000000001,
+              "interrupted": 0.8666666666666677,
+              "attacking": 0.6833333333333338,
+              "recovering": 1.2500000000000004
+            },
+            "hits": {
+              "melee": 36,
+              "projectile": 1
+            }
+          },
+          "uptime": 0.017521367521367855
+        },
+        {
+          "role": "sniper",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 6,
+            "specialCasts": 2,
+            "interrupts": 0,
+            "aborts": 8,
+            "usefulSeconds": 3.7999999999999914,
+            "stateSeconds": {
+              "following": 16.533333333333676,
+              "aiming": 11.600000000000156,
+              "acting": 3.7999999999999914,
+              "recovering": 7.066666666666647
+            },
+            "hits": {
+              "melee": 0,
+              "projectile": 0
+            }
+          },
+          "uptime": 0.09743589743589605
+        },
+        {
+          "role": "engineer",
+          "state": "following",
+          "phase": "following",
+          "ammo": 0,
+          "protection": 0,
+          "stats": {
+            "casts": 1,
+            "specialCasts": 1,
+            "interrupts": 4,
+            "aborts": 11,
+            "usefulSeconds": 0.4333333333333333,
+            "stateSeconds": {
+              "following": 21.166666666666746,
+              "building": 11.400000000000146,
+              "recovering": 4.266666666666657,
+              "interrupted": 1.733333333333332,
+              "acting": 0.4333333333333333
+            },
+            "hits": {
+              "melee": 54,
+              "projectile": 3
+            },
+            "turretUsefulSeconds": 3.26666666666666
+          },
+          "uptime": 0.011111111111111049
+        }
+      ],
+      "peak": {
+        "enemies": 5,
+        "shots": 28,
+        "enemyShots": 15,
+        "particles": 126
+      },
+      "hostSimulationMs": 9032.5
+    }
+  ],
+  "checks": {
+    "independentScripts": [
+      "cataclysm_finish_acceptance.cjs balance",
+      "cataclysm_finish_score_contract.cjs",
+      "cataclysm_next/tests/major-systems.cjs",
+      "cataclysm_next/tests/spawn-economy.cjs",
+      "cataclysm_next/tests/art-integration.cjs",
+      "cataclysm_next/tests/visuals-scroll.cjs"
+    ],
+    "syntax": "all JS in both directories pass node --check",
+    "parity": "game.js identical except STRESS_MODE flag; 93 shared module/art files byte-identical",
+    "actualGameContract": "Both start setups, killable first arrival, all-spawned and unique-defeat gates, last enemy, despawn, alive gate, additive bonus once, real projectile death, mode-specific best breakdown, victory rendering/control flow and 2.4s post-victory transition PASS (VM DOM/canvas stubs)."
+  },
+  "requiredReleaseGates": {
+    "workflow": ".github/workflows/cataclysm-10-finish.yml release job",
+    "Chrome": "pending trusted runner; portrait Samsung, landscape, touch, upgrades/reroll, actual victory and mortality, screenshots/recordings and frame pressure",
+    "PR": "pending trusted runner after Chrome passes",
+    "knownContractConflict": "Unmodified game_factory/cataclysm_next/tests/browser-horde.cjs:41 requires 18 final enemies alive simultaneously. Individually killable arrivals can invalidate that old expectation. Do not restore mutual immortality to satisfy it. Publication remains gated."
+  },
+  "sourceSHA256": {
+    "docs/cataclysm-1-0-major/follower-behavior.js": "7179c00650ca7f93057e81e7776e65db80e9206ad251d09530c118ab721a7613",
+    "docs/cataclysm-1-0-major/firestorm.js": "2961c749a1dcbe6a228c75a421b8c1f44e32acf446178fcd215e32d99af68a49",
+    "docs/cataclysm-1-0-major/animation.js": "20010d16cf719400b9e0375ded6cc587540d00df19aa656b1447697ab44725ea",
+    "docs/cataclysm-1-0-major/game.js": "eacf65516243b2f3bdd91c4a2b30db6ad85c4db6d5c8bb68f793601eff9fa54d",
+    "docs/cataclysm-1-0-major/director.js": "6d1b074ce9dbd861ef81868e838ff63804c001569252d32626e3095ef7df1bdd",
+    "docs/cataclysm-1-0-major/visuals.js": "b5468d81be1941dc71979b8c70f52f98543b580303821ea6687f07dc358c86ec",
+    "docs/cataclysm-1-0-major/hazards.js": "5070549e9616dacb8be03dc8a8bd3f43d881aa3f7fafe78a0966efa446793e40",
+    "docs/cataclysm-1-0-major/score.js": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a",
+    "docs/cataclysm-1-0-major/campaign.js": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6",
+    "docs/cataclysm-100-lab/follower-behavior.js": "7179c00650ca7f93057e81e7776e65db80e9206ad251d09530c118ab721a7613",
+    "docs/cataclysm-100-lab/firestorm.js": "2961c749a1dcbe6a228c75a421b8c1f44e32acf446178fcd215e32d99af68a49",
+    "docs/cataclysm-100-lab/animation.js": "20010d16cf719400b9e0375ded6cc587540d00df19aa656b1447697ab44725ea",
+    "docs/cataclysm-100-lab/game.js": "290e9a5c68cd51c6603eb3e16f85b59c126e6faa62b9195449e289f3b8731cdf",
+    "docs/cataclysm-100-lab/director.js": "6d1b074ce9dbd861ef81868e838ff63804c001569252d32626e3095ef7df1bdd",
+    "docs/cataclysm-100-lab/visuals.js": "b5468d81be1941dc71979b8c70f52f98543b580303821ea6687f07dc358c86ec",
+    "docs/cataclysm-100-lab/hazards.js": "5070549e9616dacb8be03dc8a8bd3f43d881aa3f7fafe78a0966efa446793e40",
+    "docs/cataclysm-100-lab/score.js": "a951237770c7f1e0cc1a6f0d987a62b0882f09d496669714cd69c0684bad1e8a",
+    "docs/cataclysm-100-lab/campaign.js": "39f64283d124e68ae1f582a968d95aef050dfd760bee74a18c6814aa7a2858e6"
+  },
+  "reproduction": {
+    "instructions": "Write harnessSource to /tmp/stage5-vm.cjs and driverSource to /tmp/stage5-balance.cjs. From repo root run node /tmp/stage5-balance.cjs. Output /tmp/stage5-balance.json. Cooperation probe: QA_MODES=cataclysm-1-0-major QA_NIGHTS=45 QA_BUILDS=damage QA_HOLD=3.4 QA_OUTPUT=/tmp/stage5-cooperation.json node /tmp/stage5-balance.cjs. ContractSource is an independent VM probe; its direct kill calls verify gates, never count as balance wins. Pre-tuning rows were captured before final health/attack/squad tuning.",
+    "harnessSource": "const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert/strict');\nconst root=process.cwd();\nfunction boot(mode='cataclysm-1-0-major'){\n const nodes=new Map(), storage=new Map();\n function element(){const n={style:{setProperty(){}},dataset:{},classList:{add(){},remove(){},toggle(){}},hidden:false,textContent:'',value:0,innerHTML:'',focus(){},append(){},replaceChildren(){},setAttribute(){},getAttribute(){return null},addEventListener(){},getBoundingClientRect(){return {width:412,height:915,left:0,top:0}},querySelector(){return element()},querySelectorAll(){return []}};n.parentElement=n;n.getContext=()=>new Proxy({},{get:()=>()=>({addColorStop(){},width:100})});return n;}\n const buttons=[...fs.readFileSync(path.join(root,'docs',mode,'index.html'),'utf8').matchAll(/data-upgrade=\"([^\"]+)\"/g)].map(m=>Object.assign(element(),{dataset:{upgrade:m[1]}}));\n const context={console,URL,URLSearchParams,Uint32Array,Math,Map,Set,Date:class extends Date{static now(){return 123456}},performance:{now:()=>0},crypto:{getRandomValues:a=>(a[0]=424242,a)},location:{search:'?seed=424242&directorSeed=990100'},navigator:{},devicePixelRatio:1,innerWidth:412,innerHeight:915,requestAnimationFrame(){},fetch:()=>Promise.resolve({ok:false}),localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},document:{hidden:false,createElement:element,getElementById:id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id)},querySelectorAll:()=>buttons,addEventListener(){}},matchMedia:()=>({matches:false}),addEventListener(){},CATACLYSM_BOOT:{ready(){}}};context.window=context;context.globalThis=context;vm.createContext(context);\n const dir=path.join(root,'docs',mode);\n for(const f of ['campaign.js','animation.js','visuals.js','director.js','hazards.js','firestorm.js','follower-behavior.js','score.js'])vm.runInContext(fs.readFileSync(path.join(dir,f),'utf8'),context,{filename:f});\n let s=fs.readFileSync(path.join(dir,'game.js'),'utf8');s=s.replace('window.spawnRelic=spawnRelic;',`window.qa={start,tick,squadHit,chooseUpgrade,summonCompanion,startMajorNight,releaseLabSpawn,defeatEnemy,finalizeMajorVictory,frame,renderWorld,get:()=>game,setSeed:n=>seeded=n,move:(x,y)=>{pointer={vx:x,vy:y}},storage};` .replace('storage};','storage:null};'));\n vm.runInContext(s,context,{filename:'game.js'});context.qa.start();context.qa.storage=storage;return context;\n}\nif(require.main===module){const c=boot(); console.log(c.CATACLYSM_DIAGNOSTICS.snapshot().player);c.qa.tick(1/60);console.log('tick PASS');}\nmodule.exports=boot;\n",
+    "driverSource": "const boot=require('/tmp/stage5-vm.cjs'),fs=require('fs');\nconst squads={solo:[],balanced:['shooter','healer','tank','sniper'],damage:['shooter','brawler','sniper','engineer'],support:['healer','tank','trapper','bard']};\nconst rows=[];\nfor(const mode of (process.env.QA_MODES||'cataclysm-1-0-major,cataclysm-100-lab').split(','))for(const night of (process.env.QA_NIGHTS||'1,45,85,100').split(',').map(Number))for(const [build,roles] of Object.entries(squads).filter(([b])=>!process.env.QA_BUILDS||process.env.QA_BUILDS.split(',').includes(b))){\n const c=boot(mode),q=c.qa,g=q.get(),p=g.player;q.setSeed(424242);\n g.t=(night-1)*13;g.campaign=c.CATA_MAJOR.newLedger();g.campaign.night=night-1;g.labEconomy=c.CATA_LAB_DIRECTOR.create(990100);g.labEconomy.primeTo(night-1);g.enemies=[];g.shots=[];g.enemyShots=[];g.companionSquad=[];g.companionRanks=Object.fromEntries(Object.keys(c.CATA_FOLLOWERS.roleSpecs).map(k=>[k,0]));g.majorFinalSpawned=false;g.finalDefeated=[];\n const tier=night===1?0:night<60?1:2,late=night===100;\n Object.assign(p,{level:night===1?0:night,damage:1+tier*2+(late?1:0),maxHp:3+tier*9+(late?5:0),hp:3+tier*9+(late?5:0),inv:0,speed:235+tier*45,shotInterval:Math.max(.26,.62-tier*.15),multishot:tier>0?1:0,ricochet:tier,armor:tier*.14,criticalBoost:tier*.1,focus:tier,areaBurst:tier,magnet:tier});\n Object.assign(g.squadStats,{damage:.5+tier*.09,rate:1+tier*.25,count:1,spread:tier>0?1:0,bounce:tier>0?1:0});\n g.world.epoch=Math.floor(g.t/180);g.cityEvents.nextCrane=g.t+90;g.cityEvents.nextCity=g.t+120;g.hazards.spawnTimer=0;g.nextPower=g.t+120;g.survivalPoints=0;g.kills=0;g.fish=0;g.scoreLedger=c.CATA_SCORE.newLedger();g.xp=0;g.pendingUpgrade=false;g.mode='running';\n for(const role of roles)for(let i=0;i<(tier+1);i++)q.summonCompanion(role);\n q.startMajorNight(night);\n let peak={enemies:0,shots:0,enemyShots:0,particles:0},elapsed=0,minHp=p.hp;const start=performance.now();\n for(let frame=0;frame<(late?180:39)*60&&g.mode!=='dead'&&g.mode!=='won';frame++){\n   if(g.mode==='upgrade'){q.chooseUpgrade(g.offered[0]);}\n   const age=frame/60;let x=0,y=0;\n   if(age%7>Number(process.env.QA_HOLD||1.6)){\n     let nearest=null,d=Infinity;\n     for(const e of g.enemies){const dx=((e.x-p.x+6300)%4200)-2100,dy=e.y-p.y,r=Math.hypot(dx,dy);if(r<d){d=r;nearest={dx,dy};}}\n     if(nearest){x=-nearest.dy/Math.max(1,d)-nearest.dx/Math.max(1,d)*(d<180?1:0);y=nearest.dx/Math.max(1,d)-nearest.dy/Math.max(1,d)*(d<180?1:0);}\n     else {x=Math.sin(age*.4);y=-.4;}\n   }\n   q.move(x,y);q.tick(1/60);elapsed+=1/60;minHp=Math.min(minHp,p.hp);\n   for(const k of Object.keys(peak))peak[k]=Math.max(peak[k],g[k].length);\n }\n const snap=c.CATACLYSM_DIAGNOSTICS.snapshot();rows.push({mode,night,build,seed:424242,directorSeed:990100,seconds:+elapsed.toFixed(2),stationaryWindow:Number(process.env.QA_HOLD||1.6),outcome:g.mode,hp:+p.hp.toFixed(3),minHp:+minHp.toFixed(3),finalSpawned:g.labFinalSpawned,finalDefeated:g.finalDefeated?.length||0,score:snap.scoring,followers:snap.companions.states,peak,hostSimulationMs:+(performance.now()-start).toFixed(1)});\n fs.writeFileSync((process.env.QA_OUTPUT||'/tmp/stage5-balance.json')+'.partial',JSON.stringify(rows));\n console.error(mode,night,build,g.mode,p.hp.toFixed(2),g.kills,elapsed.toFixed(1));\n}\nfs.writeFileSync(process.env.QA_OUTPUT||'/tmp/stage5-balance.json',JSON.stringify({method:'Actual unrendered game tick, 60Hz; fixed tier snapshots, earn/apply first offered upgrades; deterministic nearest-threat tangential dodge with stationary 1.6s per 7s. 39s early/mid/late windows, finale up to 180s. Host times are NOT browser FPS.',rows},null,2));\n",
+    "contractSource": "const boot=require('/tmp/stage5-vm.cjs'),assert=require('assert/strict');\nfor(const mode of ['cataclysm-1-0-major','cataclysm-100-lab']){\n const c=boot(mode),q=c.qa,g=q.get();\n const initial=c.CATACLYSM_DIAGNOSTICS.snapshot();assert.equal(initial.major.campaign.night,mode.endsWith('lab')?99:1);assert.equal(initial.player.level,mode.endsWith('lab')?100:0);\n g.campaign=c.CATA_MAJOR.newLedger();g.campaign.night=99;g.labEconomy=c.CATA_LAB_DIRECTOR.create(990100);g.labEconomy.primeTo(99);g.t=1287;g.player.inv=0;q.startMajorNight(100);assert.equal(g.player.inv,0);q.releaseLabSpawn();const first=g.enemies[0];assert.equal(first.arrivalUntil,1287.8);q.squadHit(first,1e6);assert.equal(g.finalDefeated.length,1,'first arrival killable without waiting for others');q.finalizeMajorVictory();assert.equal(g.victory,false);\n while(g.labQueue.length){g.t=g.labNextSpawn;q.releaseLabSpawn();}\n assert.equal(g.labFinalSpawned,18);for(const e of [...g.enemies].slice(0,-1))q.squadHit(e,1e6);\n q.finalizeMajorVictory();assert.equal(g.victory,false,'last live enemy gates victory');\n const last=g.enemies[0];g.enemies=[];q.finalizeMajorVictory();assert.equal(g.victory,false,'despawn cannot grant victory');g.enemies=[last];q.squadHit(last,1e6);\n g.player.hp=0;q.finalizeMajorVictory();assert.equal(g.victory,false,'dead player cannot win');g.player.hp=1;\n const before=c.CATACLYSM_DIAGNOSTICS.snapshot().scoring;q.finalizeMajorVictory();const after=c.CATACLYSM_DIAGNOSTICS.snapshot().scoring;assert.equal(g.mode,'won');assert.equal(after.total-before.total,999999999);q.finalizeMajorVictory();assert.equal(c.CATACLYSM_DIAGNOSTICS.snapshot().scoring.total,after.total);assert.equal(g.victoryAge,0);q.renderWorld();for(let i=0;i<50;i++)q.frame(i*50);assert.ok(g.victoryAge>=2.4);\n assert.equal(q.storage.get(mode.endsWith('lab')?'cataclysm-lab-best':'cataclysm-best'),String(after.total));\n const breakdown=JSON.parse(q.storage.get((mode.endsWith('lab')?'cataclysm-lab-best':'cataclysm-best')+'-breakdown'));assert.equal(breakdown.ruleVersion,c.CATA_SCORE.RULE_VERSION);assert.deepEqual(breakdown.awarded,['night100']);\n const mortality=boot(mode),m=mortality.qa.get();m.player.hp=.01;m.player.inv=0;m.companionSquad=[];m.enemyShots=[{x:m.player.x,y:m.player.y-1,vx:0,vy:0,life:1,r:20,damage:3,kind:'single',trail:[]}];mortality.qa.tick(1/60);assert.equal(m.mode,'dead');assert.equal(m.scoreLedger.milestonePoints,0);\n console.log('PASS',mode,'start setup, vulnerable arrival, spawn/defeat/alive gates, additive once-only bonus, saved best + breakdown');\n}\n"
+  }
+}

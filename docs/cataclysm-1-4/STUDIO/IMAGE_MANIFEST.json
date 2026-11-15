@@ -1,0 +1,109 @@
+{
+  "producer": "OpenAI Images API (real binary output)",
+  "model": "gpt-image-2.5-flare",
+  "requested_max_images": 3,
+  "made_at_utc": "2026-11-15T13:05:16.216636+00:00",
+  "images": [
+    {
+      "name": "city_district_atlas",
+      "background": "opaque",
+      "prompt": "Professional original hand-painted 2D TOP DOWN game environment tile-art atlas for a mobile cats-versus-zombies survival roguelite.\nA believable abandoned coastal city at night with wet cobblestone streets, broken road markings, small brick storefront roofs, dumpsters, parked cars, industrial fences, mossy stone alleys, neon teal/purple and warm orange spill light.\nCoherent illustrated painterly style with clean readable shapes, strong texture and highlights, suitable for mobile 32-64px tile pieces. A packed square sheet of distinct modular ENVIRONMENT ART ELEMENTS on separate regions.\nNo words, no game HUD, no labels, no watermarks, no people, NO screenshot frames. Carefully composed source art for actual sprites and background textures.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGB",
+      "size": [
+        1024,
+        1024
+      ],
+      "path": "art/generated/city_district_atlas.png",
+      "bytes": 2132611,
+      "sha256": "50229823ce1b3b78f531db8cb5c9f2b7166499eac4a51b777d23e2030f150f1c",
+      "usage": {
+        "input_tokens": 155,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 155
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 594
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "guardian_boss_atlas",
+      "background": "transparent",
+      "prompt": "Original hand-painted 2D cartoon game sprite sheet on FULLY TRANSPARENT BACKGROUND: a large armored zombie feline district guardian creature with elaborate rusty mechanical shoulder plates, feral cat face, green glowing eyes, torn jacket and glowing chains. Four clean clearly separated poses (idle, stalk, attack, hit reaction), full body visible, facing roughly right, evenly spaced in 2 by 2 grid. Strong unique character identity, mobile-readable silhouette, painterly textured outlines matching a charming but dark top-down cat survival game. No text, no backgrounds, no watermarks, no frame borders, NO code drawings. Real illustrated character art.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/guardian_boss_atlas.png",
+      "bytes": 1802559,
+      "sha256": "dc90d63a934ff414d97687c9e058de9b83a7625b5a3b037977fd8000a5a45898",
+      "usage": {
+        "input_tokens": 134,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 134
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 573
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "mecha_and_companion_atlas",
+      "background": "transparent",
+      "prompt": "Original hand-illustrated 2D cartoon sprite sheet on FULLY TRANSPARENT BACKGROUND: friendly improvised little orange-gray mecha WALKER built from salvaged machinery, fully articulated big expressive mechanical paws and detailed painted plating, with two adorable tiny distinct cats visible through its open cockpit: an engineer cat with a welding mask and a shooter cat aiming outward. Four clearly SEPARATED readable poses (walking, shooting, overheat, engineer repairing) in a clean 2 by 2 atlas, full machine and tiny cats not cropped. Rich textured hand-drawn illustration, coherent with an existing light-white quadruped cat roguelite. Not boxes with legs, no geometry-only drawings. No text, no backgrounds, no watermarks.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/mecha_and_companion_atlas.png",
+      "bytes": 1937738,
+      "sha256": "634b1273ea7863c4c9110b6e185d02263e42e6c9346fc95e81f01896559cf536",
+      "usage": {
+        "input_tokens": 155,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 155
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 594
+      },
+      "status": "GENERATED"
+    }
+  ],
+  "errors": [],
+  "status": "GENERATED",
+  "illustrated_asset_evidence": "Generated base64 PNG, validated PNG dimensions, file hash and alpha coverage; not procedural canvas shapes.",
+  "number_generated": 3
+}

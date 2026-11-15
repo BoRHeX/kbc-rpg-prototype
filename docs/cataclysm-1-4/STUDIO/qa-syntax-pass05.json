@@ -1,0 +1,82 @@
+[
+  {
+    "script": "campaign.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "hero-kinematics.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "hero-rig-renderer.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "animation.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "visuals.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "director.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "firestorm.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "hazards.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "score.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "follower-behavior.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "cat-personality.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "hero-illustrated.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "company.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "company-presentation.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "game.js",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "script": "qa/chrome-smoke.cjs",
+    "exit": 0,
+    "output": ""
+  }
+]

@@ -1,0 +1,73 @@
+{
+  "version": "1.4",
+  "one_game": "Cataclysm",
+  "baseline": "docs/cataclysm-1-3",
+  "runs": [
+    {
+      "pass": "01",
+      "name": "Concept and asset design",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-15T13:04:51.095624+00:00",
+      "github_run_id": "43716570172",
+      "sha": "c2ffbfe6867b6729238ca9db1c2967668802be133c9880b016d5f60a5fab8d9d",
+      "file_count": 177,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "02",
+      "name": "Original raster illustration",
+      "outcome": "GENERATED",
+      "details": "Direct image API output; see STUDIO/IMAGE_MANIFEST.json",
+      "timestamp_utc": "2026-11-15T13:05:59.996350+00:00",
+      "github_run_id": "43716570172",
+      "sha": "326f01f2e86b583f7374398282da55c12986411e697638ee8c456774d362b3dd",
+      "file_count": 183,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "03",
+      "name": "Sprite animation and music/SFX",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-15T13:10:11.603545+00:00",
+      "github_run_id": "43716570172",
+      "sha": "3b4789e446fd2bb273160d45d2a310648e2aa4ba763d7d631dc3892b919f3ae9",
+      "file_count": 238,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "04",
+      "name": "Mechanics and art integration",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-15T13:15:03.845870+00:00",
+      "github_run_id": "43716570172",
+      "sha": "abd56bf53291a4dde41fc1a005fc0d6a99bf87dcfe96b537e55737d3342887ca",
+      "file_count": 240,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "05",
+      "name": "Gameplay polish and independent QA",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-15T13:20:08.743085+00:00",
+      "github_run_id": "43716570172",
+      "sha": "10774afd03eb0be10ed9ec3709dd927f003ebf8933c11ef4abcae1eb34edf968",
+      "file_count": 248,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "06",
+      "name": "Optional repair / art or game integration",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-15T13:22:58.564607+00:00",
+      "github_run_id": "43716570172",
+      "sha": "590c779c4500b30bdba76e09eb014a7053a057eb3c1a67f325cee075240ce99f",
+      "file_count": 251,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    }
+  ]
+}

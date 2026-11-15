@@ -1,0 +1,288 @@
+{
+  "pass": "03",
+  "status": "PARTIAL",
+  "scope": "docs/cataclysm-1-4 only",
+  "files": [
+    {
+      "path": "STUDIO/ANIMATION_AUDIO_REPORT.md",
+      "bytes": 7997,
+      "sha256": "7ebfc28949db44a593dc200fd17bb9394b49fb515caf96d36fe3470b432af9ab"
+    },
+    {
+      "path": "STUDIO/qa-pass03/asset-validation.json",
+      "bytes": 1166,
+      "sha256": "170fc50b9195d9071542814ec97babc5110212b3f4edaecac5143a50b534f518"
+    },
+    {
+      "path": "STUDIO/qa-pass03/chromium.log",
+      "bytes": 114,
+      "sha256": "ea209150f02c46e027fcd99c5b68343945639864a150fdc50919583b19192b09"
+    },
+    {
+      "path": "STUDIO/tools/compose_audio.py",
+      "bytes": 4211,
+      "sha256": "e19bd8c8ae59775b17fd3b964fd9c36c71c604ad79dfd5fd1d5ad2d27b76e4b7"
+    },
+    {
+      "path": "STUDIO/tools/prepare_assets.py",
+      "bytes": 7415,
+      "sha256": "7ca30141f5afdfa7edad15be0353f5a69b7be21d950a3752972dd01a5108e754"
+    },
+    {
+      "path": "STUDIO/tools/validate_assets.py",
+      "bytes": 2295,
+      "sha256": "b5544d182b304a2fc3ff055c339f3eeb4c76d8ecd918e8c669483b377cd3af4b"
+    },
+    {
+      "path": "art/animated/city-alley-moss.png",
+      "bytes": 53382,
+      "sha256": "96c2be859d3fec1e99a23e32824192faa988953cf0e5357f2a4fe47eff3ebfec"
+    },
+    {
+      "path": "art/animated/city-archway.png",
+      "bytes": 71734,
+      "sha256": "d7eb6ad7ba8850d6aed626534814822fe25e1fa130e4ea439f4cdb43f5e2fa3f"
+    },
+    {
+      "path": "art/animated/city-asphalt.png",
+      "bytes": 20826,
+      "sha256": "49a6b03c7e49a2b99d6d86c17e3f4959f40664ee9b2e47ff897447145b0c204c"
+    },
+    {
+      "path": "art/animated/city-crossing.png",
+      "bytes": 25079,
+      "sha256": "2f2d89fbf937071bf1aef05b749a32ecc601f2f7da81323400bacbe65ccfd2ed"
+    },
+    {
+      "path": "art/animated/city-moss-ground.png",
+      "bytes": 22254,
+      "sha256": "967241ecdb59f62703e9a4868e48f633782be88dd50c35d21536543b32657636"
+    },
+    {
+      "path": "art/animated/city-paving-blue.png",
+      "bytes": 23705,
+      "sha256": "47347478ae2705b9c1889b81697b95de7a649f2fa8f6c721637b66e2b9af006f"
+    },
+    {
+      "path": "art/animated/city-paving-grey.png",
+      "bytes": 22793,
+      "sha256": "65631d34c1d299ab0127e58408f06a1f81037256d3a5d72da10f09f708fcccc7"
+    },
+    {
+      "path": "art/animated/city-shop-neon.png",
+      "bytes": 75197,
+      "sha256": "2ad167f4bd02981492174c22ec26e7b3c546a8c7b816ce17b5f2bb99bc73030f"
+    },
+    {
+      "path": "art/animated/city-shop-warm.png",
+      "bytes": 90983,
+      "sha256": "d307b113d7eb7d5f810ea5fc4b7a2c53cc690b752aab8c291debc5e6373f8153"
+    },
+    {
+      "path": "art/animated/city-water.png",
+      "bytes": 21830,
+      "sha256": "d8a31798e08e484889599357ae908a1362c72e7a6d513e3a7aa38a71791bb1b7"
+    },
+    {
+      "path": "art/animated/city-waterfront.png",
+      "bytes": 93101,
+      "sha256": "3c2c319def496caadffaf8194867016a7d0950c8bba73d79c883028c7420508e"
+    },
+    {
+      "path": "art/animated/city-wet-street.png",
+      "bytes": 90526,
+      "sha256": "43f2efeda7312e969fc0cf020bc44fe00da1da4cba1f596938d223722a8fbf03"
+    },
+    {
+      "path": "art/animated/frame-index.json",
+      "bytes": 24429,
+      "sha256": "c45e701074726dbfaebb9b3c1c82a0a74f8afa756d3bf0ecac493b159fb7408e"
+    },
+    {
+      "path": "art/animated/guardian-attack-0.png",
+      "bytes": 69425,
+      "sha256": "9828fd149156466e50202a0070f23a94d6c6153ca4aca2ecffe6bb1e148fcdee"
+    },
+    {
+      "path": "art/animated/guardian-attack-1.png",
+      "bytes": 69424,
+      "sha256": "29ca2a83e6ed50510843cbf511a46721d2bf4dfc90f0d038b3e525a7b3c234bd"
+    },
+    {
+      "path": "art/animated/guardian-frames.png",
+      "bytes": 323294,
+      "sha256": "8d1035fb878cc2bd4d20954739fa3b4192446f626df724907dbd51dbde5f139c"
+    },
+    {
+      "path": "art/animated/guardian-hit-0.png",
+      "bytes": 84901,
+      "sha256": "194c8a7ab6243bab9a82c07442518eb3896654b809edee4c6a49644e648aab62"
+    },
+    {
+      "path": "art/animated/guardian-hit-1.png",
+      "bytes": 84897,
+      "sha256": "4786de07d21036e096b074abeb330287c2f38b526314f6f9980b3706f267313a"
+    },
+    {
+      "path": "art/animated/guardian-idle-0.png",
+      "bytes": 84450,
+      "sha256": "80cbbbdafee1795542fb67370978a767d3b59a0a44dd3f54489eb2871bf76c5a"
+    },
+    {
+      "path": "art/animated/guardian-idle-1.png",
+      "bytes": 84450,
+      "sha256": "c4663492b83e52baa6b38595ec11d744eb97e39a983a3666470990b926c07b5e"
+    },
+    {
+      "path": "art/animated/guardian-stalk-0.png",
+      "bytes": 74091,
+      "sha256": "ff12f627a8644342844eefbb076a0dd262066608692376c5fa4fb17aedafcf36"
+    },
+    {
+      "path": "art/animated/guardian-stalk-1.png",
+      "bytes": 74097,
+      "sha256": "ca146ce5561dde9173fd53f2295e8c28d79688b8756b031200a6f54f108cb512"
+    },
+    {
+      "path": "art/animated/mecha-frames.png",
+      "bytes": 394472,
+      "sha256": "a614f462ef75ddee673698b284aa39471849dfcb8c6fad0ec2a7f1335645424a"
+    },
+    {
+      "path": "art/animated/mecha-overheat-0.png",
+      "bytes": 100314,
+      "sha256": "2e048fede964afffd98e3fd4cb5cf60ca0e223b670e0b54a043d3032d9af5c7e"
+    },
+    {
+      "path": "art/animated/mecha-overheat-1.png",
+      "bytes": 100306,
+      "sha256": "8b9cb94225b0fdc4443c1592f71748788dc1b528c7a4232b56cbea8d57809ce0"
+    },
+    {
+      "path": "art/animated/mecha-repair-0.png",
+      "bytes": 94597,
+      "sha256": "ad2137468c7e3c9b5f425d024fc6533b41be5dd3ac83c39a538e9392e526e32d"
+    },
+    {
+      "path": "art/animated/mecha-repair-1.png",
+      "bytes": 94600,
+      "sha256": "1647a81f2317a56eaccf05605eae8604de30e31f8c4b4dace8bdfa4bfd1ac185"
+    },
+    {
+      "path": "art/animated/mecha-shoot-0.png",
+      "bytes": 95841,
+      "sha256": "834c508cd6eab6d9cbf84a494d4ca9f4044cbb204cc549078976885eeb120725"
+    },
+    {
+      "path": "art/animated/mecha-shoot-1.png",
+      "bytes": 95842,
+      "sha256": "a13f5bb7d2af6da8f270ba0cd0888da0043654fb1f53f73793132d500260f171"
+    },
+    {
+      "path": "art/animated/mecha-walk-0.png",
+      "bytes": 92414,
+      "sha256": "a2252eee998d3cae3cd64deec7877c53763863713375bb3578dc86e5ae6f57a8"
+    },
+    {
+      "path": "art/animated/mecha-walk-1.png",
+      "bytes": 92417,
+      "sha256": "5afdea79d3807d65323e642a73694e56440c6912d759d7d1b77d9f9897430458"
+    },
+    {
+      "path": "art/animated/preview.html",
+      "bytes": 2888,
+      "sha256": "f8c757dbca57bd10b7f0e9dac1c260b6963afefc9c342d8e66a4ea2ddf0755bd"
+    },
+    {
+      "path": "art/animated/sprite-player.js",
+      "bytes": 1610,
+      "sha256": "5f39cffc3d8908e0e94722de97b356b8ba9f675405df267f52d3be0455714487"
+    },
+    {
+      "path": "audio/generated/audio-index.json",
+      "bytes": 13222,
+      "sha256": "df6c3ae0209b13cae2a818d8450639d6ad4260b2a15810f21fb6a73df0008ddf"
+    },
+    {
+      "path": "audio/generated/beacon-hold.wav",
+      "bytes": 70604,
+      "sha256": "adeaa9b4295ec923be44ddfeb121612aea1e705d30c94ff5db6087f46ccadd54"
+    },
+    {
+      "path": "audio/generated/district-cinder.wav",
+      "bytes": 4233644,
+      "sha256": "64154e1455fd7375fb9bac3d2183f70e74741ff53f4a3a4fb9b38fbb65b829e0"
+    },
+    {
+      "path": "audio/generated/district-ember.wav",
+      "bytes": 4233644,
+      "sha256": "0a05d751592637c3201223e236bf901361cbf0307b859987aec0bdf97b5ac455"
+    },
+    {
+      "path": "audio/generated/district-sluice.wav",
+      "bytes": 4233644,
+      "sha256": "e415ba2c4e53baef5354c435894c304c6551cddaff0c30a8c70ae4bdd5f71382"
+    },
+    {
+      "path": "audio/generated/district-terminus.wav",
+      "bytes": 4233644,
+      "sha256": "8a7ccbe6cac842321475cb03d18d6e7f9afb618caecdf2c6262baa9e0ed15415"
+    },
+    {
+      "path": "audio/generated/gate-begin.wav",
+      "bytes": 88244,
+      "sha256": "14d94a2de4ce55315378636d96d3896797bd4bdd8ec37feac929f337c89075b9"
+    },
+    {
+      "path": "audio/generated/gate-fail.wav",
+      "bytes": 105884,
+      "sha256": "987a16cb58d5788e78faabd80214b85bc152ef4d9ec663ea6a79d94b1751fa5b"
+    },
+    {
+      "path": "audio/generated/gate-pass.wav",
+      "bytes": 114704,
+      "sha256": "f82467496f82a7bb548eaab596199255760f09d2d30df26eb496c35ba37d200c"
+    },
+    {
+      "path": "audio/generated/gate-relief.wav",
+      "bytes": 176444,
+      "sha256": "e5392bbaae82ef0b7915a5dca99fb9499a5fd14efd1f8fb0ca6389072b11e6d3"
+    },
+    {
+      "path": "audio/generated/guardian-defeat.wav",
+      "bytes": 132344,
+      "sha256": "b84dc3becc932eb918532f898ef91e75e091b72fd9c725d5f3eae310076396ef"
+    },
+    {
+      "path": "audio/generated/guardian-hit.wav",
+      "bytes": 15920,
+      "sha256": "6b8e30945aeea0bbd5f7bb1cab9b3ca4050fa27345553f0da5e209c929f19f9f"
+    },
+    {
+      "path": "audio/generated/guardian-intro.wav",
+      "bytes": 529244,
+      "sha256": "07e4de3d369a32d9ee614c3b055cc923865c7f8c0bc0d4eebd9c76727c258ea7"
+    },
+    {
+      "path": "audio/generated/guardian-warning.wav",
+      "bytes": 132344,
+      "sha256": "9cb7749dd516135d2b97146cf115323a53f1c6a52ce14b6d954611d95dfb903e"
+    },
+    {
+      "path": "audio/generated/life-recovery.wav",
+      "bytes": 132344,
+      "sha256": "cda8b28ffebf43c91c2eded09b989a0ad2ec6e84e2505ab7edee831483d864d3"
+    },
+    {
+      "path": "audio/generated/route-found.wav",
+      "bytes": 44144,
+      "sha256": "6b3df36403678ede99aa391a4eb5989758c28a247e75101ce1af5450fd438d8d"
+    }
+  ],
+  "limitations": [
+    "Missing distinct guardian identities and separate crew poses",
+    "No human listening acceptance",
+    "Browser QA blocked",
+    "Not gameplay integration"
+  ]
+}

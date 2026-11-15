@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Original source hashes match pass 02 manifest",
+    "All texture PNGs decode with declared dimensions and hash",
+    "16 individual sprite references have real alpha",
+    "Frame rectangles and timed animation references valid",
+    "15 WAV files decode as non-silent unclipped PCM with declared durations",
+    "Four loop endpoint amplitudes below 10/32768"
+  ],
+  "frame_count": 16,
+  "texture_count": 14,
+  "audio_count": 15,
+  "texture_budget": {
+    "runtime_texture_decoded_bytes": 5051904,
+    "runtime_texture_download_bytes": 1329176,
+    "policy": "Load texture sheets and city crops only; individual references and source atlases are authoring assets, not additional runtime loads."
+  },
+  "audio_budget": {
+    "download_bytes": 18476796,
+    "max_active_ambience_pcm_bytes": 8467200,
+    "load_policy": "Lazy-load one district buffer; short cues can preload after audio unlock. WAV masters retained; no compressed codec dependency."
+  },
+  "not_verified": [
+    "Human listening",
+    "Chrome animation playback (sandbox prevented server/browser)",
+    "Gameplay integration",
+    "Physical mobile device"
+  ]
+}
