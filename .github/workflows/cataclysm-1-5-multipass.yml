@@ -1,0 +1,803 @@
+name: Cataclysm 1.5 — HOOK, LINE & CATNIP five-pass autonomous studio
+run-name: 1.5 · Real illustrated fishing and jackpot · multi-pass studio
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-5-multipass-launch.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-15-five-pass-candidate
+  cancel-in-progress: false
+jobs:
+  concept:
+    name: Pass 01 · Risky fishing design and real asset specification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate multipass Python and Chrome tool syntax
+        run: |
+          python -m py_compile game_factory/studio_multipass_15.py
+          node --check game_factory/cataclysm_15_browser.mjs
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -rf docs/cataclysm-1-5/STUDIO
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE CONCEPT, ART DIRECTION AND GAMEPLAY DESIGN FOR CATACLYSM 1.5 HOOK LINE AND CATNIP, continuing the actual playable 1.4.'
+            echo 'Deliver STUDIO/CONCEPT.md and STUDIO/ASSET_PLAN.json with discoverable seeded city fishing spots, move-to-cast and move-away-cancel timings, rod and bait card system, rare catch and ambush tables, jackpot, source art/audio inventory and test contracts.'
+            echo 'Analyze wall spawning beyond reachable district boundaries and the owner reaching Night 100 with 9 lives again; identify modest fixes while leaving main milestone about fishing.'
+            echo 'Prepare illustration design for three original PNG atlases: city fishing water and docks, quadruped fishing cat and gear, legendary fish mutant. Separate new art from inherited 1.4 art.'
+            echo 'Only edit docs/cataclysm-1-5. Concept/specification first, no pretending 1.5 mechanics already work.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 01 ${{ steps.worker.outcome }}
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass01-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  art:
+    name: Pass 02 · Original raster fishing image atlases
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: concept
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass01-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Install real image processing dependency
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Generate up to three REAL original raster PNG atlas files
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BORHEZ_IMAGE_MODEL: 'gpt-image-2.5-flare'
+        run: python game_factory/studio_multipass_15.py art
+      - name: Preserve image API provenance
+        run: |
+          test -s docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json
+          python -c "import json; x=json.load(open('docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json')); print('ART STATUS:',x.get('status'))"
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass02-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  animation:
+    name: Pass 03 · Fishing sprites, animation and audio
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: art
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass02-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE ART ANIMATION SPRITES AND COMPOSER DEPARTMENT FOR CATACLYSM 1.5.'
+            echo 'First inspect actual STUDIO/IMAGE_MANIFEST.json, confirm original fishing pond, illustrated cat rod/gear and mutant PNGs exist, then cut real source art into frame strips and mobile sprite references under art/animated.'
+            echo 'Illustrate automatic casting, water ripples, bobber, reel and caught fish/treasure/mutant states with usable sprite mappings. Draw thin fishing line using canvas for mechanics, but NEVER claim code primitives are original character illustrations.'
+            echo 'Produce real audio files under audio/generated for water ambience, cast splash, bite warning, reel, rare catch, jackpot and ambush tension, routed later through existing mobile sound controls.'
+            echo 'Write STUDIO/ANIMATION_AUDIO_REPORT.md and machine readable frame/audio indices with genuine PNG hashes. If art API failed, preserve truthful missing-illustration status; do not fabricate completed assets.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 03 ${{ steps.worker.outcome }}
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass03-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  integration:
+    name: Pass 04 · Real fishing mechanics and illustration integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: animation
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass03-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE THE ACTUAL GAME ENGINEERING, FISH ECONOMY AND ART INTEGRATION DEPARTMENT FOR CATACLYSM 1.5.'
+            echo 'Modify the INHERITED 1.4 actual runtime in docs/cataclysm-1-5. Add seeded reachable fishing spots integrated with connected city and collision, automatic casting after a stationary dwell and automatic cancel/reel when moving away, without a new manual combat button.'
+            echo 'Implement useful rod/line/bait random upgrade cards, worm/glowing fishbone/royal catnip choices, weighted deterministic catches with treasure/legendary fish/mutant/ambush risk, finite jackpot scoring separate from 1 billion point completion bonus.'
+            echo 'Conserve atomic fish accounting with companions that eat their own fish, Courier redistribution, Angler relevance, solo viability, rare mob fish drops, caches and boss rewards. Fishing must never be compulsory to win.'
+            echo 'Integrate genuine Pass 02 and Pass 03 PNGs and new sounds into canvas/audio engine using real file paths. Preserve 1.4 city areas, gate/beacon logic, guardian encounters, illustrated Mecha, 16 roles, nine lives and tail gun. 1.5 is ONE cumulative game.'
+            echo 'Fix enemy spawning beyond the district perimeter when reasonably feasible; keep reachable spawns. Design actual fishing effect and rare mutant attack rather than merely adding UI labels or fish particles.'
+            echo 'Write STUDIO/INTEGRATION_REPORT.md identifying implemented/not implemented mechanics, real code/assets and deterministic QA. Set actual index version to 1.5. Only edit docs/cataclysm-1-5.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 04 ${{ steps.worker.outcome }}
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass04-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  qa:
+    name: Pass 05 · Fishing economy QA, mobile browser, polish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: integration
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    outputs:
+      more: ${{ steps.decide.outputs.more }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass04-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Install real browser playtesting tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE POST INTEGRATION GAMEPLAY POLISH AND INDEPENDENT QA FOR CATACLYSM 1.5.'
+            echo 'Review actual runtime, original new PNG art, derived sprite assets and sound. Correct real gameplay problems, not just reports. Test fishing spot geometry, automatic cast/cancel, bait catch table, jackpot caps, ambush danger and companion fish ledger.'
+            echo 'Preserve and re-test inherited Cataclysm 1.4 districts, guardians, navigation, 16 companions, four squad slots, Mecha fusion, nine lives, cards/rerolls, restart and movement-only controls.'
+            echo 'Explicitly test wall/spawn behavior from latest creator playtest, including enemies outside reachable bounds; investigate tension and fishing risk given owner cleared Night 100 twice with 9 lives.'
+            echo 'Write STUDIO/FINAL_REPORT.md with all seven CAT-15 IDs, real images/code/audio evidence, honest browser versus Samsung distinction and known defects. Set EXTRA_PASS_REQUEST.json only for concrete art, collision or fishing defects; maximum three extra passes.'
+            echo 'Do not delete source or declare broken build playable. Only modify docs/cataclysm-1-5 and label unfinished systems as partial.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 05 ${{ steps.worker.outcome }}
+      - name: Start actual candidate for mobile browser evidence
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-15-http.log 2>&1 &
+      - name: Test actual Chrome boot and nonblank canvas without blocking candidate
+        continue-on-error: true
+        run: node game_factory/cataclysm_15_browser.mjs
+      - name: Choose whether a justified additional pass is necessary
+        id: decide
+        shell: bash
+        run: |
+          set -euo pipefail
+          more="$(python game_factory/studio_multipass_15.py extra 05 | python -c 'import sys,json;print(str(json.load(sys.stdin)["needs_extra"]).lower())')"
+          echo "more=$more" >> "$GITHUB_OUTPUT"
+          echo "Optional next-pass request: $more" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass05-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  repair06:
+    name: Pass 06 · Autonomous extra pass 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: qa
+    if: ${{ always() && needs.qa.outputs.more == 'true' }}
+    permissions:
+      contents: read
+    outputs:
+      more: ${{ steps.decide.outputs.more }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass05-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Install real browser playtesting tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE REPAIR DEPARTMENT 1 FOR CATACLYSM 1.5, triggered by real failed Chrome test or written specialist request.'
+            echo 'Inspect actual source, prior report and QA evidence. Fix highest value real blocker in fishing, bait probabilities, jackpot economy, inherited city wall spawns or illustrated asset draw integration.'
+            echo 'Preserve 1.5 game work and all original raster PNGs; never regress to 1.4 or substitute a separate fishing demo. Write actual fix and remaining defects in FINAL_REPORT.md. Optional next repair request only for a specific still broken feature.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 06 ${{ steps.worker.outcome }}
+      - name: Start actual candidate for mobile browser evidence
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-15-http.log 2>&1 &
+      - name: Test actual Chrome boot and nonblank canvas without blocking candidate
+        continue-on-error: true
+        run: node game_factory/cataclysm_15_browser.mjs
+      - name: Choose whether a justified additional pass is necessary
+        id: decide
+        shell: bash
+        run: |
+          set -euo pipefail
+          more="$(python game_factory/studio_multipass_15.py extra 06 | python -c 'import sys,json;print(str(json.load(sys.stdin)["needs_extra"]).lower())')"
+          echo "more=$more" >> "$GITHUB_OUTPUT"
+          echo "Optional next-pass request: $more" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass06-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  repair07:
+    name: Pass 07 · Autonomous extra pass 2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: repair06
+    if: ${{ always() && needs.repair06.outputs.more == 'true' }}
+    permissions:
+      contents: read
+    outputs:
+      more: ${{ steps.decide.outputs.more }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass06-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Install real browser playtesting tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE REPAIR DEPARTMENT 2 FOR CATACLYSM 1.5. Find the concrete highest priority remaining defect from browser QA or the previous art/mechanics repair and fix it in the real runtime.'
+            echo 'Keep original art, fishing/ambush and atomic fish/eater credit. Validate seeded collision and wall spawn issue and device readability, then record evidence. Request a final additional pass only if needed.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 07 ${{ steps.worker.outcome }}
+      - name: Start actual candidate for mobile browser evidence
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-15-http.log 2>&1 &
+      - name: Test actual Chrome boot and nonblank canvas without blocking candidate
+        continue-on-error: true
+        run: node game_factory/cataclysm_15_browser.mjs
+      - name: Choose whether a justified additional pass is necessary
+        id: decide
+        shell: bash
+        run: |
+          set -euo pipefail
+          more="$(python game_factory/studio_multipass_15.py extra 07 | python -c 'import sys,json;print(str(json.load(sys.stdin)["needs_extra"]).lower())')"
+          echo "more=$more" >> "$GITHUB_OUTPUT"
+          echo "Optional next-pass request: $more" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass07-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  repair08:
+    name: Pass 08 · Autonomous extra pass 3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    needs: repair07
+    if: ${{ always() && needs.repair07.outputs.more == 'true' }}
+    permissions:
+      contents: read
+    outputs:
+      more: ${{ steps.decide.outputs.more }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore actual preceding pass source
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-15-pass07-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+      - name: Ensure continuous baseline and stage directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/cataclysm-1-4/game.js
+          test -s game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+          mkdir -p artifacts/cataclysm-15
+          if [ ! -s docs/cataclysm-1-5/game.js ]; then
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            rm -f docs/cataclysm-1-5/STUDIO-REPORT.md docs/cataclysm-1-5/PRODUCTION-PLAN.md docs/cataclysm-1-5/SOURCE-TRACE.json
+          fi
+          mkdir -p docs/cataclysm-1-5/STUDIO
+      - name: Install real browser playtesting tools
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Assemble department-scoped instructions and persistent evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'YOU ARE FINAL OPTIONAL REPAIR DEPARTMENT 3 FOR CATACLYSM 1.5. THIS IS THE HARD LIMIT.'
+            echo 'Fix a documented high priority defect if feasible and preserve source/art. Write final QA details including what still fails. Do not launch more passes or mislabel a broken candidate.'
+            echo '## OWNER-APPROVED 1.5 SCOPE and original illustrated-art contract'
+            cat game_factory/CATACLYSM_15_MULTIPASS_ORDER.md
+            echo '## STANDING STUDIO MULTI-PASS POLICY'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual predecessor implementation evidence'
+            cat docs/cataclysm-1-4/STUDIO/FINAL_REPORT.md
+            echo '## Prior pass traces and asset records'
+            if test -f docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-5/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-5/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; then cat docs/cataclysm-1-5/STUDIO/BROWSER_QA.json; fi
+          } > artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Genuine independent AI department implementation
+        id: worker
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-15/DEPARTMENT_BRIEF.md
+      - name: Record real department outcome (failure does NOT discard work)
+        if: ${{ always() }}
+        run: python game_factory/studio_multipass_15.py record 08 ${{ steps.worker.outcome }}
+      - name: Start actual candidate for mobile browser evidence
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-15-http.log 2>&1 &
+      - name: Test actual Chrome boot and nonblank canvas without blocking candidate
+        continue-on-error: true
+        run: node game_factory/cataclysm_15_browser.mjs
+      - name: Choose whether a justified additional pass is necessary
+        id: decide
+        shell: bash
+        run: |
+          set -euo pipefail
+          more="$(python game_factory/studio_multipass_15.py extra 08 | python -c 'import sys,json;print(str(json.load(sys.stdin)["needs_extra"]).lower())')"
+          echo "more=$more" >> "$GITHUB_OUTPUT"
+          echo "Optional next-pass request: $more" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve entire versioned worktree and pass evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-pass08-${{ github.run_id }}
+          path: docs/cataclysm-1-5
+          if-no-files-found: warn
+          retention-days: 30
+          include-hidden-files: true
+  publish-candidate:
+    name: Release Engineer · always-attempt experimental candidate
+    needs: [concept, art, animation, integration, qa, repair06, repair07, repair08]
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve latest REAL archived stage, even after failed QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/cataclysm-1-5
+          retrieved=no
+          for p in 08 07 06 05 04 03 02 01; do
+            if gh run download "$GITHUB_RUN_ID" -n "cataclysm-15-pass$p-$GITHUB_RUN_ID" -D docs/cataclysm-1-5 2>/dev/null; then
+              echo "Recovered pass $p source." >> "$GITHUB_STEP_SUMMARY"
+              retrieved=yes
+              break
+            fi
+          done
+          if [ "$retrieved" = no ] || [ ! -s docs/cataclysm-1-5/game.js ]; then
+            echo "::warning::No surviving pass artifact; preserve a BROKEN baseline-derived candidate."
+            rm -rf docs/cataclysm-1-5
+            cp -a docs/cataclysm-1-4 docs/cataclysm-1-5
+            mkdir -p docs/cataclysm-1-5/STUDIO
+          fi
+      - name: Mark candidate status honestly and create labeled inspection URL
+        run: python game_factory/studio_multipass_15.py candidate
+      - name: Archive finalized candidate before publication attempt
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-15-final-candidate-${{ github.run_id }}
+          path: |
+            docs/cataclysm-1-5
+            docs/cataclysm-1-5-candidate
+          if-no-files-found: error
+          retention-days: 45
+          include-hidden-files: true
+      - name: Merge new candidate without changing historical Cataclysm versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Games Studio"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="studio/cataclysm-15-candidate-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add docs/cataclysm-1-5 docs/cataclysm-1-5-candidate
+          git -c core.whitespace=-trailing-space diff --cached --check
+          git diff --cached --quiet && { echo "::error::No candidate files"; exit 1; }
+          git commit -m "BoRHeZ multipass: Cataclysm 1.5 experimental candidate with truthful QA"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "$branch" --title "Cataclysm 1.5 · HOOK, LINE & CATNIP — experimental candidate" --body "Owner-requested multi-pass production: separate concept, real image API art, animation/audio, integrated game systems, QA and bounded extra repair work. Candidate is deliberately kept even if broken; QA status in docs/cataclysm-1-5/STUDIO/CANDIDATE_STATUS.json. Previous 1.4 and earlier versions untouched.")"
+          echo "Candidate PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          test -s docs/cataclysm-1-5-candidate/index.html
+      - name: Package all historical releases and new candidate
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-15-pages-${{ github.run_id }}
+          path: docs
+      - name: Publish experimental Cataclysm 1.5 without promoting stable default
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-15-pages-${{ github.run_id }}
+          timeout: 180000
+      - name: Report real candidate and last stable game locations
+        run: |
+          echo "### Cataclysm 1.5 — HOOK, LINE & CATNIP (experimental)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Candidate: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-5-candidate/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Actual game: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-5/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Prior playtested candidate: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-4/" >> "$GITHUB_STEP_SUMMARY"
+          echo "This is an experimental candidate. The previously playtested 1.4 remains available; status is in candidate JSON." >> "$GITHUB_STEP_SUMMARY"
