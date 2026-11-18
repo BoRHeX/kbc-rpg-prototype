@@ -1,6 +1,10 @@
 name: Cataclysm 1.69 — publish preserved candidate from completed build
 run-name: 1.69 · Publish actual archived studio files, no regeneration
 on:
+  workflow_run:
+    workflows:
+      - Cataclysm 1.69 — THE WILD CARD five-pass autonomous studio
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -14,6 +18,7 @@ concurrency:
 jobs:
   archive-and-publish:
     name: Recover model-created 1.69 and publish candidate
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.id == 44337020173 }}
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     permissions:
