@@ -1,0 +1,109 @@
+{
+  "producer": "OpenAI Images API (real binary output)",
+  "model": "gpt-image-2.5-flare",
+  "requested_max_images": 3,
+  "made_at_utc": "2026-11-18T15:38:47.737846+00:00",
+  "images": [
+    {
+      "name": "midnight_festival_world_atlas",
+      "background": "opaque",
+      "prompt": "Original high quality HAND ILLUSTRATED painterly top-down mobile roguelite ENVIRONMENT ATLAS for a surreal midnight urban feline festival in abandoned Cataclysm city. Multiple separated reusable 2D game environment patches: a luminous neon turquoise and violet brick-street carnival plaza with draped lanterns, glowing ghostly parade decorations, festive market stalls, floating painted symbols, cracked streets, damp mossy mural walls, celebratory cats silhouettes and subtle glimmering fireflies. Coherent beautiful layered game art, street tiles and props readable at 64px mobile, dark indigo and vibrant magenta/turquoise amber highlights. One organized square source atlas with spatially separate modular motifs and no texts, borders, UI, watermarks, labels, fake screenshots. Actual authored painterly environmental artwork not primitive code shapes.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGB",
+      "size": [
+        1024,
+        1024
+      ],
+      "path": "art/generated/midnight_festival_world_atlas.png",
+      "bytes": 2191341,
+      "sha256": "390d280588dad0ac97a77fce57602d913ff74b092b664cd3d7dfc7d3d48e1102",
+      "usage": {
+        "input_tokens": 172,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 172
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 611
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "archivist_cat_character_atlas",
+      "background": "transparent",
+      "prompt": "Genuine hand-painted mobile 2D game character sprite atlas on FULLY TRANSPARENT BACKGROUND: a completely ORIGINAL feline ARCHIVIST CAT, mystical historian with indigo coat, ornate book satchel, ancient lantern of knowledge, expressive green eyes, ornate hood and readable paws/tail. Distinct from ordinary Bard, Surgeon or Shooter cats and visually whimsical and memorable. Arrange six full-body separated illustrated frames in 3x2 grid, each with substantial margin: walking/running quadruped, listening/intuiting, opening a floating book, protective spell, gentle heal glyph, reacting in alarm. 2D angled top-down cartoon survival cat game, cohesive detailed painterly brushwork, warm brass and electric cyan-purple highlights, readable 48-80px silhouette. Fully transparent alpha, no backgrounds, no captions, no comic borders, no logos, no words.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/archivist_cat_character_atlas.png",
+      "bytes": 1790477,
+      "sha256": "adbb3e5362a4d9355ff541aa1f4300a43dca542422e20f0961c67bd088770942",
+      "usage": {
+        "input_tokens": 180,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 180
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 619
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "wildcard_fusion_festival_atlas",
+      "background": "transparent",
+      "prompt": "Original hand-illustrated 2D mobile action game effects and event objects atlas with TRANSPARENT background for an enchanting bizarre midnight feline street festival. Clean separated usable visuals: giant glowing rune disk hovering above pavement; mechanical cat MECHA CREW cockpit resonating with sympathetic turquoise and amber energy, ribbon-like magic aura arcs, festival lantern clusters and cat silhouettes, an event reward chest made of old archival scrolls, and an eerie carved mural/glyph sign. Each discrete object richly PAINTED and separated with margin, expressive drawn artistic shapes rather than procedural lines. Cartoon cats versus zombie dystopia, moody luminous blue-purple gold, mobile top-down readability; no frame borders, UI text, words, watermarks or screenshots.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/wildcard_fusion_festival_atlas.png",
+      "bytes": 2225482,
+      "sha256": "515f419b69ccd88bfc85b5cb34ff5a0cdf8737d914294021f0eaf9c38854e720",
+      "usage": {
+        "input_tokens": 151,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 151
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 590
+      },
+      "status": "GENERATED"
+    }
+  ],
+  "errors": [],
+  "status": "GENERATED",
+  "illustrated_asset_evidence": "Generated base64 PNG, validated PNG dimensions, file hash and alpha coverage; not procedural canvas shapes.",
+  "number_generated": 3
+}

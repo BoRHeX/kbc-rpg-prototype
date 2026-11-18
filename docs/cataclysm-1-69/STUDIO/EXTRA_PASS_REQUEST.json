@@ -1,0 +1,4 @@
+{
+  "request": false,
+  "reason": "The reproduced startup crash is repaired and the production-script regression suite passes. The scheduled Pass 06 workflow already reruns the Chrome boot check in both orientations."
+}

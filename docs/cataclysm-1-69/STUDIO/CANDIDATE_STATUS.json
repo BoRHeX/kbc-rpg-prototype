@@ -1,0 +1,58 @@
+{
+  "version": "1.69",
+  "major_title": "THE WILD CARD",
+  "status": "PLAYABLE",
+  "experimental": true,
+  "stable_promotion": false,
+  "previous_candidate": "cataclysm-1-6",
+  "last_proven_playable_candidate": "cataclysm-1-5",
+  "created_at": "2026-11-18T15:55:21.184303+00:00",
+  "run": "44341118913",
+  "browser": {
+    "checks": [
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "passed": true,
+        "errors": [],
+        "pixels": 48,
+        "canvas": {
+          "ok": true,
+          "colors": 48,
+          "w": 390,
+          "h": 844,
+          "startOverlayHidden": true
+        },
+        "http_status": 200
+      },
+      {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "passed": true,
+        "errors": [],
+        "pixels": 48,
+        "canvas": {
+          "ok": true,
+          "colors": 48,
+          "w": 844,
+          "h": 390,
+          "startOverlayHidden": true
+        },
+        "http_status": 200
+      }
+    ],
+    "both_orientations_passed": true,
+    "created_utc": "2026-11-18T15:54:09.070Z",
+    "browser": "Google Chrome via Playwright",
+    "evidence_kind": "automated browser screenshot, NOT actual Samsung hardware"
+  },
+  "art_status": "GENERATED",
+  "flaws": [],
+  "pass_count": 6,
+  "owner_playtest_required": true,
+  "note": "Candidate retained whether playable or broken; never a verified Samsung test."
+}
