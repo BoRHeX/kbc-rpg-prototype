@@ -7,8 +7,9 @@ import path from 'node:path';
 import http from 'node:http';
 const version=process.argv[2];
 if(!['1.7','1.8','1.9'].includes(version))throw new Error('Expected 1.7/1.8/1.9');
+const pathSlug='cataclysm-'+version.replaceAll('.','-');
 
-const root = path.resolve('docs/cataclysm-'+version+'/STUDIO');
+const root = path.resolve('docs/'+pathSlug+'/STUDIO');
 fs.mkdirSync(root, {recursive:true});
 const data = {checks:[], both_orientations_passed:false,
     created_utc:new Date().toISOString(), browser:'Google Chrome via Playwright',
@@ -22,7 +23,7 @@ try {
     try {
       const page=await browser.newPage({viewport:dim,isMobile:true,hasTouch:true});
       page.on('pageerror',e=>record.errors.push(String(e)));
-      const response=await page.goto('http://127.0.0.1:8765/cataclysm-'+version+'/',
+      const response=await page.goto('http://127.0.0.1:8765/'+pathSlug+'/',
                               {timeout:35000,waitUntil:'domcontentloaded'});
       record.http_status=response?.status();
       if(!response?.ok()) throw new Error('HTTP did not return 2xx');
