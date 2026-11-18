@@ -18,7 +18,7 @@ import urllib.request
 import urllib.error
 
 ROOT = Path(__file__).resolve().parents[1]
-GAME = ROOT / "docs/cataclysm-1-699"
+GAME = ROOT / "docs/cataclysm-1-69"
 STUDIO = GAME / "STUDIO"
 ART = GAME / "art/generated"
 MODEL = os.getenv("BORHEZ_IMAGE_MODEL", "gpt-image-2.5-flare")
@@ -229,7 +229,7 @@ def result():
 
 def candidate_page():
     doc=result()
-    destination=ROOT/"docs/cataclysm-1-699-candidate"
+    destination=ROOT/"docs/cataclysm-1-69-candidate"
     destination.mkdir(parents=True,exist_ok=True)
     status=html.escape(doc["status"])
     issues="".join(f"<li>{html.escape(str(x))}</li>" for x in doc["flaws"]) or "<li>Basic browser start passed; full mobile gameplay acceptance remains pending.</li>"
@@ -242,7 +242,7 @@ def candidate_page():
     <p class="pill">EXPERIMENTAL — {status}</p><p>This is the evolving single Cataclysm game.
     Failed tests do not delete the build. This experimental candidate has not replaced the prior 1.6 snapshot.</p>
     <p><a href="../cataclysm-1-69/">Open the actual 1.69 candidate game</a></p>
-    <p><a href="../cataclysm-1-6/">Play the previous 1.6 candidate</a></p><p><a href="../cataclysm-1-4/">Earlier 1.5 candidate</a></p><p><a href="../cataclysm-1-3/">Earlier 1.3 release</a></p>
+    <p><a href="../cataclysm-1-6/">Play the previous 1.6 candidate</a></p><p><a href="../cataclysm-1-5/">Earlier 1.5 candidate</a></p><p><a href="../cataclysm-1-3/">Earlier 1.3 release</a></p>
     <section><h2>Known limitations</h2><ul>{issues}</ul></section>
     <p><a href="../cataclysm-1-69/STUDIO/FINAL_REPORT.md">Development report</a> ·
     <a href="../cataclysm-1-69/STUDIO/CANDIDATE_STATUS.json">Machine-readable QA status</a> ·
