@@ -1,0 +1,6 @@
+(node:4) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TypeError: Cannot read properties of null (reading 't')
+    at frame (game.js:3091:50)
+    at step (/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-69/qa/runtime.cjs:28:165)
+    at /home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-69/qa/runtime.cjs:30:2

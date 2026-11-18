@@ -1,0 +1,221 @@
+{
+  "characters": {
+    "hero": {
+      "adrenaline": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.14
+      },
+      "attack": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "feral": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.08
+      },
+      "hit": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 6,
+        "frames": 6,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "idle": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 6,
+        "frames": 6,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "run": {
+        "art_direction": "LITE_MOBILE_TEXTURE_FIRST",
+        "embedded_weapon": true,
+        "fps": 8,
+        "frames": 8,
+        "reference_sha256": "d09553aad7ad2738e4bb",
+        "scale": 1.0
+      },
+      "aim": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "shooter": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "healer": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "tank": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "brawler": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "sniper": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "engineer": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "trapper": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    },
+    "bard": {
+      "attack": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "special": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      },
+      "hit": {
+        "frames": 8,
+        "fps": 8,
+        "scale": 1,
+        "embedded_weapon": true
+      }
+    }
+  },
+  "version": 1
+}

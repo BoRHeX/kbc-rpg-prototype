@@ -1,0 +1,103 @@
+{
+  "version": "1.69",
+  "title": "THE WILD CARD",
+  "pass": "Pass01",
+  "status": "SPECIFIED",
+  "concept": "STUDIO/CONCEPT.md",
+  "baseline": {
+    "path": "docs/cataclysm-1-6/",
+    "pr": 96,
+    "sha256": {
+      "game.js": "1011543ce7189cc97d8e1779e11395450e29297658781811168f371cc18f7e4b",
+      "mutations.js": "3a55a3fcd798567d1da5782e63768bcf3e371089f184299819e203896ddcf84d",
+      "company.js": "66eaafecdbad4651db599fc386740f52ab848d5806570abbc5cff2332314b1ef",
+      "mutation-media.js": "78ff637dc83dbdc7ab967c84fde7744ea6a12ecad0c4c6eb4993422f6d1a7603"
+    }
+  },
+  "event": {
+    "districtId": 0,
+    "eligibleSeedModulo": 8,
+    "clock": "active simulation seconds",
+    "lightingAt": 4,
+    "listeningAt": 8,
+    "timeoutAt": 44,
+    "fadeSeconds": 3,
+    "posts": 2,
+    "dwellSeconds": 0.75,
+    "postRadiusWorld": 36,
+    "rewardFishUnits": 2,
+    "auraCooldownSeconds": 10,
+    "auraMaxPerNight": 2,
+    "auraMaxTargets": 3,
+    "auraRadiusWorld": 120,
+    "auraSlowFraction": 0.2,
+    "auraEffectSeconds": 1.25,
+    "auraDrawMs": 450
+  },
+  "raster": {
+    "status": "planned",
+    "outputRoot": "art/festival/",
+    "maxOriginalSheets": 3,
+    "sheets": [
+      {
+        "file": "court.png",
+        "sizePx": [1024, 512],
+        "format": "RGBA PNG",
+        "subjects": [
+          "Matte opaque 512×256 mural panel of a supper table across painted shutters with deliberately empty settings",
+          "Separate transparent additions for first saucer and the final lit place setting",
+          "Bunting with individually hung lamps, warm shutter inserts, and two legible lantern post cutouts"
+        ],
+        "runtime": "World anchored on existing facades. Street stays cool slate. Bottom-center post pivots. Lantern movement limited to 4 degrees each side. Reserve warm ivory for paths and leave the enemy warning palette clear."
+      },
+      {
+        "file": "archivist.png",
+        "sizePx": [1024, 512],
+        "format": "RGBA PNG with transparent gutters",
+        "subjects": ["book shut idle", "ear flick", "opening with forepaw", "leaning into book", "paw pointing", "closing over blank page"],
+        "runtime": "Six 192×160 cells in a 4×2 packing grid, feet registered to a common pivot; draw 54–68 world units across. Idle alternate 900/160 ms. Open 180/240 ms, hold read until next state change. Point 480 ms then return to read. Close 240 ms then hold shut."
+      },
+      {
+        "file": "celebration.png",
+        "sizePx": [512, 512],
+        "format": "RGBA PNG with transparent gutters",
+        "subjects": ["two window silhouettes with cups lowered and raised", "small silhouette placing a saucer", "page-corner glyph", "two curved etched accents for resonance"],
+        "runtime": "Window poses swap at 400–700 ms intervals with staggered phases. Saucer gesture plays once. Glyph has a pointed silhouette. Resonance has a broken circle silhouette and can use canvas for the expanding arc."
+      }
+    ],
+    "derive": "Index crop, pivot, state, frame duration, loop/hold, world scale and layer. Check registered feet, clean alpha, at least 4 px source gutters and no colored matte halo on dark streets. Preserve original sheets with tool/model, prompt, generation date, dimensions, alpha audit and SHA-256; record frame hashes. Budget counts decoded atlas and cropped frame copies if simultaneously resident.",
+    "blocked": "Record ART-BLOCKED for service, credentials, quota or output failures. Identify any inherited or temporary visuals in subsequent integration."
+  },
+  "audio": {
+    "status": "planned",
+    "outputRoot": "audio/festival/",
+    "format": "Original mono PCM16 WAV at 24000 Hz",
+    "assets": [
+      {"file": "court-stem.wav", "ms": 10000, "brief": "Four bars at 96 BPM. Original pentatonic plucked motif, faint window murmur and a brushed rhythm. Seamless loop with continuous endpoints."},
+      {"file": "page-glyph.wav", "ms": 240, "brief": "Dry page fold followed by a single ceramic note."},
+      {"file": "resonance.wav", "ms": 380, "brief": "Two soft ascending notes with a short metallic tail."}
+    ],
+    "mix": "Decode once on the inherited AudioContext after gesture unlock. One festival loop source and at most one festival cue simultaneously. Ramp loop gain over 250 ms, nominal -18 dB gain relative to the host music bus; boss, last-life, urgent mutant cues and committed fishing take priority and suppress the stem. Pause, hidden tab, mute and restart stop sources and invalidate pending decode callbacks. Restart the loop at current event phase on resume, with no cue replay. Log original composition/source, loop points, sample counts, peaks, hash and decode result."
+  },
+  "budgets": {
+    "newDecodedRasterMiBMax": 6,
+    "newDistributedMediaMiBMax": 3,
+    "visibleLanternsMax": 8,
+    "ambientSpritesMax": 3,
+    "extraParticlesMax": 16,
+    "resonanceRingsMax": 1,
+    "localLightPatchesMax": 4,
+    "renderPolicy": "Cull outside viewport plus 32 world units. Use cached alpha patches, no per-frame full-screen lighting pass. Shed ambient motes first under pressure; keep enemy tells, posts and aura indicators. Freeze decorative sway with reduced motion.",
+    "chromeFrameP95MsMax": 33.3,
+    "chromeFrameP95DeltaVsBaselineMsMax": 4,
+    "measure": "Replay the same featured-seed route for 30 active seconds at both viewports, with three runs each for 1.6 and 1.69 on the same recorded host, DPR and throttling profile. Save frame trace and report raw values."
+  },
+  "qa": [
+    {"id": "seed-and-entry", "passWhen": "Featured seed repeats layout and draft side; nonqualifying, obstructed and stress-start fixtures suppress the event; inherited RNG streams and city gates are preserved."},
+    {"id": "posts-and-exits", "passWhen": "Both route orders settle; partial dwell resets on leaving; 44 s tie times out; reward adds exactly two loose ledger units once even at item cap. District exit, life loss, pause, hidden tab, replay, victory and restart follow the state contract."},
+    {"id": "danger", "passWhen": "Director prefers at most one legal ordinary shambler without extra threat or actors. Gust warning lasts 1 s. Max two eligible enemies per gust; terrain, mutant tells and collision remain effective."},
+    {"id": "aura", "passWhen": "Real Mecha volley and Courier food transaction trigger independently when paired with Scout; wrong recipient, stale mark, walls, excluded targets, empty target set and repair do not proc. Verify 10 s cooldown across nights, two per night, 1.25 s expiry, priority, three targets and unchanged fish ledger except actual food transaction."},
+    {"id": "inherited-runtime", "passWhen": "Run published qa/runtime.cjs and mutation fixtures plus live inherited mutant entry, atlas/audio decode and fish economy checks. Record coverage and any predecessor failures separately."},
+    {"id": "chrome-and-story", "passWhen": "In Google Chrome at 390×844 and 844×390, ordinary featured-seed Start, thumb movement, original pixel draws, NPC poses, mural change and festival audio work within the first minute. A labeled legal squad fixture shows pulse sprite, actual slow and decoded cue within the first minute. Capture each orientation, network and console log, mute and cleanup evidence, and confirm HUD avoids gestures and attack tells."}
+  ]
+}

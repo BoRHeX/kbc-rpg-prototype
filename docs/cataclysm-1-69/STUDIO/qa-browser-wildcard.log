@@ -1,0 +1,9 @@
+Target: Google Chrome, mobile emulation at 390×844 and 844×390.
+Chrome executable: /usr/bin/google-chrome, Google Chrome 157.0.8103.50.
+npm install --prefix /tmp/cata169-qa --fetch-retries=0 playwright@1.56.1
+Result: EAI_AGAIN registry.npmjs.org.
+node qa/chrome-smoke.cjs
+Result: MODULE_NOT_FOUND playwright.
+XDG_CONFIG_HOME=/tmp/cata169-config XDG_DATA_HOME=/tmp/cata169-data google-chrome --headless --no-sandbox --disable-dev-shm-usage --disable-crashpad-for-testing --user-data-dir=/tmp/cata169-chrome --dump-dom about:blank
+Result: exit 134, FATAL sandbox_host_linux.cc:41, shutdown: Operation not permitted (1).
+No pages, screenshots, browser pixels, touch results, or browser audio decode were produced.

@@ -1,0 +1,55 @@
+{
+  "version": "1.69",
+  "format": "mono PCM16 WAV",
+  "sampleRateHz": 24000,
+  "tracks": {
+    "festival-bed": {
+      "path": "audio/generated/wildcard-festival-bed.wav",
+      "sha256": "cf1644cf9b44033e84298bb5f166dc9e02efc2399b7a187865480bc34226eced",
+      "bytes": 480044,
+      "sampleCount": 240000,
+      "durationMs": 10000,
+      "peakPCM": 16251,
+      "loopSamples": [
+        0,
+        240000
+      ]
+    },
+    "fusion-pulse": {
+      "path": "audio/generated/wildcard-fusion-pulse.wav",
+      "sha256": "32258d172332898dfc20fee8aa9f44ee63c45f3aeb2009d58b60642f6c8dda60",
+      "bytes": 23084,
+      "sampleCount": 11520,
+      "durationMs": 480,
+      "peakPCM": 19318,
+      "loopSamples": null
+    },
+    "archivist-lore": {
+      "path": "audio/generated/wildcard-archivist-lore.wav",
+      "sha256": "6a3920eb468b2fb11de45247df93af676b4d73e275da8d48f58cbb5f5b135e46",
+      "bytes": 36524,
+      "sampleCount": 18240,
+      "durationMs": 760,
+      "peakPCM": 15633,
+      "loopSamples": null
+    },
+    "event-reward": {
+      "path": "audio/generated/wildcard-event-reward.wav",
+      "sha256": "f8b58c6a2cf98a5005d243e185a76f4c8eb107cd4aa5fb6af0859284bc2f4406",
+      "bytes": 43724,
+      "sampleCount": 21840,
+      "durationMs": 910,
+      "peakPCM": 18079,
+      "loopSamples": null
+    },
+    "stage-shift": {
+      "path": "audio/generated/wildcard-stage-shift.wav",
+      "sha256": "219e760d53bc08a6c6ff7cc34168c71ea21902382fb7d8077bb30e6808c1475d",
+      "bytes": 33164,
+      "sampleCount": 16560,
+      "durationMs": 690,
+      "peakPCM": 19573,
+      "loopSamples": null
+    }
+  }
+}
