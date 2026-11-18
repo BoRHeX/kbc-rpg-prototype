@@ -1,0 +1,128 @@
+name: Cataclysm 1.69 — publish preserved candidate from completed build
+run-name: 1.69 · Publish actual archived studio files, no regeneration
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-1-69-publish-recovery.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-169-recovery-publisher
+  cancel-in-progress: false
+jobs:
+  archive-and-publish:
+    name: Recover model-created 1.69 and publish candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download actual preserved 1.69 source from five-pass production
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_run=44337020173
+          gh run view "$source_run" --json status,conclusion
+          mkdir -p docs/cataclysm-1-69
+          retrieved=no
+          for stage in 08 07 06 05 04 03 02 01; do
+            if gh run download "$source_run" -n "cataclysm-169-pass$stage-$source_run" -D docs/cataclysm-1-69 2>/dev/null; then
+              echo "Actual source from pass $stage of $source_run" >> "$GITHUB_STEP_SUMMARY"
+              retrieved=yes
+              break
+            fi
+          done
+          if [ "$retrieved" = no ] || [ ! -s docs/cataclysm-1-69/game.js ]; then
+            echo "::error::No genuine studio files to publish; refusing to claim a completed game."
+            exit 1
+          fi
+          test -s docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json
+          echo "No regeneration: using original source and image evidence." >> "$GITHUB_STEP_SUMMARY"
+      - name: Honest candidate status and landing page, no fake mobile-verified claims
+        run: |
+          set -euo pipefail
+          python game_factory/studio_multipass_169.py candidate
+          test -s docs/cataclysm-1-69-candidate/index.html
+          python - <<'PY'
+          import json
+          p='docs/cataclysm-1-69/STUDIO/CANDIDATE_STATUS.json'
+          x=json.load(open(p))
+          assert x['version']=='1.69'
+          assert x['status'] in ('BROKEN','PARTIAL','PLAYABLE','VERIFIED')
+          print('EXPERIMENTAL CANDIDATE STATUS',x['status'])
+          PY
+      - name: Back up the full actual 1.69 game before Git push and Pages
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-169-published-recovery-${{ github.run_id }}
+          path: |
+            docs/cataclysm-1-69
+            docs/cataclysm-1-69-candidate
+          if-no-files-found: error
+          retention-days: 45
+      - name: Commit and merge docs-only production output from current remote main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BoRHeZ Games Studio"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="studio/cataclysm-169-published-$GITHUB_RUN_ID"
+          gh auth setup-git
+          git fetch origin main
+          git switch -c "$branch" origin/main
+          git add docs/cataclysm-1-69 docs/cataclysm-1-69-candidate
+          git -c core.whitespace=-trailing-space diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          python - <<'PY'
+          import subprocess
+          files=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert files and all(p.startswith(('docs/cataclysm-1-69/','docs/cataclysm-1-69-candidate/')) for p in files),files
+          print(len(files),'source and asset files; no workflows changed')
+          PY
+          git commit -m "BoRHeZ Studio: Cataclysm 1.69 Wild Card real experimental candidate"
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "$branch" --title "Cataclysm 1.69 · THE WILD CARD — actual multipass candidate" --body "Recovered actual concept/art/sprite/game source from run 44337020173. No regenerated or fake imagery; candidate may be PARTIAL/BROKEN if browser evidence incomplete. Historic 1.6 source and all prior URLs remain untouched.")"
+          echo "Candidate PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git switch main
+          git fetch origin main
+          git reset --hard origin/main
+          test -s docs/cataclysm-1-69/STUDIO/CANDIDATE_STATUS.json
+      - name: Include preserved prior versions in Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-169-published-${{ github.run_id }}
+          path: docs
+      - name: Publish 1.69 experimental game and honest candidate dashboard
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-169-published-${{ github.run_id }}
+          timeout: 180000
+      - name: Summarize actual release
+        run: |
+          echo "### CATACLYSM 1.69 — THE WILD CARD" >> "$GITHUB_STEP_SUMMARY"
+          echo "Candidate dashboard: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-69-candidate/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Game: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-69/" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source: real studio artifacts from run 44337020173. Prior version 1.6 preserved." >> "$GITHUB_STEP_SUMMARY"
