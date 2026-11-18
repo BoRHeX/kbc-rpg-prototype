@@ -1,0 +1,52 @@
+[5:5:1118/084005.106141:ERROR:third_party/crashpad/crashpad/util/linux/socket.cc:45] setsockopt: Operation not permitted (1)
+[5:5:1118/084005.106209:FATAL:components/crash/core/app/crashpad_linux.cc:268] Check failed: client.StartHandler(handler_path, *database_path, metrics_path, url, annotations, arguments, false, false, attachments, preserve_handles). 
+#0 0x556e5220bf72 base::debug::CollectStackTrace()
+#1 0x556e521f635e base::debug::StackTrace::StackTrace()
+#2 0x556e5212892c logging::LogMessage::Flush()
+#3 0x556e521287fc logging::LogMessage::~LogMessage()
+#4 0x556e521110f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()
+#5 0x556e52110ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#6 0x556e5647d984 crash_reporter::internal::PlatformCrashpadInitialization()
+#7 0x556e564790c2 crash_reporter::InitializeCrashpad()
+#8 0x556e4ae016af ChromeMainDelegate::PreSandboxStartup()
+#9 0x556e520f44dc content::ContentMainRunnerImpl::Initialize()
+#10 0x556e520f213c content::RunContentProcess()
+#11 0x556e520f2587 content::ContentMain()
+#12 0x556e4adff37d ChromeMain
+#13 0x7faa75a2a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#14 0x7faa75a2a28b __libc_start_main
+#15 0x556e4adff02a _start
+
+Received signal 6
+#0 0x556e5220bf72 base::debug::CollectStackTrace()
+#1 0x556e521f635e base::debug::StackTrace::StackTrace()
+#2 0x556e5220b9d8 base::debug::(anonymous namespace)::StackDumpSignalHandler()
+#3 0x7faa75a45330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)
+#4 0x7faa75a9ec0c pthread_kill
+#5 0x7faa75a4527e gsignal
+#6 0x7faa75a288ff abort
+#7 0x556e521e5165 base::debug::BreakDebuggerAsyncSafe()
+#8 0x556e52129473 base::RepeatingCallback<>::Run()
+#9 0x556e52129335 logging::LogMessage::HandleFatal()
+#10 0x556e52128f27 logging::LogMessage::Flush()
+#11 0x556e521287fc logging::LogMessage::~LogMessage()
+#12 0x556e521110f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()
+#13 0x556e52110ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#14 0x556e5647d984 crash_reporter::internal::PlatformCrashpadInitialization()
+#15 0x556e564790c2 crash_reporter::InitializeCrashpad()
+#16 0x556e4ae016af ChromeMainDelegate::PreSandboxStartup()
+#17 0x556e520f44dc content::ContentMainRunnerImpl::Initialize()
+#18 0x556e520f213c content::RunContentProcess()
+#19 0x556e520f2587 content::ContentMain()
+#20 0x556e4adff37d ChromeMain
+#21 0x7faa75a2a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#22 0x7faa75a2a28b __libc_start_main
+#23 0x556e4adff02a _start
+  r8: 000020e8001485e8  r9: 0000000000000361 r10: 0000000000000008 r11: 0000000000000246
+ r12: 0000000000000006 r13: 0000000000000449 r14: 0000000000000016 r15: 00007ffe9b6e9c30
+  di: 0000000000000005  si: 0000000000000005  bp: 00007ffe9b6e9ae0  bx: 0000000000000005
+  dx: 0000000000000006  ax: 0000000000000000  cx: 00007faa75a9ec0c  sp: 00007ffe9b6e9aa0
+  ip: 00007faa75a9ec0c efl: 0000000000000246 cgf: 002b000000000033 erf: 0000000000000000
+ trp: 0000000000000000 msk: 0000000000000000 cr2: 0000000000000000
+[end of stack trace]
+timeout: the monitored command dumped core

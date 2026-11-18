@@ -1,0 +1,62 @@
+{
+  "version": "1.6",
+  "one_game": "Cataclysm",
+  "baseline": "docs/cataclysm-1-5",
+  "runs": [
+    {
+      "pass": "01",
+      "name": "Concept and asset design",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-18T08:30:53.757614+00:00",
+      "github_run_id": "44267274376",
+      "sha": "e27b73575c7a078759056c34534dce289cf3351be640b77b009ffe593b9c41c5",
+      "file_count": 247,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "02",
+      "name": "Original raster illustration",
+      "outcome": "GENERATED",
+      "details": "Direct image API output; see STUDIO/IMAGE_MANIFEST.json",
+      "timestamp_utc": "2026-11-18T08:32:12.216844+00:00",
+      "github_run_id": "44267274376",
+      "sha": "19a25e21b6a6b85667f93a6690a5aa895f817287ba5139471e3545ef367f3e64",
+      "file_count": 253,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "03",
+      "name": "Sprite animation and music/SFX",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-18T08:35:35.685399+00:00",
+      "github_run_id": "44267274376",
+      "sha": "0e7643934f92ce938b0b9df3d92a4f9c5b676a63e4c51300839143c96d1a9870",
+      "file_count": 287,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "04",
+      "name": "Mechanics and art integration",
+      "outcome": "success",
+      "details": "",
+      "timestamp_utc": "2026-11-18T08:42:00.632427+00:00",
+      "github_run_id": "44267274376",
+      "sha": "413e7124bcd5fcc792cf188a79df3f5b19ab0543acee0acd0994f5a92ad93be0",
+      "file_count": 293,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    },
+    {
+      "pass": "05",
+      "name": "Gameplay polish and independent QA",
+      "outcome": "skipped",
+      "details": "",
+      "timestamp_utc": "2026-11-18T08:42:37.046946+00:00",
+      "github_run_id": "44267274376",
+      "sha": "48d4c905e841b4e1c72b799f81239315fa69865a2f3f46a6fdfba96c1ceceb03",
+      "file_count": 293,
+      "notes": "Pass outputs archived independently. Failed work is never discarded."
+    }
+  ]
+}

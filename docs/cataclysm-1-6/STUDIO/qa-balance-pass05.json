@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "kind": "deterministic fixtures, not a natural endgame completion",
+  "baselineGateKills": 12,
+  "lateBuild": {
+    "level": 85,
+    "hordeKills": 24,
+    "mobHp": 4.5,
+    "quota": 108
+  },
+  "fixes": [
+    "attempt-scoped gate credit",
+    "guardian survives retreat",
+    "city actors excluded from enemy fusion",
+    "unreachable and expired arrow targets excluded",
+    "map restricted to pause"
+  ]
+}

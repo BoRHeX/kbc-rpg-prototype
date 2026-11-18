@@ -1,0 +1,760 @@
+{
+  "schemaVersion": 1,
+  "milestone": "1.6",
+  "passId": "01",
+  "status": "SPECIFICATION_ONLY",
+  "baseline": "docs/cataclysm-1-5 (merged PR #94)",
+  "originalAtlasLimit": 3,
+  "raster": {
+    "width": 1024,
+    "height": 1024,
+    "format": "PNG RGBA8 sRGB with straight alpha",
+    "layout": "3 rows by 3 columns; 32 px outer guard, 320 px cell, 16 px transparent inner guard at each edge",
+    "direction": "Three-quarter right-facing in all poses; mirror around pivot for left-facing",
+    "style": "Original full-body hand-illustrated dark neon street creatures, palette keyed by material and silhouette, pale edge highlights and restrained glow",
+    "background": "True alpha zero outside painted subject and antialias edge; no ground plate, lettering, neighboring fragments, grid or matte",
+    "production": "Use validated actual image API. Preserve each original and its generation provenance. If API or required illustrated output unavailable record ART-BLOCKED with tool/version and exact error.",
+    "provenanceFields": [
+      "tool",
+      "model",
+      "requestId",
+      "promptSha256",
+      "sourcePath",
+      "sha256",
+      "width",
+      "height",
+      "alphaMode",
+      "status"
+    ]
+  },
+  "atlases": [
+    {
+      "id": "mutant-pack-atlas",
+      "path": "art/generated/mutant-pack-atlas.png",
+      "status": "PLANNED",
+      "sha256": null,
+      "frames": [
+        {
+          "id": "mimic-stray.disguise",
+          "actor": "mimic-stray",
+          "pose": "disguise",
+          "brief": "Wet charcoal fur folding into a silver sardine, a magnet or scrap through the same articulated fin-shell. Split tail and bright seam carry the reveal.",
+          "cropPx": [
+            32,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "mimic-stray.reveal",
+          "actor": "mimic-stray",
+          "pose": "reveal",
+          "brief": "Wet charcoal fur folding into a silver sardine, a magnet or scrap through the same articulated fin-shell. Split tail and bright seam carry the reveal.",
+          "cropPx": [
+            352,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 950
+        },
+        {
+          "id": "mimic-stray.lunge",
+          "actor": "mimic-stray",
+          "pose": "lunge",
+          "brief": "Wet charcoal fur folding into a silver sardine, a magnet or scrap through the same articulated fin-shell. Split tail and bright seam carry the reveal.",
+          "cropPx": [
+            672,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 250
+        },
+        {
+          "id": "bell-ringer.seek",
+          "actor": "bell-ringer",
+          "pose": "seek",
+          "brief": "Bent ears, bronze pendulum on ribbon, dusty cream fur and asymmetric forward paw.",
+          "cropPx": [
+            32,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "bell-ringer.raise",
+          "actor": "bell-ringer",
+          "pose": "raise",
+          "brief": "Bent ears, bronze pendulum on ribbon, dusty cream fur and asymmetric forward paw.",
+          "cropPx": [
+            352,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1350
+        },
+        {
+          "id": "bell-ringer.ring",
+          "actor": "bell-ringer",
+          "pose": "ring",
+          "brief": "Bent ears, bronze pendulum on ribbon, dusty cream fur and asymmetric forward paw.",
+          "cropPx": [
+            672,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 180
+        },
+        {
+          "id": "roof-pouncer.perch",
+          "actor": "roof-pouncer",
+          "pose": "perch",
+          "brief": "Rain-slick indigo, gutter-hook tail and distinct long forelimbs.",
+          "cropPx": [
+            32,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1350
+        },
+        {
+          "id": "roof-pouncer.dive",
+          "actor": "roof-pouncer",
+          "pose": "dive",
+          "brief": "Rain-slick indigo, gutter-hook tail and distinct long forelimbs.",
+          "cropPx": [
+            352,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 240
+        },
+        {
+          "id": "roof-pouncer.land",
+          "actor": "roof-pouncer",
+          "pose": "land",
+          "brief": "Rain-slick indigo, gutter-hook tail and distinct long forelimbs.",
+          "cropPx": [
+            672,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1700
+        }
+      ]
+    },
+    {
+      "id": "mutant-necromancy-atlas",
+      "path": "art/generated/mutant-necromancy-atlas.png",
+      "status": "PLANNED",
+      "sha256": null,
+      "frames": [
+        {
+          "id": "necro-groomer.seek",
+          "actor": "necro-groomer",
+          "pose": "seek",
+          "brief": "Square patchwork apron, broad silhouette and conspicuous ivory comb held clear of body.",
+          "cropPx": [
+            32,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "necro-groomer.channel",
+          "actor": "necro-groomer",
+          "pose": "channel",
+          "brief": "Square patchwork apron, broad silhouette and conspicuous ivory comb held clear of body.",
+          "cropPx": [
+            352,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1600
+        },
+        {
+          "id": "necro-groomer.recover",
+          "actor": "necro-groomer",
+          "pose": "recover",
+          "brief": "Square patchwork apron, broad silhouette and conspicuous ivory comb held clear of body.",
+          "cropPx": [
+            672,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "pack-leader.claim",
+          "actor": "pack-leader",
+          "pose": "claim",
+          "brief": "Broad cat with torn traffic vest, pointed shoulders and forked tail flag.",
+          "cropPx": [
+            32,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "pack-leader.stage",
+          "actor": "pack-leader",
+          "pose": "stage",
+          "brief": "Broad cat with torn traffic vest, pointed shoulders and forked tail flag.",
+          "cropPx": [
+            352,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1000
+        },
+        {
+          "id": "pack-leader.lock",
+          "actor": "pack-leader",
+          "pose": "lock",
+          "brief": "Broad cat with torn traffic vest, pointed shoulders and forked tail flag.",
+          "cropPx": [
+            672,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 500
+        },
+        {
+          "id": "feral-fish-thief.race",
+          "actor": "feral-fish-thief",
+          "pose": "race",
+          "brief": "Lean long-legged cat with hook nose and white-flapped creel visible against dark streets.",
+          "cropPx": [
+            32,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 0
+        },
+        {
+          "id": "feral-fish-thief.hover",
+          "actor": "feral-fish-thief",
+          "pose": "hover",
+          "brief": "Lean long-legged cat with hook nose and white-flapped creel visible against dark streets.",
+          "cropPx": [
+            352,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 850
+        },
+        {
+          "id": "feral-fish-thief.chew",
+          "actor": "feral-fish-thief",
+          "pose": "chew",
+          "brief": "Lean long-legged cat with hook nose and white-flapped creel visible against dark streets.",
+          "cropPx": [
+            672,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1400
+        }
+      ]
+    },
+    {
+      "id": "evolved-night-boss-atlas",
+      "path": "art/generated/evolved-night-boss-atlas.png",
+      "status": "PLANNED",
+      "sha256": null,
+      "frames": [
+        {
+          "id": "toll-collector.reveal",
+          "actor": "toll-collector",
+          "pose": "reveal",
+          "brief": "Large four-legged lantern-jawed inspector with rain-dark mantle and long brass shoulder bars.",
+          "cropPx": [
+            32,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1300
+        },
+        {
+          "id": "toll-collector.sweep-warning",
+          "actor": "toll-collector",
+          "pose": "sweep-warning",
+          "brief": "Large four-legged lantern-jawed inspector with rain-dark mantle and long brass shoulder bars.",
+          "cropPx": [
+            352,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1450
+        },
+        {
+          "id": "toll-collector.sweep",
+          "actor": "toll-collector",
+          "pose": "sweep",
+          "brief": "Large four-legged lantern-jawed inspector with rain-dark mantle and long brass shoulder bars.",
+          "cropPx": [
+            672,
+            32,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 300
+        },
+        {
+          "id": "broken-procession.molt",
+          "actor": "broken-procession",
+          "pose": "molt",
+          "brief": "Same body after molt, split mantle, exposed copper ribs and raised lantern tail.",
+          "cropPx": [
+            32,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1250
+        },
+        {
+          "id": "broken-procession.close-warning",
+          "actor": "broken-procession",
+          "pose": "close-warning",
+          "brief": "Same body after molt, split mantle, exposed copper ribs and raised lantern tail.",
+          "cropPx": [
+            352,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1550
+        },
+        {
+          "id": "broken-procession.close",
+          "actor": "broken-procession",
+          "pose": "close",
+          "brief": "Same body after molt, split mantle, exposed copper ribs and raised lantern tail.",
+          "cropPx": [
+            672,
+            352,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 300
+        },
+        {
+          "id": "charnel-carillon.cocoon",
+          "actor": "charnel-carillon",
+          "pose": "cocoon",
+          "brief": "Fur-wrapped ribbed bell case and crooked comb tail. Cocoon shows both parents as painted chamber shapes.",
+          "cropPx": [
+            32,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1400
+        },
+        {
+          "id": "charnel-carillon.first-lane",
+          "actor": "charnel-carillon",
+          "pose": "first-lane",
+          "brief": "Fur-wrapped ribbed bell case and crooked comb tail. Cocoon shows both parents as painted chamber shapes.",
+          "cropPx": [
+            352,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1400
+        },
+        {
+          "id": "charnel-carillon.second-lane",
+          "actor": "charnel-carillon",
+          "pose": "second-lane",
+          "brief": "Fur-wrapped ribbed bell case and crooked comb tail. Cocoon shows both parents as painted chamber shapes.",
+          "cropPx": [
+            672,
+            672,
+            320,
+            320
+          ],
+          "alphaSafeInsetPx": 16,
+          "pivotPx": [
+            160,
+            256
+          ],
+          "durationMs": 1200
+        }
+      ]
+    }
+  ],
+  "derivatives": {
+    "frameIndex": "art/animated/mutant-frame-index.json",
+    "outputPattern": "art/animated/{atlasId}-frames.png",
+    "requiredRecordFields": [
+      "id",
+      "actor",
+      "state",
+      "sourcePath",
+      "sourceSha256",
+      "sourceRect",
+      "outputPath",
+      "outputSha256",
+      "rect",
+      "pivot",
+      "mirror",
+      "durationMs"
+    ],
+    "playback": "Use state-entry time and drawImage source rects. Duration 0 holds until state exit. Recoveries reuse a named visible pose: mimic reveal, bell seek, roof land, groomer recover, leader claim, thief race, collector reveal, procession molt, carillon first-lane. Cast 2 carillon uses second-lane. Painted frame changes drive pose acting; code-native marks are telegraph VFX only.",
+    "mobile": "Review at 390x844 and 844x390, small enemies 36–56 CSS px and boss 72–104 CSS px when camera scale permits. Keep poses distinct in grayscale. Use 2 CSS px minimum telegraph strokes and motion/shape plus color. Align feet to collision and keep impacts and safe lanes visible. Limit loaded mutant sheets to these three derived textures, source originals retained outside preload.",
+    "alphaQA": "Check actual alpha channel, zero guards, bounds, pivot consistency, intact extremities and contiguous silhouettes; inspect checkerboard, dark/pale street composites and phone-size previews. Keep intentional disconnected details only when indexed and reviewed. Hash originals and derivatives separately. Avoid clipped or neighboring fragments and matte rectangles."
+  },
+  "audio": {
+    "index": "audio/generated/mutations-audio-index.json",
+    "format": "Original mono PCM16 WAV at 44100 Hz",
+    "cues": [
+      {
+        "id": "mimic-snap",
+        "event": "mimic.reveal",
+        "brief": "Two dry fishbone ticks",
+        "targetMs": 240,
+        "path": "audio/generated/mimic-snap.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "bell-lift",
+        "event": "bell.raise",
+        "brief": "Soft paired bronze taps",
+        "targetMs": 440,
+        "path": "audio/generated/bell-lift.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "bell-ring",
+        "event": "bell.commit",
+        "brief": "Short struck bronze with damping",
+        "targetMs": 600,
+        "path": "audio/generated/bell-ring.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "roof-lock",
+        "event": "roof.lock",
+        "brief": "Small gutter scrape",
+        "targetMs": 320,
+        "path": "audio/generated/roof-lock.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "roof-land",
+        "event": "roof.impact",
+        "brief": "Low padded thud",
+        "targetMs": 220,
+        "path": "audio/generated/roof-land.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "groomer-braid",
+        "event": "groomer.channel",
+        "brief": "Dry comb dragged over teeth",
+        "targetMs": 410,
+        "path": "audio/generated/groomer-braid.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "pack-lock",
+        "event": "pack.lock",
+        "brief": "Triple paw knock",
+        "targetMs": 360,
+        "path": "audio/generated/pack-lock.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "pack-break",
+        "event": "pack.leader-death",
+        "brief": "Descending whistle",
+        "targetMs": 380,
+        "path": "audio/generated/pack-break.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "thief-hover",
+        "event": "thief.hover",
+        "brief": "Creel rustle then a click",
+        "targetMs": 280,
+        "path": "audio/generated/thief-hover.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "thief-take",
+        "event": "thief.claim",
+        "brief": "Short creel clasp",
+        "targetMs": 240,
+        "path": "audio/generated/thief-take.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "fusion-close",
+        "event": "fusion.cocoon",
+        "brief": "Paired damped bell and comb rake",
+        "targetMs": 520,
+        "path": "audio/generated/fusion-close.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "fusion-lane",
+        "event": "fusion.windup",
+        "brief": "Dissonant hollow double chime",
+        "targetMs": 420,
+        "path": "audio/generated/fusion-lane.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "bailiff-sweep",
+        "event": "boss.sweep-warning",
+        "brief": "Two heavy wooden knocks",
+        "targetMs": 470,
+        "path": "audio/generated/bailiff-sweep.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "bailiff-molt",
+        "event": "boss.molt",
+        "brief": "Cloth tear across a pitched hum",
+        "targetMs": 650,
+        "path": "audio/generated/bailiff-molt.wav",
+        "loop": false,
+        "sha256": null
+      },
+      {
+        "id": "bailiff-close",
+        "event": "boss.close-warning",
+        "brief": "Separated high-low lantern chimes",
+        "targetMs": 480,
+        "path": "audio/generated/bailiff-close.wav",
+        "loop": false,
+        "sha256": null
+      }
+    ],
+    "stems": [
+      {
+        "id": "pressure",
+        "condition": "director nearby load at least 75% of effective cap, disengage below 55%, 3s hysteresis",
+        "brief": "Muted low drum and tin offbeat",
+        "path": "audio/generated/mutations-pressure.wav",
+        "loop": true,
+        "sha256": null
+      },
+      {
+        "id": "mutant",
+        "condition": "active raise, channel, fusion or elite",
+        "brief": "Bowed metallic fifths",
+        "path": "audio/generated/mutations-mutant.wav",
+        "loop": true,
+        "sha256": null
+      },
+      {
+        "id": "fishing",
+        "condition": "committed cast or bite",
+        "brief": "Sparse plucked harmonic and light ticking",
+        "path": "audio/generated/mutations-fishing.wav",
+        "loop": true,
+        "sha256": null
+      },
+      {
+        "id": "danger",
+        "condition": "last life during active running",
+        "brief": "Low two-note heartbeat, mixed below warnings",
+        "path": "audio/generated/mutations-danger.wav",
+        "loop": true,
+        "sha256": null
+      }
+    ],
+    "transport": "Author stems to two integral bars of the inherited music transport, align loop samples and match pitch center; record BPM/subdivision, loop samples and gain. Fade over one beat, duck overlays 6 dB for critical cues, preserve original music and FX/mute/volume controls.",
+    "limits": "One existing AudioContext, at most two overlay sources plus four new simultaneous FX within inherited cap. Cue dedupe by action token and per-family 750 ms minimum repeat. Drop low-priority cues first. One-shots never loop. Pause freezes transport offset and releases scheduled nodes; restart cancels nodes and rejects decoded callbacks from previous run token.",
+    "verification": "Hash and decode all files and check nonzero RMS, peak below clipping and loop seam. Audit actual play/stop events, mute/volume and restart in browser; record listening separately.",
+    "requiredRecordFields": [
+      "path",
+      "sha256",
+      "samples",
+      "sampleRate",
+      "peak",
+      "rms",
+      "eventOrCondition",
+      "gain",
+      "loop",
+      "provenance"
+    ]
+  },
+  "handoff": {
+    "manifest": "STUDIO/IMAGE_MANIFEST.json",
+    "pass03Report": "STUDIO/MEDIA_HANDOFF.md",
+    "pass05Report": "STUDIO/FINAL_REPORT.md",
+    "artifactPattern": "cataclysm-1-6-pass-{passId}-{revision}",
+    "passedAssets": 0
+  }
+}
