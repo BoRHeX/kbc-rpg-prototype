@@ -16,3 +16,6 @@ If image/coding/testing API errors occur, preserve all source and assets after e
 
 ## Preflight recovery: corrected actual baseline recognition
 The first attempt (GitHub run #44380459811) hit a controller preflight error: 1.69 is a historical predecessor but had not been admitted by the game-path guard. The version-preserving controller has been corrected in commit 83c6ec48e6baece343ab3ff8169edfaa6c34a84a. Restart the SAME authorized ten-stage project from the genuine 1.69 source, do not claim previous failed candidate output as working. Keep exactly ten production passes and one publisher in this new corrected run.
+
+## Validated canonical directory correction for the actual single ten-pass run
+All published Cataclysm versions use hyphenated directories. The 1.69 baseline is `docs/cataclysm-1-69`, NOT `docs/cataclysm-1.69`. The new versions must be `docs/cataclysm-1-7`, `docs/cataclysm-1-8` and `docs/cataclysm-1-9`, with matching `-candidate` folders. Both controller and browser runner and GitHub workflow have been corrected and cross-checked at latest main. Attempts #44380459811 and #44380690483 hit only initial wrong folder-path preflights; do not treat them as production implementations. Launch the corrected SINGLE ten-pass studio run from last actual 1.69 and preserve every stage as previously ordered. Do not start independent 1.7/1.8/1.9 workflows.
