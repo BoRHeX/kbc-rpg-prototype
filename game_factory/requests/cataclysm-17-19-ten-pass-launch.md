@@ -13,3 +13,6 @@ Final publication — recover three stage-frozen versions, honor actual browser 
 The model may make grounded architectural choices within these constraints. No 2.0 feature implementation or 2.0 release is permitted by this trigger. Ten passes only: no more automatic work, no unbounded retries.
 
 If image/coding/testing API errors occur, preserve all source and assets after each pass; label incomplete/unverified instead of fabricating playability. Previous playable 1.69 URL remains available. This experimental build experiment should run to the end without stop-for-polish handholding.
+
+## Preflight recovery: corrected actual baseline recognition
+The first attempt (GitHub run #44380459811) hit a controller preflight error: 1.69 is a historical predecessor but had not been admitted by the game-path guard. The version-preserving controller has been corrected in commit 83c6ec48e6baece343ab3ff8169edfaa6c34a84a. Restart the SAME authorized ten-stage project from the genuine 1.69 source, do not claim previous failed candidate output as working. Keep exactly ten production passes and one publisher in this new corrected run.
