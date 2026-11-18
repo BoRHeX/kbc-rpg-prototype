@@ -47,7 +47,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: This is Pass 01 of TEN, version 1.7 THE LONG NIGHT. Act as Producer + campaign/save architect. Inspect the actual inherited Cataclysm 1.69 game.js, campaign.js and company.js BEFORE designing. Deliver STUDIO/CONCEPT.md, STUDIO/SAVE_SCHEMA.json and STUDIO/PRODUCTION_PLAN.md with an implementable 1000-night, ten-distinct-chapter plan, timed 3-hour target, serialization/restore contract, RNG and version migration, phone background safety, side effects, boss state and exact acceptance fixtures. Implement a small modular foundation only if needed. No fake full campaign. Design Endless to unlock ONLY after Night1000. The previous Night100 completion logic must not end campaign early. Preserve city/mutants/fishing/festival and all other inherited systems. Your design is handed to an independent actual engineering pass. Real files only, no future-person promises.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-7/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -60,9 +60,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p01-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -111,7 +111,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p01-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -129,7 +129,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 02 implements CATACLYSM 1.7 THE LONG NIGHT, not a separate game or a mere roadmap. Use Pass01 real save schema and inherited game. Add actual ten-chapter Night1-1000 gameplay, chapter transition content and distinct boss arc, real checkpoint at every chapter and on safe backgrounding, resume and new run controls, serializing every active gameplay subsystem including RNG, lives, fish, fishing, equipment, 16 cats/fusion, seeded city and mutants, current event and pending waves, versioned migration and corruption recovery. Add actual repeatable accelerated fixtures that can run without waiting 3 hours, and only unlock Endless after real completed 1000-night campaign. Address 13s/night pacing vs ~3h target and resource caps. Do not add new combat action buttons or lose old controls. Modify source in docs/cataclysm-1-7, write STUDIO/IMPLEMENTATION_REPORT.md with exact delivered/deferred features and how to test. Source code must visibly change and remain one game.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-7/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -142,9 +142,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -164,7 +164,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p02-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -193,7 +193,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p02-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -218,7 +218,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 03 creates and INTEGRATES chapter visuals/music for 1.7. Three original PNG atlases have been generated by the real image API just before you; inspect STUDIO/IMAGE_MANIFEST.json, art/generated and exact files. Do not claim missing images exist. Cut sprite-compatible ORIGINAL raster sections and chapter emblems into art/animated and define frame manifest, make original WAV ambient chapter score/stingers in audio/generated. Integrate them into game.js/chapters with genuine drawImage and triggered playback, plus mobile chapter title/readability/transition HUD. Keep previous 1.69 drawn assets. Improve and repair incomplete 1.7 mechanics from Pass02 as needed, preserving cumulative gameplay. Written delivery STUDIO/ANIMATION_AUDIO_REPORT.md with actual file hashes, source integration evidence, art blocking if applicable. Code-drawn effects okay for light and VFX, not as substitute for original illustrations.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-7/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -231,9 +231,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -253,7 +253,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p03-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -282,7 +282,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p03-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -300,7 +300,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 04 is 1.7 INDEPENDENT QA + REPAIR and frozen candidate stage. Inspect actual 1.7 source; test whether it really has 1000 nights, ten meaningful chapters, checkpoint restore for player/fish/squad/fusion/city/boss, version migration/corruption and safe backgrounding; Endless MUST stay locked until full campaign win. Write actual deterministic tests and run them (do not claim a 3-hour physical test if not done). Fix critical runtime defects. Check inherited Mecha, Festival, mutants and fishing survive. Improve gameplay/graphics/audio where easily justified. Write STUDIO/FINAL_REPORT.md with source and test citations, missing behaviors and limitations; do not confuse tests with actual Samsung. 1.7 is frozen after this stage and handed off as basis of 1.8. Never overwrite past releases.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-7/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -313,9 +313,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-7/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-7/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -348,7 +348,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p04-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -377,7 +377,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p04-${{ github.run_id }}
-          path: docs/cataclysm-1.7
+          path: docs/cataclysm-1-7
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -402,7 +402,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 05 starts new 1.8 DISTILLED ADVANCEMENT from the real Pass04 1.7 source. Act as art director + fusion designer. Real Images API just generated up to 3 original transparent/opaque atlas PNGs for fused companion teams, weather and mood missions: verify actual file/manifest. Cut actual animation frames and create audio/generated original weather/fusion WAV cues and STUDIO/ANIMATION_AUDIO_REPORT.md. Write STUDIO/CONCEPT.md and STUDIO/ASSET_PLAN.json for two or three useful new Level3 pair fusions (Angler+Trapper, Scout+Sniper, possible Bard+Stormcaller), 4-slot 2-to-1 accounting, mood and weather state effects, side missions, 1.7 save schema compatibility, illustrated mobile HUD. Do NOT call any fusion other than Engineer+Shooter implemented until integration pass proves it. Some runtime hooks can be prepared, but Pass06 implements real gameplay. No duplicate cat identities or XP and food cheats.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-8/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -415,9 +415,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -437,7 +437,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p05-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -466,7 +466,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p05-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -484,7 +484,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 06 integrates actual CATACLYSM 1.8 DISTILLED ADVANCEMENT into inherited 1.7 campaign. Implement **at least two** mechanically unique fusion recipes besides Mecha: Angler+Trapper (net/catch trap rig) and Scout+Sniper (long-range mark synergy), both require two actual Level-3 compatible cats, merge into ONE of 4 slots, distinct abilities, visible real drawn assets and cooldown; optional Bard+Stormcaller if budget permits. Add dynamic bounded seeded weather rain/fog/storm that ACTUALLY changes enemy behavior/visibility, at least two small seeded optional side missions with meaningful rewards, companion moods and reaction dialogue/audio/visuals. Keep movement-only combat. Integrate real original Pass05 PNG frames and WAVs into runtime; not just source atlases or particle overlays. Extend 1.7 save/resume schema for fusions/weather/mood/missions with safe migration; never break 1000-night chapters or player fish. Write STUDIO/IMPLEMENTATION_REPORT.md and actual QA fixtures. Never change prior version source.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-8/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -497,9 +497,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -519,7 +519,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p06-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -548,7 +548,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p06-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -566,7 +566,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 07 is independent CATACLYSM 1.8 QA, balance correction and freeze. Confirm two Level-3 pair fusions are actual useable one-slot mechanics, don't duplicate old cats/fish, correct 4-slot limits and restart/revive. Check weather visibly changes AI and gameplay and is safe/readable at phone scale; side missions trigger, grant rewards once, original art is really drawn. Test schema migration and checkpoint resume across 1.7→1.8, 1000-night campaign and Endless gating, 1.69 festival, 1.6 mutants and 1.5 fishing. Fix actual failures. Write STUDIO/FINAL_REPORT.md with precise code/test/art evidence and missing work, not invented proof. Freeze 1.8 exactly here for 1.9.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-8/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -579,9 +579,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-8/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-8/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -614,7 +614,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p07-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -643,7 +643,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p07-${{ github.run_id }}
-          path: docs/cataclysm-1.8
+          path: docs/cataclysm-1-8
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -668,7 +668,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 08 creates 1.9 POLISH & GATING concepts, REAL original art and integration-ready UI assets from the genuine 1.8 version. The Art API generated up to three original PNG sheets; inspect files and manifests. Produce scaled menu cover, portraits/codex and pre-catacomb Threshold Trial arena art and real original short WAV UI and battle cue assets; preserve image provenance and animation frame indices. Design in STUDIO/CONCEPT.md and STUDIO/ASSET_PLAN.json a unified title menu, discovered WORLD MAP only outside combat, 16+ companion/fusion gallery, enemy/boss bestiary, fish/bait/jackpot histories, save/resume, mobile tutorials and responsive HUD. Most importantly design a **playable Threshold Trial** encounter testing fusion, weather and mutant counterplay as 1.9 defining gameplay; keep 2.0 Sphinx underground finale and hand weapons reserved. Do NOT build a menu-only mockup; Pass09 must integrate.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-9/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -681,9 +681,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -703,7 +703,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p08-${{ github.run_id }}
-          path: docs/cataclysm-1.9
+          path: docs/cataclysm-1-9
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -732,7 +732,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p08-${{ github.run_id }}
-          path: docs/cataclysm-1.9
+          path: docs/cataclysm-1-9
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -750,7 +750,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 09 implements actual CATACLYSM 1.9 POLISH & GATING on top of 1.8. Integrate real painted art/menu/codex/gallery and audio from Pass08, make menu functional, remove confusing/dead controls, accessible pause settings, world map only off-combat, visual guide to CURRENTLY WORKING fusions, collecting rare fish/jackpot and enemy bestiary; history/save state should persist safely across campaign. Build the playable seeded **Threshold Trial** pre-catacomb gauntlet with distinct encounter logic, reward, illustrated environment and atmospheric combat/sound: a tangible game feature, not only gloss. Improve AI pathing/spawn collision and late game challenge without cheap 10x HP multipliers. Keep ten chapters and save/resume from 1.7, weather/fusions from 1.8, four active slots, Mecha, optional fishing, festival, six mutants, nine lives, movement-only auto-fire. Do NOT implement 2.0's two hand weapons or Sphinx. Write STUDIO/IMPLEMENTATION_REPORT.md and source-linked tests.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-9/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -763,9 +763,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -785,7 +785,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p09-${{ github.run_id }}
-          path: docs/cataclysm-1.9
+          path: docs/cataclysm-1-9
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
@@ -814,7 +814,7 @@ jobs:
         continue-on-error: true
         with:
           name: cataclysm-triple-p09-${{ github.run_id }}
-          path: docs/cataclysm-1.9
+          path: docs/cataclysm-1-9
       - name: Restore inherited product and verify studio scripts
         shell: bash
         run: |
@@ -832,7 +832,7 @@ jobs:
           You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
           Your exact task: Pass 10 is final independent GAME-WIDE QA, actual repair and evidence for CATACLYSM 1.9. This single 10-pass owner order must yield honest **three distinct cumulative candidate snapshots** (1.7,1.8,1.9) and preserve prior history. Fix actual critical gameplay/JS/asset issues, not only markdown. Run deterministic test fixtures of real 1000-night chapter/checkpoint/Endless, 1.8 fusion/weather/mission save migration, 1.9 Threshold Trial and codex, plus inherited city, 1.69 festival, 1.6 mutants, 1.5 fish, 1.3 Mecha and nine lives. Run only tests that actually execute, log exact commands and results; no fake Samsung acceptance. Audit spawn wall physics, 2D sprite references, WAV audio memory and 2.0 open blockers (new double hand weapons, underground, Sphinx). Produce STUDIO/FINAL_REPORT.md, STUDIO/2_0_BLOCKERS.md with concrete evidence. The publication job will archive source and label 1.9 PARTIAL/PLAYABLE/BROKEN/UNVERIFIED based on independent Chrome evidence. No automatic 2.0 production.
           Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
-          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1-9/). Never edit or erase previous versions.
           No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
           Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
           Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
@@ -845,9 +845,9 @@ jobs:
             echo '## Studio candidate and failure-preservation policy'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual available original generated art'
-            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-9/STUDIO/IMAGE_MANIFEST.json; fi
             echo '## Real preceding work / handoff'
-            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+            if test -f docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-9/STUDIO/PASS_LEDGER.json; fi
           } >> artifacts/cataclysm-three/DEPARTMENT.md
       - name: Independent AI studio specialist performs REAL source/art integration
         id: develop
@@ -880,7 +880,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cataclysm-triple-p10-${{ github.run_id }}
-          path: docs/cataclysm-1.9
+          path: docs/cataclysm-1-9
           if-no-files-found: warn
           retention-days: 45
           include-hidden-files: true
