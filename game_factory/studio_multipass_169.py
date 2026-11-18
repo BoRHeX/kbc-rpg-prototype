@@ -191,7 +191,7 @@ def result():
         actual_derived=[p for p in derived.glob("*") if p.is_file() and ("archiv" in p.name.lower() or "festival" in p.name.lower() or "glyph" in p.name.lower() or "wild" in p.name.lower())] if derived.exists() else []
         if not actual_derived or not ("art/animated/" in (js_text+html_text) and (any(x in (js_text+html_text).lower() for x in ["archiv","festival","glyph","aura","wildcard"]))):
             flags.append("Illustration integration unverified: no referenced festival or Archivist sprite derivatives found")
-    # Detect claimed but absent new mutator families; browser boot alone cannot imply 1.6 completeness.
+    # Confirm inherited 1.6 mutant families, but source strings are not runtime gameplay proof.
     runtime_text=(idx.read_text(encoding="utf8",errors="replace") if idx.is_file() else "")
     runtime_text+=" ".join(p.read_text(encoding="utf8",errors="replace") for p in GAME.glob("*.js"))
     families=["mimic","bell","pounc","necro","pack","feral"]
@@ -207,9 +207,12 @@ def result():
     if not (STUDIO/"FINAL_REPORT.md").is_file():
         flags.append("Studio final implementation report missing")
     boots=bool(browser.get("both_orientations_passed",False))
-    if not boots:
-        flags.append("Browser launch/nonblank gate did not pass both orientations")
-    if not boots:
+    has_browser_evidence=bool(browser.get("checks")) or bool(browser.get("browser_start_error"))
+    if not has_browser_evidence:
+        flags.append("Browser QA NOT RUN: build cannot be labeled playable or proven broken")
+        status="PARTIAL"
+    elif not boots:
+        flags.append("Recorded browser launch/nonblank check failed; inspect BROWSER_QA.json")
         status="BROKEN"
     elif flags:
         status="PARTIAL"
