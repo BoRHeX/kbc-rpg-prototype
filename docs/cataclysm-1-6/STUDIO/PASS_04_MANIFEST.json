@@ -1,0 +1,25 @@
+{
+  "pass": "04",
+  "version": "1.6",
+  "sourceStatus": "PARTIAL",
+  "browserAcceptance": "BLOCKED",
+  "files": {
+    "index.html": "9d9558151ff56472d6844670d43006bc3243e0d54549e0790b1b63ccb47c6d91",
+    "game.js": "1011543ce7189cc97d8e1779e11395450e29297658781811168f371cc18f7e4b",
+    "game.css": "c6ee75d22ace57bbdecb8234689a201802b56de6e2435240baa36184e8dfd61b",
+    "company.js": "66eaafecdbad4651db599fc386740f52ab848d5806570abbc5cff2332314b1ef",
+    "mutations.js": "3a55a3fcd798567d1da5782e63768bcf3e371089f184299819e203896ddcf84d",
+    "mutation-media.js": "78ff637dc83dbdc7ab967c84fde7744ea6a12ecad0c4c6eb4993422f6d1a7603",
+    "qa/mutation-fixtures.cjs": "0ae2b4f504640c3508dfaa703589cf980f5eb3d6f8e5569edb17d15df7e0acca",
+    "qa/runtime.cjs": "425dbcdb767ae4b33ac130ff9687eb80384e0f0c85cc73b38d624036a7ae35d7",
+    "qa/runtime-results.json": "1b78615ddd4464e130a6b31839517a9929ff78004e575deda78e9c7cff0b7254",
+    "qa/chrome-smoke.cjs": "a4a0ed91f8c1995387656e193fb68f60acc95bdd666d8ca89fd4943922cfb83a",
+    "STUDIO/INTEGRATION_REPORT.md": "260f5d0b86a2824d2e22a9ec89f3db0461b72cc756d3849ecb6316764a98addb",
+    "STUDIO/qa-runtime-pass04.log": "ee1a072db5ff25bf9a94543d4b414a96605b309a79f3ebadec0b78584a7fc31b",
+    "STUDIO/qa-media-pass04.log": "63821a28839ecb0113f3514ac5e33013c33993efd3feeee9cd4acd5814402e8f",
+    "STUDIO/qa-syntax-pass04.log": "83e26842c122409b07559ac7b178274d950f1d21178e210ede59a508f1e9e763",
+    "STUDIO/qa-browser-pass04.log": "afb1fbd63fabf5ed7dd0396a802b84d8dcb2576ae0fa64fcfb661c47334784bc",
+    "STUDIO/qa-chromium-launch-pass04.log": "ecb2608e2318a81b515c1458f19949fd021e4cc31757dff07543c36e1c2e1436",
+    "STUDIO/qa-chrome-retry-pass04.log": "a8a6d8e3b81ff5c61b4e7a9150d2b3751ca82c4826824ba5a0644ec1c3693f70"
+  }
+}

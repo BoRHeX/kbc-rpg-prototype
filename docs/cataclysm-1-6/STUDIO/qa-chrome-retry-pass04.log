@@ -1,0 +1,4 @@
+mkdir: cannot create directory ‘/home/runner/.local’: Read-only file system
+touch: cannot touch '/home/runner/.local/share/applications/mimeapps.list': No such file or directory
+[4:4:1118/084116.047207:FATAL:content/browser/sandbox_host_linux.cc:41] Check failed: . shutdown: Operation not permitted (1)
+timeout: the monitored command dumped core

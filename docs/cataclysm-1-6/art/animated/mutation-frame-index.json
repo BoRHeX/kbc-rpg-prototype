@@ -1,0 +1,632 @@
+{
+  "version": 1,
+  "sourceManifest": "STUDIO/IMAGE_MANIFEST.json",
+  "sourceManifestSha256": "44b964b41973e6681764382d70bcb6b90354809604e6a9a5414cb80b9de4884c",
+  "preparationScriptSha256": "426a2fe86038f1df229ce9bb98660b210c6801e6a7a7002b0dbed13a370aac6e",
+  "coordinates": "Top left origin, x right, y down. Draw relative to pivotPx.",
+  "playback": "One shot, then hold last pose until gameplay changes state. null pose means telegraph VFX only.",
+  "frames": {
+    "mimic-stray.tell": {
+      "path": "art/animated/mutation-mimic-stray-tell.png",
+      "sha256": "61d4607c66760eb194f7b3e6590cbb3c25c4dbfd30ae0f35699eb6b10ff960a7",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        0,
+        90,
+        342,
+        457
+      ],
+      "sizePx": [
+        118,
+        127
+      ],
+      "pivotPx": [
+        64.33,
+        117.33
+      ],
+      "footAnchorPx": [
+        64.33,
+        117.33
+      ]
+    },
+    "bell-ringer.idle": {
+      "path": "art/animated/mutation-bell-ringer-idle.png",
+      "sha256": "2e03c98b8461175d1f1ba1ad58d8c14a7975de0dd3cbe609f5f9231a1367764c",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        342,
+        0,
+        694,
+        504
+      ],
+      "sizePx": [
+        122,
+        172
+      ],
+      "pivotPx": [
+        53.0,
+        162.33
+      ],
+      "footAnchorPx": [
+        53.0,
+        162.33
+      ]
+    },
+    "roof-pouncer.perch": {
+      "path": "art/animated/mutation-roof-pouncer-perch.png",
+      "sha256": "e1f8dcb05ca0ebec9e09cd60369669d31265f9ca627a76ae9e47331c2efcd58f",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        695,
+        35,
+        1024,
+        505
+      ],
+      "sizePx": [
+        114,
+        161
+      ],
+      "pivotPx": [
+        71.0,
+        139.67
+      ],
+      "footAnchorPx": [
+        71.0,
+        139.67
+      ]
+    },
+    "mimic-stray.open": {
+      "path": "art/animated/mutation-mimic-stray-open.png",
+      "sha256": "86d7a352deff7acce38cfe0893648881a16a2b1f0f22a04406601f5cd18633ce",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        0,
+        574,
+        334,
+        988
+      ],
+      "sizePx": [
+        116,
+        142
+      ],
+      "pivotPx": [
+        56.67,
+        117.33
+      ],
+      "footAnchorPx": [
+        56.67,
+        117.33
+      ]
+    },
+    "bell-ringer.swing": {
+      "path": "art/animated/mutation-bell-ringer-swing.png",
+      "sha256": "d9578bd63f0b6ee1250ebafd997ccca1754ace1b130acc9151703687e48d73dc",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        334,
+        510,
+        695,
+        1024
+      ],
+      "sizePx": [
+        125,
+        176
+      ],
+      "pivotPx": [
+        56.0,
+        159.0
+      ],
+      "footAnchorPx": [
+        56.0,
+        159.0
+      ]
+    },
+    "roof-pouncer.airborne": {
+      "path": "art/animated/mutation-roof-pouncer-airborne.png",
+      "sha256": "add409ff25d3b8d63478738995053df8bd70396c5728bafa0213f68ef0d961f3",
+      "source": "art/generated/mutant_pack_atlas.png",
+      "sourceSha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "sourceWindowXYXY": [
+        695,
+        517,
+        1024,
+        1004
+      ],
+      "sizePx": [
+        114,
+        167
+      ],
+      "pivotPx": [
+        72.67,
+        144.0
+      ],
+      "footAnchorPx": [
+        72.67,
+        144.0
+      ]
+    },
+    "necro-groomer.idle": {
+      "path": "art/animated/mutation-necro-groomer-idle.png",
+      "sha256": "424fc15070645d061302abc4be026185c4d2bd5dca7d16abb900ddd7f16a5830",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        0,
+        18,
+        348,
+        511
+      ],
+      "sizePx": [
+        120,
+        169
+      ],
+      "pivotPx": [
+        74.67,
+        159.0
+      ],
+      "footAnchorPx": [
+        74.67,
+        159.0
+      ]
+    },
+    "pack-leader.idle": {
+      "path": "art/animated/mutation-pack-leader-idle.png",
+      "sha256": "0194c7c64f51259c44cfc336e89fbee187b74ae6a97e3c34d22eb439fe85bf7d",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        348,
+        0,
+        689,
+        508
+      ],
+      "sizePx": [
+        118,
+        174
+      ],
+      "pivotPx": [
+        60.33,
+        164.67
+      ],
+      "footAnchorPx": [
+        60.33,
+        164.67
+      ]
+    },
+    "feral-fish-thief.prowl": {
+      "path": "art/animated/mutation-feral-fish-thief-prowl.png",
+      "sha256": "c1aebe30064bb2174d0b539e5aacbd51f8bdf95a334e35a15ba4e3434eba21f0",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        689,
+        125,
+        1024,
+        513
+      ],
+      "sizePx": [
+        116,
+        134
+      ],
+      "pivotPx": [
+        52.33,
+        124.33
+      ],
+      "footAnchorPx": [
+        52.33,
+        124.33
+      ]
+    },
+    "necro-groomer.cast": {
+      "path": "art/animated/mutation-necro-groomer-cast.png",
+      "sha256": "e6abab4b1af49b7410056c3b9fbcc1db436764c5ae1ebc3b354c6fdf284fdab2",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        0,
+        513,
+        345,
+        1024
+      ],
+      "sizePx": [
+        119,
+        175
+      ],
+      "pivotPx": [
+        68.33,
+        134.33
+      ],
+      "footAnchorPx": [
+        68.33,
+        134.33
+      ]
+    },
+    "pack-leader.charge": {
+      "path": "art/animated/mutation-pack-leader-charge.png",
+      "sha256": "d6785f316abb6c1045a3adef5f3ed7e220a7623eeb2bf6229c720d5279585072",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        345,
+        508,
+        693,
+        1024
+      ],
+      "sizePx": [
+        120,
+        176
+      ],
+      "pivotPx": [
+        65.33,
+        162.0
+      ],
+      "footAnchorPx": [
+        65.33,
+        162.0
+      ]
+    },
+    "feral-fish-thief.dash": {
+      "path": "art/animated/mutation-feral-fish-thief-dash.png",
+      "sha256": "2e8a62f8322d57a89bc147e673ba8a2c41c115d90e9e105306e1daed0eab3d0d",
+      "source": "art/generated/mutant_necromancy_atlas.png",
+      "sourceSha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "sourceWindowXYXY": [
+        693,
+        541,
+        1024,
+        1024
+      ],
+      "sizePx": [
+        115,
+        165
+      ],
+      "pivotPx": [
+        83.67,
+        124.0
+      ],
+      "footAnchorPx": [
+        83.67,
+        124.0
+      ]
+    },
+    "mourning-bell-sovereign.armored": {
+      "path": "art/animated/mutation-mourning-bell-sovereign-armored.png",
+      "sha256": "bb356e8adc72ed98bd9ebf360449a087d1d625c859db69225b1941186dd335ec",
+      "source": "art/generated/evolved_night_boss_atlas.png",
+      "sourceSha256": "b436bd9c3e8fd0f3593d6ecb501dae73ee65d1c811beae6e44dc344776e0f386",
+      "sourceWindowXYXY": [
+        0,
+        0,
+        514,
+        512
+      ],
+      "sizePx": [
+        176,
+        175
+      ],
+      "pivotPx": [
+        129.33,
+        162.67
+      ],
+      "footAnchorPx": [
+        129.33,
+        162.67
+      ]
+    },
+    "mourning-bell-sovereign.shattered": {
+      "path": "art/animated/mutation-mourning-bell-sovereign-shattered.png",
+      "sha256": "c6dd2f9ce838c76dcd7b7132baa8d20883cb722719f8e89a037e99cdbaa1dd61",
+      "source": "art/generated/evolved_night_boss_atlas.png",
+      "sourceSha256": "b436bd9c3e8fd0f3593d6ecb501dae73ee65d1c811beae6e44dc344776e0f386",
+      "sourceWindowXYXY": [
+        514,
+        0,
+        1024,
+        516
+      ],
+      "sizePx": [
+        174,
+        176
+      ],
+      "pivotPx": [
+        127.33,
+        167.67
+      ],
+      "footAnchorPx": [
+        127.33,
+        167.67
+      ]
+    },
+    "patchwork-broodmother.stitched": {
+      "path": "art/animated/mutation-patchwork-broodmother-stitched.png",
+      "sha256": "bee46f49c1917bb68547e1407dbb8ae346329fd6af2a2ce81ed34bda69732431",
+      "source": "art/generated/evolved_night_boss_atlas.png",
+      "sourceSha256": "b436bd9c3e8fd0f3593d6ecb501dae73ee65d1c811beae6e44dc344776e0f386",
+      "sourceWindowXYXY": [
+        0,
+        514,
+        510,
+        1024
+      ],
+      "sizePx": [
+        174,
+        174
+      ],
+      "pivotPx": [
+        127.67,
+        156.67
+      ],
+      "footAnchorPx": [
+        127.67,
+        156.67
+      ]
+    },
+    "patchwork-broodmother.reformed": {
+      "path": "art/animated/mutation-patchwork-broodmother-reformed.png",
+      "sha256": "d6a3d74a1e2cd390338cffeeef649e8d4296fb778277b8769047192abf1e6e37",
+      "source": "art/generated/evolved_night_boss_atlas.png",
+      "sourceSha256": "b436bd9c3e8fd0f3593d6ecb501dae73ee65d1c811beae6e44dc344776e0f386",
+      "sourceWindowXYXY": [
+        510,
+        516,
+        1024,
+        1024
+      ],
+      "sizePx": [
+        176,
+        174
+      ],
+      "pivotPx": [
+        130.33,
+        157.0
+      ],
+      "footAnchorPx": [
+        130.33,
+        157.0
+      ]
+    }
+  },
+  "actors": {
+    "mimic-stray": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "disguise": [
+          {
+            "frame": "inherit:ordinary-fish-pickup",
+            "durationMs": null
+          }
+        ],
+        "reveal": [
+          {
+            "frame": "mimic-stray.tell",
+            "durationMs": 620
+          },
+          {
+            "frame": "mimic-stray.open",
+            "durationMs": 330
+          }
+        ],
+        "lunge": [
+          {
+            "frame": "mimic-stray.open",
+            "durationMs": 260
+          }
+        ]
+      }
+    },
+    "bell-ringer": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "idle": [
+          {
+            "frame": "bell-ringer.idle",
+            "durationMs": null
+          }
+        ],
+        "countdown": [
+          {
+            "frame": "bell-ringer.idle",
+            "durationMs": 750
+          },
+          {
+            "frame": "bell-ringer.swing",
+            "durationMs": 550
+          }
+        ],
+        "strike": [
+          {
+            "frame": "bell-ringer.swing",
+            "durationMs": 280
+          }
+        ],
+        "interrupted": [
+          {
+            "frame": "bell-ringer.idle",
+            "durationMs": 300
+          }
+        ]
+      }
+    },
+    "roof-pouncer": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "perch": [
+          {
+            "frame": "roof-pouncer.perch",
+            "durationMs": null
+          }
+        ],
+        "landing-warning": [
+          {
+            "frame": null,
+            "durationMs": 900
+          }
+        ],
+        "leap": [
+          {
+            "frame": "roof-pouncer.airborne",
+            "durationMs": 320
+          }
+        ],
+        "land": [
+          {
+            "frame": "roof-pouncer.airborne",
+            "durationMs": 400
+          }
+        ]
+      }
+    },
+    "necro-groomer": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "idle": [
+          {
+            "frame": "necro-groomer.idle",
+            "durationMs": null
+          }
+        ],
+        "ritual": [
+          {
+            "frame": "necro-groomer.idle",
+            "durationMs": 400
+          },
+          {
+            "frame": "necro-groomer.cast",
+            "durationMs": 800
+          }
+        ],
+        "reanimate": [
+          {
+            "frame": "necro-groomer.cast",
+            "durationMs": 380
+          }
+        ],
+        "interrupted": [
+          {
+            "frame": "necro-groomer.idle",
+            "durationMs": 300
+          }
+        ]
+      }
+    },
+    "pack-leader": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "idle": [
+          {
+            "frame": "pack-leader.idle",
+            "durationMs": null
+          }
+        ],
+        "rally": [
+          {
+            "frame": "pack-leader.idle",
+            "durationMs": 520
+          },
+          {
+            "frame": "pack-leader.charge",
+            "durationMs": 180
+          }
+        ],
+        "charge": [
+          {
+            "frame": "pack-leader.charge",
+            "durationMs": 420
+          }
+        ],
+        "dispersal": [
+          {
+            "frame": "pack-leader.idle",
+            "durationMs": 260
+          }
+        ]
+      }
+    },
+    "feral-fish-thief": {
+      "worldUnitsPerSpritePixel": 0.44,
+      "states": {
+        "prowl": [
+          {
+            "frame": "feral-fish-thief.prowl",
+            "durationMs": null
+          }
+        ],
+        "snatch": [
+          {
+            "frame": "feral-fish-thief.prowl",
+            "durationMs": 160
+          },
+          {
+            "frame": "feral-fish-thief.dash",
+            "durationMs": 220
+          }
+        ],
+        "escape": [
+          {
+            "frame": "feral-fish-thief.dash",
+            "durationMs": null
+          }
+        ]
+      }
+    },
+    "mourning-bell-sovereign": {
+      "worldUnitsPerSpritePixel": 0.53,
+      "states": {
+        "phase-one": [
+          {
+            "frame": "mourning-bell-sovereign.armored",
+            "durationMs": null
+          }
+        ],
+        "transition": [
+          {
+            "frame": "mourning-bell-sovereign.armored",
+            "durationMs": 600
+          },
+          {
+            "frame": "mourning-bell-sovereign.shattered",
+            "durationMs": 600
+          }
+        ],
+        "phase-two": [
+          {
+            "frame": "mourning-bell-sovereign.shattered",
+            "durationMs": null
+          }
+        ]
+      }
+    },
+    "patchwork-broodmother": {
+      "worldUnitsPerSpritePixel": 0.53,
+      "states": {
+        "phase-one": [
+          {
+            "frame": "patchwork-broodmother.stitched",
+            "durationMs": null
+          }
+        ],
+        "transition": [
+          {
+            "frame": "patchwork-broodmother.stitched",
+            "durationMs": 500
+          },
+          {
+            "frame": "patchwork-broodmother.reformed",
+            "durationMs": 700
+          }
+        ],
+        "phase-two": [
+          {
+            "frame": "patchwork-broodmother.reformed",
+            "durationMs": null
+          }
+        ]
+      }
+    }
+  }
+}

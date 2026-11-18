@@ -1,0 +1,114 @@
+{
+  "producer": "OpenAI Images API (real binary output)",
+  "model": "gpt-image-2.5-flare",
+  "requested_max_images": 3,
+  "made_at_utc": "2026-11-18T08:31:24.409743+00:00",
+  "images": [
+    {
+      "name": "mutant_pack_atlas",
+      "background": "transparent",
+      "prompt": "EXCEPTIONALLY BEAUTIFUL ORIGINAL painterly mobile 2D game character sprite atlas on fully TRANSPARENT background. Three uniquely DIFFERENT undead FELINE enemy characters for dark whimsical Cataclysm roguelite: MIMIC STRAY disguises as fish/magnet treasure with grotesque reveal, BELL-RINGER hulking haunted cat carrying huge bronze bell and flickering runes, ROOF POUNCER agile bat-eared spring-limbed roof stalker preparing to leap. All characters clearly separated in an orderly 3-column by 2-row layout: each type has base and aggressive pose. Full body not cropped, strong independent silhouettes, clean alpha, finely illustrated brushwork and glowing neon cyan-purple-gold accents matching prior illustrated top-down urban game, readable downscaled to 64 pixels. These are genuine drawable 2D sprites, not geometric shapes. No text, no captions, no borders, no background, no watermark.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/mutant_pack_atlas.png",
+      "bytes": 1860679,
+      "sha256": "691ae4bacc9629b6d1ab0acb3c4fe7a2bbfe970b983784c7283d5fe90380e3f5",
+      "usage": {
+        "input_tokens": 195,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 195
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 634
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "mutant_necromancy_atlas",
+      "background": "transparent",
+      "prompt": "ORIGINAL hand-PAINTED darkly charming 2D top-down angled mobile roguelite transparent sprite atlas, three entirely different undead CAT enemy forms, six distinct full-body poses separated in clean 3-by-2 grid. NECRO-GROOMER an eerie crooked feline mortician with an animated grooming brush and green corpse spores, PACK LEADER a majestic scarred feral black cat with collar of glowing pack runes calling a coordinated charge, FERAL FISH THIEF a scrappy hunched starving zombie cat with bulging cheeks stealing gold fish. Top row idle/readable identities, bottom row obvious ability poses (reanimate, lead charge, grab-and-run fish). Strong unique silhouette and personality, atmospheric illustrated detailed texture, richly expressive nonrepeating art, coherent with surreal neon-luminous cat zombie city world. Fully transparent alpha background. No words, UI, watermarks, frame lines or comic panels.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/mutant_necromancy_atlas.png",
+      "bytes": 2090218,
+      "sha256": "c9d0345ad53b56aec1bb8c6bc0e9e1745f0e13457e3080efcc1cf0632bacd531",
+      "usage": {
+        "input_tokens": 191,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 191
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 630
+      },
+      "status": "GENERATED"
+    },
+    {
+      "name": "evolved_night_boss_atlas",
+      "background": "transparent",
+      "prompt": "High quality originally illustrated 2D game BOSS SPRITE atlas on TRANSPARENT canvas for Cataclysm: two unique horrifying yet charming late-night mutant zombie cat bosses with visually legible EVOLUTION phases. A MOURNING BELL SOVEREIGN, huge haunted bell-armored undead feline, its shell splitting into glowing runes, and a PATCHWORK BROODMOTHER, grotesque elegant stitched feline queen that reforms fallen zombie cats into a second body. Composition 2x2 separated evenly: phase-one and distinctive terrifying phase-two for each boss. Highly detailed painterly cartoon art with clean silhouette visible on 64px Android phone, cyan toxic green, indigo night and warm antique brass accents, full figures with transparent margins, genuine authored brushwork, 2D isometric/top-down style. No labels, panels, text, watermarks or background.",
+      "model": "gpt-image-2.5-flare",
+      "kind": "generated-original-illustration",
+      "mode": "RGBA",
+      "size": [
+        1024,
+        1024
+      ],
+      "has_alpha_channel": true,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "path": "art/generated/evolved_night_boss_atlas.png",
+      "bytes": 2017961,
+      "sha256": "b436bd9c3e8fd0f3593d6ecb501dae73ee65d1c811beae6e44dc344776e0f386",
+      "usage": {
+        "input_tokens": 180,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 180
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 619
+      },
+      "status": "GENERATED"
+    }
+  ],
+  "errors": [],
+  "status": "GENERATED",
+  "illustrated_asset_evidence": "Generated base64 PNG, validated PNG dimensions, file hash and alpha coverage; not procedural canvas shapes.",
+  "number_generated": 3
+}
