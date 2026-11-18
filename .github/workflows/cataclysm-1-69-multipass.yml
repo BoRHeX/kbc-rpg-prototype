@@ -775,7 +775,9 @@ jobs:
           git config user.name "BoRHeZ Games Studio"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           branch="studio/cataclysm-169-candidate-$GITHUB_RUN_ID"
-          git switch -c "$branch"
+          gh auth setup-git
+          git fetch origin main
+          git switch -c "$branch" origin/main
           git add docs/cataclysm-1-69 docs/cataclysm-1-69-candidate
           git -c core.whitespace=-trailing-space diff --cached --check
           git diff --cached --quiet && { echo "::error::No candidate files"; exit 1; }
