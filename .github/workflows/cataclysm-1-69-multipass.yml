@@ -63,7 +63,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -202,7 +202,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -286,7 +286,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -375,7 +375,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -473,7 +473,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -571,7 +571,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
@@ -669,7 +669,7 @@ jobs:
             echo '## STANDING STUDIO MULTI-PASS POLICY'
             cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
             echo '## Actual predecessor implementation evidence'
-            cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md
+            if test -s docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; then cat docs/cataclysm-1-6/STUDIO/FINAL_REPORT.md; else cat docs/cataclysm-1-6/STUDIO/INTEGRATION_REPORT.md; cat docs/cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json; fi
             echo '## Prior pass traces and asset records'
             if test -f docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1-69/STUDIO/PASS_LEDGER.json; fi
             if test -f docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1-69/STUDIO/IMAGE_MANIFEST.json; fi
