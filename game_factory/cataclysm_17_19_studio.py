@@ -54,8 +54,9 @@ def setup(version):
  previous=VERSIONS[version][0]
  source=game(previous)
  target=game(version)
- if not (source/"game.js").is_file():raise RuntimeError(f"Missing actual predecessor {source}; refusing a blank game")
  if not (target/"game.js").is_file():
+  if not (source/"game.js").is_file():
+   raise RuntimeError(f"Missing both archived target and actual predecessor {source}; refusing a blank game")
   if target.exists(): shutil.rmtree(target)
   shutil.copytree(source,target)
   shutil.rmtree(target/"STUDIO",ignore_errors=True)
