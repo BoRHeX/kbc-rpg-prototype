@@ -191,6 +191,13 @@ def result():
         actual_derived=[p for p in derived.glob("*") if p.is_file() and ("mutant" in p.name.lower() or "mimic" in p.name.lower() or "pouncer" in p.name.lower() or "boss" in p.name.lower())] if derived.exists() else []
         if not actual_derived or not ("art/animated/" in (js_text+html_text) and (any(x in (js_text+html_text).lower() for x in ["mutant","mimic","pouncer","necro","packleader","boss"]))):
             flags.append("Illustration integration unverified: no referenced mutant sprite derivatives found")
+    # Detect claimed but absent new mutator families; browser boot alone cannot imply 1.6 completeness.
+    runtime_text=(idx.read_text(encoding="utf8",errors="replace") if idx.is_file() else "")
+    runtime_text+=" ".join(p.read_text(encoding="utf8",errors="replace") for p in GAME.glob("*.js"))
+    families=["mimic","bell","pounc","necro","pack","feral"]
+    missing=[name for name in families if name not in runtime_text.lower()]
+    if missing:
+        flags.append("Missing mutant-family runtime references: "+", ".join(missing))
     if not (STUDIO/"FINAL_REPORT.md").is_file():
         flags.append("Studio final implementation report missing")
     boots=bool(browser.get("both_orientations_passed",False))
@@ -225,11 +232,11 @@ def candidate_page():
     <style>body{{margin:auto;padding:2rem 1rem;max-width:45rem;background:#071821;color:#e7f2ee;font:16px/1.65 system-ui}}
     a{{color:#73d9cc}}.pill{{border:1px solid #debd78;border-radius:20px;padding:4px 12px;display:inline-block}}
     section{{padding:1rem;background:#0e2730;border:1px solid #234e55;border-radius:12px}}</style>
-    <h1>CATACLYSM 1.5 · MUTATIONS AFTER MIDNIGHT</h1>
+    <h1>CATACLYSM 1.6 · MUTATIONS AFTER MIDNIGHT</h1>
     <p class="pill">EXPERIMENTAL — {status}</p><p>This is the evolving single Cataclysm game.
     Failed tests do not delete the build. This candidate has not replaced the previous 1.5 build.</p>
     <p><a href="../cataclysm-1-6/">Open the actual 1.6 candidate game</a></p>
-    <p><a href="../cataclysm-1-5/">Play previous 1.5 candidate</a></p><p><a href="../cataclysm-1-3/">Earlier 1.4 rollback</a></p>
+    <p><a href="../cataclysm-1-5/">Play previous 1.5 candidate</a></p><p><a href="../cataclysm-1-4/">Earlier 1.4 candidate</a></p><p><a href="../cataclysm-1-3/">1.3 older release</a></p>
     <section><h2>Known limitations</h2><ul>{issues}</ul></section>
     <p><a href="../cataclysm-1-6/STUDIO/FINAL_REPORT.md">Development report</a> ·
     <a href="../cataclysm-1-6/STUDIO/CANDIDATE_STATUS.json">Machine-readable QA status</a> ·
