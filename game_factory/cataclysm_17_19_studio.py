@@ -39,7 +39,8 @@ ART_TASKS={
 
 def now(): return dt.datetime.now(dt.timezone.utc).isoformat()
 def game(version):
- if version not in VERSIONS: raise ValueError("Expected 1.7 / 1.8 / 1.9")
+ if version not in set(VERSIONS) | {"1.69"}:
+  raise ValueError("Expected 1.69 / 1.7 / 1.8 / 1.9")
  return ROOT/"docs"/("cataclysm-"+version)
 def studio(version):return game(version)/"STUDIO"
 def save_json(path,x):
