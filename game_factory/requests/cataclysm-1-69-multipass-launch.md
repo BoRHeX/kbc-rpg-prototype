@@ -15,3 +15,6 @@ Up to three additional agent-requested repair passes only with test evidence.
 **Nonblocking candidate publication:** preserve source/art/logs after EVERY pass, attempt real GitHub Pages release of docs/cataclysm-1-69/ and labeled dashboard docs/cataclysm-1-69-candidate/ even if partially working, and never silently overwrite 1.6 or call unverified browser behavior proven broken. No requirement to approve every minor agent fix. Do not begin 1.7, 1.8 or 2.0.
 
 1.69 is a deliberately bounded experiment exploring the studio workflow's creative potential. Honest implementation evidence is more important than making premature claims about completion.
+
+## Restart after missing predecessor final report — SAME 1.69 milestone
+Initial run https://github.com/BoRHeX/kbc-rpg-prototype/actions/runs/44336711610 lost the concept pass because 1.6's `STUDIO/FINAL_REPORT.md` does not exist (1.6 final QA never executed). The actual `STUDIO/INTEGRATION_REPORT.md` and `CANDIDATE_STATUS.json` are present. The 1.69 workflow is now corrected: every specialist reads those existing sources as fallback and does not fail when a predecessor lacks the optional final QA artifact. This corrected run restarts only the same approved 1.69 experiment. Do not start 1.7, do not overwrite 1.6, preserve all pass outputs.
