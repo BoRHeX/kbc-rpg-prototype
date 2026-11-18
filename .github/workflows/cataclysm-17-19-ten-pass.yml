@@ -1,0 +1,999 @@
+name: Cataclysm 1.7–1.9 — ONE 10-pass autonomous studio run
+run-name: CATACLYSM · 10 passes · Long Night → Distilled Advancement → Polish & Gating
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-17-19-ten-pass-launch.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-17-19-ten-pass
+  cancel-in-progress: false
+jobs:
+  p01:
+    name: Pass 01/10 · Cataclysm 1.7 · Long Night producer, campaign system architect, save-state designer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.7
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 01 of 10; version 1.7
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: This is Pass 01 of TEN, version 1.7 THE LONG NIGHT. Act as Producer + campaign/save architect. Inspect the actual inherited Cataclysm 1.69 game.js, campaign.js and company.js BEFORE designing. Deliver STUDIO/CONCEPT.md, STUDIO/SAVE_SCHEMA.json and STUDIO/PRODUCTION_PLAN.md with an implementable 1000-night, ten-distinct-chapter plan, timed 3-hour target, serialization/restore contract, RNG and version migration, phone background safety, side effects, boss state and exact acceptance fixtures. Implement a small modular foundation only if needed. No fake full campaign. Design Endless to unlock ONLY after Night1000. The previous Night100 completion logic must not end campaign early. Preserve city/mutants/fishing/festival and all other inherited systems. Your design is handed to an independent actual engineering pass. Real files only, no future-person promises.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 01 1.7 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p01-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p02:
+    name: Pass 02/10 · Cataclysm 1.7 · Long Night gameplay and save-resume engineer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p01
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 01
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p01-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.7
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 02 of 10; version 1.7
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 02 implements CATACLYSM 1.7 THE LONG NIGHT, not a separate game or a mere roadmap. Use Pass01 real save schema and inherited game. Add actual ten-chapter Night1-1000 gameplay, chapter transition content and distinct boss arc, real checkpoint at every chapter and on safe backgrounding, resume and new run controls, serializing every active gameplay subsystem including RNG, lives, fish, fishing, equipment, 16 cats/fusion, seeded city and mutants, current event and pending waves, versioned migration and corruption recovery. Add actual repeatable accelerated fixtures that can run without waiting 3 hours, and only unlock Endless after real completed 1000-night campaign. Address 13s/night pacing vs ~3h target and resource caps. Do not add new combat action buttons or lose old controls. Modify source in docs/cataclysm-1-7, write STUDIO/IMPLEMENTATION_REPORT.md with exact delivered/deferred features and how to test. Source code must visibly change and remain one game.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 02 1.7 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p02-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p03:
+    name: Pass 03/10 · Cataclysm 1.7 · Chapter art director, animator and music producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p02
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 02
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p02-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.7
+          mkdir -p artifacts/cataclysm-three
+      - name: Install image toolkit for actual raster production
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Produce authentic original image API PNGs with provenance
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BORHEZ_IMAGE_MODEL: gpt-image-2.5-flare
+        run: python game_factory/cataclysm_17_19_studio.py art 1.7
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 03 of 10; version 1.7
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 03 creates and INTEGRATES chapter visuals/music for 1.7. Three original PNG atlases have been generated by the real image API just before you; inspect STUDIO/IMAGE_MANIFEST.json, art/generated and exact files. Do not claim missing images exist. Cut sprite-compatible ORIGINAL raster sections and chapter emblems into art/animated and define frame manifest, make original WAV ambient chapter score/stingers in audio/generated. Integrate them into game.js/chapters with genuine drawImage and triggered playback, plus mobile chapter title/readability/transition HUD. Keep previous 1.69 drawn assets. Improve and repair incomplete 1.7 mechanics from Pass02 as needed, preserving cumulative gameplay. Written delivery STUDIO/ANIMATION_AUDIO_REPORT.md with actual file hashes, source integration evidence, art blocking if applicable. Code-drawn effects okay for light and VFX, not as substitute for original illustrations.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 03 1.7 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p03-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p04:
+    name: Pass 04/10 · Cataclysm 1.7 · Long Night integration QA and runtime repair
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p03
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 03
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p03-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.7
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 04 of 10; version 1.7
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 04 is 1.7 INDEPENDENT QA + REPAIR and frozen candidate stage. Inspect actual 1.7 source; test whether it really has 1000 nights, ten meaningful chapters, checkpoint restore for player/fish/squad/fusion/city/boss, version migration/corruption and safe backgrounding; Endless MUST stay locked until full campaign win. Write actual deterministic tests and run them (do not claim a 3-hour physical test if not done). Fix critical runtime defects. Check inherited Mecha, Festival, mutants and fishing survive. Improve gameplay/graphics/audio where easily justified. Write STUDIO/FINAL_REPORT.md with source and test citations, missing behaviors and limitations; do not confuse tests with actual Samsung. 1.7 is frozen after this stage and handed off as basis of 1.8. Never overwrite past releases.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.7/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.7/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.7/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Install dependable browser test runner
+        continue-on-error: true
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Start staged candidate http server
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-three-browser.log 2>&1 &
+      - name: Record ACTUAL Chrome canvas/touch acceptance for both orientations
+        continue-on-error: true
+        run: node game_factory/cataclysm_17_19_browser.mjs 1.7
+      - name: Label candidate based on evidence, never assume success
+        if: ${{ always() }}
+        run: python game_factory/cataclysm_17_19_studio.py candidate 1.7
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 04 1.7 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p04-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p05:
+    name: Pass 05/10 · Cataclysm 1.8 · Distilled Advancement art director and fusion concept producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p04
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 04
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p04-${{ github.run_id }}
+          path: docs/cataclysm-1.7
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.8
+          mkdir -p artifacts/cataclysm-three
+      - name: Install image toolkit for actual raster production
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Produce authentic original image API PNGs with provenance
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BORHEZ_IMAGE_MODEL: gpt-image-2.5-flare
+        run: python game_factory/cataclysm_17_19_studio.py art 1.8
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 05 of 10; version 1.8
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 05 starts new 1.8 DISTILLED ADVANCEMENT from the real Pass04 1.7 source. Act as art director + fusion designer. Real Images API just generated up to 3 original transparent/opaque atlas PNGs for fused companion teams, weather and mood missions: verify actual file/manifest. Cut actual animation frames and create audio/generated original weather/fusion WAV cues and STUDIO/ANIMATION_AUDIO_REPORT.md. Write STUDIO/CONCEPT.md and STUDIO/ASSET_PLAN.json for two or three useful new Level3 pair fusions (Angler+Trapper, Scout+Sniper, possible Bard+Stormcaller), 4-slot 2-to-1 accounting, mood and weather state effects, side missions, 1.7 save schema compatibility, illustrated mobile HUD. Do NOT call any fusion other than Engineer+Shooter implemented until integration pass proves it. Some runtime hooks can be prepared, but Pass06 implements real gameplay. No duplicate cat identities or XP and food cheats.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 05 1.8 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p05-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p06:
+    name: Pass 06/10 · Cataclysm 1.8 · Distilled Advancement fusion, AI and weather engineer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p05
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 05
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p05-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.8
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 06 of 10; version 1.8
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 06 integrates actual CATACLYSM 1.8 DISTILLED ADVANCEMENT into inherited 1.7 campaign. Implement **at least two** mechanically unique fusion recipes besides Mecha: Angler+Trapper (net/catch trap rig) and Scout+Sniper (long-range mark synergy), both require two actual Level-3 compatible cats, merge into ONE of 4 slots, distinct abilities, visible real drawn assets and cooldown; optional Bard+Stormcaller if budget permits. Add dynamic bounded seeded weather rain/fog/storm that ACTUALLY changes enemy behavior/visibility, at least two small seeded optional side missions with meaningful rewards, companion moods and reaction dialogue/audio/visuals. Keep movement-only combat. Integrate real original Pass05 PNG frames and WAVs into runtime; not just source atlases or particle overlays. Extend 1.7 save/resume schema for fusions/weather/mood/missions with safe migration; never break 1000-night chapters or player fish. Write STUDIO/IMPLEMENTATION_REPORT.md and actual QA fixtures. Never change prior version source.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 06 1.8 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p06-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p07:
+    name: Pass 07/10 · Cataclysm 1.8 · Distilled Advancement game QA and mobile integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p06
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 06
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p06-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.8
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 07 of 10; version 1.8
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 07 is independent CATACLYSM 1.8 QA, balance correction and freeze. Confirm two Level-3 pair fusions are actual useable one-slot mechanics, don't duplicate old cats/fish, correct 4-slot limits and restart/revive. Check weather visibly changes AI and gameplay and is safe/readable at phone scale; side missions trigger, grant rewards once, original art is really drawn. Test schema migration and checkpoint resume across 1.7→1.8, 1000-night campaign and Endless gating, 1.69 festival, 1.6 mutants and 1.5 fishing. Fix actual failures. Write STUDIO/FINAL_REPORT.md with precise code/test/art evidence and missing work, not invented proof. Freeze 1.8 exactly here for 1.9.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.8/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.8/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.8/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Install dependable browser test runner
+        continue-on-error: true
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Start staged candidate http server
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-three-browser.log 2>&1 &
+      - name: Record ACTUAL Chrome canvas/touch acceptance for both orientations
+        continue-on-error: true
+        run: node game_factory/cataclysm_17_19_browser.mjs 1.8
+      - name: Label candidate based on evidence, never assume success
+        if: ${{ always() }}
+        run: python game_factory/cataclysm_17_19_studio.py candidate 1.8
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 07 1.8 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p07-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p08:
+    name: Pass 08/10 · Cataclysm 1.9 · Polish & Gating art/UI/world design producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p07
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 07
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p07-${{ github.run_id }}
+          path: docs/cataclysm-1.8
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.9
+          mkdir -p artifacts/cataclysm-three
+      - name: Install image toolkit for actual raster production
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Produce authentic original image API PNGs with provenance
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BORHEZ_IMAGE_MODEL: gpt-image-2.5-flare
+        run: python game_factory/cataclysm_17_19_studio.py art 1.9
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 08 of 10; version 1.9
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 08 creates 1.9 POLISH & GATING concepts, REAL original art and integration-ready UI assets from the genuine 1.8 version. The Art API generated up to three original PNG sheets; inspect files and manifests. Produce scaled menu cover, portraits/codex and pre-catacomb Threshold Trial arena art and real original short WAV UI and battle cue assets; preserve image provenance and animation frame indices. Design in STUDIO/CONCEPT.md and STUDIO/ASSET_PLAN.json a unified title menu, discovered WORLD MAP only outside combat, 16+ companion/fusion gallery, enemy/boss bestiary, fish/bait/jackpot histories, save/resume, mobile tutorials and responsive HUD. Most importantly design a **playable Threshold Trial** encounter testing fusion, weather and mutant counterplay as 1.9 defining gameplay; keep 2.0 Sphinx underground finale and hand weapons reserved. Do NOT build a menu-only mockup; Pass09 must integrate.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 08 1.9 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p08-${{ github.run_id }}
+          path: docs/cataclysm-1.9
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p09:
+    name: Pass 09/10 · Cataclysm 1.9 · Polish & Gating runtime integration and Threshold Trial engineer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p08
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 08
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p08-${{ github.run_id }}
+          path: docs/cataclysm-1.9
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.9
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 09 of 10; version 1.9
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 09 implements actual CATACLYSM 1.9 POLISH & GATING on top of 1.8. Integrate real painted art/menu/codex/gallery and audio from Pass08, make menu functional, remove confusing/dead controls, accessible pause settings, world map only off-combat, visual guide to CURRENTLY WORKING fusions, collecting rare fish/jackpot and enemy bestiary; history/save state should persist safely across campaign. Build the playable seeded **Threshold Trial** pre-catacomb gauntlet with distinct encounter logic, reward, illustrated environment and atmospheric combat/sound: a tangible game feature, not only gloss. Improve AI pathing/spawn collision and late game challenge without cheap 10x HP multipliers. Keep ten chapters and save/resume from 1.7, weather/fusions from 1.8, four active slots, Mecha, optional fishing, festival, six mutants, nine lives, movement-only auto-fire. Do NOT implement 2.0's two hand weapons or Sphinx. Write STUDIO/IMPLEMENTATION_REPORT.md and source-linked tests.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 09 1.9 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p09-${{ github.run_id }}
+          path: docs/cataclysm-1.9
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  p10:
+    name: Pass 10/10 · Cataclysm 1.9 · Multi-version independent QA, preservation and studio signoff
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    needs: p09
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore archived source output of Pass 09
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: cataclysm-triple-p09-${{ github.run_id }}
+          path: docs/cataclysm-1.9
+      - name: Restore inherited product and verify studio scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          node --check game_factory/cataclysm_17_19_browser.mjs
+          python game_factory/cataclysm_17_19_studio.py setup 1.9
+          mkdir -p artifacts/cataclysm-three
+      - name: Build grounded department work order
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > artifacts/cataclysm-three/DEPARTMENT.md <<'BORHEZ_DEPARTMENT'
+          # BoRHeZ Games Studio — ten-pass coordinated run; pass 10 of 10; version 1.9
+          You are one independently invoked coding/creative studio role working on ONE continuous Cataclysm video game.
+          Your exact task: Pass 10 is final independent GAME-WIDE QA, actual repair and evidence for CATACLYSM 1.9. This single 10-pass owner order must yield honest **three distinct cumulative candidate snapshots** (1.7,1.8,1.9) and preserve prior history. Fix actual critical gameplay/JS/asset issues, not only markdown. Run deterministic test fixtures of real 1000-night chapter/checkpoint/Endless, 1.8 fusion/weather/mission save migration, 1.9 Threshold Trial and codex, plus inherited city, 1.69 festival, 1.6 mutants, 1.5 fish, 1.3 Mecha and nine lives. Run only tests that actually execute, log exact commands and results; no fake Samsung acceptance. Audit spawn wall physics, 2D sprite references, WAV audio memory and 2.0 open blockers (new double hand weapons, underground, Sphinx). Produce STUDIO/FINAL_REPORT.md, STUDIO/2_0_BLOCKERS.md with concrete evidence. The publication job will archive source and label 1.9 PARTIAL/PLAYABLE/BROKEN/UNVERIFIED based on independent Chrome evidence. No automatic 2.0 production.
+          Do not ask the creator for small approvals; make source-grounded decisions and leave testable artifacts.
+          Only modify files inside the CURRENT version directory (docs/cataclysm-1.9/). Never edit or erase previous versions.
+          No fictional art or QA: only claim raster PNGs, WAVs, game mechanics and browser tests when actual files/source/evidence exists.
+          Read the approved and creator-authorized ten-pass order, relevant roadmap and current real runtime first.
+          Keep it playable when practical, but a broken experimental pass must still be preserved and reported.
+          BORHEZ_DEPARTMENT
+          {
+            echo '## Owner-authorized whole run'
+            cat game_factory/CATACLYSM_17_19_TEN_PASS_ORDER.md
+            echo '## Original approved long roadmap'
+            cat game_factory/CATACLYSM_1_1_TO_2_0_ROADMAP.md
+            echo '## Studio candidate and failure-preservation policy'
+            cat game_factory/STUDIO_MULTIPASS_PRODUCTION_POLICY.md
+            echo '## Actual available original generated art'
+            if test -f docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; then cat docs/cataclysm-1.9/STUDIO/IMAGE_MANIFEST.json; fi
+            echo '## Real preceding work / handoff'
+            if test -f docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; then cat docs/cataclysm-1.9/STUDIO/PASS_LEDGER.json; fi
+          } >> artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Independent AI studio specialist performs REAL source/art integration
+        id: develop
+        uses: openai/codex-action@v1
+        continue-on-error: true
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          allow-bots: true
+          prompt-file: artifacts/cataclysm-three/DEPARTMENT.md
+      - name: Install dependable browser test runner
+        continue-on-error: true
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          google-chrome --version
+      - name: Start staged candidate http server
+        run: nohup python -m http.server 8765 --directory docs > /tmp/cataclysm-three-browser.log 2>&1 &
+      - name: Record ACTUAL Chrome canvas/touch acceptance for both orientations
+        continue-on-error: true
+        run: node game_factory/cataclysm_17_19_browser.mjs 1.9
+      - name: Label candidate based on evidence, never assume success
+        if: ${{ always() }}
+        run: python game_factory/cataclysm_17_19_studio.py candidate 1.9
+      - name: Record real outcome without throwing away completed work
+        if: ${{ always() }}
+        run: |
+          python game_factory/cataclysm_17_19_studio.py record 10 1.9 ${{ steps.develop.outcome }}
+      - name: Archive entire active game and original media after this pass
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-triple-p10-${{ github.run_id }}
+          path: docs/cataclysm-1.9
+          if-no-files-found: warn
+          retention-days: 45
+          include-hidden-files: true
+  publish-three-candidates:
+    name: Publisher · recover 1.7 1.8 1.9 and label three candidates
+    needs: [p04, p07, p10]
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore all THREE final version source snapshots, not demos
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for spec in '1.7:04 03 02 01' '1.8:07 06 05' '1.9:10 09 08'; do
+            version="${spec%%:*}"
+            passes="${spec#*:}"
+            target="docs/cataclysm-$version"
+            mkdir -p "$target"
+            found=no
+            for id in $passes; do
+              if gh run download "$GITHUB_RUN_ID" -n "cataclysm-triple-p$id-$GITHUB_RUN_ID" -D "$target" 2>/dev/null; then
+                found=yes
+                echo "Recovered $version from pass $id" >> "$GITHUB_STEP_SUMMARY"
+                break
+              fi
+            done
+            if [ "$found" = no ] || [ ! -s "$target/game.js" ]; then
+              echo "::warning::No saved source for $version; preserving predecessor as unverified fallback"
+              rm -rf "$target"
+              python game_factory/cataclysm_17_19_studio.py setup "$version"
+              mkdir -p "$target/STUDIO"
+              printf 'Missing surviving artifact. Copied predecessor. Not an implemented %s release.\n' "$version" > "$target/STUDIO/PUBLISH_FALLBACK.txt"
+            fi
+          done
+      - name: Independently label all three candidates from surviving files and QA
+        run: |
+          set -euo pipefail
+          for version in 1.7 1.8 1.9; do
+            python game_factory/cataclysm_17_19_studio.py candidate "$version"
+          done
+      - name: Archive all finished candidates before attempting to merge/publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-17-19-final-${{ github.run_id }}
+          path: |
+            docs/cataclysm-1-7
+            docs/cataclysm-1-8
+            docs/cataclysm-1-9
+            docs/cataclysm-1-7-candidate
+            docs/cataclysm-1-8-candidate
+            docs/cataclysm-1-9-candidate
+          retention-days: 60
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Publish THREE immutable candidate versions in ONE PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="studio/cataclysm-17-19-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add docs/cataclysm-1-7 docs/cataclysm-1-8 docs/cataclysm-1-9 docs/cataclysm-1-7-candidate docs/cataclysm-1-8-candidate docs/cataclysm-1-9-candidate
+          git -c core.whitespace=-trailing-space diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'Cataclysm 1.7–1.9: ten autonomous source passes and preserved honest candidate states'
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          pr="$(gh pr create --base main --head "$branch" --title 'Cataclysm: 1.7 Long Night + 1.8 Distilled Advancement + 1.9 Polish & Gating' --body 'One owner-authorized 10-pass studio run, sequential cumulative version snapshots: 1.7 1000-night save/resume, 1.8 fusion/weather/side missions, 1.9 menu/codex/Threshold Trial. Actual image assets and every stage preserved; experimental status per version in STUDIO/CANDIDATE_STATUS.json. Does not claim complete physical Android testing or 2.0 readiness; old versions unchanged.")"
+          echo "PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          for v in 1.7 1.8 1.9; do test -s "docs/cataclysm-$v/STUDIO/CANDIDATE_STATUS.json"; done
+      - name: Create Pages artifact with all historic Cataclysm releases
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-triple-pages-${{ github.run_id }}
+          path: docs
+      - name: Publish three experimental candidates, keep past releases
+        id: deploy
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: cataclysm-triple-pages-${{ github.run_id }}
+          timeout: 180000
+      - name: Record public candidate paths without pretending 2.0 exists
+        run: |
+          echo '### ONE 10-PASS STUDIO RUN · THREE EXPERIMENTAL CANDIDATES' >> "$GITHUB_STEP_SUMMARY"
+          for v in 1.7 1.8 1.9; do
+            echo "Candidate $v: https://borhex.github.io/kbc-rpg-prototype/cataclysm-$v-candidate/" >> "$GITHUB_STEP_SUMMARY"
+            echo "Actual source/game $v: https://borhex.github.io/kbc-rpg-prototype/cataclysm-$v/" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo 'Versions 1.0–1.69 untouched; no 2.0 automatically launched.' >> "$GITHUB_STEP_SUMMARY"
