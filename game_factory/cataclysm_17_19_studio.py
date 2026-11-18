@@ -41,7 +41,9 @@ def now(): return dt.datetime.now(dt.timezone.utc).isoformat()
 def game(version):
  if version not in set(VERSIONS) | {"1.69"}:
   raise ValueError("Expected 1.69 / 1.7 / 1.8 / 1.9")
- return ROOT/"docs"/("cataclysm-"+version)
+ # Special creator version 1.69 uses a dash in its historical published path.
+ # Never normalize it to a numeric release number.
+ return ROOT/"docs"/("cataclysm-1-69" if version=="1.69" else "cataclysm-"+version)
 def studio(version):return game(version)/"STUDIO"
 def save_json(path,x):
  path=pathlib.Path(path);path.parent.mkdir(parents=True,exist_ok=True)
