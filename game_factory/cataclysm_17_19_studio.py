@@ -38,12 +38,14 @@ ART_TASKS={
 ]}
 
 def now(): return dt.datetime.now(dt.timezone.utc).isoformat()
+def slug(version):
+ # ALL published versions use a hyphenated directory: 1.69 -> 1-69, 1.7 -> 1-7.
+ return "cataclysm-"+version.replace(".", "-")
+
 def game(version):
  if version not in set(VERSIONS) | {"1.69"}:
   raise ValueError("Expected 1.69 / 1.7 / 1.8 / 1.9")
- # Special creator version 1.69 uses a dash in its historical published path.
- # Never normalize it to a numeric release number.
- return ROOT/"docs"/("cataclysm-1-69" if version=="1.69" else "cataclysm-"+version)
+ return ROOT/"docs"/slug(version)
 def studio(version):return game(version)/"STUDIO"
 def save_json(path,x):
  path=pathlib.Path(path);path.parent.mkdir(parents=True,exist_ok=True)
@@ -166,8 +168,10 @@ def candidate(version):
       "source_evidence":artifacts(version),
       "note":"Only actual browser checks support PLAYABLE. UNVERIFIED is not proof of a crash."}
  save_json(s/"CANDIDATE_STATUS.json",doc)
- location=ROOT/"docs"/("cataclysm-"+version+"-candidate");location.mkdir(parents=True,exist_ok=True)
+ location=ROOT/"docs"/(slug(version)+"-candidate");location.mkdir(parents=True,exist_ok=True)
  issues="".join("<li>"+html.escape(str(x))+"</li>" for x in flags) or "<li>Browser startup passed; full game, marathon and physical-phone performance are not yet verified.</li>"
+ current_slug=slug(version)
+ previous_slug=slug(VERSIONS[version][0])
  # Plain HTML with no claims of completion if only tests are incomplete.
  body=f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cataclysm {version}: {html.escape(status)} candidate</title>
@@ -176,9 +180,9 @@ a{{color:#8ce7d7}}section{{background:#13232f;padding:1rem;border-radius:12px}}.
 <h1>CATACLYSM {version} — {html.escape(VERSIONS[version][1])}</h1>
 <p class="status">EXPERIMENTAL / {status}</p>
 <p>The continuing one Cataclysm game. This candidate does not replace the last accepted playable version.</p>
-<p><a href="../cataclysm-{version}/">Open actual {version} game source</a> · <a href="../cataclysm-{VERSIONS[version][0]}/">Previous version</a></p>
+<p><a href="../{current_slug}/">Open actual {version} game source</a> · <a href="../{previous_slug}/">Previous version</a></p>
 <section><h2>Verification and known limitations</h2><ul>{issues}</ul><p>Browser acceptance: {'passed basic portrait and landscape checks' if is_verified else 'not established'}. No real Samsung hardware acceptance claimed.</p></section>
-<p><a href="../cataclysm-{version}/STUDIO/FINAL_REPORT.md">Developer report</a> · <a href="../cataclysm-{version}/STUDIO/CANDIDATE_STATUS.json">Evidence JSON</a> · <a href="../cataclysm-{version}/STUDIO/IMAGE_MANIFEST.json">Original art</a></p>
+<p><a href="../{current_slug}/STUDIO/FINAL_REPORT.md">Developer report</a> · <a href="../{current_slug}/STUDIO/CANDIDATE_STATUS.json">Evidence JSON</a> · <a href="../{current_slug}/STUDIO/IMAGE_MANIFEST.json">Original art</a></p>
 <p>GitHub run {html.escape(str(os.getenv('GITHUB_RUN_ID','unknown')))}. Roadmap continues to 2.0, not reached by 1.9.</p></html>'''
  (location/"index.html").write_text(body,encoding="utf8")
  print("EXPERIMENTAL",version,status,"issues",flags)
