@@ -1,0 +1,6 @@
+(node:4) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ReferenceError: Audio is not defined
+    at polishCue (game.js:1122:15)
+    at Object.openRecords (game.js:1462:5)
+    at /home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-9/qa/runtime.cjs:149:140

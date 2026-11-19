@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "source": "STUDIO/tools/compose_mutation_audio.py",
+  "sourceSha256": "dadf2821b4f7844df0ade6e6346c27eda635f0f1dc2a2a3465b1dbea71a69b8b",
+  "format": "signed mono PCM16 LE",
+  "sampleRateHz": 24000,
+  "assets": {
+    "bell-countdown": {
+      "path": "audio/generated/mutation-bell-countdown.wav",
+      "sha256": "7073a14cae5d7fc2efaa511ef74c66e7f53573df3059b4c0dfcadc5b8ad16dee",
+      "priority": 4,
+      "durationMs": 1300,
+      "sampleCount": 31200,
+      "loopSamples": null,
+      "peak": 0.39935,
+      "rms": 0.06384
+    },
+    "bell-strike": {
+      "path": "audio/generated/mutation-bell-strike.wav",
+      "sha256": "d91e62cfb205743542ee499a7d0225e70e34ccf95a6a0d0ee670b207ac021cae",
+      "priority": 4,
+      "durationMs": 650,
+      "sampleCount": 15600,
+      "loopSamples": null,
+      "peak": 0.46988,
+      "rms": 0.09522
+    },
+    "mimic-reveal": {
+      "path": "audio/generated/mutation-mimic-reveal.wav",
+      "sha256": "6b700eaf1f9036bfe384a1224ef3af1d3d43169cab5ac0f7ea6ec31b52ce72d9",
+      "priority": 4,
+      "durationMs": 950,
+      "sampleCount": 22800,
+      "loopSamples": null,
+      "peak": 0.2915,
+      "rms": 0.05647
+    },
+    "roof-pounce": {
+      "path": "audio/generated/mutation-roof-pounce.wav",
+      "sha256": "fa409a12464743cfb73f4e9b92805c9915ff903c5d1d064fd2366f38b8a46aab",
+      "priority": 4,
+      "durationMs": 1240,
+      "sampleCount": 29760,
+      "loopSamples": null,
+      "peak": 0.30945,
+      "rms": 0.06059
+    },
+    "necro-ritual": {
+      "path": "audio/generated/mutation-necro-ritual.wav",
+      "sha256": "80d1e4e58340fede839b8181f0a0bc3a3241e70abedd56a39623f4681a3447ba",
+      "priority": 3,
+      "durationMs": 1580,
+      "sampleCount": 37920,
+      "loopSamples": null,
+      "peak": 0.29874,
+      "rms": 0.06178
+    },
+    "pack-charge": {
+      "path": "audio/generated/mutation-pack-charge.wav",
+      "sha256": "94dae52d6b36009a50b26409862ce20e8a9a71e13b90f1edcbd1814341566c81",
+      "priority": 3,
+      "durationMs": 1120,
+      "sampleCount": 26880,
+      "loopSamples": null,
+      "peak": 0.27652,
+      "rms": 0.0669
+    },
+    "fish-theft": {
+      "path": "audio/generated/mutation-fish-theft.wav",
+      "sha256": "4d2c1ac3172ab38b207b5dc4b4176a057010f50c32589846ad500e2aaa5f2c4d",
+      "priority": 2,
+      "durationMs": 400,
+      "sampleCount": 9600,
+      "loopSamples": null,
+      "peak": 0.22586,
+      "rms": 0.04459
+    },
+    "boss-phase-escalation": {
+      "path": "audio/generated/mutation-boss-phase-escalation.wav",
+      "sha256": "474b1b7a2754995f0d74cd794c08d2b28b2244eed3a87e30a5c134da599e812b",
+      "priority": 5,
+      "durationMs": 1800,
+      "sampleCount": 43200,
+      "loopSamples": null,
+      "peak": 0.43713,
+      "rms": 0.07908
+    },
+    "pressure-bed": {
+      "path": "audio/generated/mutation-pressure-bed.wav",
+      "sha256": "52a7266b9ac34a3dbee0f7ad5ce269deae6289883cded2874fbaa8f035270489",
+      "priority": null,
+      "durationMs": 8000,
+      "sampleCount": 192000,
+      "loopSamples": [
+        0,
+        192000
+      ],
+      "peak": 0.1741,
+      "rms": 0.03077
+    },
+    "mutant-bed": {
+      "path": "audio/generated/mutation-mutant-bed.wav",
+      "sha256": "f05aa0e4ffaea2f5a96e68b15ac5c9e5053e8a930495aff0984643b172a1c66c",
+      "priority": null,
+      "durationMs": 8000,
+      "sampleCount": 192000,
+      "loopSamples": [
+        0,
+        192000
+      ],
+      "peak": 0.33438,
+      "rms": 0.04814
+    },
+    "fishing-bed": {
+      "path": "audio/generated/mutation-fishing-bed.wav",
+      "sha256": "75e2f688b0a195ae2d2b6a24858b3ef1b407821093beba73e8fe36a0ecd79600",
+      "priority": null,
+      "durationMs": 8000,
+      "sampleCount": 192000,
+      "loopSamples": [
+        0,
+        192000
+      ],
+      "peak": 0.51245,
+      "rms": 0.0901
+    },
+    "last-life-bed": {
+      "path": "audio/generated/mutation-last-life-bed.wav",
+      "sha256": "1d84fdd83a062736537f19c0d911f3ea741fca154f8ce504328e3ccc7b41f7bf",
+      "priority": null,
+      "durationMs": 8000,
+      "sampleCount": 192000,
+      "loopSamples": [
+        0,
+        192000
+      ],
+      "peak": 0.27374,
+      "rms": 0.04372
+    },
+    "boss-bed": {
+      "path": "audio/generated/mutation-boss-bed.wav",
+      "sha256": "a617fcbda60019f81e6bbbfd8efa7c4d7c2b9f71d967939d05ad75d8407c71dd",
+      "priority": null,
+      "durationMs": 8000,
+      "sampleCount": 192000,
+      "loopSamples": [
+        0,
+        192000
+      ],
+      "peak": 0.31396,
+      "rms": 0.04856
+    }
+  },
+  "mix": {
+    "status": "Pass 04 runtime handoff",
+    "cueBus": "fxBus",
+    "stemBus": "musicBus",
+    "cueGain": 0.5,
+    "stemGain": 0.3,
+    "duckInheritedScoreMultiplier": 0.67,
+    "cueMaxVoices": 3,
+    "reservedWarningVoices": 1,
+    "cueGlobalGapMs": 90,
+    "sameCueCooldownMs": 750,
+    "maxBedsIncludingCrossfade": 2,
+    "crossfadeMs": 450,
+    "stateDwellMs": 750,
+    "stemPrecedence": [
+      "last-life-bed",
+      "boss-bed",
+      "fishing-bed",
+      "mutant-bed",
+      "pressure-bed"
+    ]
+  }
+}

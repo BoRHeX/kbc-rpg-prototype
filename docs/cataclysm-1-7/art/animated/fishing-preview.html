@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.5 Pass03 media reference</title>
+<style>body{background:#15242b;color:#eef;font:16px system-ui;margin:16px}canvas{display:block;width:min(100%,700px);background:#29373d}button,select{font:inherit;margin:8px;padding:8px}img{max-width:100%;background:repeating-conic-gradient(#444 0 25%,#666 0 50%) 0/16px 16px}</style>
+<h1>Fishing media reference — PARTIAL</h1><p>Real Pass02 crops; source mattes retained. Derived motion and canvas line VFX. This reference is not gameplay or browser acceptance.</p>
+<label>Pose <select id="state"></select></label><label><input id="reduced" type="checkbox">Reduced motion</label><canvas width="700" height="320"></canvas><p id="status">Loading…</p><section id="sounds"></section><section id="sheets"></section>
+<script src="fishing-sprite-player.js"></script><script>
+(async()=>{try{
+ const base='../../',player=await FishingSpritePlayer.load(base),select=document.querySelector('select'),ctx=document.querySelector('canvas').getContext('2d');
+ for(const id of Object.keys(player.index.animations))select.add(new Option(id,id));
+ const started=performance.now();function draw(now){ctx.clearRect(0,0,700,320);player.draw(ctx,select.value,(now-started)/1000,350,290,256,document.querySelector('#reduced').checked);if(['cast','wait','reel'].includes(select.value))FishingSpritePlayer.drawLine(ctx,{x:400,y:80},{x:580,y:230},10);requestAnimationFrame(draw)}requestAnimationFrame(draw);
+ document.querySelector('#status').textContent='Loaded reference crops. Audio playback requires your tap; listening quality remains unreviewed.';
+ const audio=await(await fetch(base+'audio/generated/fishing-audio-index.json')).json();for(const cue of audio.cues){const p=document.createElement('p');p.textContent=cue.id+' ';const a=document.createElement('audio');a.controls=true;a.preload='none';a.src=base+cue.path;a.loop=cue.loop;p.append(a);document.querySelector('#sounds').append(p)}
+ for(const [id,s] of Object.entries(player.index.sheets)){const p=document.createElement('p');p.textContent=id;const im=new Image();im.src=base+s.path;document.querySelector('#sheets').append(p,im)}
+}catch(e){document.querySelector('#status').textContent=String(e)}})();
+</script></html>

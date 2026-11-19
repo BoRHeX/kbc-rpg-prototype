@@ -1,0 +1,60 @@
+{
+  "version": "1.9",
+  "title": "POLISH & GATING",
+  "status": "PLAYABLE",
+  "experimental": true,
+  "stable_promotion": false,
+  "producer_run": "44514410044",
+  "browser": {
+    "checks": [
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "passed": true,
+        "errors": [],
+        "pixels": 47,
+        "canvas": {
+          "ok": true,
+          "colors": 47,
+          "w": 390,
+          "h": 844,
+          "startOverlayHidden": true
+        },
+        "http_status": 200
+      },
+      {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "passed": true,
+        "errors": [],
+        "pixels": 48,
+        "canvas": {
+          "ok": true,
+          "colors": 48,
+          "w": 844,
+          "h": 390,
+          "startOverlayHidden": true
+        },
+        "http_status": 200
+      }
+    ],
+    "both_orientations_passed": true,
+    "created_utc": "2026-11-18T20:24:36.034Z",
+    "browser": "Google Chrome via Playwright",
+    "evidence_kind": "automated browser screenshot, NOT actual Samsung hardware"
+  },
+  "flaws": [],
+  "art_status": "GENERATED",
+  "previous_version": "1.8",
+  "owner_accepted": false,
+  "source_evidence": {
+    "n_files": 445,
+    "bytes": 118709936,
+    "game_sha256": "b4c886bf1205587c5aa3231eaf9c9a9207ed43896d0f89d88a2abaeb14920d9d"
+  },
+  "note": "Only actual browser checks support PLAYABLE. UNVERIFIED is not proof of a crash."
+}

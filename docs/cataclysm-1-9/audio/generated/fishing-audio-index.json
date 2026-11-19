@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "version": "1.5",
+  "status": "FILES_PREPARED_NOT_RUNTIME_ROUTED",
+  "generator": "STUDIO/tools/prepare_fishing_media.py",
+  "seed": 1503,
+  "listening_acceptance": false,
+  "routing_contract": {
+    "context": "reuse existing audio",
+    "fx_bus": "existing fxBus",
+    "ambience_bus": "existing master bus at low gain, alongside inherited music",
+    "controls": "existing volume/mute; no new UI or AudioContext",
+    "voice_cap": 8,
+    "lifecycle": "stop/fade ambience and reel on pause/cancel/death/restart/end; invalidate pending async decode on reset; do not autoplay before user gesture",
+    "warning": "bite/ambush take priority; duck ambience; never encode gameplay-only warning exclusively in audio"
+  },
+  "cues": [
+    {
+      "id": "water-ambience",
+      "path": "audio/generated/fishing-water-ambience.wav",
+      "sha256": "d45cd8f2386a87cef11c59899860135a1ca96599ad614356b2d08aa30e6924cd",
+      "bytes": 352844,
+      "duration_seconds": 8.0,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": true,
+      "bus": "ambience",
+      "suggested_gain": 0.24,
+      "peak": 0.78,
+      "rms": 0.22058750769161417,
+      "end_samples": [
+        0,
+        0
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "cast-splash",
+      "path": "audio/generated/fishing-cast-splash.wav",
+      "sha256": "f084e736fee284b1aa2afb5b4dad1192d82efff9cdaaa97bd2e02c0f5c3f384f",
+      "bytes": 30914,
+      "duration_seconds": 0.7,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": false,
+      "bus": "fx",
+      "suggested_gain": 0.55,
+      "peak": 0.78,
+      "rms": 0.10297792343317377,
+      "end_samples": [
+        0,
+        0
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "bite-warning",
+      "path": "audio/generated/fishing-bite-warning.wav",
+      "sha256": "c0be2e5171c624f7803b0974d7fe597eafef47ab1fd83c734fb94f08b21c840f",
+      "bytes": 24300,
+      "duration_seconds": 0.5500226757369614,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": false,
+      "bus": "fx",
+      "suggested_gain": 0.58,
+      "peak": 0.78,
+      "rms": 0.29522741452322054,
+      "end_samples": [
+        0,
+        0
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "reel",
+      "path": "audio/generated/fishing-reel.wav",
+      "sha256": "70978cbd696c4970c51d436cab7ad622efc532c3258adf977a7f6a14e285fe16",
+      "bytes": 44144,
+      "duration_seconds": 1.0,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": true,
+      "bus": "fx",
+      "suggested_gain": 0.33,
+      "peak": 0.7799999999999999,
+      "rms": 0.2010032774127007,
+      "end_samples": [
+        0,
+        -1
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "rare-catch",
+      "path": "audio/generated/fishing-rare-catch.wav",
+      "sha256": "58a9234b4cd8bc8c31f5e3d7eff85101c56a775ff7c864f5581594e3ca1c2ef8",
+      "bytes": 66194,
+      "duration_seconds": 1.5,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": false,
+      "bus": "fx",
+      "suggested_gain": 0.48,
+      "peak": 0.78,
+      "rms": 0.21115436225426887,
+      "end_samples": [
+        0,
+        -1
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "jackpot",
+      "path": "audio/generated/fishing-jackpot.wav",
+      "sha256": "25ee1d2f5df517a7a159c1c83a4100630612e44eebbd43019199b851de540e5c",
+      "bytes": 105884,
+      "duration_seconds": 2.4,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": false,
+      "bus": "fx",
+      "suggested_gain": 0.48,
+      "peak": 0.78,
+      "rms": 0.19180252525605443,
+      "end_samples": [
+        0,
+        0
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    },
+    {
+      "id": "ambush-tension",
+      "path": "audio/generated/fishing-ambush-tension.wav",
+      "sha256": "084e6d7e24fd4b6963c4b925e0c2e91d941d316d42baf65481560686850597e8",
+      "bytes": 141164,
+      "duration_seconds": 3.2,
+      "sample_rate": 22050,
+      "channels": 1,
+      "bits": 16,
+      "loop": false,
+      "bus": "fx",
+      "suggested_gain": 0.5,
+      "peak": 0.78,
+      "rms": 0.17007285463955324,
+      "end_samples": [
+        0,
+        0
+      ],
+      "provenance": "Original deterministic offline oscillator/noise composition; not API audio, field recording or inherited soundtrack"
+    }
+  ]
+}

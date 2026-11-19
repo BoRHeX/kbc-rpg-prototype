@@ -1,0 +1,64 @@
+{
+  "version": "1.9",
+  "pass": 8,
+  "status": "MEDIA_READY_RUNTIME_INTEGRATION_PENDING",
+  "baseline": "STUDIO/BASELINE.json",
+  "concept": "STUDIO/CONCEPT.md",
+  "mediaIndex": "STUDIO/POLISH_MEDIA.json",
+  "sourceApiManifest": "STUDIO/IMAGE_MANIFEST.json",
+  "inheritedImageManifest": "STUDIO/inherited/IMAGE_MANIFEST.json",
+  "frameReferences": {
+    "actorStates": "art/actor-packs.json",
+    "mechaAndGuardian": "art/animated/frame-index.json",
+    "fishing": "art/animated/fishing-frame-index.json",
+    "mutants": "art/animated/mutation-frame-index.json",
+    "mutantPlayback": "mutation-media.js",
+    "fusions": "STUDIO/inherited/ADVANCEMENT_MEDIA.json",
+    "wildCard": "art/animated/wildcard-frame-index.json",
+    "chapters": "art/animated/long-night-frames.js"
+  },
+  "menu": {
+    "surfaces": ["title", "pause", "results"],
+    "actions": ["resume", "start-new", "threshold-trial", "records", "settings", "endless-when-eligible"],
+    "cover": {"default": "art/polish/cover.png", "small": "art/polish/cover-small.png", "focusPercent": [45, 40]},
+    "records": {
+      "map": {"visibility": "outside active combat", "maskUndiscovered": true},
+      "company": {"identitySource": "CATA_COMPANY.identities", "baseRoles": 16, "fusionIds": ["mecha", "trawl", "spotter"], "sectionIcons": ["company", "evolution"]},
+      "bestiary": {"sectionIcons": ["mutants", "bosses"], "unlock": "observed reveal or defeat"},
+      "fishing": {"sectionIcons": ["fish", "bait", "jackpot"], "historyLimits": {"casts": 64, "jackpot": 64}, "baitIds": ["plain", "worm", "fishbone", "catnip"]}
+    },
+    "tutorials": ["movement-auto-fire", "companions", "map-pause", "fishing", "fusion", "trial-beacon"],
+    "settings": ["text-size", "hud-density", "mute", "volume", "reduced-motion", "replay-tutorials"],
+    "targetsCssPx": 44,
+    "viewports": [[390, 844], [844, 390]]
+  },
+  "trial": {
+    "director": "threshold-trial.js",
+    "fixture": "qa/threshold-director.cjs",
+    "unlockCampaignNight": 101,
+    "seededApproachCount": 4,
+    "timeLimitPerLegSeconds": 40,
+    "beaconHoldSeconds": 2,
+    "beaconRadius": 56,
+    "maxLiveEnemies": 12,
+    "legs": [
+      {"weather": "rain", "art": "art/polish/flooded-street.png", "objective": "street-beacon"},
+      {"weather": "fog", "art": "art/polish/stair-landing.png", "objective": "stair-beacon"},
+      {"weather": "storm", "art": "art/polish/sealed-door.png", "objective": "door-beacon"}
+    ],
+    "persist": ["cosmetic badge", "best active clear time"],
+    "savePolicy": "Park campaign and its RNG. Discard in-flight trial on reload. Never serialize trial as campaign."
+  },
+  "audio": {
+    "format": "mono PCM WAV",
+    "triggers": {
+      "userOpenedTitleMenu": "audio/polish/menu-open.wav",
+      "userOpenedCodex": "audio/polish/codex-turn.wav",
+      "trialStarted": "audio/polish/trial-entry.wav",
+      "trialLegAdvanced": "audio/polish/weather-turn.wav",
+      "trialCleared": "audio/polish/trial-clear.wav",
+      "trialFailed": "audio/polish/trial-retry.wav"
+    }
+  },
+  "reservedFor2_0": ["underground biomes", "Sphinx finale", "two independently firing hand weapons"]
+}

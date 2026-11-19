@@ -1,0 +1,43 @@
+$ python3 qa/media-audit.py
+116 PNGs checked via literal references and 11 manifests
+66 WAVs, 27443646 file bytes, 27440742 PCM bytes, 78069144 bytes if all decoded to float32 at 48 kHz
+missing alley-king-run.png
+missing bard-run.png
+missing blight-run.png
+missing brawler-run.png
+missing dasher-run.png
+missing dreadnought-run.png
+missing echo-reaper-run.png
+missing engineer-run.png
+missing ghost-run.png
+missing grave-herald-run.png
+missing healer-run.png
+missing hexer-run.png
+missing iron-titan-run.png
+missing jawbreaker-run.png
+missing moth-queen-run.png
+missing neon-siren-run.png
+missing orbiter-run.png
+missing plague-empress-run.png
+missing pulse-drone-run.png
+missing rust-butcher-run.png
+missing scrapper-run.png
+missing shambler-run.png
+missing shooter-run.png
+missing sniper-run.png
+missing stalker-run.png
+missing storm-magus-run.png
+missing summoner-run.png
+missing tank-run.png
+missing the-catastrophe-run.png
+missing trapper-run.png
+missing venom-oracle-run.png
+missing void-harbinger-run.png
+missing volt-hydra-run.png
+missing watcher-run.png
+missing weaver-run.png
+exit=1
+$ python3 qa/media-audit.py
+151 PNGs checked via literal references and 11 manifests
+66 WAVs, 27443646 file bytes, 27440742 PCM bytes, 78069144 bytes if all decoded to float32 at 48 kHz
+exit=0

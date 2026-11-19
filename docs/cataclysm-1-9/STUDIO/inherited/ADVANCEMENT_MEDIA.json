@@ -1,0 +1,318 @@
+{
+  "frames": {
+    "trawl-ready": {
+      "path": "art/advancement/fusion/trawl-ready.png",
+      "atlas": "companion_fusion_evolutions",
+      "sourceBox": [
+        0,
+        0,
+        512,
+        491
+      ],
+      "size": [
+        192,
+        204
+      ],
+      "sha256": "f9b1ac47115440e4ffbeadca665a7a55b75405dfe47411e29a98658914c62af4"
+    },
+    "trawl-cast": {
+      "path": "art/advancement/fusion/trawl-cast.png",
+      "atlas": "companion_fusion_evolutions",
+      "sourceBox": [
+        512,
+        0,
+        1024,
+        491
+      ],
+      "size": [
+        192,
+        204
+      ],
+      "sha256": "25d139d977224552153b1aeaaf96d0eaf3a3f2476cf4c20402d445e5f04516b6"
+    },
+    "spotter-ready": {
+      "path": "art/advancement/fusion/spotter-ready.png",
+      "atlas": "companion_fusion_evolutions",
+      "sourceBox": [
+        0,
+        491,
+        512,
+        1024
+      ],
+      "size": [
+        192,
+        204
+      ],
+      "sha256": "908053f4ad68e9a7ca8af904ad5ac130ac9cadd449f348eb8dc4df34e359d023"
+    },
+    "spotter-fire": {
+      "path": "art/advancement/fusion/spotter-fire.png",
+      "atlas": "companion_fusion_evolutions",
+      "sourceBox": [
+        512,
+        491,
+        1024,
+        1024
+      ],
+      "size": [
+        192,
+        204
+      ],
+      "sha256": "13e993180243aecc69cdcd5691a45058713f47ee57fd03756681565f780585fb"
+    },
+    "rain": {
+      "path": "art/advancement/weather/rain.png",
+      "atlas": "weather_city_biome_atlas",
+      "sourceBox": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "sha256": "b700b2c1bad3cadd21f8861af2493a49fcb04a621d9e1763de6bc61ec70d8b94"
+    },
+    "storm": {
+      "path": "art/advancement/weather/storm.png",
+      "atlas": "weather_city_biome_atlas",
+      "sourceBox": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "sha256": "22a0f6043be6d4b7ae61093877cad2cea6887c038bc3ec6d516a8dcdaf39da87"
+    },
+    "fog": {
+      "path": "art/advancement/weather/fog.png",
+      "atlas": "weather_city_biome_atlas",
+      "sourceBox": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "sha256": "ebf7f69e3a5b4c1e1639851e96e6d621a0d021b669196dda350c51acebf7902e"
+    },
+    "clear": {
+      "path": "art/advancement/weather/clear.png",
+      "atlas": "weather_city_biome_atlas",
+      "sourceBox": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "sha256": "6f2675f28263e7524aa6d46a91578951054ecca0dfcffb9dd4f8a726139b703d"
+    },
+    "curious": {
+      "path": "art/advancement/mood-mission/curious.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        0,
+        0,
+        242,
+        461
+      ],
+      "size": [
+        78,
+        144
+      ],
+      "sha256": "7fd3493368b577415dbcc110f56c548a9ffa657ea08505962a81dae1024f7b98"
+    },
+    "worried": {
+      "path": "art/advancement/mood-mission/worried.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        242,
+        0,
+        497,
+        461
+      ],
+      "size": [
+        91,
+        144
+      ],
+      "sha256": "0b13179059ab40b1ec8fb8f28d8e277488f0a3db5c860a302c3e33d3a2edab74"
+    },
+    "determined": {
+      "path": "art/advancement/mood-mission/determined.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        497,
+        0,
+        782,
+        461
+      ],
+      "size": [
+        93,
+        144
+      ],
+      "sha256": "ec37b66da5274a8f1afb7e0784b3394976bf2ab5a7227c02f77469d3f0d8db42"
+    },
+    "excited": {
+      "path": "art/advancement/mood-mission/excited.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        782,
+        0,
+        1024,
+        461
+      ],
+      "size": [
+        79,
+        144
+      ],
+      "sha256": "7277af5d05fe06cbaf8f985c71648af9dc7c900ad71ed601a9824d7c8ba8766b"
+    },
+    "beacon": {
+      "path": "art/advancement/mood-mission/beacon.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        0,
+        461,
+        269,
+        1024
+      ],
+      "size": [
+        69,
+        144
+      ],
+      "sha256": "c3babeb898bc14ee1f8792442958c43560c1c6ecc6a0c19323cef97a1eeb4f57"
+    },
+    "cache": {
+      "path": "art/advancement/mood-mission/cache.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        230,
+        540,
+        540,
+        870
+      ],
+      "size": [
+        135,
+        144
+      ],
+      "sha256": "2a971a4fb32ad69462777670e25853f0a9f3b86e48605d6832c20e7dfaf8cd5a"
+    },
+    "rain-fish": {
+      "path": "art/advancement/mood-mission/rain-fish.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        540,
+        461,
+        744,
+        1024
+      ],
+      "size": [
+        52,
+        144
+      ],
+      "sha256": "6dcec6a7fa5f8d7c4411c1876bbf5a13dc73ee3d61c11907e6b3fa0eeaf3a3bb"
+    },
+    "rescue": {
+      "path": "art/advancement/mood-mission/rescue.png",
+      "atlas": "companion_mood_missions",
+      "sourceBox": [
+        744,
+        461,
+        1024,
+        1024
+      ],
+      "size": [
+        75,
+        144
+      ],
+      "sha256": "f755f6d30bca8504547d990a17a4175b0a5731d32897d7442f2f8f12b6381c47"
+    }
+  },
+  "cues": {
+    "trawl-cast": {
+      "path": "audio/advancement/trawl-cast.wav",
+      "seconds": 0.72,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "9fbab5b76d3e9cbaa66702cab3c06c0a2de4647d1323fc3daf4e3c5387bb15e8"
+    },
+    "spotter-fire": {
+      "path": "audio/advancement/spotter-fire.wav",
+      "seconds": 0.48,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "d566b172027ab47a0baa17eedc4ec685da4490d079f2785bf51da5439987233b"
+    },
+    "rain": {
+      "path": "audio/advancement/rain.wav",
+      "seconds": 1.3,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "bf1cf39f163df09a6daaec08927a30f239481c7a35a40d57d5f94bcd6ad49d88"
+    },
+    "storm": {
+      "path": "audio/advancement/storm.wav",
+      "seconds": 1.65,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "573d0b7bed4b7461e15d99dde67c15c8dd91eb1fd3d90f3a6fedffef39042093"
+    },
+    "fog": {
+      "path": "audio/advancement/fog.wav",
+      "seconds": 1.45,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "1c00c09178517e1bfa05e69ba5d6aa43f81501df1754dcca95748477a3d19242"
+    },
+    "clear": {
+      "path": "audio/advancement/clear.wav",
+      "seconds": 1.2,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "576d5da2cd9a67441bcd0fb3197c5d0638c4f20882a90941c6509b162e1b2bb7"
+    },
+    "mission-complete": {
+      "path": "audio/advancement/mission-complete.wav",
+      "seconds": 0.85,
+      "sampleRate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "sha256": "2f584713847e57fa15f9849e52d0106d1d9219b1bfeafc06f3eb6b6f0da851ff"
+    }
+  },
+  "fusionAnimations": {
+    "trawl_team": {
+      "rest": "trawl-ready",
+      "action": "trawl-cast",
+      "holdMs": 220
+    },
+    "spotter_pair": {
+      "rest": "spotter-ready",
+      "action": "spotter-fire",
+      "holdMs": 130
+    }
+  },
+  "fusionPivotNormalized": [
+    0.5,
+    1
+  ]
+}

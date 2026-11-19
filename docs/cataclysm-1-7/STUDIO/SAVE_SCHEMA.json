@@ -1,0 +1,857 @@
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "gameVersion": {
+      "const": "1.7"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}$"
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "completion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/receipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "campaignBest": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "endlessBest": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cityBySeed": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[0-9]{1,10}$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "discovery": {
+                "type": "array",
+                "items": {
+                  "type": "boolean"
+                },
+                "maxItems": 4,
+                "uniqueItems": false,
+                "minItems": 4
+              },
+              "warrantySpent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "discovery",
+              "warrantySpent"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "completion",
+        "runs",
+        "campaignBest",
+        "endlessBest",
+        "cityBySeed"
+      ],
+      "additionalProperties": false
+    },
+    "run": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+            },
+            "mode": {
+              "enum": [
+                "campaign",
+                "endless"
+              ]
+            },
+            "phase": {
+              "enum": [
+                "running",
+                "upgrade",
+                "reviving",
+                "dead",
+                "won"
+              ]
+            },
+            "clocks": {
+              "type": "object",
+              "properties": {
+                "simTick": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "nightTick": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 630
+                },
+                "overtimeTick": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reviveTicks": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "simTick",
+                "nightTick",
+                "overtimeTick",
+                "reviveTicks"
+              ],
+              "additionalProperties": false
+            },
+            "night": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "chapter": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "clears": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "maxItems": 10,
+              "uniqueItems": true
+            },
+            "finale": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "stage": {
+                      "enum": [
+                        "lights",
+                        "escorts",
+                        "boss",
+                        "cleared"
+                      ]
+                    },
+                    "lights": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2
+                    },
+                    "lightHoldTick": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 60
+                    },
+                    "escorts": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 3
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "lights",
+                    "lightHoldTick",
+                    "escorts"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "encounters": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/encounter"
+              },
+              "maxItems": 32,
+              "uniqueItems": false
+            },
+            "rng": {
+              "type": "object",
+              "properties": {
+                "root": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "city": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "combat": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "offers": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "director": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "chapter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "dialogue": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                },
+                "fishingNonce": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                }
+              },
+              "required": [
+                "root",
+                "city",
+                "combat",
+                "offers",
+                "director",
+                "chapter",
+                "dialogue",
+                "fishingNonce"
+              ],
+              "additionalProperties": false
+            },
+            "player": {
+              "type": "object",
+              "properties": {
+                "hp": {
+                  "type": "number"
+                },
+                "maxHp": {
+                  "type": "number"
+                },
+                "x": {
+                  "type": "number"
+                },
+                "y": {
+                  "type": "number"
+                },
+                "equipment": {
+                  "type": "object"
+                },
+                "upgrades": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  },
+                  "maxItems": 8192,
+                  "uniqueItems": false
+                },
+                "runtime": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "hp",
+                "maxHp",
+                "x",
+                "y",
+                "equipment",
+                "upgrades",
+                "runtime"
+              ],
+              "additionalProperties": false,
+              "description": "Runtime contains all gameplay player stats, aim, invulnerability, cooldowns and perk flags."
+            },
+            "lives": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9
+            },
+            "lifeLosses": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "squad": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/member"
+              },
+              "maxItems": 4,
+              "uniqueItems": false
+            },
+            "inventory": {
+              "type": "object",
+              "properties": {
+                "fish": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "xp": {
+                  "type": "number"
+                },
+                "rerolls": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "score": {
+                  "type": "object"
+                },
+                "upgradesPending": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+                  },
+                  "maxItems": 5,
+                  "uniqueItems": true
+                },
+                "companyFish": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "fish",
+                "xp",
+                "rerolls",
+                "score",
+                "upgradesPending",
+                "companyFish"
+              ],
+              "additionalProperties": false
+            },
+            "fishing": {
+              "type": "object",
+              "properties": {
+                "rod": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "bait": {
+                  "enum": [
+                    "plain",
+                    "worm",
+                    "fishbone",
+                    "catnip"
+                  ]
+                },
+                "charges": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "ordinal": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "caught": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "jackpot": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "cache": {
+                  "type": "boolean"
+                },
+                "awardIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+                  },
+                  "maxItems": 256,
+                  "uniqueItems": true
+                },
+                "resolvedOrdinals": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "maxItems": 24,
+                  "uniqueItems": true
+                },
+                "active": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/cast"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "spots": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  },
+                  "maxItems": 8,
+                  "uniqueItems": false,
+                  "minItems": 8
+                }
+              },
+              "required": [
+                "rod",
+                "line",
+                "bait",
+                "charges",
+                "ordinal",
+                "caught",
+                "jackpot",
+                "cache",
+                "awardIds",
+                "resolvedOrdinals",
+                "active",
+                "spots"
+              ],
+              "additionalProperties": false
+            },
+            "city": {
+              "type": "object",
+              "description": "Capture discovered/open flags, per-district kill and guardian states, warranty, mutable gates, optional active city encounter, event clocks and relay. Derive immutable geometry."
+            },
+            "wildcard": {
+              "type": "object",
+              "description": "Capture phase, layout, dwell/stamps, lore, one-time pressure/reward/result, gust and fade timers, pulse data, counters and expiry."
+            },
+            "actors": {
+              "type": "object",
+              "properties": {
+                "enemies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 140,
+                  "uniqueItems": false
+                },
+                "shots": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 2048,
+                  "uniqueItems": false
+                },
+                "enemyShots": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 512,
+                  "uniqueItems": false
+                },
+                "fishItems": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 1024,
+                  "uniqueItems": false
+                },
+                "powerups": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 128,
+                  "uniqueItems": false
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 128,
+                  "uniqueItems": false
+                },
+                "corpses": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/entity"
+                  },
+                  "maxItems": 140,
+                  "uniqueItems": false
+                }
+              },
+              "required": [
+                "enemies",
+                "shots",
+                "enemyShots",
+                "fishItems",
+                "powerups",
+                "devices",
+                "corpses"
+              ],
+              "additionalProperties": false
+            },
+            "systems": {
+              "type": "object",
+              "description": "Capture director economy and mutable director state, ID counters, pending queues, mutation packs, gas/buffs, grace/life reward, squad stats/ranks/tactics, relics, support and encore, world event clocks, run difficulty and authoritative score counters."
+            }
+          },
+          "required": [
+            "id",
+            "mode",
+            "phase",
+            "clocks",
+            "night",
+            "chapter",
+            "clears",
+            "finale",
+            "encounters",
+            "rng",
+            "player",
+            "lives",
+            "lifeLosses",
+            "squad",
+            "inventory",
+            "fishing",
+            "city",
+            "wildcard",
+            "actors",
+            "systems"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "gameVersion",
+    "revision",
+    "digest",
+    "profile",
+    "run"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cataclysm 1.7 checkpoint v1",
+  "$defs": {
+    "member": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+        },
+        "role": {
+          "enum": [
+            "shooter",
+            "healer",
+            "tank",
+            "brawler",
+            "sniper",
+            "engineer",
+            "trapper",
+            "bard",
+            "angler",
+            "scout",
+            "alchemist",
+            "salvager",
+            "saboteur",
+            "stormcaller",
+            "courier",
+            "hexcat",
+            "mecha"
+          ]
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "work": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "food": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "energy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/member"
+          },
+          "maxItems": 2,
+          "uniqueItems": false
+        },
+        "runtime": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "level",
+        "work",
+        "food",
+        "energy",
+        "components",
+        "runtime"
+      ],
+      "additionalProperties": false
+    },
+    "cast": {
+      "type": "object",
+      "properties": {
+        "spotId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7
+        },
+        "originX": {
+          "type": "number"
+        },
+        "originY": {
+          "type": "number"
+        },
+        "originHp": {
+          "type": "number"
+        },
+        "age": {
+          "type": "number"
+        },
+        "committed": {
+          "type": "boolean"
+        },
+        "ordinal": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bait": {
+          "anyOf": [
+            {
+              "enum": [
+                "plain",
+                "worm",
+                "fishbone",
+                "catnip"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "until": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bite": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "spotId",
+        "originX",
+        "originY",
+        "originHp",
+        "age",
+        "committed",
+        "ordinal",
+        "bait",
+        "outcome",
+        "until",
+        "bite"
+      ],
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "properties": {
+        "runId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+        },
+        "night": {
+          "const": 1000
+        },
+        "clears": {
+          "const": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "finaleId": {
+          "const": "c10:finalBoss"
+        }
+      },
+      "required": [
+        "runId",
+        "night",
+        "clears",
+        "finaleId"
+      ],
+      "additionalProperties": false
+    },
+    "encounter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+        },
+        "kind": {
+          "enum": [
+            "chapterBoss",
+            "finalEscort",
+            "finalBoss",
+            "chapterPressure"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "queued",
+            "active",
+            "defeated",
+            "retired"
+          ]
+        },
+        "enemyId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "phase",
+        "enemyId",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:_-]{1,96}$"
+        },
+        "state": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "state"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

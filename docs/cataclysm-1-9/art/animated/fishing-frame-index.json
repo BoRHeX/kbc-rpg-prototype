@@ -1,0 +1,857 @@
+{
+  "schema_version": 1,
+  "version": "1.5",
+  "pass": "06",
+  "status": "PARTIAL_DERIVED_CLEANUP_RUNTIME_REFERENCED",
+  "sources": [
+    {
+      "path": "art/generated/fishing_pond_world_atlas.png",
+      "sha256": "32cf84bf4eb0e630a32b47bf5757c1eb3e79d32c50fd9911a61fd7465e46ddcb",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_zero_fraction": 0.0,
+      "alpha_below_128_fraction": 0.0
+    },
+    {
+      "path": "art/generated/fishing_cat_gear_atlas.png",
+      "sha256": "a9230824dccc9930c953793306160cee177dba96364eadd3a48129b93bf90dd0",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        0,
+        254
+      ],
+      "alpha_zero_fraction": 0.2878446578979492,
+      "alpha_below_128_fraction": 0.6568498611450195
+    },
+    {
+      "path": "art/generated/abyssal_catch_mutant_atlas.png",
+      "sha256": "d9ac10c7594d8a10a11bae3af1ba0b5e7e6be3a24c6f003c83902cfce34ad9dc",
+      "size": [
+        1024,
+        1024
+      ],
+      "alpha_range": [
+        0,
+        254
+      ],
+      "alpha_zero_fraction": 0.4347238540649414,
+      "alpha_below_128_fraction": 0.6101827621459961
+    }
+  ],
+  "coordinate_system": "source rectangles x,y,width,height; frame rects in strip pixels; pivots normalized bottom center",
+  "provenance": "Crops and nearest-neighbor downscales of Pass02 PNGs. Transforms/holds are derived motion, not new illustrations. Pass06 cat/mutant alpha: remove alpha below 24, remap remaining coverage, retain largest connected painted component plus two-pixel fringe. Location/gear backgrounds retained.",
+  "sheets": {
+    "fishing-cat": {
+      "path": "art/animated/fishing-cat-strip.png",
+      "sha256": "02579829de96203cda06b05a725d3a5b87bf795ea83bab1ee3775b3583693f56",
+      "size": [
+        1792,
+        256
+      ],
+      "frame_size": [
+        256,
+        256
+      ],
+      "source": "art/generated/fishing_cat_gear_atlas.png",
+      "frames": [
+        {
+          "id": "idle",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            70,
+            185,
+            265
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "wait",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            185,
+            72,
+            275,
+            263
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "cast",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            650,
+            265,
+            340
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "bite",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            225,
+            650,
+            275,
+            340
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "caught",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            838,
+            98,
+            186,
+            240
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "windup",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            650,
+            265,
+            340
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "reel",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            225,
+            650,
+            275,
+            340
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        }
+      ],
+      "mobile": {
+        "path": "art/animated/fishing-cat-mobile.png",
+        "sha256": "e158499fba360490b66a29acfd084faf944acd7b0d188d787b3bd44b48df0ed4",
+        "scale": 0.5,
+        "size": [
+          896,
+          128
+        ]
+      }
+    },
+    "fishing-gear": {
+      "path": "art/animated/fishing-gear-strip.png",
+      "sha256": "66060cca330957fc04577c2efdfa99d75ea923eef0576313caafb38814bb55d4",
+      "size": [
+        1152,
+        192
+      ],
+      "frame_size": [
+        192,
+        192
+      ],
+      "source": "art/generated/fishing_cat_gear_atlas.png",
+      "frames": [
+        {
+          "id": "rod",
+          "rect": [
+            0,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            12,
+            342,
+            310,
+            302
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "fishbone",
+          "rect": [
+            192,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            328,
+            365,
+            171,
+            283
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "worm",
+          "rect": [
+            384,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            510,
+            440,
+            200,
+            155
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "catnip",
+          "rect": [
+            576,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            750,
+            372,
+            255,
+            252
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "fish-net",
+          "rect": [
+            768,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            495,
+            668,
+            231,
+            333
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "jackpot",
+          "rect": [
+            960,
+            0,
+            192,
+            192
+          ],
+          "source_rect": [
+            735,
+            674,
+            289,
+            332
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        }
+      ],
+      "mobile": {
+        "path": "art/animated/fishing-gear-mobile.png",
+        "sha256": "d339ae0f6de3396f6c0baaddee9c9c64bfa59d32e2583862cceb9a11a7a5d58a",
+        "scale": 0.5,
+        "size": [
+          576,
+          96
+        ]
+      }
+    },
+    "fishing-mutant": {
+      "path": "art/animated/fishing-mutant-strip.png",
+      "sha256": "c0396d9c7bce759ca288f2884c72dd1bf8e00223f762cd567351ab9ac0f3429e",
+      "size": [
+        1024,
+        256
+      ],
+      "frame_size": [
+        256,
+        256
+      ],
+      "source": "art/generated/abyssal_catch_mutant_atlas.png",
+      "frames": [
+        {
+          "id": "lurking",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            37,
+            580,
+            449
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "hooked",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            602,
+            0,
+            405,
+            560
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "lunge",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            502,
+            535,
+            522
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        },
+        {
+          "id": "stunned",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            540,
+            672,
+            484,
+            352
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "alpha cleaned; largest painted component retained"
+        }
+      ],
+      "mobile": {
+        "path": "art/animated/fishing-mutant-mobile.png",
+        "sha256": "b3318d9244d18d17caa62ea521f3c831135c9fb32a609f9894acdb190926f8ce",
+        "scale": 0.5,
+        "size": [
+          512,
+          128
+        ]
+      }
+    },
+    "fishing-locations": {
+      "path": "art/animated/fishing-locations-strip.png",
+      "sha256": "6cb4f6135f7932d37685487885912478bcf57db6a09c243a15fcaefab067f674",
+      "size": [
+        1280,
+        256
+      ],
+      "frame_size": [
+        256,
+        256
+      ],
+      "source": "art/generated/fishing_pond_world_atlas.png",
+      "frames": [
+        {
+          "id": "canal",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            0,
+            466,
+            462
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "pond",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            470,
+            0,
+            334,
+            462
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "sewer",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            0,
+            728,
+            272,
+            296
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "dock",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            514,
+            466,
+            253,
+            256
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        },
+        {
+          "id": "ripple-bobber",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "source_rect": [
+            265,
+            466,
+            244,
+            256
+          ],
+          "pivot": [
+            0.5,
+            0.9
+          ],
+          "background": "source matte retained; reference patch, not clean alpha cutout"
+        }
+      ],
+      "mobile": {
+        "path": "art/animated/fishing-locations-mobile.png",
+        "sha256": "15914aaf09a87ed2959d3edb1c454e37ffbf9feb6b2a37d03d71e3f22a848b89",
+        "scale": 0.5,
+        "size": [
+          640,
+          128
+        ]
+      }
+    }
+  },
+  "animations": {
+    "idle": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "idle"
+      ],
+      "durations_ms": [
+        250
+      ],
+      "loop": true,
+      "reduced_motion_frame": "idle"
+    },
+    "windup": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "wait",
+        "windup"
+      ],
+      "durations_ms": [
+        200,
+        250
+      ],
+      "loop": false,
+      "reduced_motion_frame": "windup"
+    },
+    "cast": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "windup",
+        "cast",
+        "wait"
+      ],
+      "durations_ms": [
+        80,
+        120,
+        120
+      ],
+      "loop": false,
+      "reduced_motion_frame": "wait",
+      "line_tip_anchors": [
+        [
+          0.85,
+          0.13
+        ],
+        [
+          0.85,
+          0.13
+        ],
+        [
+          0.96,
+          0.09
+        ]
+      ],
+      "bobber_motion": "quadratic arc from rod tip to world target; code VFX"
+    },
+    "wait": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "wait"
+      ],
+      "durations_ms": [
+        500
+      ],
+      "loop": true,
+      "reduced_motion_frame": "wait"
+    },
+    "bite": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "bite",
+        "wait"
+      ],
+      "durations_ms": [
+        100,
+        100
+      ],
+      "loop": true,
+      "reduced_motion_frame": "wait"
+    },
+    "reel": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "reel",
+        "bite",
+        "reel"
+      ],
+      "durations_ms": [
+        110,
+        110,
+        110
+      ],
+      "loop": true,
+      "reduced_motion_frame": "reel"
+    },
+    "cancel": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "reel",
+        "idle"
+      ],
+      "durations_ms": [
+        100,
+        100
+      ],
+      "loop": false,
+      "reduced_motion_frame": "idle",
+      "movement_unrestricted": true,
+      "stop_pending_catch": true
+    },
+    "caught-fish": {
+      "sheet": "fishing-gear",
+      "frames": [
+        "fish-net"
+      ],
+      "durations_ms": [
+        450
+      ],
+      "loop": false,
+      "reduced_motion_frame": "fish-net",
+      "limitation": "basket of fish reference; independent single normal/rare fish sprite missing"
+    },
+    "caught-treasure": {
+      "sheet": "fishing-gear",
+      "frames": [
+        "jackpot"
+      ],
+      "durations_ms": [
+        450
+      ],
+      "loop": false,
+      "reduced_motion_frame": "jackpot",
+      "limitation": "same painted chest for treasure and jackpot; no distinct closed treasure painting"
+    },
+    "jackpot": {
+      "sheet": "fishing-gear",
+      "frames": [
+        "jackpot"
+      ],
+      "durations_ms": [
+        650
+      ],
+      "loop": false,
+      "reduced_motion_frame": "jackpot"
+    },
+    "celebrate": {
+      "sheet": "fishing-cat",
+      "frames": [
+        "caught"
+      ],
+      "durations_ms": [
+        450
+      ],
+      "loop": false,
+      "reduced_motion_frame": "caught"
+    },
+    "mutant-warn": {
+      "sheet": "fishing-mutant",
+      "frames": [
+        "lurking",
+        "hooked"
+      ],
+      "durations_ms": [
+        500,
+        500
+      ],
+      "loop": false,
+      "reduced_motion_frame": "hooked"
+    },
+    "mutant-lunge": {
+      "sheet": "fishing-mutant",
+      "frames": [
+        "hooked",
+        "lunge"
+      ],
+      "durations_ms": [
+        900,
+        450
+      ],
+      "loop": false,
+      "reduced_motion_frame": "lunge"
+    },
+    "mutant-recover": {
+      "sheet": "fishing-mutant",
+      "frames": [
+        "stunned",
+        "lurking"
+      ],
+      "durations_ms": [
+        750,
+        750
+      ],
+      "loop": false,
+      "reduced_motion_frame": "lurking"
+    },
+    "mutant-hit": {
+      "sheet": "fishing-mutant",
+      "frames": [
+        "stunned"
+      ],
+      "durations_ms": [
+        160
+      ],
+      "loop": false,
+      "reduced_motion_frame": "stunned"
+    },
+    "water-ripple": {
+      "sheet": "fishing-locations",
+      "frames": [
+        "ripple-bobber",
+        "ripple-bobber",
+        "ripple-bobber",
+        "ripple-bobber"
+      ],
+      "durations_ms": [
+        160,
+        160,
+        160,
+        160
+      ],
+      "loop": true,
+      "reduced_motion_frame": "ripple-bobber",
+      "derived_transform": [
+        {
+          "scale": 0.94,
+          "alpha": 0.8
+        },
+        {
+          "scale": 1,
+          "alpha": 0.95
+        },
+        {
+          "scale": 1.04,
+          "alpha": 0.8
+        },
+        {
+          "scale": 1,
+          "alpha": 0.9
+        }
+      ],
+      "limitation": "one painted water/bobber patch with transformed holds, not four painted ripples; water rectangle includes baked bobber/line"
+    }
+  },
+  "mechanics_vfx": {
+    "line": {
+      "renderer": "CanvasRenderingContext2D quadraticCurveTo",
+      "width_css_px": 1,
+      "origin": "code-native mechanics, never original character art"
+    },
+    "bobber": {
+      "renderer": "source ripple-bobber patch or code-native VFX bobber",
+      "limitation": "no isolated painted bobber in source"
+    },
+    "hero_contract": "Retain inherited quadruped hero and independently aimed tail gun; pose references include upright cats and must not replace active hero wholesale. Gear rod crop includes baked line.",
+    "spot_geometry": "Source scenes are perspective paintings, not collision maps; integrate localized decals at clear reachable sockets. Do not infer dry apron from alpha."
+  },
+  "missing_illustrations_or_cleanup": [
+    "complete quadruped cast/reel action set",
+    "isolated painted bobber",
+    "isolated normal and rare fish",
+    "distinct ordinary treasure",
+    "clean rod-only overlay without baked line"
+  ],
+  "cleanup_limitations": [
+    "Cast reuses the intact windup illustration; bite reuses reel. These are not new painted poses.",
+    "Largest-component cleanup may remove detached decorative droplets/glints and fine line sections.",
+    "The inherited moving quadruped/tail remains; fishing pose is still a separate stationary reference beside it."
+  ]
+}

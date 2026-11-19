@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "errors": [],
+      "pixels": 47,
+      "canvas": {
+        "ok": true,
+        "colors": 47,
+        "w": 390,
+        "h": 844,
+        "startOverlayHidden": true
+      },
+      "http_status": 200
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "passed": true,
+      "errors": [],
+      "pixels": 48,
+      "canvas": {
+        "ok": true,
+        "colors": 48,
+        "w": 844,
+        "h": 390,
+        "startOverlayHidden": true
+      },
+      "http_status": 200
+    }
+  ],
+  "both_orientations_passed": true,
+  "created_utc": "2026-11-18T20:08:33.018Z",
+  "browser": "Google Chrome via Playwright",
+  "evidence_kind": "automated browser screenshot, NOT actual Samsung hardware"
+}

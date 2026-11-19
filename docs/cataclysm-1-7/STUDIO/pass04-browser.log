@@ -1,0 +1,29 @@
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module 'playwright'
+Require stack:
+- /home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-7/qa/long-night-browser.cjs
+[90m    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)[39m
+[90m    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)[39m
+[90m    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)[39m
+[90m    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)[39m
+[90m    at Module._load (node:internal/modules/cjs/loader:1341:5)[39m
+[90m    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)[39m
+[90m    at Module.require (node:internal/modules/cjs/loader:1674:12)[39m
+[90m    at require (node:internal/modules/helpers:157:16)[39m
+    at Object.<anonymous> [90m(/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-7/[39mqa/long-night-browser.cjs:3:18[90m)[39m
+[90m    at Module._compile (node:internal/modules/cjs/loader:1929:14)[39m {
+  code: [32m'MODULE_NOT_FOUND'[39m,
+  requireStack: [
+    [32m'/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-7/qa/long-night-browser.cjs'[39m
+  ]
+}
+
+Node.js v24.22.2
+Playwright smoke exit 1
+Google Chrome 157.0.8103.50 
+[196:196:1118/195359.004228:FATAL:content/browser/sandbox_host_linux.cc:41] Check failed: . shutdown: Operation not permitted (1)
+/bin/bash: line 1:   196 Aborted                 (core dumped) env XDG_CONFIG_HOME=/tmp/cata-pass04-config XDG_DATA_HOME=/tmp/cata-pass04-data google-chrome --headless --no-sandbox --disable-crashpad-for-testing --disable-dev-shm-usage --user-data-dir=/tmp/cata-pass04-probe --dump-dom about:blank
+Direct Chrome launch exit 134

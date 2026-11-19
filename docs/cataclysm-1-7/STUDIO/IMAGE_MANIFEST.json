@@ -1,0 +1,446 @@
+{
+  "version": "1.7",
+  "model": "gpt-image-2.5-flare",
+  "status": "GENERATED",
+  "images": [
+    {
+      "name": "long_night_chapter_city_atlas",
+      "background": "opaque",
+      "prompt": "Genuine illustrated 2D top-down video game environment atlas for a grimly charming cartoon cat versus zombie city survival roguelite: four clear visual chapter biomes in one original detailed painterly square sheet, early abandoned brick coastal district, neon flooding and ivy jungle alleys, violet nocturnal occult streets, midnight burning industrial edges, seamless town roofs and pavement motifs, dynamic atmospheric light and strong readable 64px mobile textures. Regions separated for manual sprite slicing. No letters, labels, UI, borders or screenshots.",
+      "status": "GENERATED",
+      "path": "art/generated/long_night_chapter_city_atlas.png",
+      "sha256": "a681f1f76dcb8e998a7a1faef720010989d81a62b5a3785e7004203560f4f5e4",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "bytes": 2505779,
+      "usage": {
+        "input_tokens": 110,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 110
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 549
+      }
+    },
+    {
+      "name": "long_night_ten_chapter_emblems",
+      "background": "transparent",
+      "prompt": "A genuinely hand-painted 2D GAME ART ATLAS on full transparent alpha: ten visually diverse, individually recognizable chapter emblems for a ten-chapter, thousand-night cartoon cat-vs-undead marathon: coastline, sewer, market, rooftops, ruins, flooded district, lantern festival, rusty factory, occult cathedral and long-night climax. Ten ornate small glowing medallions cleanly arranged 5 by 2, each separated, centered and suitable for crop/animated UI, with detailed characterful brushes. No words, numbers, captions, watermarks, panels, backgrounds or fonts.",
+      "status": "GENERATED",
+      "path": "art/generated/long_night_ten_chapter_emblems.png",
+      "sha256": "77247d8b05a06cd4ba0985bf8d44f9d37bc04ddb512b8e408c83eb29dc3b34b4",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 1572295,
+      "usage": {
+        "input_tokens": 124,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 124
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 563
+      }
+    },
+    {
+      "name": "long_night_climax_boss_stage",
+      "background": "transparent",
+      "prompt": "High-quality original hand-painted 2D top-down mobile game sprite source atlas on full transparent alpha showing four distinct atmospheric night-1000 campaign climax scenes: an endless torchlit gateway, two unique imposing evolved undead feline lieutenants with glowing armor, and a survival squad of illustrated cats in a last-night standoff, four separate figures/props suitable for animated 2D sprites and rewards. Detailed painterly urban fantasy; rich indigo/amber/cyan neon contrast, clear silhouettes at mobile size, full bodies and visual margin, no UI text, watermarks or backgrounds.",
+      "status": "GENERATED",
+      "path": "art/generated/long_night_climax_boss_stage.png",
+      "sha256": "000f6a402fddd8589e5fec788163016d94ab6872fb2af356a2cec1bc9b3fcf12",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 1997654,
+      "usage": {
+        "input_tokens": 122,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 122
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 561
+      }
+    }
+  ],
+  "requested": 3,
+  "created_utc": "2026-11-18T19:46:36.956116+00:00",
+  "provenance": "Actual image-generation API PNG byte outputs, not canvas-drawn text model shapes",
+  "number_generated": 3,
+  "pass03": {
+    "frameManifest": "art/animated/long-night-frames.js",
+    "frameManifestSha256": "8f143c5ce465ca86050f5ae3f103073464a7695dec5bb5c7d1fbd7490ea88ff0",
+    "derivedPngs": {
+      "coast": {
+        "path": "art/animated/long-night-coast.png",
+        "source": "art/generated/long_night_chapter_city_atlas.png",
+        "crop": [
+          0,
+          0,
+          512,
+          512
+        ],
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "124e844b6b4284afb2e94ad4da4ca9802a1ce968eddb6633a18eb4b0a5173b82"
+      },
+      "canal": {
+        "path": "art/animated/long-night-canal.png",
+        "source": "art/generated/long_night_chapter_city_atlas.png",
+        "crop": [
+          512,
+          0,
+          1024,
+          512
+        ],
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "74eb0ca8b449b785e16c8a52a385ecfed405e742514f9314f22e7642cd3851c4"
+      },
+      "occult": {
+        "path": "art/animated/long-night-occult.png",
+        "source": "art/generated/long_night_chapter_city_atlas.png",
+        "crop": [
+          0,
+          512,
+          512,
+          1024
+        ],
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "f13a7a41db1ccd8a334a62093d1f4030c5d90ec727159094e93f5ad9da66e501"
+      },
+      "furnace": {
+        "path": "art/animated/long-night-furnace.png",
+        "source": "art/generated/long_night_chapter_city_atlas.png",
+        "crop": [
+          512,
+          512,
+          1024,
+          1024
+        ],
+        "size": [
+          512,
+          512
+        ],
+        "sha256": "b6894fc3e111ef1b47f995583ecb48848041207620551e347cde1136b0b84184"
+      },
+      "emblem-01": {
+        "path": "art/animated/long-night-emblem-01.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          0,
+          208,
+          204,
+          502
+        ],
+        "size": [
+          204,
+          294
+        ],
+        "sha256": "aa156a156dbdf57f5cd2bca249c0ab8a464eff06c8730fb9d6c29e0578fdfd6e"
+      },
+      "emblem-02": {
+        "path": "art/animated/long-night-emblem-02.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          204,
+          208,
+          410,
+          502
+        ],
+        "size": [
+          206,
+          294
+        ],
+        "sha256": "c37b23e998e60cabf9911571320f995450c9523e5f866e2fe9d7b00c97781ed2"
+      },
+      "emblem-03": {
+        "path": "art/animated/long-night-emblem-03.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          410,
+          208,
+          615,
+          502
+        ],
+        "size": [
+          205,
+          294
+        ],
+        "sha256": "a957d5492077c67a02c98d6ee32b763c31c6ebed3ecd619bf4dea9838e1796d1"
+      },
+      "emblem-04": {
+        "path": "art/animated/long-night-emblem-04.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          615,
+          208,
+          819,
+          502
+        ],
+        "size": [
+          204,
+          294
+        ],
+        "sha256": "537b7bd4e04f4f00b49ff2aa125529088dc176e808fb2d3e03d30249f4bcc617"
+      },
+      "emblem-05": {
+        "path": "art/animated/long-night-emblem-05.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          819,
+          208,
+          1024,
+          502
+        ],
+        "size": [
+          205,
+          294
+        ],
+        "sha256": "bc18143a23165808cc0eb35d191d5602f9382bd6707916e83d005b666b1f8a67"
+      },
+      "emblem-06": {
+        "path": "art/animated/long-night-emblem-06.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          0,
+          510,
+          204,
+          820
+        ],
+        "size": [
+          204,
+          310
+        ],
+        "sha256": "e0a2f76a763d88ea3720300556e18c8544ffb314dd34a3228d0da3afae38ad8a"
+      },
+      "emblem-07": {
+        "path": "art/animated/long-night-emblem-07.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          204,
+          510,
+          410,
+          820
+        ],
+        "size": [
+          206,
+          310
+        ],
+        "sha256": "edc5eed5e849d7a7259bc843afb026a0882fb6edbbdec9b3c9ca0359dbae7031"
+      },
+      "emblem-08": {
+        "path": "art/animated/long-night-emblem-08.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          410,
+          510,
+          615,
+          820
+        ],
+        "size": [
+          205,
+          310
+        ],
+        "sha256": "5e90511d715bcd41bd70c9a0c94d9bb3205717fcf4dc01328b5ec1a8e37f9f94"
+      },
+      "emblem-09": {
+        "path": "art/animated/long-night-emblem-09.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          615,
+          510,
+          819,
+          820
+        ],
+        "size": [
+          204,
+          310
+        ],
+        "sha256": "9e2d255c1f1a2438334b2a0c6bb739f6f9df0fdc9bbc1a78bcf88602299e3c5b"
+      },
+      "emblem-10": {
+        "path": "art/animated/long-night-emblem-10.png",
+        "source": "art/generated/long_night_ten_chapter_emblems.png",
+        "crop": [
+          819,
+          510,
+          1024,
+          820
+        ],
+        "size": [
+          205,
+          310
+        ],
+        "sha256": "d571d24094b28e87ccf15ea0c192b5140335ebcf62e59d2fb533bed5c4bee41d"
+      },
+      "gateway": {
+        "path": "art/animated/long-night-gateway.png",
+        "source": "art/generated/long_night_climax_boss_stage.png",
+        "crop": [
+          0,
+          0,
+          365,
+          614
+        ],
+        "size": [
+          365,
+          614
+        ],
+        "sha256": "0fae47137eebd57c393f3c5113f8762f45cd22cb28e5afe0e2670a8a4ed8e8a2"
+      },
+      "lieutenants": {
+        "path": "art/animated/long-night-lieutenants.png",
+        "source": "art/generated/long_night_climax_boss_stage.png",
+        "crop": [
+          365,
+          0,
+          1024,
+          616
+        ],
+        "size": [
+          659,
+          616
+        ],
+        "sha256": "a6f470c6db407a7fab74a0266a04373295225fe00285be0b235f6542a61f59c9"
+      },
+      "squad": {
+        "path": "art/animated/long-night-squad.png",
+        "source": "art/generated/long_night_climax_boss_stage.png",
+        "crop": [
+          0,
+          616,
+          1024,
+          1024
+        ],
+        "size": [
+          1024,
+          408
+        ],
+        "sha256": "197c390e7dcd815cfd2108d9504b9409c3e71cb2d00db3b4a9f6ac91b7f0a01b"
+      }
+    },
+    "generatedWavs": {
+      "chapter-01": {
+        "path": "audio/generated/long-night-chapter-01.wav",
+        "seconds": 8,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "22a9d581ab1ab357e5077e2c2780722d89e24b53527b4af345c99886bc23dc5c"
+      },
+      "chapter-02": {
+        "path": "audio/generated/long-night-chapter-02.wav",
+        "seconds": 10,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "1f10ba305c46a43b57d9f3b159b7c3293ec8dd1656c88d7b9b00faa23454c43d"
+      },
+      "chapter-03": {
+        "path": "audio/generated/long-night-chapter-03.wav",
+        "seconds": 8,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "53f2534a1467ad198421f526eb88277a515fb542afe6ba94305066e8986b3779"
+      },
+      "chapter-04": {
+        "path": "audio/generated/long-night-chapter-04.wav",
+        "seconds": 12,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "eafa634a2a04c51aa0c069248110ad6f277a3950c0a2803df78865bbe444f4ca"
+      },
+      "chapter-05": {
+        "path": "audio/generated/long-night-chapter-05.wav",
+        "seconds": 10,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "a7134a3a4fff511232c4be8a78d43a994ab45ad4ae323b4f5b7225a3b1f38469"
+      },
+      "chapter-06": {
+        "path": "audio/generated/long-night-chapter-06.wav",
+        "seconds": 12,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "a3648332eccfb4a9900122b15eb30e01f4dc591250a5dd27b60273666467c2d8"
+      },
+      "chapter-07": {
+        "path": "audio/generated/long-night-chapter-07.wav",
+        "seconds": 8,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "c3596df7259f5e99b413e7d3130186967008614c0e384f65978be5ce57f72e76"
+      },
+      "chapter-08": {
+        "path": "audio/generated/long-night-chapter-08.wav",
+        "seconds": 10,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "fce64b2586eb7eae8d19c692c00ee758e9645b8d6ff7844f8c97edb3aa3c7703"
+      },
+      "chapter-09": {
+        "path": "audio/generated/long-night-chapter-09.wav",
+        "seconds": 12,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "de83d4be3eb34049ef5b59115d90f74883141de8d6f53d118e528b079635625d"
+      },
+      "chapter-10": {
+        "path": "audio/generated/long-night-chapter-10.wav",
+        "seconds": 12,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "57f0f758db3ac8e8d127eca22baeb120c4dca7f5db20318687493e4c1401031e"
+      },
+      "arrival": {
+        "path": "audio/generated/long-night-arrival.wav",
+        "seconds": 1.6,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "98d0b308596442094e6007913db0fc6fceb4085599f319d403293b0649f96965"
+      },
+      "gauntlet": {
+        "path": "audio/generated/long-night-gauntlet.wav",
+        "seconds": 1.6,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "e701bb3c98a4639a783b3b3c32e2da0a1fa6711d5995c47a2d421af84b93a0c0"
+      },
+      "light": {
+        "path": "audio/generated/long-night-light.wav",
+        "seconds": 1.6,
+        "sampleRate": 22050,
+        "channels": 1,
+        "sha256": "6262eedf0d7e20a19a847b80661e6bc551027dbc81cd7de9e4196bb2c0c7d889"
+      }
+    }
+  }
+}

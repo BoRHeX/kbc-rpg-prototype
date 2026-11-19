@@ -1,0 +1,92 @@
+{
+  "version": "1.8",
+  "model": "gpt-image-2.5-flare",
+  "status": "GENERATED",
+  "images": [
+    {
+      "name": "companion_fusion_evolutions",
+      "background": "transparent",
+      "prompt": "A truly hand-painted 2D video game sprite atlas with fully transparent alpha, showing two original fused CAT companions, not just reskinned existing cats: an ANGLER+TRAPPER hybrid carrying a living net turret with mechanical fishing lures and distinctive dual-cat partnership, and a SCOUT+SNIPER hybrid long-range lookout rig with telescopic periscope and visible cat crew. Two action states each: walking/aiming, hooking/launching. Four coherent separated poses in a square 2x2 grid, mobile readability, distinctive bodies, fine painted mechanical details, whimsical expressive feline survival game art, no labels, backgrounds, frame borders or watermarks.",
+      "status": "GENERATED",
+      "path": "art/generated/companion_fusion_evolutions.png",
+      "sha256": "13959da2615cd7676cac682a37d78ed55fb2efdf16edc9864a2afa2115e3ca5c",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 1859322,
+      "usage": {
+        "input_tokens": 142,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 142
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 581
+      }
+    },
+    {
+      "name": "weather_city_biome_atlas",
+      "background": "opaque",
+      "prompt": "Original richly hand-illustrated top-down mobile game environmental atlas of a ruined cartoon feline city under four real WEATHER CONDITIONS in 2 by 2 separated districts: pounding rain with wet roofs and specular reflections; purple lightning electrical storm; layered pale fog and greenish eerie glow; clear post-storm amber sunshine. Each biome has distinct cover, light pools and puddles reflecting possible gameplay visibility and AI adaptations. Carefully textured painterly source art, readable mobile 48-96px, no text, no UI, no watermark or screenshot frame.",
+      "status": "GENERATED",
+      "path": "art/generated/weather_city_biome_atlas.png",
+      "sha256": "5a7194941d245cb8bba77c73dcc56dd63e58d1c85b2cd1154f7a97108d921e0b",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "bytes": 2524005,
+      "usage": {
+        "input_tokens": 115,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 115
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 554
+      }
+    },
+    {
+      "name": "companion_mood_missions",
+      "background": "transparent",
+      "prompt": "An original painterly 2D mobile game icon and character atlas with fully transparent background: expressive cartoon cats showing curious, worried, determined, excited moods as four separated illustrated character poses; whimsical small illustrated side-mission beacons, scavenger caches, rainy fish and an eerie drone-cat rescue marker. Cohesive well-painted textured Cataclysm game style, rich neon amber cyan indigo, mobile-readable, separated items ready for sprite cropping, no captions, no panels, no watermarks.",
+      "status": "GENERATED",
+      "path": "art/generated/companion_mood_missions.png",
+      "sha256": "66ce02a1fa85161818393cea57aeabe7ab805b3c78b4b4ba31269cc09e1446f1",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 1934317,
+      "usage": {
+        "input_tokens": 106,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 106
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 545
+      }
+    }
+  ],
+  "requested": 3,
+  "created_utc": "2026-11-18T19:56:08.861717+00:00",
+  "provenance": "Actual image-generation API PNG byte outputs, not canvas-drawn text model shapes",
+  "number_generated": 3
+}

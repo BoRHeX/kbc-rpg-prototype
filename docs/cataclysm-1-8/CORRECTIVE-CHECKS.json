@@ -1,0 +1,208 @@
+{
+  "baseline": "83b5378eabe094d5f04b6dd23282f46f778d359a",
+  "results": [
+    {
+      "path": "cataclysm-1-0-major",
+      "earlyLevelUpsAtFish": [
+        6,
+        14,
+        24
+      ],
+      "lateThresholdMonotonic": true,
+      "ghostTelegraphEscapeAndSharedCooldown": true,
+      "animationSourceFrames": {
+        "hero:run": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:attack": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:hit": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:feral": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:adrenaline": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "shambler:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:hit": [
+          0,
+          96,
+          192,
+          288
+        ]
+      },
+      "pausedDialogueClock": 0,
+      "groundParity": true,
+      "spawnBudgetAndRoleBounds": true,
+      "projectileCap": 16,
+      "speechRevealAndPauseFreeze": true
+    },
+    {
+      "path": "cataclysm-100-lab",
+      "earlyLevelUpsAtFish": [
+        6,
+        14,
+        24
+      ],
+      "lateThresholdMonotonic": true,
+      "ghostTelegraphEscapeAndSharedCooldown": true,
+      "animationSourceFrames": {
+        "hero:run": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:attack": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:hit": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:feral": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "hero:adrenaline": [
+          0,
+          384,
+          768,
+          1248
+        ],
+        "shambler:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "shambler:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "weaver:hit": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:run": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:attack": [
+          0,
+          96,
+          192,
+          288
+        ],
+        "ghost:hit": [
+          0,
+          96,
+          192,
+          288
+        ]
+      },
+      "pausedDialogueClock": 0,
+      "groundParity": true,
+      "spawnBudgetAndRoleBounds": true,
+      "projectileCap": 16,
+      "speechRevealAndPauseFreeze": true
+    }
+  ],
+  "browserQA": "Pending external runner: local Chromium socket creation denied by sandbox"
+}

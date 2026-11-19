@@ -1,0 +1,282 @@
+{
+  "sourceManifest": "STUDIO/IMAGE_MANIFEST.json",
+  "animationPolicy": "New PNGs are static frame 0. Inherited frame descriptors keep original indices.",
+  "assets": [
+    {
+      "path": "art/polish/cover.png",
+      "sha256": "396d42b1f4f221c95a742b1a926b7e242fce1e6704599eb6538b360c3b4d974a",
+      "bytes": 1068071,
+      "source": "art/generated/cataclysm_menu_cover.png",
+      "sourceSha256": "0e0f941f6f7df9de462ea5ed8cbe5623c6d831c4e3c0c3bfa24bcb2fce617cfc",
+      "cropLTRB": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "size": [
+        768,
+        768
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/cover-small.png",
+      "sha256": "98d500abff6409a533b45b3d812a0caf8e6727423df7aaa23924e14ad28e303a",
+      "bytes": 448662,
+      "source": "art/generated/cataclysm_menu_cover.png",
+      "sourceSha256": "0e0f941f6f7df9de462ea5ed8cbe5623c6d831c4e3c0c3bfa24bcb2fce617cfc",
+      "cropLTRB": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "size": [
+        480,
+        480
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/flooded-street.png",
+      "sha256": "2fc1600f5c130ac96facbc52d134577cbef82a22481c9946cc356c4ebd4988be",
+      "bytes": 416287,
+      "source": "art/generated/threshold_trial_arena.png",
+      "sourceSha256": "8339673c959c97c33a9011e3947b7bb05f1e012bf28637257ba03f76125356e1",
+      "cropLTRB": [
+        2,
+        2,
+        388,
+        489
+      ],
+      "size": [
+        380,
+        480
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/stair-landing.png",
+      "sha256": "55fcd7acd4d93bc72d7e07e01b9d7e82b24a235fcb15f005b9287f4d8dfdaf3f",
+      "bytes": 249617,
+      "source": "art/generated/threshold_trial_arena.png",
+      "sourceSha256": "8339673c959c97c33a9011e3947b7bb05f1e012bf28637257ba03f76125356e1",
+      "cropLTRB": [
+        398,
+        2,
+        643,
+        489
+      ],
+      "size": [
+        241,
+        480
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/sealed-door.png",
+      "sha256": "e5093ea3b9908c6eb0625ec5a688e6c5d61beb637ccea5b7a6630dcb15a8731c",
+      "bytes": 358279,
+      "source": "art/generated/threshold_trial_arena.png",
+      "sourceSha256": "8339673c959c97c33a9011e3947b7bb05f1e012bf28637257ba03f76125356e1",
+      "cropLTRB": [
+        652,
+        2,
+        1022,
+        489
+      ],
+      "size": [
+        365,
+        480
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/company.png",
+      "sha256": "93d883f5d75daa50462dfcf075444789133942c8719958479e9a9d1747d46b61",
+      "bytes": 14871,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        2,
+        52,
+        121,
+        182
+      ],
+      "size": [
+        88,
+        96
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/evolution.png",
+      "sha256": "d0ba199a2cb3fd254f62d9ec3604beb21389962507c6685f46a8593ada5191a6",
+      "bytes": 14280,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        394,
+        8,
+        520,
+        186
+      ],
+      "size": [
+        68,
+        96
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/mutants.png",
+      "sha256": "dab203d3f268efa9acbc36da7895cdca3060141f6ef1be742ef3c7254f357f0e",
+      "bytes": 19055,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        123,
+        190,
+        276,
+        345
+      ],
+      "size": [
+        95,
+        96
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/bosses.png",
+      "sha256": "4bd89f55d1ffaa3bf6e173ed4df9be3cf6abdf9daa8e52723f82744137e17ecc",
+      "bytes": 18981,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        492,
+        195,
+        656,
+        350
+      ],
+      "size": [
+        96,
+        91
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/fish.png",
+      "sha256": "790db9c419e2824520f6647fb2ec8e3670a45703ae543a4085c4311bc216befc",
+      "bytes": 8564,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        2,
+        511,
+        147,
+        615
+      ],
+      "size": [
+        96,
+        69
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/bait.png",
+      "sha256": "2bcb8ef6f26115f9994d88537d56421cc725c99130d479c35cf1efc569637c7d",
+      "bytes": 8710,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        715,
+        510,
+        871,
+        615
+      ],
+      "size": [
+        96,
+        65
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "art/polish/jackpot.png",
+      "sha256": "2b5547a68cbf30a7027bbada56abcc752da20e466d716798ee626ad1f591a8ef",
+      "bytes": 13165,
+      "source": "art/generated/codex_collectibles_atlas.png",
+      "sourceSha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "cropLTRB": [
+        145,
+        613,
+        274,
+        762
+      ],
+      "size": [
+        83,
+        96
+      ],
+      "frameIndex": 0
+    },
+    {
+      "path": "audio/polish/menu-open.wav",
+      "sha256": "7dcfb91ee0b1ad0e4263d069858c86c725ec8c929c0a2af6410f37521804b7c0",
+      "bytes": 24300,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 12128,
+      "encoding": "PCM signed 16-bit little-endian"
+    },
+    {
+      "path": "audio/polish/codex-turn.wav",
+      "sha256": "de0450f31f876751e6901d60b5d8dfe6f32bef8e21abf1b3ddf07dbc271ab8b0",
+      "bytes": 7982,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 3969,
+      "encoding": "PCM signed 16-bit little-endian"
+    },
+    {
+      "path": "audio/polish/trial-entry.wav",
+      "sha256": "83be52296b020c63ecb376ba4704b26ceadd24f52f1a09608b7869c49689e09c",
+      "bytes": 41498,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 20727,
+      "encoding": "PCM signed 16-bit little-endian"
+    },
+    {
+      "path": "audio/polish/weather-turn.wav",
+      "sha256": "84171ca2197ae9a407599a98a56c22ed939ddfef7b35a78a254ecbaee19b4079",
+      "bytes": 19450,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 9703,
+      "encoding": "PCM signed 16-bit little-endian"
+    },
+    {
+      "path": "audio/polish/trial-clear.wav",
+      "sha256": "f96f6662adb27ed84967a0798ccac8eed9aabcdcb8692ad9c51579a7ac00732d",
+      "bytes": 38412,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 19184,
+      "encoding": "PCM signed 16-bit little-endian"
+    },
+    {
+      "path": "audio/polish/trial-retry.wav",
+      "sha256": "39bdfb245113a2f21fd775aaa43ea6b323a48f3eb55824b2ab3fabf88b206f59",
+      "bytes": 20772,
+      "source": "STUDIO/build-polish-media.py",
+      "sampleRate": 22050,
+      "channels": 1,
+      "frames": 10364,
+      "encoding": "PCM signed 16-bit little-endian"
+    }
+  ]
+}

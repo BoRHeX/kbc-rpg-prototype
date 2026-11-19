@@ -1,0 +1,42 @@
+{
+  "version": "1.9",
+  "baseline": "1.8",
+  "runs": [
+    {
+      "pass": 8,
+      "outcome": "success",
+      "detail": "",
+      "at_utc": "2026-11-18T20:12:15.522653+00:00",
+      "github_run_id": "44381718645",
+      "source": {
+        "n_files": 422,
+        "bytes": 117525892,
+        "game_sha256": "787b3f1f2bf068d820e5ab4ecea117ea5e076087e9a0d412fb60df6a6dbd885d"
+      }
+    },
+    {
+      "pass": 9,
+      "outcome": "success",
+      "detail": "",
+      "at_utc": "2026-11-18T20:19:12.945815+00:00",
+      "github_run_id": "44381718645",
+      "source": {
+        "n_files": 425,
+        "bytes": 117573014,
+        "game_sha256": "a96c31381afd19b263c9145d4b8865d883e6d58e59e7f2ab668477e3f1935a60"
+      }
+    },
+    {
+      "pass": 10,
+      "outcome": "success",
+      "detail": "",
+      "at_utc": "2026-11-18T20:24:48.849579+00:00",
+      "github_run_id": "44381718645",
+      "source": {
+        "n_files": 445,
+        "bytes": 118709599,
+        "game_sha256": "b4c886bf1205587c5aa3231eaf9c9a9207ed43896d0f89d88a2abaeb14920d9d"
+      }
+    }
+  ]
+}

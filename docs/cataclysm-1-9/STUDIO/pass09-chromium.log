@@ -1,0 +1,136 @@
+(node:5) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:15:1118/201621.751950:FATAL:content/browser/sandbox_host_linux.cc:41] Check failed: 0 == shutdown(child_socket_, SHUT_RD). shutdown: Operation not permitted (1)
+#0 0x5635bc95ef72 base::debug::CollectStackTrace()
+#1 0x5635bc94935e base::debug::StackTrace::StackTrace()
+#2 0x5635bc87b92c logging::LogMessage::Flush()
+#3 0x5635bc87c74e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#4 0x5635bc87c89e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#5 0x5635bc863ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#6 0x5635b9448cb6 content::SandboxHostLinux::Init()
+#7 0x5635bc8479ea content::ContentMainRunnerImpl::Initialize()
+#8 0x5635bc84513c content::RunContentProcess()
+#9 0x5635bc845587 content::ContentMain()
+#10 0x5635b555237d ChromeMain
+#11 0x7f1ca842a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#12 0x7f1ca842a28b __libc_start_main
+#13 0x5635b555202a _start
+Crash keys:
+  "switch-13" = "about:blank"
+  "switch-12" = "--use-angle=swiftshader-webgl"
+  "switch-11" = "--ozone-override-screen-size=800,600"
+  "switch-10" = "--ozone-platform=headless"
+  "switch-9" = "--no-first-run"
+  "switch-8" = "--noerrdialogs"
+  "switch-7" = "--user-data-dir=/tmp/cata18-chromium-2apbrG"
+  "switch-6" = "--remote-debugging-pipe"
+  "switch-5" = "--disable-crashpad-for-testing"
+  "switch-4" = "--disable-gpu"
+  "switch-3" = "--disable-dev-shm-usage"
+  "switch-2" = "--no-sandbox"
+  "switch-1" = "--headless"
+  "num-switches" = "13"
+
+Received signal 6
+#0 0x5635bc95ef72 base::debug::CollectStackTrace()
+#1 0x5635bc94935e base::debug::StackTrace::StackTrace()
+#2 0x5635bc95e9d8 base::debug::(anonymous namespace)::StackDumpSignalHandler()
+#3 0x7f1ca8445330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)
+#4 0x7f1ca849ec0c pthread_kill
+#5 0x7f1ca844527e gsignal
+#6 0x7f1ca84288ff abort
+#7 0x5635bc938165 base::debug::BreakDebuggerAsyncSafe()
+#8 0x5635bc87c473 base::RepeatingCallback<>::Run()
+#9 0x5635bc87c335 logging::LogMessage::HandleFatal()
+#10 0x5635bc87bf27 logging::LogMessage::Flush()
+#11 0x5635bc87c74e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#12 0x5635bc87c89e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#13 0x5635bc863ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#14 0x5635b9448cb6 content::SandboxHostLinux::Init()
+#15 0x5635bc8479ea content::ContentMainRunnerImpl::Initialize()
+#16 0x5635bc84513c content::RunContentProcess()
+#17 0x5635bc845587 content::ContentMain()
+#18 0x5635b555237d ChromeMain
+#19 0x7f1ca842a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#20 0x7f1ca842a28b __libc_start_main
+#21 0x5635b555202a _start
+  r8: 000006080009d2a4  r9: 00000000000004f5 r10: 0000000000000008 r11: 0000000000000246
+ r12: 0000000000000006 r13: 0000000000000599 r14: 0000000000000016 r15: 00007ffc1df49f80
+  di: 000000000000000f  si: 000000000000000f  bp: 00007ffc1df49e30  bx: 000000000000000f
+  dx: 0000000000000006  ax: 0000000000000000  cx: 00007f1ca849ec0c  sp: 00007ffc1df49df0
+  ip: 00007f1ca849ec0c efl: 0000000000000246 cgf: 002b000000000033 erf: 0000000000000000
+ trp: 0000000000000000 msk: 0000000000000000 cr2: 0000000000000000
+[end of stack trace]
+390x844 Chromium smoke failed: Error: Chromium exited null
+    at ChildProcess.<anonymous> [90m(/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-9/[39mqa/advancement-chromium.cjs:56:122[90m)[39m
+[90m    at ChildProcess.wrapper (node:events:639:12)[39m
+[90m    at ChildProcess.emit (node:events:514:28)[39m
+[90m    at maybeClose (node:internal/child_process:1172:16)[39m
+[90m    at ChildProcess._handle.onexit (node:internal/child_process:335:5)[39m
+[16:16:1118/201622.567270:FATAL:content/browser/sandbox_host_linux.cc:41] Check failed: 0 == shutdown(child_socket_, SHUT_RD). shutdown: Operation not permitted (1)
+#0 0x55f6d4030f72 base::debug::CollectStackTrace()
+#1 0x55f6d401b35e base::debug::StackTrace::StackTrace()
+#2 0x55f6d3f4d92c logging::LogMessage::Flush()
+#3 0x55f6d3f4e74e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#4 0x55f6d3f4e89e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#5 0x55f6d3f35ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#6 0x55f6d0b1acb6 content::SandboxHostLinux::Init()
+#7 0x55f6d3f199ea content::ContentMainRunnerImpl::Initialize()
+#8 0x55f6d3f1713c content::RunContentProcess()
+#9 0x55f6d3f17587 content::ContentMain()
+#10 0x55f6ccc2437d ChromeMain
+#11 0x7fbff442a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#12 0x7fbff442a28b __libc_start_main
+#13 0x55f6ccc2402a _start
+Crash keys:
+  "switch-13" = "about:blank"
+  "switch-12" = "--use-angle=swiftshader-webgl"
+  "switch-11" = "--ozone-override-screen-size=800,600"
+  "switch-10" = "--ozone-platform=headless"
+  "switch-9" = "--no-first-run"
+  "switch-8" = "--noerrdialogs"
+  "switch-7" = "--user-data-dir=/tmp/cata18-chromium-h0JyYv"
+  "switch-6" = "--remote-debugging-pipe"
+  "switch-5" = "--disable-crashpad-for-testing"
+  "switch-4" = "--disable-gpu"
+  "switch-3" = "--disable-dev-shm-usage"
+  "switch-2" = "--no-sandbox"
+  "switch-1" = "--headless"
+  "num-switches" = "13"
+
+Received signal 6
+#0 0x55f6d4030f72 base::debug::CollectStackTrace()
+#1 0x55f6d401b35e base::debug::StackTrace::StackTrace()
+#2 0x55f6d40309d8 base::debug::(anonymous namespace)::StackDumpSignalHandler()
+#3 0x7fbff4445330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)
+#4 0x7fbff449ec0c pthread_kill
+#5 0x7fbff444527e gsignal
+#6 0x7fbff44288ff abort
+#7 0x55f6d400a165 base::debug::BreakDebuggerAsyncSafe()
+#8 0x55f6d3f4e473 base::RepeatingCallback<>::Run()
+#9 0x55f6d3f4e335 logging::LogMessage::HandleFatal()
+#10 0x55f6d3f4df27 logging::LogMessage::Flush()
+#11 0x55f6d3f4e74e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#12 0x55f6d3f4e89e logging::ErrnoLogMessage::~ErrnoLogMessage()
+#13 0x55f6d3f35ddb logging::CheckNoreturnError::~CheckNoreturnError()
+#14 0x55f6d0b1acb6 content::SandboxHostLinux::Init()
+#15 0x55f6d3f199ea content::ContentMainRunnerImpl::Initialize()
+#16 0x55f6d3f1713c content::RunContentProcess()
+#17 0x55f6d3f17587 content::ContentMain()
+#18 0x55f6ccc2437d ChromeMain
+#19 0x7fbff442a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+#20 0x7fbff442a28b __libc_start_main
+#21 0x55f6ccc2402a _start
+  r8: 00003c700009d2a4  r9: 00000000000004f5 r10: 0000000000000008 r11: 0000000000000246
+ r12: 0000000000000006 r13: 0000000000000599 r14: 0000000000000016 r15: 00007ffe57ff3a40
+  di: 0000000000000010  si: 0000000000000010  bp: 00007ffe57ff38f0  bx: 0000000000000010
+  dx: 0000000000000006  ax: 0000000000000000  cx: 00007fbff449ec0c  sp: 00007ffe57ff38b0
+  ip: 00007fbff449ec0c efl: 0000000000000246 cgf: 002b000000000033 erf: 0000000000000000
+ trp: 0000000000000000 msk: 0000000000000000 cr2: 0000000000000000
+[end of stack trace]
+844x390 Chromium smoke failed: Error: Chromium exited null
+    at ChildProcess.<anonymous> [90m(/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-9/[39mqa/advancement-chromium.cjs:56:122[90m)[39m
+[90m    at ChildProcess.wrapper (node:events:639:12)[39m
+[90m    at ChildProcess.emit (node:events:514:28)[39m
+[90m    at maybeClose (node:internal/child_process:1172:16)[39m
+[90m    at ChildProcess._handle.onexit (node:internal/child_process:335:5)[39m

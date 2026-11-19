@@ -1,0 +1,53 @@
+
+$ node qa/threshold-director.cjs
+Threshold director: seeded approach, objective resets, three phases, timeout, death and terminal idempotence passed.
+(node:3) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+exit=0
+
+$ node qa/long-night-fixtures.cjs
+(node:9) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS active chapter boss checkpoint and restore at all ten milestones, including city guardian, equipment, and final boss
+PASS detached pack leader restore, direct Endless denial with legacy win
+PASS new crews consume one pickup, survive revival and clear on restart; seeded mission offer, painted beacon, dwell reset and no renewed reward after reload
+PASS storm schedules a warning then stuns ordinary cats only
+PASS Pass 05 PNG/WAV byte signatures and manifest hashes
+PASS schema-1 Mecha import, paused fusion, slot checks, crew combat and raster calls, mood, weather, missions and reward restore
+PASS Trial pause, all weather legs, solo movement and auto-fire clear, badge and unchanged parked checkpoint
+PASS combat map gate, sandbox fusion selection, background freeze, timeout and original squad restoration
+PASS Pass 08 PNG/WAV signature and SHA-256 verification, 1.8 checkpoint import and catch deduplication
+PASS 17 chapter raster draw calls, chapter titles, terminal banner hide, WAV scheduling and stale decode cancellation (test doubles)
+Largest surviving fixture slot: 11107 characters
+PASS legacy metadata migration, festival dwell and 120-tick replay, title, 630-tick boundary, cast and Mecha restore, upgrade offers, revival, 1000-night segmented progression, finale, Endless, recovery, quota, future schema
+exit=0
+
+$ node qa/runtime.cjs
+(node:15) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+game.js:4322
+  window.__test={get game(){return game;},updateSupport,updateGas,prepareShot,updateEnemyProjectiles,summonCompanion,updateCompanions,addFish,updateMecha,updateCompanyRole,updateForaging,squadHit,cityRoute,cityTick,cityDefeat,citySolids,isTerrainClear,createCity,updateDirector,beginFusion,cityMap,fishingDraw,fishingInit,fishingTick,fishingOdds,fishingResolve,fishingAward,fishingHazard,safeSpawn,moveWithCollision,updateMajorEnemyAttack,mutationAPI,wildcardAPI,defeatEnemy,spawnEnemy,updateEvolution,renderWorld};window.spawnRelic=spawnRelic;
+                                                                                                                                                                                                                                                                                                  ^
+
+ReferenceError: cityMap is not defined
+    at game.js:4322:291
+    at game.js:4338:3
+    at Script.runInContext (node:vm:149:12)
+    at Object.runInContext (node:vm:301:6)
+    at /home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-9/qa/runtime.cjs:26:830
+    at Object.<anonymous> (/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-9/qa/runtime.cjs:227:3)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+exit=1
+
+$ node qa/mutation-fixtures.cjs
+(node:21) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+exit=0
+
+$ node qa/wildcard-fixtures.cjs
+(node:27) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+exit=0
