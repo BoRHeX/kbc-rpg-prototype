@@ -1,0 +1,155 @@
+name: Cataclysm 1.7–1.9 — recover original ten-pass source and publish
+run-name: Recover REAL 1.7 1.8 1.9 artifacts · publish all three without regeneration
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-17-19-publish-recovery.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-17-19-original-artifact-recovery
+  cancel-in-progress: false
+jobs:
+  recover-and-publish:
+    name: Recover 3 archived game versions and safely publish actual originals
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore exact 1.7 source, PNGs, WAVs, QA and report from Pass04
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 44381718645
+          github-token: ${{ github.token }}
+          name: cataclysm-triple-p04-44381718645
+          path: docs/cataclysm-1-7
+      - name: Restore exact 1.8 source from Pass07
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 44381718645
+          github-token: ${{ github.token }}
+          name: cataclysm-triple-p07-44381718645
+          path: docs/cataclysm-1-8
+      - name: Restore exact 1.9 source from Pass10
+        uses: actions/download-artifact@v4
+        with:
+          repository: BoRHeX/kbc-rpg-prototype
+          run-id: 44381718645
+          github-token: ${{ github.token }}
+          name: cataclysm-triple-p10-44381718645
+          path: docs/cataclysm-1-9
+      - name: Verify full actual games and browser evidence before issuing candidate labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile game_factory/cataclysm_17_19_studio.py
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          for version in ('1.7','1.8','1.9'):
+              p=Path('docs')/('cataclysm-'+version.replace('.','-'))
+              game=p/'game.js'
+              index=p/'index.html'
+              assert game.is_file() and game.stat().st_size>100000,(version,'game.js missing')
+              assert index.is_file() and version in index.read_text(),(version,'index missing version')
+              report=p/'STUDIO/FINAL_REPORT.md'
+              assert report.is_file() and report.stat().st_size>500,(version,'QA report absent')
+              qa=json.loads((p/'STUDIO/BROWSER_QA.json').read_text())
+              assert qa.get('both_orientations_passed') is True,(version,'Browser not verified')
+              assert len(qa.get('checks',[]))==2 and all(x.get('passed') for x in qa['checks']),version
+              images=json.loads((p/'STUDIO/IMAGE_MANIFEST.json').read_text())
+              assert images.get('status')=='GENERATED',(version,'art was not all generated')
+              print('RECOVERED REAL GAME',version,'bytes',game.stat().st_size,'report',report.stat().st_size,'illustrations',len(images['images']))
+          PY
+      - name: Label all three experimental versions with real intact QA evidence
+        run: |
+          set -euo pipefail
+          for v in 1.7 1.8 1.9; do
+            python game_factory/cataclysm_17_19_studio.py candidate "$v"
+          done
+      - name: Archive restored games before any public GitHub publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: cataclysm-17-19-REAL-games-44381718645-${{ github.run_id }}
+          path: |
+            docs/cataclysm-1-7
+            docs/cataclysm-1-8
+            docs/cataclysm-1-9
+            docs/cataclysm-1-7-candidate
+            docs/cataclysm-1-8-candidate
+            docs/cataclysm-1-9-candidate
+          retention-days: 45
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Commit authentic frozen 1.7, 1.8 and 1.9 versions and merge one PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'BoRHeZ Games Studio'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch="studio/cataclysm-17-19-real-recovery-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add docs/cataclysm-1-7 docs/cataclysm-1-8 docs/cataclysm-1-9 docs/cataclysm-1-7-candidate docs/cataclysm-1-8-candidate docs/cataclysm-1-9-candidate
+          test -n "$(git diff --cached --name-only)"
+          git -c core.whitespace=-trailing-space diff --cached --check
+          git commit -m "Publish original preserved 1.7–1.9 ten-pass studio games and QA evidence"
+          gh auth setup-git
+          git push --set-upstream origin HEAD
+          cat > /tmp/borhez-recovery-pr.txt <<'PR_BODY'
+          Original Cataclysm 1.7, 1.8 and 1.9 game sources restored directly from successful original development Pass04, Pass07 and Pass10 artifacts of run 44381718645.
+          All ten development jobs passed. Each stage passed two-orientation Chrome nonblank startup checks and preserved original raster illustrations, generated sounds and actual gameplay source.
+          This recovery performs ZERO new game-generation or coding model calls.
+          Candidate statuses and source reports distinguish browser smoke from long-form user/physical Samsung acceptance.
+          Earlier version directories preserved. No 2.0 work or stable promotion.
+          PR_BODY
+          pr="$(gh pr create --base main --head "$branch" --title 'Cataclysm 1.7–1.9 — publish REAL ten-pass game archives' --body-file /tmp/borhez-recovery-pr.txt)"
+          echo "Original three-version PR: $pr" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge "$pr" --squash --delete-branch
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          for v in 1-7 1-8 1-9; do
+            test -s "docs/cataclysm-$v/game.js"
+            test -s "docs/cataclysm-$v/STUDIO/CANDIDATE_STATUS.json"
+          done
+      - name: Package all previous and new versions for Github Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: cataclysm-triple-recovery-pages-${{ github.run_id }}
+          path: docs
+      - name: Deploy actual 1.7 1.8 and 1.9 builds
+        uses: actions/deploy-pages@v4
+        id: deploy
+        with:
+          artifact_name: cataclysm-triple-recovery-pages-${{ github.run_id }}
+          timeout: 180000
+      - name: Report three game links and provenance
+        run: |
+          echo '### Cataclysm 1.7–1.9 archived game recovery and publication' >> "$GITHUB_STEP_SUMMARY"
+          for v in 1-7 1-8 1-9; do
+            echo "Game: https://borhex.github.io/kbc-rpg-prototype/cataclysm-$v/" >> "$GITHUB_STEP_SUMMARY"
+            echo "Candidate report: https://borhex.github.io/kbc-rpg-prototype/cataclysm-$v-candidate/" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo 'Actual original run artifacts: 44381718645; no regenerated models.' >> "$GITHUB_STEP_SUMMARY"
