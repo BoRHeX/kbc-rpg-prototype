@@ -1,0 +1,62 @@
+name: Cataclysm 1.7–1.9 — Pages-only deployment retry
+run-name: Deploy merged REAL 1.7 1.8 1.9 candidate files, no AI generation
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_factory/requests/cataclysm-17-19-pages-deploy.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cataclysm-three-version-pages-deploy
+  cancel-in-progress: false
+jobs:
+  pages:
+    name: Deploy only real merged game source and artwork
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Verify merged release source, not fake placeholder directories
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          for v in ('1-7','1-8','1-9'):
+              d=Path('docs')/('cataclysm-'+v)
+              assert (d/'game.js').is_file() and (d/'game.js').stat().st_size>100000
+              assert (d/'index.html').is_file()
+              assert (d/'STUDIO/FINAL_REPORT.md').is_file()
+              qa=json.loads((d/'STUDIO/BROWSER_QA.json').read_text())
+              assert qa['both_orientations_passed'] is True
+              state=json.loads((d/'STUDIO/CANDIDATE_STATUS.json').read_text())
+              print(v,'REAL',state['status'],'browser passes',len(qa['checks']))
+          PY
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Package merged docs with canonical github-pages artifact name
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy to GitHub Pages (default artifact name)
+        uses: actions/deploy-pages@v4
+        id: deployment
+      - name: Confirm intended entrypoints after deployment
+        run: |
+          echo 'Published source: merge PR #100, ten AI development passes from run #44381718645' >> "$GITHUB_STEP_SUMMARY"
+          echo '1.7: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-7/' >> "$GITHUB_STEP_SUMMARY"
+          echo '1.8: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-8/' >> "$GITHUB_STEP_SUMMARY"
+          echo '1.9: https://borhex.github.io/kbc-rpg-prototype/cataclysm-1-9/' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Previous 1.69 and earlier preserved; 2.0 not launched.' >> "$GITHUB_STEP_SUMMARY"
