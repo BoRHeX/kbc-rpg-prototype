@@ -1,0 +1,51 @@
+{
+  "version": "1.8",
+  "pass": 5,
+  "phase": "art and concept",
+  "baseline": "Pass 04 Cataclysm 1.7",
+  "sourceManifest": "STUDIO/IMAGE_MANIFEST.json",
+  "derivedManifest": "STUDIO/ADVANCEMENT_MEDIA.json",
+  "concept": "STUDIO/CONCEPT.md",
+  "implementedCompanionFusion": "mecha",
+  "recipes": [
+    {
+      "id": "trawl_team",
+      "parents": ["angler", "trapper"],
+      "requiredLevel": 3,
+      "status": "planned",
+      "slots": {"before": 2, "after": 1},
+      "frameKeys": ["trawl-ready", "trawl-cast"],
+      "cue": "trawl-cast",
+      "cooldownSeconds": 9
+    },
+    {
+      "id": "spotter_pair",
+      "parents": ["scout", "sniper"],
+      "requiredLevel": 3,
+      "status": "planned",
+      "slots": {"before": 2, "after": 1},
+      "frameKeys": ["spotter-ready", "spotter-fire"],
+      "cue": "spotter-fire",
+      "cooldownSeconds": 7
+    },
+    {
+      "id": "thunder_chorus",
+      "parents": ["bard", "stormcaller"],
+      "requiredLevel": 3,
+      "status": "stretch concept",
+      "slots": {"before": 2, "after": 1},
+      "frameKeys": []
+    }
+  ],
+  "squadSlotCap": 4,
+  "mergeSplitLockSeconds": 10,
+  "weatherKeys": ["clear", "rain", "fog", "storm"],
+  "moodKeys": ["curious", "worried", "determined", "excited"],
+  "missions": {
+    "rain_cache": {"frameKeys": ["beacon", "cache", "rain-fish"], "reward": "brief movement buff"},
+    "signal_rescue": {"frameKeys": ["rescue"], "reward": "temporary shield charge"}
+  },
+  "missionSuccessCue": "mission-complete",
+  "hud": {"chipCssPixels": [32, 36], "weatherThumbnailCssPixels": 24, "combatInput": "movement only"},
+  "save": {"sourceSchemaVersion": 1, "plannedSchemaVersion": 2, "preserveSourceJournal": true}
+}

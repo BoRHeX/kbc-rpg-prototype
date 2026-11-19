@@ -1,0 +1,11 @@
+$ sha256sum -c STUDIO/pass10-source.sha256
+game.js: OK
+index.html: OK
+long-night.js: OK
+checkpoint.js: OK
+advancement.js: OK
+threshold-trial.js: OK
+art/generated/cataclysm_menu_cover.png: OK
+art/generated/codex_collectibles_atlas.png: OK
+art/generated/threshold_trial_arena.png: OK
+exit=0

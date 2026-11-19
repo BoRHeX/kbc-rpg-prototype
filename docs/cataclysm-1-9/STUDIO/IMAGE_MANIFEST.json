@@ -1,0 +1,92 @@
+{
+  "version": "1.9",
+  "model": "gpt-image-2.5-flare",
+  "status": "GENERATED",
+  "images": [
+    {
+      "name": "cataclysm_menu_cover",
+      "background": "opaque",
+      "prompt": "Beautiful original vertical-feeling square illustrated GAME TITLE SCREEN artwork for a darkly funny top-down feline-versus-zombie action roguelite nearing a major 2.0 expansion: brave white quadruped cat hero with expressive eyes and independent tail gun, a visible detailed mecha and companion squad in rain-soaked abandoned ruined city, a glowing mysterious stairwell descending into underground darkness as teased destination, moody neon cyan amber violet lighting and mature painted cartoon style. Detailed concept illustration with uncluttered central panel for later UI overlay. NO WORDS, title text, logos, buttons, watermarks or frames.",
+      "status": "GENERATED",
+      "path": "art/generated/cataclysm_menu_cover.png",
+      "sha256": "0e0f941f6f7df9de462ea5ed8cbe5623c6d831c4e3c0c3bfa24bcb2fce617cfc",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "bytes": 1908289,
+      "usage": {
+        "input_tokens": 129,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 129
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 568
+      }
+    },
+    {
+      "name": "codex_collectibles_atlas",
+      "background": "transparent",
+      "prompt": "Real hand-drawn painterly 2D game UI icon atlas on transparent background for illustrated Cataclysm roguelite: separated high-quality tiny portraits/icons of distinct feline companion evolutions, mutant enemy bestiary, bait fish/jackpot mementos, rare boss relic and old weapons—varied distinct shapes and whimsical detail, consistent palette and 40-80px legibility. Organize as separate cells for crop/hover and catalog integration. No glyph/text labels, no words, no borders or watermarks.",
+      "status": "GENERATED",
+      "path": "art/generated/codex_collectibles_atlas.png",
+      "sha256": "bfca1b35817d581f28056fd17d385496228bdb516584c236a523698976a56531",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 1994473,
+      "usage": {
+        "input_tokens": 112,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 112
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 551
+      }
+    },
+    {
+      "name": "threshold_trial_arena",
+      "background": "opaque",
+      "prompt": "Original rich painterly top-down mobile video game environment atlas for a PRE-CATACOMB Threshold Trial before version 2.0, flooded ruined city street transitioning to stone stairwell and giant ancient underground sealed door, cracked pavement, stair glyphs, torchlit echoing vestibule, narrow tactical alleys and hazard props; true functional illustrated world art, tile-friendly separated sections, neon lavender cyan brass and midnight blue, readable miniature characters and painted edges, no title, UI labels, captions or watermark.",
+      "status": "GENERATED",
+      "path": "art/generated/threshold_trial_arena.png",
+      "sha256": "8339673c959c97c33a9011e3947b7bb05f1e012bf28637257ba03f76125356e1",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB",
+      "bytes": 2284519,
+      "usage": {
+        "input_tokens": 107,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 107
+        },
+        "output_tokens": 439,
+        "output_tokens_details": {
+          "image_tokens": 439,
+          "text_tokens": 0
+        },
+        "total_tokens": 546
+      }
+    }
+  ],
+  "requested": 3,
+  "created_utc": "2026-11-18T20:09:22.853067+00:00",
+  "provenance": "Actual image-generation API PNG byte outputs, not canvas-drawn text model shapes",
+  "number_generated": 3
+}

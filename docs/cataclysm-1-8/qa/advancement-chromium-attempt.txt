@@ -1,0 +1,5 @@
+(node:4) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[14:14:1118/200330.169517:FATAL:content/browser/sandbox_host_linux.cc:41] Check failed: 0 == shutdown(child_socket_, SHUT_RD). shutdown: Operation not permitted (1)
+#0 0x5610e9ad2f72 base::debug::CollectStackTrace()
+#1 0x5610e9abd35e base::debug::StackTrace::StackTrace()

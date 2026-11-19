@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cataclysm 1.4 — animation and audio inspection</title>
+<style>body{background:#19232a;color:#eee;font:16px system-ui;max-width:1000px;margin:24px auto;padding:16px}canvas{max-width:100%;background:repeating-conic-gradient(#64717b 0% 25%,#303b44 0% 50%) 0/24px 24px}button,select,audio{margin:8px;max-width:95%}a{color:#8de}</style>
+<h1>1.4 illustrated pose inspection — PARTIAL</h1><p>One guardian identity; four Mecha states. The demo sequences distinct generated paintings. Small translation variants are derived frames, not extra painted poses. Gameplay integration is a later pass.</p>
+<button id="toggle">Pause animation</button><label><input id="reduced" type="checkbox">Reduced motion</label><p id="status">Loading actual PNGs…</p><canvas width="960" height="420" id="view"></canvas>
+<p>Left: guardian at 80px and 256px. Right: Mecha at 96px and 256px. Checkerboard exposes alpha. Pose changes can pop; no directional gait is claimed.</p><h2>Original synthesized audio — audition pending</h2><select id="sounds"></select><audio controls id="audio"></audio><p>Audio starts only through the player. Existing game soundtrack is preserved. Four 24-second loops, one 6-second introduction, ten short cues.</p><p><a href="frame-index.json">Frame index/provenance</a> · <a href="../../audio/generated/audio-index.json">Audio index</a> · <a href="../../STUDIO/ANIMATION_AUDIO_REPORT.md">Handoff report</a></p>
+<script type="module">
+import {loadFrames,drawFrame,frameAt} from './sprite-player.js';
+const pack=await loadFrames('../../'); const ctx=view.getContext('2d');let paused=false,elapsed=0,last=performance.now();
+toggle.onclick=()=>{paused=!paused;toggle.textContent=paused?'Resume animation':'Pause animation'};
+reduced.checked=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function render(now){if(!paused)elapsed+=Math.min(now-last,100);last=now;ctx.clearRect(0,0,960,420);ctx.fillStyle='white';ctx.font='18px system-ui';
+for(const [actor,x,size] of [['guardian',180,80],['mecha',650,96]]){const key=frameAt(pack.index,actor+'.demonstration',elapsed,reduced.checked);drawFrame(ctx,pack,key,x,150,size);drawFrame(ctx,pack,key,x,410,256);ctx.fillText(key,x-120,24)}requestAnimationFrame(render)}requestAnimationFrame(render);document.getElementById('status').textContent='PNG frames decoded; animation running.';
+const index=await(await fetch('../../audio/generated/audio-index.json')).json();for(const [id,a]of Object.entries(index.assets)){const o=document.createElement('option');o.value='../../'+a.path;o.textContent=id+' ('+a.seconds+'s)';sounds.append(o)}function select(){audio.src=sounds.value;audio.loop=index.assets[sounds.selectedOptions[0].textContent.split(' (')[0]].loop}sounds.onchange=select;select();
+</script></html>

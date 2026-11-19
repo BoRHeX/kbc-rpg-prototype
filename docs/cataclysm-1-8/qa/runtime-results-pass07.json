@@ -1,0 +1,1616 @@
+{
+  "status": "PASS",
+  "checks": [
+    "live lab director admits collision-checked disguise, reveal, lunge and reward",
+    "bell and ritual interrupt on damage; five-minion cap; revived corpse cannot recurse",
+    "offscreen roof spawn, locked safe landing point and harmless warning/leap",
+    "flying pack member rallies, charges and scatters",
+    "fish reservation and courier flags, final charged bait distraction, atomic theft and refund",
+    "Bell + Necro hybrid and two distinct district/guardian-dependent late evolutions",
+    "inherited flying anatomy survives fusion; indexed mutant PNG canvas draw; music precedence",
+    "WAV file buffers enter one audio context; interruption and pause stop voices; resume drops stale cue",
+    "32 seed placements (2 dormant, 0 blocked, 30 ineligible), timed lanterns, lore, capped gust and mimic, one two-fish award, timeout, departure and life-loss retirement",
+    "indexed festival PNG atlas draws, original audio bed, lore WAV, fanfare priority, cue cap and mute invalidation through shared media",
+    "actual marked Mecha volley and committed Courier fish delivery, three-target cap, empty targets, expiry, cooldown, night cap and life cleanup",
+    "pause preserves committed danger; cancel on resume releases it",
+    "ambush cap holds from five to six",
+    "flying and phasing actors stay within physical perimeter",
+    "nine sampled city seeds have clear aprons and plaza approaches",
+    "1.5 bait weights, collision water and reachable aprons, cast cancellation, atomic catch, jackpot cap, mutant warned lunge, bounded spawns",
+    "guardian spawns clear and away from player",
+    "early guardian gas telegraphs damages and expires",
+    "seeded finite city safe spawn and seed variance",
+    "locked/open gates share collision geometry",
+    "horde gate success and third-attempt relief",
+    "reachable magnet route excludes ordinary pickups",
+    "local kill provocation and guardian defeat",
+    "rare eligible guardian life reward cannot repeat across seed restart",
+    "full runtime and local assets load",
+    "render draw calls",
+    "responsive keyboard movement",
+    "three/four/five unique eligible offers",
+    "reroll spends token and changes offers",
+    "upgrade pause",
+    "nine distinct deaths and terminal game over",
+    "transition pauses",
+    "revive retains run progression and pickups",
+    "partial HP and bounded safe grace",
+    "one-shot capped recovery and full-cap fallback",
+    "restart reset",
+    "all new perks equip",
+    "ordinary and lethal projectile integration",
+    "regen rates and solo/last-life multipliers",
+    "haunted pierce expires",
+    "shield periodic cooldown",
+    "four unique companions and eligibility",
+    "visible tail muzzle matches simulation in both facings",
+    "inherited timed life lottery removed",
+    "zero-token reroll is inert and offers remain selectable",
+    "16 actual recruits and level thresholds",
+    "eight distinct new role work paths",
+    "fish consumed once without player currency or XP duplication",
+    "four-slot fusion and component recruitment lock",
+    "Mecha build boarding fire heat repair and restart",
+    "presentation all roles and Mecha stages in both motion modes without state mutation",
+    "crew HUD visibility override"
+  ],
+  "drawCalls": 41211,
+  "browserPixels": "NOT TESTED by this DOM/canvas-double harness; see STUDIO browser attempt logs",
+  "snapshot": {
+    "unseen": {
+      "seed": 31,
+      "discovered": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "open": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "kills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "guardians": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "defeated": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "solids": [
+        {
+          "x": 365,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1120,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1875,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 350,
+          "y": 1100,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1860,
+          "y": 1100,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 400,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1155,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1910,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 3025,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3780,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4600,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3075,
+          "y": 1100,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4585,
+          "y": 1100,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3060,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3815,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4570,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 385,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1140,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1895,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 370,
+          "y": 3780,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1880,
+          "y": 3780,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 355,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1110,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1865,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 3045,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3800,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4555,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3030,
+          "y": 3780,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4540,
+          "y": 3780,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3080,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3835,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4590,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 935,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 1470,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 3570,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 4265,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 845,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 1540,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 3640,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 4175,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        }
+      ],
+      "gates": [
+        {
+          "a": 0,
+          "b": 1,
+          "x": 2680,
+          "y": 1340,
+          "vertical": true,
+          "attempts": 0,
+          "cooldown": 0,
+          "active": false,
+          "done": false
+        },
+        {
+          "a": 0,
+          "b": 2,
+          "x": 1340,
+          "y": 2680,
+          "vertical": false,
+          "attempts": 0,
+          "cooldown": 0,
+          "active": false,
+          "done": false
+        },
+        {
+          "a": 1,
+          "b": 3,
+          "x": 4020,
+          "y": 2680,
+          "vertical": false,
+          "attempts": 0,
+          "cooldown": 0,
+          "active": false,
+          "done": false
+        },
+        {
+          "a": 2,
+          "b": 3,
+          "x": 2680,
+          "y": 4020,
+          "vertical": true,
+          "attempts": 0,
+          "cooldown": 0,
+          "active": false,
+          "done": false
+        }
+      ],
+      "route": null,
+      "nextRoute": 0,
+      "rewardUsed": false,
+      "solidCacheKey": "0000"
+    },
+    "nineLives": {
+      "lives": 9,
+      "losses": 0,
+      "grace": 0,
+      "reviveClock": 0,
+      "offerCount": 3,
+      "reward": {
+        "checked": false,
+        "claimed": false,
+        "won": false,
+        "at": 180,
+        "chance": 0.18
+      },
+      "perks": {
+        "solo": false,
+        "repair": false,
+        "shield": false,
+        "revenant": false,
+        "secondWind": false,
+        "squadCare": false,
+        "lastLaugh": false
+      }
+    },
+    "major": {
+      "campaign": {
+        "night": 1,
+        "events": [],
+        "credited": [],
+        "boss": 0,
+        "elite": 0,
+        "superElite": 0,
+        "finaleCleared": false,
+        "won": false
+      },
+      "nightDuration": 10.5,
+      "roster": {
+        "normal": 9,
+        "boss": 9,
+        "elite": 6,
+        "superElite": 3
+      },
+      "animationFrames": 1314,
+      "songs": [
+        "ironmarch",
+        "afterlight"
+      ],
+      "rerollTokens": 2,
+      "rerollDrops": 0,
+      "enemyShots": 0,
+      "victory": false
+    },
+    "world": {
+      "size": null,
+      "chunkSize": 1340,
+      "cacheLimit": 64,
+      "wrap": false,
+      "wrapY": false,
+      "topology": "seeded-connected-city",
+      "epoch": 0,
+      "currentBiomeId": "neon-city",
+      "epochs": [
+        {
+          "from": 9007199254740991,
+          "biome": 0
+        }
+      ],
+      "frontier": 0,
+      "minY": 2100,
+      "maxY": 2100,
+      "cameraY": 1740,
+      "chunk": 0,
+      "scrollDirection": "static",
+      "scrollSpeed": 0,
+      "chunks": [],
+      "solids": [
+        {
+          "x": 365,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1120,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1875,
+          "y": 340,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 350,
+          "y": 1100,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1860,
+          "y": 1100,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 400,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1155,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 1910,
+          "y": 1860,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 0
+        },
+        {
+          "x": 3025,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3780,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4600,
+          "y": 340,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3075,
+          "y": 1100,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4585,
+          "y": 1100,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3060,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 3815,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 4570,
+          "y": 1860,
+          "w": 300,
+          "h": 180,
+          "kind": "building",
+          "style": 1
+        },
+        {
+          "x": 385,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1140,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1895,
+          "y": 3020,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 370,
+          "y": 3780,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1880,
+          "y": 3780,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 355,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1110,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 1865,
+          "y": 4540,
+          "w": 180,
+          "h": 400,
+          "kind": "building",
+          "style": 2
+        },
+        {
+          "x": 3045,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3800,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4555,
+          "y": 3020,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3030,
+          "y": 3780,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4540,
+          "y": 3780,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3080,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 3835,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 4590,
+          "y": 4540,
+          "w": 300,
+          "h": 280,
+          "kind": "building",
+          "style": 3
+        },
+        {
+          "x": 935,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 1470,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 3570,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 4265,
+          "y": 1160,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 845,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 1540,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 3640,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": 4175,
+          "y": 3840,
+          "w": 160,
+          "h": 100,
+          "kind": "water"
+        },
+        {
+          "x": -200,
+          "y": -200,
+          "w": 5760,
+          "h": 200
+        },
+        {
+          "x": -200,
+          "y": 5360,
+          "w": 5760,
+          "h": 200
+        },
+        {
+          "x": -200,
+          "y": 0,
+          "w": 200,
+          "h": 5360
+        },
+        {
+          "x": 5360,
+          "y": 0,
+          "w": 200,
+          "h": 5360
+        },
+        {
+          "x": 2640,
+          "y": 0,
+          "w": 80,
+          "h": 1140
+        },
+        {
+          "x": 2640,
+          "y": 1540,
+          "w": 80,
+          "h": 1140
+        },
+        {
+          "x": 2640,
+          "y": 1140,
+          "w": 80,
+          "h": 400,
+          "gate": true
+        },
+        {
+          "x": 0,
+          "y": 2640,
+          "w": 1140,
+          "h": 80
+        },
+        {
+          "x": 1540,
+          "y": 2640,
+          "w": 1140,
+          "h": 80
+        },
+        {
+          "x": 1140,
+          "y": 2640,
+          "w": 400,
+          "h": 80,
+          "gate": true
+        },
+        {
+          "x": 2680,
+          "y": 2640,
+          "w": 1140,
+          "h": 80
+        },
+        {
+          "x": 4220,
+          "y": 2640,
+          "w": 1140,
+          "h": 80
+        },
+        {
+          "x": 3820,
+          "y": 2640,
+          "w": 400,
+          "h": 80,
+          "gate": true
+        },
+        {
+          "x": 2640,
+          "y": 2680,
+          "w": 80,
+          "h": 1140
+        },
+        {
+          "x": 2640,
+          "y": 4220,
+          "w": 80,
+          "h": 1140
+        },
+        {
+          "x": 2640,
+          "y": 3820,
+          "w": 80,
+          "h": 400,
+          "gate": true
+        }
+      ]
+    },
+    "progressionMilestones": [],
+    "risingShadow": {
+      "active": false,
+      "warning": 0,
+      "y": 0,
+      "hits": 0
+    },
+    "endgame": {
+      "active": false,
+      "victories": 0,
+      "spawned": 0,
+      "cooldown": 0,
+      "complete": false,
+      "reward": null
+    },
+    "cityEvents": {
+      "active": null,
+      "nextCrane": 90,
+      "nextCity": 120,
+      "cityIndex": 0,
+      "serial": 0,
+      "counts": {
+        "crane": 0,
+        "street": 0,
+        "elite": 0
+      },
+      "completed": {
+        "crane": 0,
+        "street": 0,
+        "elite": 0
+      },
+      "recoveryUntil": 0,
+      "relayUnlocked": false,
+      "relay": null,
+      "playerHits": 0,
+      "enemyHits": 0,
+      "avoids": 0,
+      "maxDebris": 0
+    },
+    "director": {
+      "budget": 12,
+      "aliveThreat": 0,
+      "nearby": 0,
+      "kills": 0,
+      "dps": 0,
+      "pendingKills": 0,
+      "pendingDamage": 0,
+      "blocked": false,
+      "recovery": 0,
+      "mutationCooldown": 0,
+      "spawnDelay": 1.65,
+      "spawns": 0,
+      "suppressed": 0,
+      "mutations": 0,
+      "criticalShots": 0,
+      "fusionCooldown": 12,
+      "fusions": 0,
+      "emerged": 0,
+      "cocoonsDestroyed": 0,
+      "serial": 0,
+      "frameMs": 16.7,
+      "framePressure": false,
+      "maxEnemies": 140,
+      "minSpawnDelay": 0.16,
+      "maxSpawnDelay": 1.5,
+      "normalArrivals": []
+    },
+    "viewport": {
+      "width": 1558.1538461538462,
+      "height": 720,
+      "pixels": [
+        844,
+        390
+      ]
+    },
+    "squadTactic": "default",
+    "squadTacticDuration": 0,
+    "squadTacticCooldown": 0,
+    "nightCycle": {
+      "waveCount": 1
+    },
+    "build": "1.8",
+    "patch": "cataclysm-18-distilled-advancement",
+    "threatUnlocks": {
+      "shambler": 0,
+      "weaver": 40,
+      "dasher": 50,
+      "orbiter": 70,
+      "stalker": 85,
+      "hexer": 95,
+      "ghost": 140,
+      "summoner": 160,
+      "blight": 190,
+      "gas": 240
+    },
+    "availableThreats": [
+      "shambler"
+    ],
+    "catSpeech": {
+      "seed": 2071961571,
+      "clock": 0,
+      "active": [],
+      "queue": [],
+      "history": [],
+      "cooldowns": {},
+      "eventTimes": {},
+      "used": {},
+      "serial": 0,
+      "nextIdle": 14,
+      "started": false,
+      "seen": [],
+      "night": 0,
+      "lastHp": null,
+      "lastFish": 0,
+      "feral": false,
+      "adrenaline": false,
+      "encounter": null,
+      "reply": null,
+      "guideAt": 18
+    },
+    "catSpeechVisuals": [],
+    "formationPlan": {
+      "side": 1,
+      "spacing": 1,
+      "next": 0,
+      "changes": 0
+    },
+    "company": {
+      "fish": {
+        "spawned": 16,
+        "player": 0,
+        "eaten": 0,
+        "onGround": 16,
+        "balance": 0
+      },
+      "slots": 0,
+      "unique": true,
+      "roster": []
+    },
+    "advancement": {
+      "weather": "clear",
+      "district": -1,
+      "strike": null,
+      "nextStrike": 0,
+      "mission": null,
+      "rushUntil": 0,
+      "wardUntil": 0
+    },
+    "wildcard": {
+      "phase": "ineligible",
+      "stamps": 0,
+      "result": null,
+      "nextPulse": 0,
+      "pulseNight": 0,
+      "pulses": 0
+    },
+    "companions": {
+      "behaviorVersion": 4,
+      "states": [],
+      "limit": 4,
+      "roles": [
+        "shooter",
+        "healer",
+        "tank",
+        "brawler",
+        "sniper",
+        "engineer",
+        "trapper",
+        "bard",
+        "angler",
+        "scout",
+        "alchemist",
+        "salvager",
+        "saboteur",
+        "stormcaller",
+        "courier",
+        "hexcat"
+      ],
+      "active": [],
+      "ranks": {
+        "shooter": 0,
+        "healer": 0,
+        "tank": 0,
+        "brawler": 0,
+        "sniper": 0,
+        "engineer": 0,
+        "trapper": 0,
+        "bard": 0,
+        "angler": 0,
+        "scout": 0,
+        "alchemist": 0,
+        "salvager": 0,
+        "saboteur": 0,
+        "stormcaller": 0,
+        "courier": 0,
+        "hexcat": 0
+      },
+      "uniqueCount": 16
+    },
+    "survivalTimer": 0,
+    "escapeOverdriveTimer": 0,
+    "feralInstinctOverdrive": 0,
+    "runicRelic": {
+      "held": null,
+      "active": null,
+      "duration": 0,
+      "cooldown": 0,
+      "nextSpawn": 35,
+      "items": []
+    },
+    "offered": [],
+    "lastNotice": null,
+    "mode": "running",
+    "time": 0,
+    "equipment": {
+      "lens": 0,
+      "coil": 0,
+      "capacitor": 0
+    },
+    "buildEffects": {
+      "conducted": 0,
+      "recharged": 0,
+      "slowed": 0
+    },
+    "exploration": {
+      "attempts": 0,
+      "spawned": 0,
+      "lastSpawn": -150,
+      "nextPower": 150,
+      "rules": {
+        "first": 150,
+        "intervalMin": 120,
+        "intervalMax": 180,
+        "chance": 0.18,
+        "cap": 2,
+        "magnetSweep": true
+      }
+    },
+    "encore": {
+      "charge": 0,
+      "window": 0,
+      "cooldown": 0,
+      "wave": null,
+      "activations": 0,
+      "hits": 0,
+      "radius": 230,
+      "windowDuration": 8,
+      "cooldownDuration": 10
+    },
+    "run": 1,
+    "runScale": 1,
+    "difficulty": 1,
+    "bossEncounters": 0,
+    "escapeArmed": true,
+    "upgradeAvailability": {
+      "fishing-rod": true,
+      "fishing-line": true,
+      "fishing-worm": true,
+      "fishing-fishbone": true,
+      "fishing-catnip": false,
+      "curiosity": true,
+      "omniscience": false,
+      "loaded-dice": true,
+      "second-wind": true,
+      "quiet-repair": true,
+      "clock-shield": true,
+      "glass-cat": true,
+      "fleet-return": true,
+      "solo-contract": true,
+      "squad-care": false,
+      "last-laugh": true,
+      "revenant-tail": true,
+      "tail-pierce": true,
+      "tail-burst": true,
+      "tail-turbo": true,
+      "lucky-bounce": true,
+      "sprint-dodge": true,
+      "shield-rebound": true,
+      "squad-crossfire": false,
+      "fish-momentum": true,
+      "equip-lens": true,
+      "equip-coil": true,
+      "equip-capacitor": true,
+      "damage": true,
+      "fire-rate": true,
+      "speed": true,
+      "xp-gain": true,
+      "recover": false,
+      "multi-shot": true,
+      "ricochet": true,
+      "fish-magnet": true,
+      "armor": true,
+      "critical": true,
+      "shield-pulse": true,
+      "area-burst": true,
+      "focus": true,
+      "squad-range": false,
+      "tactical-momentum": true,
+      "companion-shooter": true,
+      "companion-healer": true,
+      "companion-tank": true,
+      "companion-brawler": true,
+      "companion-sniper": true,
+      "companion-engineer": true,
+      "companion-trapper": true,
+      "companion-bard": true,
+      "companion-angler": true,
+      "companion-scout": true,
+      "companion-alchemist": true,
+      "companion-salvager": true,
+      "companion-saboteur": true,
+      "companion-stormcaller": true,
+      "companion-courier": true,
+      "companion-hexcat": true,
+      "squad-damage": false,
+      "squad-rate": false,
+      "squad-count": false,
+      "squad-spread": false,
+      "squad-bounce": false
+    },
+    "score": 0,
+    "scoring": {
+      "total": 0,
+      "components": {
+        "survival": 0,
+        "kills": 0,
+        "fish": 0,
+        "milestones": 0
+      },
+      "unrankedTotal": null,
+      "survivalPoints": 0,
+      "weightedKills": 0,
+      "fish": 0,
+      "milestonePoints": 0,
+      "eligible": true,
+      "ruleVersion": "cataclysm-1.0-score-1",
+      "awarded": []
+    },
+    "kills": 0,
+    "fish": 0,
+    "xp": 0,
+    "wave": 1,
+    "escape": 0,
+    "escapeCooldown": 0,
+    "edgeWarning": false,
+    "presentation": {
+      "artVersion": "cataclysm-11-everything-drawn",
+      "aimFrame": 0,
+      "artStatus": {
+        "loaded": 59,
+        "failed": 0,
+        "total": 59,
+        "manifestReady": true,
+        "characters": [
+          "shooter-run",
+          "shooter-attack",
+          "shooter-special",
+          "shooter-hit",
+          "healer-run",
+          "healer-attack",
+          "healer-special",
+          "healer-hit",
+          "tank-run",
+          "tank-attack",
+          "tank-special",
+          "tank-hit",
+          "brawler-run",
+          "brawler-attack",
+          "brawler-special",
+          "brawler-hit",
+          "sniper-run",
+          "sniper-attack",
+          "sniper-special",
+          "sniper-hit",
+          "engineer-run",
+          "engineer-attack",
+          "engineer-special",
+          "engineer-hit",
+          "trapper-run",
+          "trapper-attack",
+          "trapper-special",
+          "trapper-hit",
+          "bard-run",
+          "bard-attack",
+          "bard-special",
+          "bard-hit",
+          "shambler-run",
+          "dasher-run",
+          "stalker-run",
+          "weaver-run",
+          "orbiter-run",
+          "ghost-run",
+          "hexer-run",
+          "summoner-run",
+          "blight-run",
+          "alley-king-run",
+          "iron-titan-run",
+          "neon-siren-run",
+          "moth-queen-run",
+          "rust-butcher-run",
+          "venom-oracle-run",
+          "echo-reaper-run",
+          "volt-hydra-run",
+          "the-catastrophe-run",
+          "jawbreaker-run",
+          "scrapper-run",
+          "watcher-run",
+          "pulse-drone-run",
+          "grave-herald-run",
+          "storm-magus-run",
+          "dreadnought-run",
+          "plague-empress-run",
+          "void-harbinger-run"
+        ]
+      },
+      "followerAnimations": [],
+      "reducedMotion": false,
+      "poseHz": 12,
+      "animation": {
+        "state": "idle",
+        "clock": 0,
+        "frame": 0,
+        "attack": 0,
+        "hit": 0,
+        "moving": false
+      },
+      "particles": 0,
+      "visualPass": "catastrophe-neon-noir-02",
+      "hazardPass": "catastrophe-hazards-03",
+      "worldScrollY": 0,
+      "wavePulse": 1,
+      "bossFlash": 0,
+      "magnetSweepCount": 0,
+      "magnetSweepFish": 0,
+      "firestorm": false
+    },
+    "lab": {
+      "enabled": true,
+      "source": "full-campaign",
+      "economy": {
+        "seed": 2455526153,
+        "state": 1824636744,
+        "bank": 0,
+        "lastNight": 1,
+        "totalSpent": 5,
+        "totalEarned": 12,
+        "rankPrices": {
+          "shambler": 1,
+          "dasher": 2,
+          "weaver": 5,
+          "stalker": 2.6,
+          "orbiter": 7,
+          "ghost": 12,
+          "hexer": 9,
+          "summoner": 10,
+          "blight": 9,
+          "elite": 18,
+          "superElite": 26,
+          "boss": 34
+        },
+        "surprises": [
+          17,
+          38,
+          59,
+          83
+        ]
+      },
+      "wave": {
+        "night": 1,
+        "income": 12,
+        "reserved": 0,
+        "released": 0,
+        "bankAfter": 0,
+        "budget": 12,
+        "spent": 5,
+        "unspent": 7,
+        "isPeak": false,
+        "isSurprise": false,
+        "rank": 1,
+        "interval": 0.9,
+        "scripted": false,
+        "queue": [
+          {
+            "id": "shambler",
+            "cost": 1,
+            "rank": 1
+          },
+          {
+            "id": "shambler",
+            "cost": 1,
+            "rank": 1
+          },
+          {
+            "id": "shambler",
+            "cost": 1,
+            "rank": 1
+          },
+          {
+            "id": "shambler",
+            "cost": 1,
+            "rank": 1
+          },
+          {
+            "id": "shambler",
+            "cost": 1,
+            "rank": 1
+          }
+        ],
+        "counts": {
+          "shambler": 5
+        }
+      },
+      "pending": 0,
+      "finalSpawned": 0,
+      "finalTotal": 0,
+      "finalIntervalSeconds": 9,
+      "effectiveIntervalSeconds": 9,
+      "qaSpawnScale": 1,
+      "arrivals": [],
+      "finalSlainCounts": {
+        "boss": 0,
+        "elite": 0,
+        "superElite": 0
+      },
+      "slainIds": [],
+      "finalBossId": null,
+      "finalDefeated": 0,
+      "defeatedBoss": null
+    },
+    "music": {
+      "volume": 0.7,
+      "voices": 0,
+      "scheduledAhead": 0,
+      "arrangement": {
+        "phase": "groove",
+        "biome": -1,
+        "event": null,
+        "transitions": 0,
+        "drops": 0
+      },
+      "mode": "silent",
+      "enabled": true,
+      "active": false,
+      "beat": 0,
+      "drums": 0,
+      "bass": 0,
+      "lead": 0,
+      "bossDrops": 0,
+      "pass": "the-wild-card",
+      "boss": false
+    },
+    "pendingUpgrade": false,
+    "fishItems": [
+      {
+        "x": 1340,
+        "y": 1700,
+        "r": 12,
+        "value": 4,
+        "phase": 2.6920427964223625,
+        "attracted": false
+      },
+      {
+        "x": 4020,
+        "y": 1700,
+        "r": 12,
+        "value": 4,
+        "phase": 1.6994123041437483,
+        "attracted": false
+      },
+      {
+        "x": 1340,
+        "y": 4380,
+        "r": 12,
+        "value": 4,
+        "phase": 3.5988246680984837,
+        "attracted": false
+      },
+      {
+        "x": 4020,
+        "y": 4380,
+        "r": 12,
+        "value": 4,
+        "phase": 4.570076052159998,
+        "attracted": false
+      }
+    ],
+    "powerups": [],
+    "buffs": {
+      "rage": 0,
+      "magnet": 0,
+      "survivalInstinct": 0
+    },
+    "bossMilestone": 0,
+    "beacons": [],
+    "beaconCharges": 0,
+    "offerSeed": 2255018105,
+    "offerState": 2255018105,
+    "companionSquad": [],
+    "squadStats": {
+      "damage": 0.5,
+      "rate": 1,
+      "count": 1,
+      "spread": 0,
+      "bounce": 0
+    },
+    "activeCompanion": null,
+    "companionRanks": {
+      "shooter": 0,
+      "healer": 0,
+      "tank": 0,
+      "brawler": 0,
+      "sniper": 0,
+      "engineer": 0,
+      "trapper": 0,
+      "bard": 0,
+      "angler": 0,
+      "scout": 0,
+      "alchemist": 0,
+      "salvager": 0,
+      "saboteur": 0,
+      "stormcaller": 0,
+      "courier": 0,
+      "hexcat": 0
+    },
+    "feralInstinct": {
+      "active": false,
+      "timer": 0,
+      "duration": 6,
+      "armed": true
+    },
+    "effectiveBuffs": {
+      "speed": 1,
+      "damage": 1,
+      "fire": 1,
+      "magnet": 0,
+      "healing": 0,
+      "mitigation": 0
+    },
+    "petCompanion": null,
+    "toxicGasClouds": [],
+    "gasSpawnTimer": 0,
+    "pickupEffects": [],
+    "upgrades": [],
+    "enemies": [],
+    "shots": [],
+    "input": null,
+    "player": {
+      "x": 1340,
+      "y": 1340,
+      "r": 21,
+      "inv": 0,
+      "survivalTimer": 0,
+      "survivalInstinctBuff": 0,
+      "hp": 3,
+      "maxHp": 3,
+      "autoFireDisabled": false,
+      "silence": 0,
+      "phaseCooldown": 0,
+      "petPicks": 0,
+      "xpRequired": 6,
+      "xpGain": 1,
+      "level": 1,
+      "damage": 1,
+      "speed": 235,
+      "shotInterval": 0.62,
+      "multishot": 0,
+      "ricochet": 0,
+      "magnet": 0
+    }
+  }
+}

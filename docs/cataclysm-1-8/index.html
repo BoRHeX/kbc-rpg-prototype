@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f1b"><title>CATACLYSM 1.8 — DISTILLED ADVANCEMENT</title><link rel="stylesheet" href="./game.css?build=cataclysm-18-distilled-advancement"></head><body><div id="city-status" style="position:fixed;bottom:8px;left:8px;z-index:5;pointer-events:none;color:#ffe2a2;font:12px system-ui;max-width:90%"></div><div id="fishing-status" style="position:fixed;top:80px;left:8px;z-index:5;color:#baf3e7;font:11px system-ui;pointer-events:none"></div><main id="arena" class="arena">
+<canvas id="canvas" aria-label="Cataclysm. Drag to move; arrows or WASD also work."></canvas>
+<header class="identity"><a href="../games/" class="back">← Games</a><span>CATACLYSM <b id="game-version">1.8</b></span><small id="build-version" data-run="DISTILLED ADVANCEMENT">DISTILLED ADVANCEMENT</small><button id="fullscreen" type="button" class="fullscreen-toggle" aria-label="Enter fullscreen" aria-pressed="false">⛶ Full</button></header>
+<div class="hud">
+<div class="hud-block"><small>NIGHT <b id="night-count">1/1000</b></small><b id="time">00:00</b></div><div class="hud-block"><small id="encore-label">FISH · 0/3</small><b id="fish">0</b><progress id="encore-meter" max="1" value="0" aria-label="Fishbone Encore: collect 3 fish in eight seconds"></progress></div><div class="hud-block"><small>KILLS</small><b id="kills">0</b></div><div class="hud-block"><small>HP</small><b id="health">3 / 3</b></div><div class="hud-block"><small>SCORE</small><b id="score">0</b></div><div class="hud-block"><small>XP / LEVEL</small><b id="xp-level">0 / 6 · L1</b></div>
+</div><div id="night-status"></div>
+<section id="chapter-banner" hidden aria-live="polite" aria-atomic="true">
+  <canvas id="chapter-banner-art" width="768" height="192" aria-hidden="true"></canvas>
+  <div><b id="chapter-title"></b><small id="chapter-detail"></small></div>
+</section><div id="boss-status" hidden><span>ALLEY KING</span><progress id="boss-health" max="1" value="1" aria-label="Alley King health"></progress></div>
+<div id="lives-hud" aria-label="9 of 9 lives remaining"><span>LIVES <b id="lives-count">9 / 9</b></span><span id="life-pips" aria-hidden="true">●●●●●●●●●</span><small id="grace-status"></small></div><p id="life-announcement" class="sr-only" role="status" aria-live="polite"></p>
+<section id="revive-panel" hidden role="status" aria-live="assertive"><small>POSTAL SERVICE OF THE AFTERLIFE</small><h2 id="revive-title"></h2><p id="revive-copy"></p><b id="revive-detail"></b></section>
+<div id="advancement-hud" aria-label="Weather, mission and crew"></div><div id="major-buff-icons" aria-label="Active buffs and abilities" role="status"></div><p id="support-status" role="status"></p><p id="buff-status" role="status"></p><div id="encounter-status" aria-live="polite" role="status"></div>
+<nav class="quick-controls" aria-label="Combat controls"><button id="pause" aria-label="Pause game" hidden>Ⅱ</button><button hidden id="squad-tactic" aria-label="Squad tactics toggle">Tactic: ATK</button><button id="runic-relic-activate" hidden>Activate relic</button></nav><div id="companionAbilityButtons" hidden class="companion-abilities" role="group" aria-label="Companion special abilities"><button id="ability-shooter" hidden>Burst ready</button><button id="ability-healer" hidden>Heal ready</button><button id="ability-tank" hidden>Guard ready</button><button id="ability-brawler" hidden>Claws ready</button><button id="ability-sniper" hidden>Deadeye ready</button><button id="ability-engineer" hidden>Turret ready</button><button id="ability-trapper" hidden>Snare ready</button><button id="ability-bard" hidden>Anthem ready</button></div>
+<div id="start-overlay" class="overlay"><div class="overline">BO RHEZ GAMES · CATACLYSM 1.8 · DISTILLED ADVANCEMENT</div><h1 id="overlay-title">DISTILLED ADVANCEMENT</h1><p id="overlay-copy">Ten chapters. Survive 1,000 nights, defeat their bosses, and light the emergency avenue. Midnight Festival on select seeds: stand at both lanterns to light them. Optional fishing: stand in a marked dry circle to cast; move to cancel. Three attempts per spot. Bait cards equip packs; plain lure is unlimited. Repeated casts raise ambush odds; line reduces them. Fish and JACKPOT are separate. Pair Level-3 cats in the pause menu to form Trawl Team or Spotter Pair. Nine lives. One tail gun. Zero sensible decisions. Drag to move; everyone shoots automatically. Zero HP costs one life. Revive with partial HP and a safe glow, keeping your build. Start Night 1 with three random cards and two rerolls; perks unlock four or five cards. Sixteen roles. Four unique crew slots. Friends eat their own fish and evolve at Level 3. The full nine-life warranty is in the pause guide.</p><button id="play" class="primary" disabled>LOADING…</button><button id="continue-run" disabled hidden>Resume checkpoint</button><button id="endless-run" disabled hidden>Start Endless</button><small>Historical best <b id="best">0</b> · Play enters fullscreen when supported · <span class="rotate-hint">Landscape recommended · </span>WASD / arrows supported</small><a class="festival-run" href="?seed=26">Try the Midnight Festival seed</a><small id="build-stats"></small></div>
+      <section id="upgrade-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upgrade-title">
+        <h2 id="upgrade-title">CHOOSE ONE UPGRADE</h2>
+        <p id="upgrade-copy">Time and combat are frozen. Choose your build.</p><div id="upgrade-actions"><span>Rerolls: <b id="reroll-count">0</b></span><button id="reroll-upgrades" type="button" disabled aria-label="Reroll all offered upgrades">⟳ Reroll (1)</button></div>
+
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-shooter" hidden>Special · Shooter familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-healer" hidden>Special · Healer familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-tank" hidden>Special · Tank familiar<small>Recruit / train a permanent follower. Other allies stay.</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-brawler" hidden>Recruit brawler</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-sniper" hidden>Recruit sniper</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-engineer" hidden>Recruit engineer</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-trapper" hidden>Recruit trapper</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="companion-bard" hidden>Recruit bard</button>
+        <button type="button" class="upgrade special" data-special data-upgrade="multi-shot" hidden>Special · Multi-shot<small>Add two spread shots · more ranks aggregate damage after nine projectiles</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="ricochet" hidden>Special · Bouncing bullets<small>Shots seek another enemy after hitting · more ranks improve bounce damage after eight bounces</small></button>
+        <button type="button" class="upgrade special" data-special data-upgrade="fish-magnet" hidden>Special · Cat's catch<small>Pull fish from 65 pixels farther away · repeatable range growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="equip-lens" hidden>lens</button>
+<button type="button" class="upgrade" data-upgrade="equip-coil" hidden>coil</button>
+<button type="button" class="upgrade" data-upgrade="equip-capacitor" hidden>capacitor</button>
+        <button type="button" class="upgrade" data-upgrade="xp-gain" hidden>xp-gain</button>
+        <button type="button" class="upgrade" data-upgrade="squad-damage" hidden>squad-damage</button>
+        <button type="button" class="upgrade" data-upgrade="squad-rate" hidden>squad-rate</button>
+        <button type="button" class="upgrade" data-upgrade="squad-count" hidden>squad-count</button>
+        <button type="button" class="upgrade" data-upgrade="squad-spread" hidden>squad-spread</button>
+        <button type="button" class="upgrade" data-upgrade="squad-bounce" hidden>squad-bounce</button>
+        <button type="button" class="upgrade" data-upgrade="tail-pierce" hidden>Needle tail</button>
+        <button type="button" class="upgrade" data-upgrade="tail-burst" hidden>Stuttering whisker</button>
+        <button type="button" class="upgrade" data-upgrade="tail-turbo" hidden>Hot brass</button>
+        <button type="button" class="upgrade" data-upgrade="lucky-bounce" hidden>Bank shot kitten</button>
+        <button type="button" class="upgrade" data-upgrade="sprint-dodge" hidden>Liquid cat</button>
+        <button type="button" class="upgrade" data-upgrade="shield-rebound" hidden>Spite bubble</button>
+        <button type="button" class="upgrade" data-upgrade="squad-crossfire" hidden>Alley firing line</button>
+        <button type="button" class="upgrade" data-upgrade="fish-momentum" hidden>Sardine zoomies</button>
+        <button type="button" class="upgrade" data-upgrade="armor" hidden>armor</button>
+        <button type="button" class="upgrade" data-upgrade="critical" hidden>critical</button>
+        <button type="button" class="upgrade" data-upgrade="shield-pulse" hidden>shield-pulse</button>
+        <button type="button" class="upgrade" data-upgrade="area-burst" hidden>area-burst</button>
+        <button type="button" class="upgrade" data-upgrade="focus" hidden>focus</button>
+        <button type="button" class="upgrade" data-upgrade="squad-range" hidden>squad-range</button>
+        <button type="button" class="upgrade" data-upgrade="tactical-momentum" hidden>tactical-momentum</button>
+        <button type="button" class="upgrade" data-upgrade="fire-rate">Faster firing<small>Cooldown ×1.65 · fast volleys aggregate extra damage</small></button>
+        <button type="button" class="upgrade" data-upgrade="damage">Damage +0.25<small>Each shot hits harder · repeatable damage growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="speed">Movement speed +18<small>+12 pickup range · diminishing speed growth</small></button>
+        <button type="button" class="upgrade" data-upgrade="recover">Patch up<small>Restore one heart · heal one heart and gain 0.25 maximum HP</small></button>
+      </section>
+<section id="pause-overlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="pause-title">
+ <div class="pause-heading"><div><span class="overline">A QUIET CORNER OF THE ALLEY</span><h2 id="pause-title">Catch your breath.</h2></div><button id="resume" class="primary">Resume</button></div>
+ <div class="pause-sound"><label for="volume">Volume <input id="volume" type="range" min="0" max="100" value="70"></label><button id="mute" aria-pressed="false">Sound on</button><button id="pause-fullscreen">Fullscreen</button></div>
+ <section aria-label="Companion fusions"><div id="fusion-options"></div><p id="fusion-feedback" role="status"></p></section>
+ <button id="city-map" type="button">Discovered city map</button><section id="city-map-panel" hidden aria-label="Discovered city map"></section><p>Approach frontier beacons for 24-second horde checks. Failed attempts ease; survive attempt three to open a relief route. Twelve local kills provoke the central plaza guardian. Shared guardian illustration; unique paintings incomplete.</p><section id="pause-guide" aria-labelledby="guide-title" tabindex="0"><h3 id="guide-title">The alley survival guide</h3><p class="hero-guide" data-cat-speech="hero">“My paws do the running. Yours do the steering.” — BoRHeZ</p>
+ <div class="guide-grid"><p><b>01 · Keep moving</b>Drag anywhere in the arena, or use WASD / arrows. Lift to stop. Your cat aims and fires automatically.</p><p><b>02 · Follow the fish</b>Collect fish and XP to grow. Three fish within eight seconds trigger a Fishbone Encore when ready.</p><p><b>03 · Build your luck</b>Level up, then choose from three cards; perks unlock four or five. Combat freezes. Spend earned rerolls here to refresh the choices.</p><p><b>04 · Trust your crew</b>Recruit up to four distinct companions. All 16 roles eat their own fish and earn individual Levels 1–3. Level-3 Engineer + Shooter automatically form one Mecha slot; heat forces repairs. Work 24 / 75 earns Levels 2 / 3; each eaten fish adds 6 work. HUD: work/threshold, f = fish eaten, E/S = Engineer/Shooter Level-3 readiness. Crew components stay committed until restart. Angler + Trapper cast nets as Trawl Team. Scout + Sniper mark targets as Spotter Pair. Merge these teams in pause. Separating needs an open slot and safe space. Stand still near your healer for care.</p><p><b>05 · Respect the big cats</b>Bosses hit hard. Watch their warnings, keep an escape lane and avoid getting surrounded. Runes and squad tactics activate automatically.</p><p><b>06 · Nine-life warranty</b>Zero HP consumes one life. Revive after 0.9s at 60% HP with 2.8s protection; XP, fish, squad and night remain. Zero lives ends the run. A rare eligible Terminus guardian can restore one life up to nine, once per city seed. The old timed life lottery is disabled.</p><p><b>07 · Take a breather</b>Pause with Ⅱ or Escape. Use Tab to reach controls; arrows select upgrade cards, Enter chooses. Your sound level is remembered.</p></div></section>
+ <footer class="pause-footer"><button id="restart">Restart run</button><a href="../games/">Exit to Games ↗</a><small>Combat and companion timers are frozen.</small></footer>
+ </section>
+<div class="joystick" id="stick" hidden><div class="thumb" id="thumb"></div></div><div id="city-notice" role="status" aria-live="polite" hidden></div><div id="notice" class="notice" role="status" hidden></div><div id="festival-status" hidden><span></span><i></i><i></i></div><div id="mutation-speech" hidden></div><p id="checkpoint-status" role="status" hidden></p><p id="runtime-status" role="alert" hidden></p><noscript>JavaScript is required to play.</noscript></main>
+<script>
+(function () {
+  var expected = '1.8';
+  var status = document.getElementById('runtime-status');
+  var play = document.getElementById('play');
+  var acknowledged = false;
+  var timer = setTimeout(function () {
+    if (!acknowledged) fail('Game initialization timed out. Reload this page.');
+  }, 10000);
+  function fail(message) {
+    clearTimeout(timer);
+    status.hidden = false;
+    status.textContent = message;
+    document.getElementById('overlay-copy').textContent = message + ' If reloading does not help, clear this site’s cached files and report code ' + expected + '.';
+    play.disabled = true;
+    play.textContent = 'RELOAD REQUIRED';
+  }
+  window.CATACLYSM_BOOT = {
+    fail: fail,
+    ready: function (build) {
+      document.getElementById('game-version').textContent = build;
+      document.getElementById('build-version').textContent = document.getElementById('build-version').dataset.run + ' · CODE ' + build;
+      if (build !== expected) {
+        fail('Game files are from different builds. Reload this page to update.');
+        throw Error('Game build mismatch: expected ' + expected + ', loaded ' + build);
+      }
+      acknowledged = true;
+      clearTimeout(timer);
+      window.CATACLYSM_READY = true;
+      play.disabled = false;
+      play.textContent = '▶ START RUN';
+    }
+  };
+  window.addEventListener('error', function (event) {
+    fail('Game error: ' + (event.message || 'resource failed to load') + '. Reload this page.');
+  });
+  window.addEventListener('unhandledrejection', function (event) {
+    fail('Game error: ' + String(event.reason || 'unhandled promise') + '. Reload this page.');
+  });
+})();
+</script>
+<script src="./campaign.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Campaign module failed to load')"></script>
+<script src="./hero-kinematics.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Character gait solver failed to load')"></script>
+<script src="./hero-rig-renderer.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Character articulated renderer failed to load')"></script>
+<script src="./animation.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Animation module failed to load')"></script>
+<script src="./visuals.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Visual effects module failed to load')"></script>
+<script src="./director.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Spawn director failed to load')"></script>
+<script src="./firestorm.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Firestorm module failed to load')"></script>
+<script src="./hazards.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Hazard animations failed to load')"></script>
+<script src="./score.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Scoring module failed to load')"></script>
+<script src="./follower-behavior.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Follower module failed to load')"></script>
+<script src="./cat-personality.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Cat voices failed to load')"></script>
+<script src="./hero-illustrated.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Illustrated cat failed to load')"></script>
+<script src="./company.js" defer></script>
+<script src="./company-presentation.js" defer></script>
+<script src="./mutations.js" defer></script>
+<script src="./mutation-media.js" defer></script>
+<script src="./wildcard-art.js" defer></script>
+<script src="./wildcard.js" defer></script>
+<script src="./long-night.js" defer></script>
+<script src="./art/animated/long-night-frames.js" defer></script>
+<script src="./chapter-media.js" defer></script>
+<script src="./advancement.js" defer></script>
+<script src="./checkpoint.js" defer></script>
+<script src="./game.js?build=cataclysm-18-distilled-advancement" defer onerror="window.CATACLYSM_BOOT.fail('Game code failed to load. Reload this page.')"></script>
+</body></html>

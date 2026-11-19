@@ -1,0 +1,24 @@
+# 1.7 · The Long Night
+
+Ten chapter routes dress the four seeded districts differently while retaining their geometry, guardian and optional gate state. Mandatory encounters can stage in the current open district with the chapter dressing and a clear escape lane. Movement and automatic attacks remain the combat controls. Fishing, guardians, fusion and the opening festival remain optional.
+
+Each chapter introduces its rule on local nights 1–10, uses four pressure nights followed by a recovery night through 69, combines its rule with the preceding chapter's threat through 94, telegraphs the milestone on 95–99 and starts the boss on 100. Recovery halves additional admission. Ordinary nights advance with enemies alive; pending required encounters get reserved slots. No chapter resets the build or optional encounters.
+
+| Nights | District dressing and music direction | Pressure rule and mandatory milestone |
+|---|---|---|
+| 1–100 | Cinder lantern alleys, amber windows and bells | At local 20, 40 and 60 admit a second Bell-Ringer after the first signals or falls. Night 100 Bell Captain signals one reinforcement group. Keep the seeded festival on its original opening clock. |
+| 101–200 | Sluice towpath, blue reeds and brushed percussion | Alternate Fish Thieves and Mimics. Dredge Runner sweeps one lane at a time and exposes its flank between attacks. |
+| 201–300 | Ember yard, orange stripes and hammer rhythm | At local 25–75 alternate warned crane drops between two lanes. Crane Marshal targets the marked lane and pauses during debris recovery. |
+| 301–400 | Glass concourse, violet signs and glass chimes | Stagger two Pouncer shadows on separate lanes. Roof Regent alternates drops and a grounded recovery window. |
+| 401–500 | Cinder shutter row, chalk markings and detuned reeds | At local 30–80 place capped corpse clusters for Necro-Groomers. Groomer Prime spends two visible raise charges. |
+| 501–600 | Sluice spillway, teal lamps and bass pulses | At local 20, 50 and 80 provide a dry lane where pursuit breaks Pack Leader formations. Spillway Alpha signals a dash with a clear gap before dispersing. |
+| 601–700 | Ember switching yard, red signals and syncopated drums | Admit one cocoon pair on pressure beats. Breaking either interrupts combination. Switchyard Hybrid changes its telegraphed traits once at half HP. |
+| 701–800 | Glass rooftop arcade, pale signs and plucked strings | Alternate elites and super-elites at local 20, 35, 50, 65 and 80, with one deferred slot. Arcade Sentinel alternates a projectile fan and a close-range opening. |
+| 801–900 | Cinder blackout streets, pink reflections and low strings | At local 30–90 alternate gas pockets and caster volleys around marked escape lanes. Blackout Warden moves the threatened lane twice at HP thresholds. |
+| 901–1000 | Glass emergency avenue, white signals and a rising reprise | Mix earlier threats in pairs, adding one rotating warning lane per pressure beat after 970. On Night 1000 hold two sequential light circles for one second each, defeat one escort in each of three sequential beats, then defeat the two-phase Catastrophe. |
+
+Use existing attack, tell, collision and defeat interfaces with authored phase data. Every chapter boss drops three fish once. Chapters 3 and 7 add one reroll if below the drop cap of 99. Chapters 5 and 9 restore one life up to nine, or grant and heal 0.5 max HP at cap. Night 1000 adds one 10,000-point milestone and completion receipt. Guardian and jackpot rewards keep independent eligibility. Chapter dressing and planned audio cues have distinct IDs and shape/text telegraphs with mute and reduced-motion support.
+
+Use a 10.5-second combat floor per night. Hold milestone nights until the manifest clears and the player is alive. At 30 seconds of milestone overtime halve ambient admission, and at 60 suspend ambient admission and apply a one-time 1.5× boss damage-taken modifier. Use 45/90 seconds at Night 1000. Budget 10 seconds overtime at each of nine milestones, 45 at the finale and 165 for cards/transitions. 10,500 + 90 + 45 + 165 = 10,800 seconds. Foreground play target is 2h45–3h15 including decision time, excluding deliberate pause/background. Log combat, overtime and decision time separately. No elapsed-time defeat.
+
+Night 100 advances to 101. Night 1000 requires ten ordered clears, both lights, three escort defeats and Catastrophe defeat, elapsed floor, and a live player. Resolve lethal damage before completion. A nonterminal revival delays completion. Endless is a separate opt-in run from the title after durable completion. Start with a fresh build and nine lives at Endless Night 1. Rotate themes every 100 nights, add 5% admission budget per full ten-theme cycle up to 50%, keep existing live caps, omit story-only rewards and keep a separate best-night record. Retain only current cycle encounter details and cumulative totals.

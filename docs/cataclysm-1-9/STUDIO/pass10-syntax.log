@@ -1,0 +1,2 @@
+$ for f in *.js; do node --check "$f" || exit; done
+Syntax passed for all top-level JS

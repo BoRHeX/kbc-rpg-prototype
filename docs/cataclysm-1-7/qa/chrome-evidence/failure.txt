@@ -1,0 +1,58 @@
+browserType.launch: Timeout 15000ms exceeded.
+Call log:
+[2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/tmp/playwright_chromiumdev_profile-Z23QPN --remote-debugging-pipe --no-startup-window[22m
+[2m  - <launched> pid=14[22m
+[2m  - [pid=14][err] [14:14:1115/152442.369100:ERROR:third_party/crashpad/crashpad/util/linux/socket.cc:45] setsockopt: Operation not permitted (1)[22m
+[2m  - [pid=14][err] [14:14:1115/152442.480668:FATAL:components/crash/core/app/crashpad_linux.cc:268] Check failed: client.StartHandler(handler_path, *database_path, metrics_path, url, annotations, arguments, false, false, attachments, preserve_handles).[22m
+[2m  - [pid=14][err] #0 0x564035a30f72 base::debug::CollectStackTrace()[22m
+[2m  - [pid=14][err] #1 0x564035a1b35e base::debug::StackTrace::StackTrace()[22m
+[2m  - [pid=14][err] #2 0x56403594d92c logging::LogMessage::Flush()[22m
+[2m  - [pid=14][err] #3 0x56403594d7fc logging::LogMessage::~LogMessage()[22m
+[2m  - [pid=14][err] #4 0x5640359360f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()[22m
+[2m  - [pid=14][err] #5 0x564035935ddb logging::CheckNoreturnError::~CheckNoreturnError()[22m
+[2m  - [pid=14][err] #6 0x564039ca2984 crash_reporter::internal::PlatformCrashpadInitialization()[22m
+[2m  - [pid=14][err] #7 0x564039c9e0c2 crash_reporter::InitializeCrashpad()[22m
+[2m  - [pid=14][err] #8 0x56402e6266af ChromeMainDelegate::PreSandboxStartup()[22m
+[2m  - [pid=14][err] #9 0x5640359194dc content::ContentMainRunnerImpl::Initialize()[22m
+[2m  - [pid=14][err] #10 0x56403591713c content::RunContentProcess()[22m
+[2m  - [pid=14][err] #11 0x564035917587 content::ContentMain()[22m
+[2m  - [pid=14][err] #12 0x56402e62437d ChromeMain[22m
+[2m  - [pid=14][err] #13 0x7f2d5482a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)[22m
+[2m  - [pid=14][err] #14 0x7f2d5482a28b __libc_start_main[22m
+[2m  - [pid=14][err] #15 0x56402e62402a _start[22m
+[2m  - [pid=14][err][22m
+[2m  - [pid=14][err] Received signal 6[22m
+[2m  - [pid=14][err] #0 0x564035a30f72 base::debug::CollectStackTrace()[22m
+[2m  - [pid=14][err] #1 0x564035a1b35e base::debug::StackTrace::StackTrace()[22m
+[2m  - [pid=14][err] #2 0x564035a309d8 base::debug::(anonymous namespace)::StackDumpSignalHandler()[22m
+[2m  - [pid=14][err] #3 0x7f2d54845330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)[22m
+[2m  - [pid=14][err] #4 0x7f2d5489ec0c pthread_kill[22m
+[2m  - [pid=14][err] #5 0x7f2d5484527e gsignal[22m
+[2m  - [pid=14][err] #6 0x7f2d548288ff abort[22m
+[2m  - [pid=14][err] #7 0x564035a0a165 base::debug::BreakDebuggerAsyncSafe()[22m
+[2m  - [pid=14][err] #8 0x56403594e473 base::RepeatingCallback<>::Run()[22m
+[2m  - [pid=14][err] #9 0x56403594e335 logging::LogMessage::HandleFatal()[22m
+[2m  - [pid=14][err] #10 0x56403594df27 logging::LogMessage::Flush()[22m
+[2m  - [pid=14][err] #11 0x56403594d7fc logging::LogMessage::~LogMessage()[22m
+[2m  - [pid=14][err] #12 0x5640359360f2 logging::(anonymous namespace)::CheckLogMessage::~CheckLogMessage()[22m
+[2m  - [pid=14][err] #13 0x564035935ddb logging::CheckNoreturnError::~CheckNoreturnError()[22m
+[2m  - [pid=14][err] #14 0x564039ca2984 crash_reporter::internal::PlatformCrashpadInitialization()[22m
+[2m  - [pid=14][err] #15 0x564039c9e0c2 crash_reporter::InitializeCrashpad()[22m
+[2m  - [pid=14][err] #16 0x56402e6266af ChromeMainDelegate::PreSandboxStartup()[22m
+[2m  - [pid=14][err] #17 0x5640359194dc content::ContentMainRunnerImpl::Initialize()[22m
+[2m  - [pid=14][err] #18 0x56403591713c content::RunContentProcess()[22m
+[2m  - [pid=14][err] #19 0x564035917587 content::ContentMain()[22m
+[2m  - [pid=14][err] #20 0x56402e62437d ChromeMain[22m
+[2m  - [pid=14][err] #21 0x7f2d5482a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)[22m
+[2m  - [pid=14][err] #22 0x7f2d5482a28b __libc_start_main[22m
+[2m  - [pid=14][err] #23 0x56402e62402a _start[22m
+[2m  - [pid=14][err]   r8: 00001870000b4fea  r9: 0000000000000361 r10: 0000000000000008 r11: 0000000000000246[22m
+[2m  - [pid=14][err]  r12: 0000000000000006 r13: 000000000000044b r14: 0000000000000016 r15: 00007ffcfd18ab20[22m
+[2m  - [pid=14][err]   di: 000000000000000e  si: 000000000000000e  bp: 00007ffcfd18a9d0  bx: 000000000000000e[22m
+[2m  - [pid=14][err]   dx: 0000000000000006  ax: 0000000000000000  cx: 00007f2d5489ec0c  sp: 00007ffcfd18a990[22m
+[2m  - [pid=14][err]   ip: 00007f2d5489ec0c efl: 0000000000000246 cgf: 002b000000000033 erf: 0000000000000000[22m
+[2m  - [pid=14][err]  trp: 0000000000000000 msk: 0000000000000000 cr2: 0000000000000000[22m
+[2m  - [pid=14][err] [end of stack trace][22m
+
+    at /home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-5/qa/chrome-smoke.cjs:10:31
+    at Object.<anonymous> (/home/runner/work/kbc-rpg-prototype/kbc-rpg-prototype/docs/cataclysm-1-5/qa/chrome-smoke.cjs:63:3)

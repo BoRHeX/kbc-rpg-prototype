@@ -1,0 +1,7 @@
+PASS active chapter boss checkpoint and restore at all ten milestones, including city guardian, equipment, and final boss
+PASS detached pack leader restore, direct Endless denial with legacy win
+PASS Pass 05 PNG/WAV byte signatures and manifest hashes
+PASS schema-1 Mecha import, paused fusion, slot checks, crew combat and raster calls, mood, weather, missions and reward restore
+PASS 17 chapter raster draw calls, chapter titles, terminal banner hide, WAV scheduling and stale decode cancellation (test doubles)
+Largest surviving fixture slot: 14050 characters
+PASS legacy metadata migration, festival dwell and 120-tick replay, title, 630-tick boundary, cast and Mecha restore, upgrade offers, revival, 1000-night segmented progression, finale, Endless, recovery, quota, future schema

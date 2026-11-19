@@ -1,0 +1,780 @@
+{
+  "version": "1.69",
+  "coordinateSpace": "world units; bottom/ground anchors in local frame pixels",
+  "atlases": {
+    "archivist": {
+      "path": "art/animated/wildcard-archivist-atlas.png",
+      "sha256": "2161e793d9c2219686a5d930853c28e892c4b90ce01e83c0dd1dc0308bfd8831",
+      "bytes": 473653,
+      "sizePx": [
+        512,
+        512
+      ]
+    },
+    "props": {
+      "path": "art/animated/wildcard-props-atlas.png",
+      "sha256": "b8028d16378da05f6c2ddbd07357d0cf3ec0b95c7df16866ef9e01af85b8171d",
+      "bytes": 659114,
+      "sizePx": [
+        768,
+        576
+      ]
+    },
+    "court": {
+      "path": "art/animated/wildcard-court-atlas.png",
+      "sha256": "ba94210e8d5a82edb9db5e120a97d34e8581cf7a0d535e9b5fbf4930a890b39b",
+      "bytes": 238484,
+      "sizePx": [
+        512,
+        512
+      ]
+    }
+  },
+  "frames": {
+    "stride": {
+      "path": "art/animated/wildcard-stride.png",
+      "sha256": "76e110c6d66f5a003ff8a775f4edbac2f5c745d11ac6573b67c65661035a4ccb",
+      "bytes": 243206,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        0,
+        52,
+        358,
+        422
+      ],
+      "atlasRectPx": [
+        0,
+        26,
+        179,
+        211
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        222,
+        384
+      ],
+      "sizePx": [
+        358,
+        422
+      ],
+      "mobileWidthWorld": 63,
+      "worldUnitsPerSpritePixel": 0.175978,
+      "alphaExtrema": [
+        0,
+        253
+      ]
+    },
+    "listen": {
+      "path": "art/animated/wildcard-listen.png",
+      "sha256": "cb5004434d72de14373a650c1dc92dd4d75e7a2ddfd97bd67b79312a1e753bf4",
+      "bytes": 214197,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        362,
+        76,
+        298,
+        398
+      ],
+      "atlasRectPx": [
+        181,
+        38,
+        149,
+        199
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        172,
+        368
+      ],
+      "sizePx": [
+        298,
+        398
+      ],
+      "mobileWidthWorld": 55,
+      "worldUnitsPerSpritePixel": 0.184564,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "read": {
+      "path": "art/animated/wildcard-read.png",
+      "sha256": "7c56c1b9723aa15d0328fcf1b1a00ba7b72881e495c5a2e396944f12fae588ea",
+      "bytes": 309262,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        660,
+        38,
+        364,
+        458
+      ],
+      "atlasRectPx": [
+        330,
+        19,
+        182,
+        229
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        142,
+        428
+      ],
+      "sizePx": [
+        364,
+        458
+      ],
+      "mobileWidthWorld": 68,
+      "worldUnitsPerSpritePixel": 0.186813,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "ward": {
+      "path": "art/animated/wildcard-ward.png",
+      "sha256": "526c01d1012702226a4b7a3cd5ca102edbd9a9b82122be877be3d2c492d2591e",
+      "bytes": 329930,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        0,
+        516,
+        362,
+        446
+      ],
+      "atlasRectPx": [
+        0,
+        258,
+        181,
+        223
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        192,
+        392
+      ],
+      "sizePx": [
+        362,
+        446
+      ],
+      "mobileWidthWorld": 70,
+      "worldUnitsPerSpritePixel": 0.19337,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "heal": {
+      "path": "art/animated/wildcard-heal.png",
+      "sha256": "5cccb2af5e06fe3db602175f3fb9c8cd97b32f82af581b893dff9c8217036ba2",
+      "bytes": 273604,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        360,
+        570,
+        320,
+        426
+      ],
+      "atlasRectPx": [
+        180,
+        285,
+        160,
+        213
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        158,
+        286
+      ],
+      "sizePx": [
+        320,
+        426
+      ],
+      "mobileWidthWorld": 64,
+      "worldUnitsPerSpritePixel": 0.2,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "alarm": {
+      "path": "art/animated/wildcard-alarm.png",
+      "sha256": "6cf5cea685b65f222512530874c68a368d8389e76bcda94f9a01a9d9ec898238",
+      "bytes": 226513,
+      "atlas": "archivist",
+      "sourcePath": "art/generated/archivist_cat_character_atlas.png",
+      "sourceRectPx": [
+        704,
+        570,
+        320,
+        396
+      ],
+      "atlasRectPx": [
+        352,
+        285,
+        160,
+        198
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        164,
+        340
+      ],
+      "sizePx": [
+        320,
+        396
+      ],
+      "mobileWidthWorld": 60,
+      "worldUnitsPerSpritePixel": 0.1875,
+      "alphaExtrema": [
+        0,
+        253
+      ]
+    },
+    "rune": {
+      "path": "art/animated/wildcard-rune.png",
+      "sha256": "1354f95963d15575ebf2b29c95ffc44c4d04536fc3ef0d0989151e6c95e99666",
+      "bytes": 566225,
+      "atlas": "props",
+      "sourcePath": "art/generated/wildcard_fusion_festival_atlas.png",
+      "sourceRectPx": [
+        0,
+        0,
+        534,
+        518
+      ],
+      "atlasRectPx": [
+        2,
+        2,
+        267,
+        259
+      ],
+      "sourceMaskPx": [
+        [
+          0,
+          0
+        ],
+        [
+          524,
+          0
+        ],
+        [
+          524,
+          130
+        ],
+        [
+          496,
+          208
+        ],
+        [
+          488,
+          308
+        ],
+        [
+          528,
+          432
+        ],
+        [
+          534,
+          518
+        ],
+        [
+          0,
+          518
+        ]
+      ],
+      "pivotPx": [
+        264,
+        468
+      ],
+      "sizePx": [
+        534,
+        518
+      ],
+      "mobileWidthWorld": 94,
+      "worldUnitsPerSpritePixel": 0.17603,
+      "alphaExtrema": [
+        0,
+        253
+      ]
+    },
+    "resonance": {
+      "path": "art/animated/wildcard-resonance.png",
+      "sha256": "fcf0ced30a3445582f358ed90d62601203ff72b4bd0950244113fbf93b23ff63",
+      "bytes": 603211,
+      "atlas": "props",
+      "sourcePath": "art/generated/wildcard_fusion_festival_atlas.png",
+      "sourceRectPx": [
+        480,
+        0,
+        544,
+        564
+      ],
+      "atlasRectPx": [
+        273,
+        2,
+        272,
+        282
+      ],
+      "sourceMaskPx": [
+        [
+          528,
+          0
+        ],
+        [
+          1024,
+          0
+        ],
+        [
+          1024,
+          564
+        ],
+        [
+          664,
+          564
+        ],
+        [
+          632,
+          526
+        ],
+        [
+          538,
+          514
+        ],
+        [
+          502,
+          398
+        ],
+        [
+          480,
+          304
+        ],
+        [
+          492,
+          270
+        ],
+        [
+          520,
+          216
+        ],
+        [
+          530,
+          136
+        ]
+      ],
+      "pivotPx": [
+        270,
+        492
+      ],
+      "sizePx": [
+        544,
+        564
+      ],
+      "mobileWidthWorld": 100,
+      "worldUnitsPerSpritePixel": 0.183824,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "lanterns": {
+      "path": "art/animated/wildcard-lanterns.png",
+      "sha256": "45e7ccf2bb224c08d24326f2b9657874ade9ee812095233ffe23116b0bc51811",
+      "bytes": 323634,
+      "atlas": "props",
+      "sourcePath": "art/generated/wildcard_fusion_festival_atlas.png",
+      "sourceRectPx": [
+        0,
+        502,
+        334,
+        522
+      ],
+      "atlasRectPx": [
+        550,
+        2,
+        167,
+        261
+      ],
+      "sourceMaskPx": [
+        [
+          0,
+          502
+        ],
+        [
+          274,
+          502
+        ],
+        [
+          324,
+          652
+        ],
+        [
+          334,
+          1024
+        ],
+        [
+          0,
+          1024
+        ]
+      ],
+      "pivotPx": [
+        154,
+        470
+      ],
+      "sizePx": [
+        334,
+        522
+      ],
+      "mobileWidthWorld": 56,
+      "worldUnitsPerSpritePixel": 0.167665,
+      "alphaExtrema": [
+        0,
+        253
+      ]
+    },
+    "reward": {
+      "path": "art/animated/wildcard-reward.png",
+      "sha256": "9c268046ce62bd67c653c442b82f6bce13b0cc441010e52d926e3a4e31aa9cec",
+      "bytes": 339922,
+      "atlas": "props",
+      "sourcePath": "art/generated/wildcard_fusion_festival_atlas.png",
+      "sourceRectPx": [
+        326,
+        538,
+        376,
+        452
+      ],
+      "atlasRectPx": [
+        2,
+        288,
+        188,
+        226
+      ],
+      "sourceMaskPx": [
+        [
+          372,
+          538
+        ],
+        [
+          620,
+          538
+        ],
+        [
+          662,
+          618
+        ],
+        [
+          668,
+          750
+        ],
+        [
+          702,
+          900
+        ],
+        [
+          702,
+          990
+        ],
+        [
+          326,
+          990
+        ],
+        [
+          326,
+          608
+        ]
+      ],
+      "pivotPx": [
+        194,
+        412
+      ],
+      "sizePx": [
+        376,
+        452
+      ],
+      "mobileWidthWorld": 56,
+      "worldUnitsPerSpritePixel": 0.148936,
+      "alphaExtrema": [
+        0,
+        254
+      ]
+    },
+    "mural": {
+      "path": "art/animated/wildcard-mural.png",
+      "sha256": "0904ecf69d8f64f5815d6121685631e25f0de75f24a06433f1562a6911a5b012",
+      "bytes": 382705,
+      "atlas": "props",
+      "sourcePath": "art/generated/wildcard_fusion_festival_atlas.png",
+      "sourceRectPx": [
+        684,
+        470,
+        340,
+        554
+      ],
+      "atlasRectPx": [
+        194,
+        288,
+        170,
+        277
+      ],
+      "sourceMaskPx": [
+        [
+          922,
+          470
+        ],
+        [
+          1024,
+          470
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          684,
+          1024
+        ],
+        [
+          684,
+          626
+        ],
+        [
+          740,
+          568
+        ],
+        [
+          838,
+          530
+        ]
+      ],
+      "pivotPx": [
+        168,
+        526
+      ],
+      "sizePx": [
+        340,
+        554
+      ],
+      "mobileWidthWorld": 88,
+      "worldUnitsPerSpritePixel": 0.258824,
+      "alphaExtrema": [
+        0,
+        253
+      ]
+    },
+    "plaza": {
+      "path": "art/animated/wildcard-plaza.png",
+      "sha256": "48d6289fc628d54d2eb81e596df26f2d5e1e058492f2afee635fd41b05be7193",
+      "bytes": 651345,
+      "atlas": "court",
+      "sourcePath": "art/generated/midnight_festival_world_atlas.png",
+      "sourceRectPx": [
+        14,
+        14,
+        474,
+        534
+      ],
+      "atlasRectPx": [
+        7,
+        7,
+        237,
+        267
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        234,
+        532
+      ],
+      "sizePx": [
+        474,
+        534
+      ],
+      "mobileWidthWorld": 270,
+      "worldUnitsPerSpritePixel": 0.56962,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    },
+    "court-mural": {
+      "path": "art/animated/wildcard-court-mural.png",
+      "sha256": "f88249e34348e977086d3ac6a852609c027c20dc6223b4b5da4d2183b9d33f1e",
+      "bytes": 123847,
+      "atlas": "court",
+      "sourcePath": "art/generated/midnight_festival_world_atlas.png",
+      "sourceRectPx": [
+        684,
+        20,
+        196,
+        252
+      ],
+      "atlasRectPx": [
+        342,
+        10,
+        98,
+        126
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        96,
+        246
+      ],
+      "sizePx": [
+        196,
+        252
+      ],
+      "mobileWidthWorld": 98,
+      "worldUnitsPerSpritePixel": 0.5,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    },
+    "stall": {
+      "path": "art/animated/wildcard-stall.png",
+      "sha256": "d27731eb4aa4c1a708a9597e5b5a5d64b9f07277af745e9433209a960d3dc9c8",
+      "bytes": 24586,
+      "atlas": "court",
+      "sourcePath": "art/generated/midnight_festival_world_atlas.png",
+      "sourceRectPx": [
+        518,
+        290,
+        102,
+        98
+      ],
+      "atlasRectPx": [
+        259,
+        145,
+        51,
+        49
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        50,
+        92
+      ],
+      "sizePx": [
+        102,
+        98
+      ],
+      "mobileWidthWorld": 53,
+      "worldUnitsPerSpritePixel": 0.519608,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    },
+    "street-rune": {
+      "path": "art/animated/wildcard-street-rune.png",
+      "sha256": "7e09af5b4201e39b00216a907a28711bdfccb8e11b72aaec1c83ccc0f201a675",
+      "bytes": 25631,
+      "atlas": "court",
+      "sourcePath": "art/generated/midnight_festival_world_atlas.png",
+      "sourceRectPx": [
+        122,
+        664,
+        100,
+        100
+      ],
+      "atlasRectPx": [
+        61,
+        332,
+        50,
+        50
+      ],
+      "sourceMaskPx": null,
+      "pivotPx": [
+        50,
+        50
+      ],
+      "sizePx": [
+        100,
+        100
+      ],
+      "mobileWidthWorld": 43,
+      "worldUnitsPerSpritePixel": 0.43,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    }
+  },
+  "actors": {
+    "archivist": {
+      "idle": {
+        "mode": "hold",
+        "sequence": [
+          {
+            "frame": "listen",
+            "durationMs": null
+          }
+        ]
+      },
+      "walk": {
+        "mode": "loop",
+        "sequence": [
+          {
+            "frame": "stride",
+            "durationMs": 220
+          }
+        ]
+      },
+      "read": {
+        "mode": "hold",
+        "sequence": [
+          {
+            "frame": "listen",
+            "durationMs": 180
+          },
+          {
+            "frame": "read",
+            "durationMs": null
+          }
+        ]
+      },
+      "ward": {
+        "mode": "hold",
+        "sequence": [
+          {
+            "frame": "ward",
+            "durationMs": 260
+          },
+          {
+            "frame": "listen",
+            "durationMs": null
+          }
+        ]
+      },
+      "heal": {
+        "mode": "hold",
+        "sequence": [
+          {
+            "frame": "heal",
+            "durationMs": 420
+          },
+          {
+            "frame": "listen",
+            "durationMs": null
+          }
+        ]
+      },
+      "alarm": {
+        "mode": "hold",
+        "sequence": [
+          {
+            "frame": "alarm",
+            "durationMs": 420
+          },
+          {
+            "frame": "listen",
+            "durationMs": null
+          }
+        ]
+      }
+    }
+  }
+}
